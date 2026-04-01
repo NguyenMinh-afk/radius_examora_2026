@@ -9,6 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+import authRoutes from "./routes/auth.routes.js";
+app.use("/api/auth", authRoutes);
+
 app.get("/", (req, res) => {
   res.send("Examora API is running...");
 });

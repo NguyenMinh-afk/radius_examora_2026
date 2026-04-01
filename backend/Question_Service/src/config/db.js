@@ -1,5 +1,7 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // PostgreSQL connection pool
 console.log('DB_PASSWORD (db.js):', typeof process.env.DB_PASSWORD, process.env.DB_PASSWORD);
@@ -65,8 +67,4 @@ const getClient = async () => {
   return client;
 };
 
-module.exports = {
-  pool,
-  query,
-  getClient,
-};
+export { pool, query, getClient };
