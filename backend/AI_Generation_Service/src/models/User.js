@@ -2,8 +2,8 @@
  * Model User - thông tin người dùng hệ thống
  * @augments Model
  */
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/sequelize.js';
 
 class User extends Model {}
 
@@ -94,4 +94,4 @@ User.init({
   tableName: 'users',
 });
 
-module.exports = User;
+export default User;
