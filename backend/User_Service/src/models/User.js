@@ -34,6 +34,17 @@ User.init({
     unique: true,
   },
   /**
+   * Role ID (liên kết với bảng roles)
+   */
+  role_id: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'roles',
+      key: 'id',
+    },
+  },
+  /**
    * Hash mật khẩu
    */
   password_hash: {

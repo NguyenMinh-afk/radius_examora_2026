@@ -1,7 +1,10 @@
+
 import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { GraduationCap, User, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Footer from "../Footer/Footer";
+import { registerUser } from "../../api/axios/User";
 
 const roles = [
   { id: "student", label: "Student", icon: <GraduationCap size={18} /> },
@@ -9,6 +12,7 @@ const roles = [
 ];
 
 const Register: React.FC = () => {
+
   const [role, setRole] = useState("student");
   const [agreed, setAgreed] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -16,11 +20,24 @@ const Register: React.FC = () => {
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreed) return; // không cho submit nếu chưa tick
-    setShowOtpModal(true); // mở modal OTP
+    if (!agreed) return;
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    try {
+      await registerUser({ email, password, full_name: fullName });
+      setShowOtpModal(true); // mở modal OTP (giả lập)
+    } catch (err: any) {
+      alert("Register failed: " + (err.response?.data?.message || err.message));
+    }
   };
 
   const handleConfirmOtp = (e: React.FormEvent) => {
@@ -84,6 +101,8 @@ const Register: React.FC = () => {
               <label className="text-xs font-semibold text-gray-500">FULL NAME</label>
               <input
                 type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Enter your full name"
                 className="w-full mt-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 required
@@ -105,21 +124,45 @@ const Register: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-gray-500">PASSWORD</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full mt-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full mt-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
+                    tabIndex={-1}
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-500">CONFIRM</label>
-                <input
-                  type="password"
-                  className="w-full mt-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full mt-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
+                    tabIndex={-1}
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
             </div>
 
