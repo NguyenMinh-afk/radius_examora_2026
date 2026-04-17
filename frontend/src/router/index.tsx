@@ -7,6 +7,7 @@ import Login from "../pages/Login/Login";
 import Forgot from "../pages/Forgot/Forgot";
 import AdminDashboard from "../pages/Dashboard/Admin/AdminDashboard";
 import TeacherDashboard from "../pages/Dashboard/Teacher/TeacherDashboard";
+import StudentDashboard from "../pages/Dashboard/Student/StudentDashboard";
 
 const AppRouter = () => {
   return (
@@ -33,6 +34,10 @@ const AppRouter = () => {
 
         {/* Teacher Dashboard */}
         <Route path="/teacher" element={<TeacherDashboard />} /> 
+
+        {/* Student Dashboard */}
+        <Route path="/student" element={<StudentDashboard />} />
+
 
       </Routes>
     </BrowserRouter>

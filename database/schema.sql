@@ -1,6 +1,7 @@
--- =====================================================
--- DATABASE SCHEMA FOR AI-POWERED EXAM BANK SYSTEM
--- Subject: High School Multiple Choice Exam Management
+﻿-- =====================================================
+-- DATABASE SCHEMA FULL - AI-POWERED EXAM BANK SYSTEM (UNIVERSITY EDITION)
+-- Research topic: RabbitMQ messaging platform integrated with modern AI
+-- Applied to experimental development of an MCQ exam-bank generation and management system
 -- =====================================================
 
 -- Enable UUID extension
@@ -21,8 +22,9 @@ CREATE TABLE roles (
 -- Insert default roles
 INSERT INTO roles (name, description) VALUES 
     ('admin', 'System Administrator'),
-    ('teacher', 'Teacher/Instructor'),
-    ('student', 'Student/Learner');
+    ('teacher', 'Giang vien'),
+    ('student', 'Sinh vien'),
+    ('staff', 'Nhan vien ho tro');
 
 -- Users table
 CREATE TABLE users (
@@ -56,30 +58,29 @@ CREATE INDEX idx_users_is_active ON users(is_active);
 CREATE INDEX idx_users_approval_status ON users(approval_status) WHERE approval_status = 'pending';
 
 -- =====================================================
--- SUBJECTS (Must be created before teacher_profiles)
+-- COURSES (Must be created before teacher_profiles)
 -- =====================================================
 
-CREATE TABLE subjects (
+CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     code VARCHAR(20) UNIQUE NOT NULL,
     description TEXT,
     icon_url TEXT,
+    credits INTEGER DEFAULT 3,
+    semester_type VARCHAR(20),
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert common high school subjects
-INSERT INTO subjects (name, code, description) VALUES 
-    ('Toán', 'MATH', 'Toán học'),
-    ('Văn', 'LIT', 'Ngữ văn'),
-    ('Tiếng Anh', 'ENG', 'Tiếng Anh'),
-    ('Vật lý', 'PHY', 'Vật lý'),
-    ('Hóa học', 'CHEM', 'Hóa học'),
-    ('Sinh học', 'BIO', 'Sinh học'),
-    ('Lịch sử', 'HIST', 'Lịch sử'),
-    ('Địa lý', 'GEO', 'Địa lý'),
-    ('GDCD', 'CIV', 'Giáo dục công dân');
+-- Insert common university courses
+INSERT INTO courses (name, code, description, credits, semester_type) VALUES
+    ('Toan cao cap', 'MATH101', 'Toan hoc dai cuong', 4, 'HK1'),
+    ('Lap trinh co ban', 'CS101', 'Nhap mon lap trinh', 3, 'HK1'),
+    ('Co so du lieu', 'DB102', 'Thiet ke va quan tri CSDL', 3, 'HK2'),
+    ('Tri tue nhan tao', 'AI201', 'Machine Learning and Deep Learning', 3, 'HK1'),
+    ('Ngu van hoc', 'LIT101', 'Ngu van dai cuong', 2, 'HK1'),
+    ('Vat ly dai cuong', 'PHY101', 'Vat ly co ban', 4, 'HK1');
 
 -- =====================================================
 -- USER PROFILES
@@ -114,8 +115,9 @@ CREATE TABLE user_profiles (
     
     -- Education/Work Information
     school_name VARCHAR(255),
-    grade_level VARCHAR(50),
-    class_name VARCHAR(100), -- Tên lớp cụ thể (10A1, 11B2, etc.)
+    major VARCHAR(100),
+    year_of_study INTEGER,
+    class_code VARCHAR(50),
     student_code VARCHAR(50), -- Mã học sinh/giáo viên
     
     -- Emergency Contact
@@ -161,9 +163,9 @@ CREATE TABLE teacher_profiles (
     graduation_year INTEGER,
     
     -- Teaching Information
-    subjects_teaching INTEGER[], -- Array of subject IDs
-    main_subject_id INTEGER REFERENCES subjects(id), -- Môn chính
-    grade_levels_teaching VARCHAR(50)[], -- ['10', '11', '12']
+    courses_teaching INTEGER[], -- Array of course IDs
+    main_course_id INTEGER REFERENCES courses(id), -- Main course
+    year_levels_teaching VARCHAR(50)[], -- ['Year 1', 'Year 2', 'Year 3', 'Year 4']
     teaching_experience_years INTEGER,
     
     -- Certifications & Training
@@ -192,7 +194,7 @@ CREATE TABLE teacher_profiles (
     total_reviews INTEGER DEFAULT 0,
     
     -- Statistics
-    total_classes_taught INTEGER DEFAULT 0,
+    total_courses_taught INTEGER DEFAULT 0,
     total_students_taught INTEGER DEFAULT 0,
     total_exams_created INTEGER DEFAULT 0,
     
@@ -202,7 +204,7 @@ CREATE TABLE teacher_profiles (
 
 CREATE INDEX idx_teacher_profiles_user ON teacher_profiles(user_id);
 CREATE INDEX idx_teacher_profiles_code ON teacher_profiles(teacher_code);
-CREATE INDEX idx_teacher_profiles_main_subject ON teacher_profiles(main_subject_id);
+CREATE INDEX idx_teacher_profiles_main_course ON teacher_profiles(main_course_id);
 CREATE INDEX idx_teacher_profiles_status ON teacher_profiles(employment_status);
 
 -- Student-specific profiles
@@ -216,16 +218,16 @@ CREATE TABLE student_profiles (
     expected_graduation_year INTEGER,
     
     -- Current Academic Status
-    current_grade_level VARCHAR(20), -- '10', '11', '12'
-    current_class_id UUID, -- Will be linked to classes table if needed
+    current_year_of_study INTEGER,
+    current_class_code VARCHAR(50),
     academic_year VARCHAR(20), -- '2025-2026'
     semester VARCHAR(20), -- 'HK1', 'HK2'
     enrollment_status VARCHAR(50) DEFAULT 'active', -- 'active', 'suspended', 'graduated', 'transferred', 'dropped'
     
     -- Academic Track
-    academic_track VARCHAR(50), -- 'natural_science', 'social_science', 'both'
-    major_subjects INTEGER[], -- Array of main subject IDs
-    elective_subjects INTEGER[], -- Array of elective subject IDs
+    major VARCHAR(100),
+    major_courses INTEGER[], -- Array of major course IDs
+    elective_courses INTEGER[], -- Array of elective course IDs
     
     -- Academic Performance
     gpa DECIMAL(4,2), -- Grade Point Average
@@ -268,8 +270,8 @@ CREATE TABLE student_profiles (
 
 CREATE INDEX idx_student_profiles_user ON student_profiles(user_id);
 CREATE INDEX idx_student_profiles_code ON student_profiles(student_code);
-CREATE INDEX idx_student_profiles_grade ON student_profiles(current_grade_level);
-CREATE INDEX idx_student_profiles_class ON student_profiles(current_class_id);
+CREATE INDEX idx_student_profiles_year ON student_profiles(current_year_of_study);
+CREATE INDEX idx_student_profiles_class ON student_profiles(current_class_code);
 CREATE INDEX idx_student_profiles_status ON student_profiles(enrollment_status);
 CREATE INDEX idx_student_profiles_admission_year ON student_profiles(admission_year);
 
@@ -338,21 +340,21 @@ CREATE INDEX idx_password_reset_tokens_token ON password_reset_tokens(token) WHE
 CREATE INDEX idx_password_reset_tokens_expires ON password_reset_tokens(expires_at) WHERE is_used = false;
 
 -- =====================================================
--- 2. SUBJECT & CURRICULUM MANAGEMENT
+-- 2. COURSE & CURRICULUM MANAGEMENT
 -- =====================================================
 
--- Subjects (Môn học)
+-- Courses
 -- Chapters/Units (Chương/Bài)
 CREATE TABLE chapters (
     id SERIAL PRIMARY KEY,
-    subject_id INTEGER REFERENCES subjects(id) ON DELETE CASCADE,
-    grade_level VARCHAR(20) NOT NULL, -- '10', '11', '12'
+    course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE,
+    year_level VARCHAR(20) NOT NULL,
     chapter_number INTEGER NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     curriculum_standard TEXT, -- CT2018, etc.
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(subject_id, grade_level, chapter_number)
+    UNIQUE(course_id, year_level, chapter_number)
 );
 
 -- Knowledge Units (Đơn vị kiến thức)
@@ -383,7 +385,7 @@ CREATE TYPE question_type AS ENUM (
 -- Questions table
 CREATE TABLE questions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    subject_id INTEGER REFERENCES subjects(id) NOT NULL,
+    course_id INTEGER REFERENCES courses(id) NOT NULL,
     chapter_id INTEGER REFERENCES chapters(id),
     knowledge_unit_id INTEGER REFERENCES knowledge_units(id),
     created_by UUID REFERENCES users(id),
@@ -462,13 +464,72 @@ CREATE TABLE question_versions (
 -- 4. AI GENERATION SYSTEM
 -- =====================================================
 
+-- Document ingest pipeline
+CREATE TABLE documents (
+    document_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE NOT NULL,
+    uploaded_by UUID REFERENCES users(id) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    storage_path TEXT NOT NULL,
+    file_url TEXT,
+    mime_type VARCHAR(100),
+    file_size BIGINT,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED')),
+    error_message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ai_jobs (
+    ai_job_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    document_id UUID REFERENCES documents(document_id) ON DELETE CASCADE NOT NULL,
+    requested_by UUID REFERENCES users(id) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED')),
+    retry_count INTEGER DEFAULT 0,
+    result_artifact_path TEXT,
+    error_message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP
+);
+
+CREATE TABLE outbox_events (
+    outbox_event_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    aggregate_type VARCHAR(50) NOT NULL,
+    aggregate_id UUID NOT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    exchange_name VARCHAR(100),
+    routing_key VARCHAR(100),
+    message_id VARCHAR(255) UNIQUE NOT NULL,
+    payload JSONB NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'PUBLISHED', 'FAILED')),
+    retry_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    published_at TIMESTAMP
+);
+
+CREATE TABLE processed_messages (
+    processed_message_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    outbox_event_id UUID REFERENCES outbox_events(outbox_event_id),
+    consumer_name VARCHAR(100) NOT NULL,
+    message_id VARCHAR(255) NOT NULL,
+    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (consumer_name, message_id)
+);
+
+CREATE INDEX idx_documents_course_status ON documents(course_id, status);
+CREATE INDEX idx_ai_jobs_status ON ai_jobs(status, created_at);
+CREATE INDEX idx_outbox_events_status ON outbox_events(status, created_at);
+CREATE UNIQUE INDEX uq_ai_jobs_active_per_document ON ai_jobs(document_id) WHERE status IN ('PENDING', 'RUNNING');
+
 -- AI generation requests
 CREATE TABLE ai_generation_requests (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) NOT NULL,
     
     -- Request parameters
-    subject_id INTEGER REFERENCES subjects(id) NOT NULL,
+    course_id INTEGER REFERENCES courses(id) NOT NULL,
     chapter_id INTEGER REFERENCES chapters(id),
     knowledge_unit_id INTEGER REFERENCES knowledge_units(id),
     difficulty difficulty_level,
@@ -537,8 +598,8 @@ CREATE TABLE exams (
     -- Basic info
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    subject_id INTEGER REFERENCES subjects(id) NOT NULL,
-    grade_level VARCHAR(20),
+    course_id INTEGER REFERENCES courses(id) NOT NULL,
+    year_level VARCHAR(20),
     exam_type VARCHAR(50), -- 'practice', 'midterm', 'final', 'mock'
     
     -- Exam configuration
@@ -608,8 +669,8 @@ CREATE TABLE classes (
     description TEXT,
     class_code VARCHAR(50) UNIQUE NOT NULL, -- For students to join
     
-    subject_id INTEGER REFERENCES subjects(id),
-    grade_level VARCHAR(20),
+    course_id INTEGER REFERENCES courses(id),
+    year_level VARCHAR(20),
     academic_year VARCHAR(20), -- '2025-2026'
     semester VARCHAR(20), -- 'HK1', 'HK2'
     
@@ -635,7 +696,7 @@ CREATE TABLE class_members (
 );
 
 -- =====================================================
--- 7. EXAM ASSIGNMENTS & SUBMISSIONS
+-- 7. EXAM ASSIGNMENTS & ATTEMPTS (Optimized)
 -- =====================================================
 
 -- Exam assignments (Assign exam to class/students)
@@ -675,58 +736,70 @@ CREATE TABLE student_assignments (
     UNIQUE(assignment_id, student_id)
 );
 
--- Exam submissions
-CREATE TABLE exam_submissions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    assignment_id UUID REFERENCES exam_assignments(id) ON DELETE CASCADE,
-    student_id UUID REFERENCES users(id) NOT NULL,
-    exam_id UUID REFERENCES exams(id) NOT NULL,
-    
-    attempt_number INTEGER NOT NULL,
-    
-    -- Submission details
-    started_at TIMESTAMP NOT NULL,
+-- Attempts overview
+CREATE TABLE attempts (
+    attempt_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    exam_id UUID REFERENCES exams(id) ON DELETE CASCADE NOT NULL,
+    student_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    assignment_id UUID REFERENCES exam_assignments(id),
+
+    attempt_number INTEGER NOT NULL CHECK (attempt_number > 0),
+    started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     submitted_at TIMESTAMP,
-    time_taken INTEGER, -- seconds
-    
-    -- Answers
-    answers JSONB NOT NULL, -- {question_id: selected_answer}
-    
-    -- Scoring
-    status VARCHAR(50) DEFAULT 'in_progress', -- in_progress, submitted, graded
+    time_taken INTEGER,
+
+    status VARCHAR(20) NOT NULL DEFAULT 'in_progress'
+        CHECK (status IN ('in_progress', 'submitted', 'graded', 'abandoned')),
+
     score DECIMAL(5,2),
     percentage DECIMAL(5,2),
-    correct_answers INTEGER,
-    wrong_answers INTEGER,
-    skipped_answers INTEGER,
-    
-    -- AI Proctoring results
+    correct_answers INTEGER DEFAULT 0,
+    wrong_answers INTEGER DEFAULT 0,
+    skipped_answers INTEGER DEFAULT 0,
+
     proctoring_data JSONB,
     violations_detected INTEGER DEFAULT 0,
     flagged_for_review BOOLEAN DEFAULT false,
-    
-    -- Grading
+
     graded_by UUID REFERENCES users(id),
     graded_at TIMESTAMP,
     teacher_feedback TEXT,
-    
+
     is_late BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    trace_id VARCHAR(100),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(exam_id, student_id, attempt_number)
 );
 
--- Answer details for each question
-CREATE TABLE submission_answers (
+CREATE INDEX idx_attempts_exam_student ON attempts(exam_id, student_id);
+CREATE INDEX idx_attempts_student_status ON attempts(student_id, status);
+CREATE INDEX idx_attempts_trace_id ON attempts(trace_id);
+CREATE UNIQUE INDEX uq_attempts_one_in_progress
+    ON attempts(exam_id, student_id)
+    WHERE status = 'in_progress';
+
+-- Attempt answer details
+CREATE TABLE attempt_answers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    submission_id UUID REFERENCES exam_submissions(id) ON DELETE CASCADE,
+    attempt_id UUID REFERENCES attempts(attempt_id) ON DELETE CASCADE NOT NULL,
     question_id UUID REFERENCES questions(id) NOT NULL,
-    
-    selected_answer TEXT, -- Student's answer
+
+    selected_answer TEXT,
     is_correct BOOLEAN,
-    points_earned DECIMAL(5,2),
-    time_spent INTEGER, -- seconds on this question
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    points_earned DECIMAL(5,2) DEFAULT 0,
+    time_spent INTEGER,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(attempt_id, question_id)
 );
+
+CREATE INDEX idx_attempt_answers_attempt ON attempt_answers(attempt_id);
+CREATE INDEX idx_attempt_answers_question ON attempt_answers(question_id);
+CREATE INDEX idx_attempt_answers_question_correct ON attempt_answers(question_id, is_correct);
 
 -- =====================================================
 -- 8. ANALYTICS & STATISTICS
@@ -736,7 +809,7 @@ CREATE TABLE submission_answers (
 CREATE TABLE student_progress (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    subject_id INTEGER REFERENCES subjects(id) NOT NULL,
+    course_id INTEGER REFERENCES courses(id) NOT NULL,
     chapter_id INTEGER REFERENCES chapters(id),
     
     -- Progress metrics
@@ -757,7 +830,7 @@ CREATE TABLE student_progress (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    UNIQUE(student_id, subject_id, chapter_id)
+    UNIQUE(student_id, course_id, chapter_id)
 );
 
 -- Question statistics
@@ -961,7 +1034,7 @@ CREATE TABLE ai_models (
     
     -- Capabilities
     supports_question_types TEXT[], -- question types it can generate
-    supports_subjects TEXT[], -- subject codes
+    supports_courses TEXT[], -- course codes
     
     -- Configuration
     api_endpoint TEXT,
@@ -986,7 +1059,7 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_active ON users(is_active);
 
 -- Questions indexes
-CREATE INDEX idx_questions_subject ON questions(subject_id);
+CREATE INDEX idx_questions_course ON questions(course_id);
 CREATE INDEX idx_questions_chapter ON questions(chapter_id);
 CREATE INDEX idx_questions_difficulty ON questions(difficulty);
 CREATE INDEX idx_questions_created_by ON questions(created_by);
@@ -995,7 +1068,7 @@ CREATE INDEX idx_questions_active ON questions(is_active);
 CREATE INDEX idx_questions_public ON questions(is_public);
 
 -- Exams indexes
-CREATE INDEX idx_exams_subject ON exams(subject_id);
+CREATE INDEX idx_exams_course ON exams(course_id);
 CREATE INDEX idx_exams_created_by ON exams(created_by);
 CREATE INDEX idx_exams_active ON exams(is_active);
 
@@ -1004,11 +1077,10 @@ CREATE INDEX idx_exam_assignments_class ON exam_assignments(class_id);
 CREATE INDEX idx_exam_assignments_exam ON exam_assignments(exam_id);
 CREATE INDEX idx_exam_assignments_dates ON exam_assignments(start_time, end_time);
 
--- Submissions indexes
-CREATE INDEX idx_submissions_student ON exam_submissions(student_id);
-CREATE INDEX idx_submissions_assignment ON exam_submissions(assignment_id);
-CREATE INDEX idx_submissions_status ON exam_submissions(status);
-CREATE INDEX idx_submissions_created ON exam_submissions(created_at);
+-- Attempts indexes
+CREATE INDEX idx_attempts_assignment ON attempts(assignment_id);
+CREATE INDEX idx_attempts_status ON attempts(status);
+CREATE INDEX idx_attempts_created ON attempts(created_at);
 
 -- Class indexes
 CREATE INDEX idx_classes_teacher ON classes(teacher_id);
@@ -1025,20 +1097,62 @@ CREATE INDEX idx_ai_requests_created ON ai_generation_requests(created_at);
 CREATE INDEX idx_queue_jobs_status ON queue_jobs(status);
 CREATE INDEX idx_queue_jobs_type ON queue_jobs(job_type);
 CREATE INDEX idx_queue_jobs_queued ON queue_jobs(queued_at);
+
+-- Exam question snapshot/versioning and async traceability
+ALTER TABLE exam_questions
+    ADD COLUMN IF NOT EXISTS question_version INTEGER NOT NULL DEFAULT 1,
+    ADD COLUMN IF NOT EXISTS question_snapshot_json JSONB NOT NULL DEFAULT '{}'::jsonb;
+
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS trace_id VARCHAR(100);
+ALTER TABLE ai_jobs ADD COLUMN IF NOT EXISTS trace_id VARCHAR(100);
+ALTER TABLE ai_generation_requests ADD COLUMN IF NOT EXISTS trace_id VARCHAR(100);
+ALTER TABLE ai_generation_requests ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE questions ADD COLUMN IF NOT EXISTS trace_id VARCHAR(100);
+ALTER TABLE exam_assignments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE student_assignments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE outbox_events
+    ADD COLUMN IF NOT EXISTS exchange_name VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS routing_key VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS headers JSONB;
+
+CREATE TABLE IF NOT EXISTS dead_letter_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    original_message_id VARCHAR(255) NOT NULL,
+    routing_key VARCHAR(100),
+    exchange_name VARCHAR(100),
+    payload JSONB NOT NULL,
+    error_reason TEXT,
+    failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    trace_id VARCHAR(100)
+);
+
+CREATE INDEX IF NOT EXISTS idx_dlq_routing_key ON dead_letter_messages(routing_key);
+CREATE INDEX IF NOT EXISTS idx_dlq_failed_at ON dead_letter_messages(failed_at);
+
+-- JSONB / ARRAY indexes for flexible search filters
+CREATE INDEX idx_questions_options_gin ON questions USING GIN (options);
+CREATE INDEX idx_questions_keywords_gin ON questions USING GIN (keywords);
+CREATE INDEX idx_user_profiles_metadata_gin ON user_profiles USING GIN (metadata);
+CREATE INDEX idx_user_profiles_preferences_gin ON user_profiles USING GIN (preferences);
+CREATE INDEX idx_teacher_profiles_certifications_gin ON teacher_profiles USING GIN (certifications);
+CREATE INDEX idx_student_profiles_achievements_gin ON student_profiles USING GIN (achievements);
+
+-- Time-series access optimization
+CREATE INDEX idx_system_analytics_metric_date_desc ON system_analytics (metric_date DESC);
 -- =====================================================
--- TRIGGERS FOR AUTO-UPDATE
+-- TRIGGERS FOR AUTO-UPDATE - FINAL CLEAN VERSION
 -- =====================================================
 
--- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
--- Apply trigger to tables with updated_at
+-- Apply triggers
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -1054,8 +1168,29 @@ CREATE TRIGGER update_exams_updated_at BEFORE UPDATE ON exams
 CREATE TRIGGER update_classes_updated_at BEFORE UPDATE ON classes
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- CREATE TRIGGER update_learning_paths_updated_at BEFORE UPDATE ON learning_paths
---     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_exam_assignments_updated_at BEFORE UPDATE ON exam_assignments
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_student_assignments_updated_at BEFORE UPDATE ON student_assignments
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_documents_updated_at BEFORE UPDATE ON documents
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_ai_jobs_updated_at BEFORE UPDATE ON ai_jobs
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_attempts_updated_at BEFORE UPDATE ON attempts
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_learning_paths_updated_at BEFORE UPDATE ON learning_paths
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_question_collections_updated_at BEFORE UPDATE ON question_collections
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_ai_generation_requests_updated_at BEFORE UPDATE ON ai_generation_requests
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- CREATE TRIGGER update_leaderboards_updated_at BEFORE UPDATE ON leaderboards
 --     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -1069,6 +1204,61 @@ CREATE TRIGGER update_teacher_profiles_updated_at BEFORE UPDATE ON teacher_profi
 CREATE TRIGGER update_student_profiles_updated_at BEFORE UPDATE ON student_profiles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- Synchronize document and ai_job status
+CREATE OR REPLACE FUNCTION sync_document_ai_job_status()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE documents
+    SET status = NEW.status,
+        error_message = NEW.error_message,
+        trace_id = COALESCE(NEW.trace_id, documents.trace_id),
+        updated_at = CURRENT_TIMESTAMP
+    WHERE document_id = NEW.document_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_sync_ai_job_status
+AFTER UPDATE ON ai_jobs
+FOR EACH ROW EXECUTE FUNCTION sync_document_ai_job_status();
+
+-- Auto-update question statistics from attempt_answers
+CREATE OR REPLACE FUNCTION update_question_statistics_on_submission()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status = 'graded' AND NEW.attempt_id IS NOT NULL THEN
+        INSERT INTO question_statistics (
+            question_id, times_answered, times_correct, difficulty_index, updated_at
+        )
+        SELECT
+            aa.question_id,
+            COUNT(*)::INTEGER,
+            COUNT(*) FILTER (WHERE aa.is_correct = true)::INTEGER,
+            CASE WHEN COUNT(*) > 0
+                 THEN COUNT(*) FILTER (WHERE aa.is_correct = true)::DECIMAL / COUNT(*)
+                 ELSE 0
+            END,
+            CURRENT_TIMESTAMP
+        FROM attempt_answers aa
+        WHERE aa.attempt_id = NEW.attempt_id
+        GROUP BY aa.question_id
+        ON CONFLICT (question_id) DO UPDATE SET
+            times_answered = question_statistics.times_answered + EXCLUDED.times_answered,
+            times_correct = question_statistics.times_correct + EXCLUDED.times_correct,
+            difficulty_index = EXCLUDED.difficulty_index,
+            updated_at = CURRENT_TIMESTAMP;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_question_stats
+AFTER INSERT OR UPDATE OF status ON attempts
+FOR EACH ROW
+WHEN (NEW.status = 'graded')
+EXECUTE FUNCTION update_question_statistics_on_submission();
+
 -- =====================================================
 -- VIEWS FOR COMMON QUERIES
 -- =====================================================
@@ -1078,14 +1268,14 @@ CREATE VIEW teacher_question_summary AS
 SELECT 
     u.id as teacher_id,
     u.full_name as teacher_name,
-    s.name as subject_name,
+    s.name as course_name,
     COUNT(q.id) as total_questions,
     SUM(CASE WHEN q.is_ai_generated THEN 1 ELSE 0 END) as ai_generated_count,
     SUM(CASE WHEN q.is_verified THEN 1 ELSE 0 END) as verified_count,
     AVG(q.quality_score) as avg_quality_score
 FROM users u
 LEFT JOIN questions q ON u.id = q.created_by
-LEFT JOIN subjects s ON q.subject_id = s.id
+LEFT JOIN courses s ON q.course_id = s.id
 WHERE u.role_id = (SELECT id FROM roles WHERE name = 'teacher')
 GROUP BY u.id, u.full_name, s.name;
 
@@ -1094,15 +1284,16 @@ CREATE VIEW student_performance_summary AS
 SELECT 
     u.id as student_id,
     u.full_name as student_name,
-    COUNT(DISTINCT es.id) as total_submissions,
-    AVG(es.score) as avg_score,
-    AVG(es.percentage) as avg_percentage,
-    SUM(es.correct_answers) as total_correct,
-    SUM(es.wrong_answers) as total_wrong
+    COUNT(DISTINCT at.attempt_id) as total_submissions,
+    AVG(at.score) as avg_score,
+    AVG(at.percentage) as avg_percentage,
+    SUM(at.correct_answers) as total_correct,
+    SUM(at.wrong_answers) as total_wrong
 FROM users u
-LEFT JOIN exam_submissions es ON u.id = es.student_id
+-- at = attempts
+LEFT JOIN attempts at ON u.id = at.student_id
 WHERE u.role_id = (SELECT id FROM roles WHERE name = 'student')
-  AND es.status = 'graded'
+  AND at.status = 'graded'
 GROUP BY u.id, u.full_name;
 
 -- View: Active exam assignments
@@ -1116,13 +1307,14 @@ SELECT
     ea.start_time,
     ea.end_time,
     COUNT(DISTINCT sa.student_id) as total_students,
-    COUNT(DISTINCT es.id) as submissions_count
+        COUNT(DISTINCT at.attempt_id) as submissions_count
 FROM exam_assignments ea
 JOIN exams e ON ea.exam_id = e.id
 LEFT JOIN classes c ON ea.class_id = c.id
 JOIN users u ON ea.assigned_by = u.id
 LEFT JOIN student_assignments sa ON ea.id = sa.assignment_id
-LEFT JOIN exam_submissions es ON ea.id = es.assignment_id
+-- at = attempts
+LEFT JOIN attempts at ON ea.id = at.assignment_id
 WHERE ea.is_active = true
   AND ea.end_time > CURRENT_TIMESTAMP
 GROUP BY ea.id, ea.title, e.title, c.name, u.full_name, ea.start_time, ea.end_time;
@@ -1148,7 +1340,7 @@ CREATE TABLE file_attachments (
     file_type VARCHAR(50), -- 'image', 'audio', 'video', 'document', 'other'
     
     -- Related entity
-    entity_type VARCHAR(50), -- 'question', 'exam', 'material', 'submission'
+    entity_type VARCHAR(50), -- 'question', 'exam', 'material', 'attempt'
     entity_id UUID,
     
     -- Storage info
@@ -1176,7 +1368,7 @@ CREATE TABLE learning_materials (
     content_type VARCHAR(50), -- 'document', 'video', 'link', 'pdf', 'slides'
     
     -- Classification
-    subject_id INTEGER REFERENCES subjects(id),
+    course_id INTEGER REFERENCES courses(id),
     chapter_id INTEGER REFERENCES chapters(id),
     knowledge_unit_id INTEGER REFERENCES knowledge_units(id),
     
@@ -1202,7 +1394,7 @@ CREATE TABLE learning_materials (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_materials_subject ON learning_materials(subject_id);
+CREATE INDEX idx_materials_course ON learning_materials(course_id);
 CREATE INDEX idx_materials_chapter ON learning_materials(chapter_id);
 CREATE INDEX idx_materials_created_by ON learning_materials(created_by);
 
@@ -1230,8 +1422,8 @@ CREATE TABLE question_collections (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     
-    subject_id INTEGER REFERENCES subjects(id),
-    grade_level VARCHAR(20),
+    course_id INTEGER REFERENCES courses(id),
+    year_level VARCHAR(20),
     
     is_public BOOLEAN DEFAULT false,
     is_collaborative BOOLEAN DEFAULT false, -- Allow multiple teachers to contribute
@@ -1330,8 +1522,8 @@ CREATE TABLE learning_paths (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_id UUID REFERENCES users(id) ON DELETE CASCADE,
     
-    subject_id INTEGER REFERENCES subjects(id) NOT NULL,
-    grade_level VARCHAR(20),
+    course_id INTEGER REFERENCES courses(id) NOT NULL,
+    year_level VARCHAR(20),
     
     -- Path status
     status VARCHAR(50) DEFAULT 'in_progress', -- 'not_started', 'in_progress', 'completed'
@@ -1356,7 +1548,7 @@ CREATE TABLE learning_paths (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    UNIQUE(student_id, subject_id)
+    UNIQUE(student_id, course_id)
 );
 
 -- Learning activities log
@@ -1545,8 +1737,8 @@ CREATE TABLE leaderboards (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     
     leaderboard_type VARCHAR(50) NOT NULL, -- 'weekly', 'monthly', 'all_time'
-    subject_id INTEGER REFERENCES subjects(id),
-    grade_level VARCHAR(20),
+    course_id INTEGER REFERENCES courses(id),
+    year_level VARCHAR(20),
     
     period_start DATE NOT NULL,
     period_end DATE NOT NULL,
@@ -1558,7 +1750,7 @@ CREATE TABLE leaderboards (
 );
 
 CREATE INDEX idx_leaderboards_type ON leaderboards(leaderboard_type);
-CREATE INDEX idx_leaderboards_subject ON leaderboards(subject_id);
+CREATE INDEX idx_leaderboards_course ON leaderboards(course_id);
 
 -- =====================================================
 -- ADDITIONAL CONSTRAINTS & BUSINESS RULES
@@ -1579,7 +1771,7 @@ ALTER TABLE exam_questions
     CHECK (points > 0);
 
 -- Ensure percentage values are valid
-ALTER TABLE exam_submissions 
+ALTER TABLE attempts 
     ADD CONSTRAINT check_percentage_range 
     CHECK (percentage >= 0 AND percentage <= 100);
 
@@ -1628,54 +1820,14 @@ CREATE TRIGGER trigger_update_question_usage
 AFTER INSERT ON exam_questions
 FOR EACH ROW EXECUTE FUNCTION update_question_usage();
 
--- Auto-update question statistics
-CREATE OR REPLACE FUNCTION update_question_statistics_on_submission()
-RETURNS TRIGGER AS $$
-DECLARE
-    q_stat RECORD;
-BEGIN
-    FOR q_stat IN 
-        SELECT question_id, is_correct 
-        FROM submission_answers 
-        WHERE submission_id = NEW.id
-    LOOP
-        INSERT INTO question_statistics (
-            question_id, 
-            times_answered, 
-            times_correct
-        ) VALUES (
-            q_stat.question_id, 
-            1, 
-            CASE WHEN q_stat.is_correct THEN 1 ELSE 0 END
-        )
-        ON CONFLICT (question_id) 
-        DO UPDATE SET
-            times_answered = question_statistics.times_answered + 1,
-            times_correct = question_statistics.times_correct + 
-                CASE WHEN q_stat.is_correct THEN 1 ELSE 0 END,
-            difficulty_index = 
-                CASE WHEN question_statistics.times_answered + 1 > 0 
-                THEN (question_statistics.times_correct + 
-                    CASE WHEN q_stat.is_correct THEN 1 ELSE 0 END)::DECIMAL / 
-                    (question_statistics.times_answered + 1)
-                ELSE 0 
-                END;
-    END LOOP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trigger_update_question_stats
-AFTER INSERT ON exam_submissions
-FOR EACH ROW 
-WHEN (NEW.status = 'graded')
-EXECUTE FUNCTION update_question_statistics_on_submission();
-
 -- Auto-create audit log for critical changes
 CREATE OR REPLACE FUNCTION create_audit_log()
 RETURNS TRIGGER AS $$
 DECLARE
     v_user_id UUID;
+    v_old JSONB;
+    v_new JSONB;
+    v_changes JSONB;
 BEGIN
     -- Safely get user_id, handle NULL or empty string
     BEGIN
@@ -1686,6 +1838,7 @@ BEGIN
     END;
 
     IF TG_OP = 'DELETE' THEN
+        v_old := to_jsonb(OLD);
         INSERT INTO audit_logs (
             user_id, action, entity_type, entity_id, 
             old_values, description
@@ -1694,25 +1847,39 @@ BEGIN
             'delete',
             TG_TABLE_NAME,
             OLD.id,
-            row_to_json(OLD),
+            v_old,
             'Record deleted'
         );
         RETURN OLD;
     ELSIF TG_OP = 'UPDATE' THEN
+        v_old := to_jsonb(OLD);
+        v_new := to_jsonb(NEW);
+
+        SELECT COALESCE(
+            jsonb_object_agg(
+                k,
+                jsonb_build_object('old', v_old -> k, 'new', v_new -> k)
+            ),
+            '{}'::jsonb
+        )
+        INTO v_changes
+        FROM jsonb_object_keys(v_new) AS k
+        WHERE (v_old -> k) IS DISTINCT FROM (v_new -> k);
+
         INSERT INTO audit_logs (
             user_id, action, entity_type, entity_id,
-            old_values, new_values, description
+            changes, description
         ) VALUES (
             v_user_id,
             'update',
             TG_TABLE_NAME,
             NEW.id,
-            row_to_json(OLD),
-            row_to_json(NEW),
+            v_changes,
             'Record updated'
         );
         RETURN NEW;
     ELSIF TG_OP = 'INSERT' THEN
+        v_new := to_jsonb(NEW);
         INSERT INTO audit_logs (
             user_id, action, entity_type, entity_id,
             new_values, description
@@ -1721,7 +1888,7 @@ BEGIN
             'create',
             TG_TABLE_NAME,
             NEW.id,
-            row_to_json(NEW),
+            v_new,
             'Record created'
         );
         RETURN NEW;
@@ -1743,10 +1910,10 @@ CREATE TRIGGER audit_questions AFTER INSERT OR UPDATE OR DELETE ON questions
 -- ADDITIONAL VIEWS
 -- =====================================================
 
--- View: Question bank overview by subject
+-- View: Question bank overview by course
 CREATE VIEW question_bank_overview AS
 SELECT 
-    s.name as subject_name,
+    s.name as course_name,
     COUNT(q.id) as total_questions,
     COUNT(DISTINCT q.chapter_id) as chapters_covered,
     SUM(CASE WHEN q.difficulty = 'easy' THEN 1 ELSE 0 END) as easy_count,
@@ -1756,8 +1923,8 @@ SELECT
     SUM(CASE WHEN q.is_ai_generated THEN 1 ELSE 0 END) as ai_generated,
     SUM(CASE WHEN q.is_verified THEN 1 ELSE 0 END) as verified,
     AVG(q.quality_score) as avg_quality_score
-FROM subjects s
-LEFT JOIN questions q ON s.id = q.subject_id
+FROM courses s
+LEFT JOIN questions q ON s.id = q.course_id
 WHERE q.is_active = true
 GROUP BY s.id, s.name;
 
@@ -1770,14 +1937,15 @@ SELECT
     u.full_name as teacher_name,
     COUNT(DISTINCT cm.user_id) as total_students,
     COUNT(DISTINCT ea.id) as total_assignments,
-    COUNT(DISTINCT es.id) as total_submissions,
-    AVG(es.score) as avg_class_score,
-    AVG(es.percentage) as avg_class_percentage
+    COUNT(DISTINCT at.attempt_id) as total_submissions,
+    AVG(at.score) as avg_class_score,
+    AVG(at.percentage) as avg_class_percentage
 FROM classes c
 JOIN users u ON c.teacher_id = u.id
 LEFT JOIN class_members cm ON c.id = cm.class_id AND cm.role = 'student'
 LEFT JOIN exam_assignments ea ON c.id = ea.class_id
-LEFT JOIN exam_submissions es ON ea.id = es.assignment_id AND es.status = 'graded'
+-- at = attempts
+LEFT JOIN attempts at ON ea.id = at.assignment_id AND at.status = 'graded'
 WHERE c.is_active = true
 GROUP BY c.id, c.name, c.teacher_id, u.full_name;
 
@@ -1796,6 +1964,23 @@ FROM ai_generation_requests agr
 LEFT JOIN ai_generation_logs agl ON agr.id = agl.request_id
 GROUP BY DATE(agr.created_at)
 ORDER BY generation_date DESC;
+
+-- Question reviews (AI quality review workflow)
+CREATE TABLE question_reviews (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    question_id UUID REFERENCES questions(id) ON DELETE CASCADE NOT NULL,
+    reviewed_by UUID REFERENCES users(id) NOT NULL,
+    quality_score DECIMAL(3,2),
+    comments TEXT,
+    status VARCHAR(20) CHECK (status IN ('pending','approved','rejected')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_question_reviews_question ON question_reviews(question_id);
+
+CREATE TRIGGER update_question_reviews_updated_at BEFORE UPDATE ON question_reviews
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================
 -- SAMPLE DATA (Optional - for testing)
@@ -1816,6 +2001,17 @@ VALUES (
     true,
     'approved',
     CURRENT_TIMESTAMP
+);
+
+-- Sample document for testing AI pipeline
+INSERT INTO documents (course_id, uploaded_by, file_name, original_filename, storage_path, status)
+VALUES (
+    1,
+    '10000000-0000-0000-0000-000000000001',
+    'math101_ch1.pdf',
+    'math101_ch1.pdf',
+    '/storage/docs/math101_ch1.pdf',
+    'PENDING'
 );
 
 -- Insert admin profile
@@ -1885,9 +2081,9 @@ INSERT INTO teacher_profiles (
     major, 
     university, 
     graduation_year,
-    subjects_teaching,
-    main_subject_id,
-    grade_levels_teaching,
+    courses_teaching,
+    main_course_id,
+    year_levels_teaching,
     teaching_experience_years,
     certifications,
     awards,
@@ -1897,7 +2093,7 @@ INSERT INTO teacher_profiles (
     office_location,
     average_rating,
     total_reviews,
-    total_classes_taught,
+    total_courses_taught,
     total_students_taught,
     total_exams_created
 ) VALUES
@@ -1911,7 +2107,7 @@ INSERT INTO teacher_profiles (
         2012,
         ARRAY[1], -- Toán
         1,
-        ARRAY['10', '11', '12'],
+        ARRAY['Year 1', 'Year 2', 'Year 3', 'Year 4'],
         12,
         '[{"name": "Chứng chỉ giảng dạy nâng cao", "issuer": "Bộ GD&ĐT", "date": "2020-06-15"}]'::jsonb,
         '[{"name": "Giáo viên giỏi cấp thành phố", "year": 2023}]'::jsonb,
@@ -1935,7 +2131,7 @@ INSERT INTO teacher_profiles (
         2014,
         ARRAY[4], -- Vật lý
         4,
-        ARRAY['10', '11', '12'],
+        ARRAY['Year 1', 'Year 2', 'Year 3', 'Year 4'],
         10,
         '[{"name": "Chứng chỉ STEM Education", "issuer": "British Council", "date": "2021-03-20"}]'::jsonb,
         '[{"name": "Huấn luyện Olympic Vật lý", "year": 2022}]'::jsonb,
@@ -1959,7 +2155,7 @@ INSERT INTO teacher_profiles (
         2015,
         ARRAY[5], -- Hóa học
         5,
-        ARRAY['10', '11', '12'],
+        ARRAY['Year 1', 'Year 2', 'Year 3', 'Year 4'],
         9,
         '[{"name": "Chứng chỉ thí nghiệm an toàn", "issuer": "Viện Hóa học", "date": "2019-11-10"}]'::jsonb,
         '[{"name": "Giáo viên xuất sắc", "year": 2023}]'::jsonb,
@@ -1985,25 +2181,25 @@ INSERT INTO users (id, email, phone, full_name, password_hash, role_id, is_activ
     ('30000000-0000-0000-0000-000000000005', 'buithibh@student.examora.vn', '0965555555', 'Bùi Thị H', '{{STUDENT_PASSWORD_HASH}}', (SELECT id FROM roles WHERE name = 'student'), true, true, 'approved', CURRENT_TIMESTAMP);
 
 -- Insert student profiles
-INSERT INTO user_profiles (user_id, date_of_birth, gender, place_of_birth, address, city, district, school_name, grade_level, class_name, student_code) VALUES
-    ('30000000-0000-0000-0000-000000000001', '2008-03-25', 'female', 'Hà Nội', 'Số 12 Hoàng Cầu, Q. Đống Đa', 'Hà Nội', 'Đống Đa', 'THPT Chu Văn An', '11', '11A1', 'HS2023001'),
-    ('30000000-0000-0000-0000-000000000002', '2008-07-18', 'male', 'Hà Nội', 'Số 56 Nguyễn Lương Bằng, Q. Đống Đa', 'Hà Nội', 'Đống Đa', 'THPT Chu Văn An', '11', '11A1', 'HS2023002'),
-    ('30000000-0000-0000-0000-000000000003', '2008-11-05', 'female', 'Hải Dương', 'Số 89 Giải Phóng, Q. Hoàng Mai', 'Hà Nội', 'Hoàng Mai', 'THPT Nguyễn Huệ', '11', '11B2', 'HS2023003'),
-    ('30000000-0000-0000-0000-000000000004', '2008-01-20', 'male', 'Nam Định', 'Số 34 Lê Duẩn, Q. Hai Bà Trưng', 'Hà Nội', 'Hai Bà Trưng', 'THPT Lê Quý Đôn', '11', '11C3', 'HS2023004'),
-    ('30000000-0000-0000-0000-000000000005', '2008-09-12', 'female', 'Hà Nội', 'Số 67 Trần Đại Nghĩa, Q. Hai Bà Trưng', 'Hà Nội', 'Hai Bà Trưng', 'THPT Lê Quý Đôn', '11', '11C3', 'HS2023005');
+INSERT INTO user_profiles (user_id, date_of_birth, gender, place_of_birth, address, city, district, school_name, major, year_of_study, class_code, student_code) VALUES
+    ('30000000-0000-0000-0000-000000000001', '2008-03-25', 'female', 'Ha Noi', 'So 12 Hoang Cau, Q. Dong Da', 'Ha Noi', 'Dong Da', 'Dai hoc EXAMORA', 'Computer Science', 2, 'CS2A', 'SV2023001'),
+    ('30000000-0000-0000-0000-000000000002', '2008-07-18', 'male', 'Ha Noi', 'So 56 Nguyen Luong Bang, Q. Dong Da', 'Ha Noi', 'Dong Da', 'Dai hoc EXAMORA', 'Computer Science', 2, 'CS2A', 'SV2023002'),
+    ('30000000-0000-0000-0000-000000000003', '2008-11-05', 'female', 'Hai Duong', 'So 89 Giai Phong, Q. Hoang Mai', 'Ha Noi', 'Hoang Mai', 'Dai hoc EXAMORA', 'Database Systems', 2, 'DB2B', 'SV2023003'),
+    ('30000000-0000-0000-0000-000000000004', '2008-01-20', 'male', 'Nam Dinh', 'So 34 Le Duan, Q. Hai Ba Trung', 'Ha Noi', 'Hai Ba Trung', 'Dai hoc EXAMORA', 'AI Engineering', 2, 'AI2C', 'SV2023004'),
+    ('30000000-0000-0000-0000-000000000005', '2008-09-12', 'female', 'Ha Noi', 'So 67 Tran Dai Nghia, Q. Hai Ba Trung', 'Ha Noi', 'Hai Ba Trung', 'Dai hoc EXAMORA', 'Computer Science', 2, 'CS2C', 'SV2023005');
 
 INSERT INTO student_profiles (
     user_id,
     student_code,
     admission_year,
     expected_graduation_year,
-    current_grade_level,
+    current_year_of_study,
     academic_year,
     semester,
     enrollment_status,
-    academic_track,
-    major_subjects,
-    elective_subjects,
+    major,
+    major_courses,
+    elective_courses,
     gpa,
     class_rank,
     grade_rank,
@@ -2025,7 +2221,7 @@ INSERT INTO student_profiles (
         'HS2023001',
         2023,
         2026,
-        '11',
+        2,
         '2025-2026',
         'HK1',
         'active',
@@ -2053,7 +2249,7 @@ INSERT INTO student_profiles (
         'HS2023002',
         2023,
         2026,
-        '11',
+        2,
         '2025-2026',
         'HK1',
         'active',
@@ -2081,7 +2277,7 @@ INSERT INTO student_profiles (
         'HS2023003',
         2023,
         2026,
-        '11',
+        2,
         '2025-2026',
         'HK1',
         'active',
@@ -2109,7 +2305,7 @@ INSERT INTO student_profiles (
         'HS2023004',
         2023,
         2026,
-        '11',
+        2,
         '2025-2026',
         'HK1',
         'active',
@@ -2137,7 +2333,7 @@ INSERT INTO student_profiles (
         'HS2023005',
         2023,
         2026,
-        '11',
+        2,
         '2025-2026',
         'HK1',
         'active',
@@ -2239,7 +2435,7 @@ INSERT INTO email_templates (template_key, template_name, subject, html_body, te
 -- =====================================================
 
 -- Function to calculate student's overall progress
-CREATE OR REPLACE FUNCTION calculate_student_progress(student_uuid UUID, subject_int INTEGER)
+CREATE OR REPLACE FUNCTION calculate_student_progress(student_uuid UUID, course_int INTEGER)
 RETURNS DECIMAL AS $$
 DECLARE
     total_chapters INTEGER;
@@ -2248,15 +2444,15 @@ DECLARE
 BEGIN
     SELECT COUNT(*) INTO total_chapters
     FROM chapters
-    WHERE subject_id = subject_int;
+    WHERE course_id = course_int;
     
-    SELECT COUNT(DISTINCT chapter_id) INTO completed_chapters
-    FROM submission_answers sa
-    JOIN questions q ON sa.question_id = q.id
-    JOIN exam_submissions es ON sa.submission_id = es.id
-    WHERE es.student_id = student_uuid
-      AND q.subject_id = subject_int
-      AND sa.is_correct = true;
+        SELECT COUNT(DISTINCT q.chapter_id) INTO completed_chapters
+        FROM attempt_answers aa
+        JOIN questions q ON aa.question_id = q.id
+        JOIN attempts at ON aa.attempt_id = at.attempt_id
+        WHERE at.student_id = student_uuid
+            AND q.course_id = course_int
+            AND aa.is_correct = true;
     
     IF total_chapters > 0 THEN
         progress := (completed_chapters::DECIMAL / total_chapters::DECIMAL) * 100;
@@ -2269,17 +2465,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function to get recommended difficulty for student
-CREATE OR REPLACE FUNCTION get_recommended_difficulty(student_uuid UUID, subject_int INTEGER)
+CREATE OR REPLACE FUNCTION get_recommended_difficulty(student_uuid UUID, course_int INTEGER)
 RETURNS difficulty_level AS $$
 DECLARE
     avg_accuracy DECIMAL;
     recommended difficulty_level;
 BEGIN
     SELECT AVG(percentage) INTO avg_accuracy
-    FROM exam_submissions
+    FROM attempts
     WHERE student_id = student_uuid
       AND exam_id IN (
-          SELECT id FROM exams WHERE subject_id = subject_int
+          SELECT id FROM exams WHERE course_id = course_int
       )
       AND status = 'graded'
     LIMIT 10;
@@ -2320,10 +2516,12 @@ $$ LANGUAGE plpgsql;
 -- Daily cleanup tasks:
 -- 1. cleanup_expired_sessions()
 -- 2. Delete old audit_logs (> 1 year)
--- 3. Archive completed exam_submissions (> 6 months)
+-- 3. Archive completed attempts (> 6 months)
 -- 4. Update leaderboards
 -- 5. Calculate daily analytics
 
 -- =====================================================
 -- END OF ENHANCED SCHEMA
 -- =====================================================
+
+

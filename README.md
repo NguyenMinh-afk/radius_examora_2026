@@ -36,7 +36,7 @@ Each service is located in `backend/<Service_Name>/` (e.g., `User_Service`, `Exa
 cd backend/<Service_Name>
 npm install
 cp .env.example .env   # Edit .env as needed
-npm start
+npm run dev
 ```
 - Repeat for each service you want to run.
 

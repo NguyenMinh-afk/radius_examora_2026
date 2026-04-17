@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import Footer from "../Footer/Footer";
+import Footer from "../../components/Footer/Footer";
 import { loginUser } from "../../api/axios/User";
 
 const Login: React.FC = () => {

@@ -133,7 +133,10 @@ BEGIN
             gender,
             address,
             city,
-            school_name
+            school_name,
+            major,
+            year_of_study,
+            class_code
         ) VALUES (
             user_id,
             random_date(CASE WHEN is_teacher THEN 1980 ELSE 2005 END, 
@@ -141,7 +144,13 @@ BEGIN
             CASE WHEN random() > 0.5 THEN 'male' ELSE 'female' END,
             floor(random() * 500) || ' Đường Lê Lợi',
             (ARRAY['Hà Nội', 'TP. Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ'])[1 + floor(random() * 5)],
-            (ARRAY['THPT Lê Quý Đôn', 'THPT Nguyễn Huệ', 'THPT Trần Phú', 'THPT Chu Văn An'])[1 + floor(random() * 4)]
+            (ARRAY['Đại học EXAMORA', 'ĐH Bách Khoa', 'ĐH Khoa học Tự nhiên', 'ĐH Công nghệ'])[1 + floor(random() * 4)],
+            CASE
+                WHEN is_teacher THEN (ARRAY['Toán học', 'Văn học', 'Vật lý', 'Hóa học', 'Sinh học'])[1 + floor(random() * 5)]
+                ELSE (ARRAY['Computer Science', 'Data Science', 'AI Engineering', 'Software Engineering'])[1 + floor(random() * 4)]
+            END,
+            CASE WHEN is_teacher THEN NULL ELSE (floor(random() * 4) + 1)::INTEGER END,
+            CASE WHEN is_teacher THEN NULL ELSE 'K' || (floor(random() * 4) + 1)::TEXT || '-A' || (floor(random() * 8) + 1)::TEXT END
         );
         
         -- Insert teacher or student profile
@@ -171,15 +180,17 @@ BEGIN
             INSERT INTO student_profiles (
                 user_id,
                 student_code,
-                current_grade_level,
+                current_year_of_study,
+                current_class_code,
                 admission_year,
                 enrollment_status,
                 academic_year,
                 semester
             ) VALUES (
                 user_id,
-                'HS' || lpad(i::TEXT, 6, '0'),
-                (ARRAY['10', '11', '12'])[1 + floor(random() * 3)],
+                'SV' || lpad(i::TEXT, 6, '0'),
+                floor(random() * 4) + 1,
+                'K' || (floor(random() * 4) + 1)::TEXT || '-A' || (floor(random() * 8) + 1)::TEXT,
                 floor(random() * 3) + 2021,
                 'active',
                 '2025-2026',
@@ -235,6 +246,6 @@ SELECT seed_users(50000);  -- Default: 50K users (thay đổi số lượng tùy
 -- =====================================================
 
 -- DELETE FROM teacher_profiles WHERE teacher_code LIKE 'GV%';
--- DELETE FROM student_profiles WHERE student_code LIKE 'HS%';
+-- DELETE FROM student_profiles WHERE student_code LIKE 'SV%';
 -- DELETE FROM user_profiles WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@example.com');
 -- DELETE FROM users WHERE email LIKE '%@example.com';
