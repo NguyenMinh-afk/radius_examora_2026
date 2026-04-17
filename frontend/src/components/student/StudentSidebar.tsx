@@ -2,28 +2,24 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
-  Users,
-  MessageSquare,
-  Cpu,
-  BookOpen,
-  Sparkles,
+  GraduationCap,
   FileText,
+  BookOpen,
+  BarChart3,
   Settings,
   LogOut,
   ArrowUpRight,
 } from "lucide-react";
 
 const menu = [
-  { label: "System", icon: <LayoutGrid size={18} />, active: true },
-  { label: "Users", icon: <Users size={18} /> },
-  { label: "RabbitMQ", icon: <MessageSquare size={18} /> },
-  { label: "AI Models", icon: <Cpu size={18} /> },
-  { label: "Question Bank", icon: <BookOpen size={18} /> },
-  { label: "AI Generator", icon: <Sparkles size={18} /> },
-  { label: "Exams", icon: <FileText size={18} /> },
+  { label: "Home", icon: <LayoutGrid size={18} />, active: true },
+  { label: "My Classes", icon: <GraduationCap size={18} /> },
+  { label: "My Exams", icon: <FileText size={18} /> },
+  { label: "Results", icon: <BookOpen size={18} /> },
+  { label: "Progress", icon: <BarChart3 size={18} /> },
 ];
 
-const AdminSidebar: React.FC = () => {
+const StudentSidebar: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = (e: React.MouseEvent) => {
@@ -39,7 +35,7 @@ const AdminSidebar: React.FC = () => {
         <h2 className="text-2xl font-extrabold text-blue-700 tracking-tight">
           EXMORA
         </h2>
-        <span className="text-xs text-gray-400 font-medium">Admin Panel</span>
+        <span className="text-xs text-gray-400 font-medium">Student Panel</span>
       </div>
 
       {/* Menu */}
@@ -65,12 +61,15 @@ const AdminSidebar: React.FC = () => {
       <div className="mt-8">
         {/* Pro Access box */}
         <div className="bg-blue-50 rounded-lg p-4 mb-6">
-          <h3 className="text-sm font-semibold text-blue-600 tracking-wide mb-3">
-            PRO ACCESS
+          <h3 className="text-sm font-semibold text-blue-600 tracking-wide mb-2">
+            Upgrade to Pro
           </h3>
+          <p className="text-xs text-gray-600 mb-3">
+            Get personalized AI tutoring and unlimited practice tests.
+          </p>
           <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-lg py-2 hover:bg-blue-700 transition">
             <ArrowUpRight size={16} />
-            Upgrade to Pro
+            Go Premium
           </button>
         </div>
 
@@ -98,4 +97,4 @@ const AdminSidebar: React.FC = () => {
   );
 };
 
-export default AdminSidebar;
+export default StudentSidebar;

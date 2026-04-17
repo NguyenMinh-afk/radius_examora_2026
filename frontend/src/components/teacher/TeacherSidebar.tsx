@@ -1,29 +1,45 @@
 import React from "react";
-import { LayoutGrid, Users, MessageSquare, Cpu, BookOpen, Sparkles, GraduationCap, FileText, Settings, LogOut, ArrowUpRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  LayoutGrid,
+  Users,
+  BarChart3,
+  BookOpen,
+  Sparkles,
+  GraduationCap,
+  FileText,
+  Settings,
+  LogOut,
+  ArrowUpRight,
+} from "lucide-react";
 
 const menu = [
   { label: "System", icon: <LayoutGrid size={18} />, active: true },
-  { label: "Users", icon: <Users size={18} /> },
-  { label: "RabbitMQ", icon: <MessageSquare size={18} /> },
-  { label: "AI Models", icon: <Cpu size={18} /> },
+  { label: "Classes", icon: <GraduationCap size={18} /> },
+  { label: "Students", icon: <Users size={18} /> },
   { label: "Question Bank", icon: <BookOpen size={18} /> },
   { label: "AI Generator", icon: <Sparkles size={18} /> },
-  { label: "Classes", icon: <GraduationCap size={18} /> },
   { label: "Exams", icon: <FileText size={18} /> },
+  { label: "Analytics", icon: <BarChart3 size={18} /> },
 ];
 
 const TeacherSidebar: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <aside className="w-64 h-screen sticky top-0 bg-white border-r border-slate-200 flex flex-col px-6 py-8">
-      
       {/* Logo */}
       <div className="mb-10">
         <h2 className="text-2xl font-extrabold text-blue-700 tracking-tight">
           EXMORA
         </h2>
-        <span className="text-xs text-gray-400 font-medium">
-          Teacher Panel
-        </span>
+        <span className="text-xs text-gray-400 font-medium">Teacher Panel</span>
       </div>
 
       {/* Menu */}
@@ -47,11 +63,21 @@ const TeacherSidebar: React.FC = () => {
 
       {/* Bottom section */}
       <div className="mt-8">
-        <button className="w-full flex items-center justify-center gap-2 bg-blue-100 text-blue-700 font-semibold rounded-lg py-2 mb-6 hover:bg-blue-200 transition">
-          <ArrowUpRight size={16} />
-          Upgrade to Pro
-        </button>
+        {/* Pro Access box */}
+        <div className="bg-blue-50 rounded-lg p-4 mb-6">
+          <h3 className="text-sm font-semibold text-blue-600 tracking-wide mb-2">
+            PRO ACCESS
+          </h3>
+          <p className="text-xs text-gray-600 mb-3">
+            Generate unlimited questions with GPT-4 Turbo.
+          </p>
+          <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-lg py-2 hover:bg-blue-700 transition">
+            <ArrowUpRight size={16} />
+            Upgrade to Pro
+          </button>
+        </div>
 
+        {/* Settings & Logout */}
         <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
           <a
             href="#"
@@ -63,6 +89,7 @@ const TeacherSidebar: React.FC = () => {
 
           <a
             href="#"
+            onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-slate-50 hover:text-blue-700 transition"
           >
             <LogOut size={18} />
