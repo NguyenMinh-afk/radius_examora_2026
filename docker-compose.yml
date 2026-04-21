@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234567
+      POSTGRES_DB: exam_bank_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed-fake-users.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: StrongPassword123
+    restart: unless-stopped
+
+  user-service:
+    image: node:20-alpine
+    container_name: user-service
+    working_dir: /app
+    volumes:
+      - ./backend/User_Service:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  exam-service:
+    image: node:20-alpine
+    container_name: exam-service
+    working_dir: /app
+    volumes:
+      - ./backend/Exam_Service:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  question-service:
+    image: node:20-alpine
+    container_name: question-service
+    working_dir: /app
+    volumes:
+      - ./backend/Question_Service:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  ai-generation-service:
+    image: node:20-alpine
+    container_name: ai-generation-service
+    working_dir: /app
+    volumes:
+      - ./backend/AI_Generation_Service:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  analytics-service:
+    image: node:20-alpine
+    container_name: analytics-service
+    working_dir: /app
+    volumes:
+      - ./backend/Analytics_Service:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3005:3005"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  notification-service:
+    image: node:20-alpine
+    container_name: notification-service
+    working_dir: /app
+    volumes:
+      - ./backend/Notification_Service:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3006:3006"
+    depends_on:
+      - rabbitmq
+
+  frontend:
+    image: node:20-alpine
+    container_name: frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - user-service
