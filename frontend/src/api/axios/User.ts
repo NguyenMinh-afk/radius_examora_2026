@@ -1,12 +1,14 @@
 
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/api/auth";
+export const AUTH_API_URL =
+	import.meta.env.VITE_AUTH_API_URL || "http://localhost:3001/api/auth";
 
 export interface RegisterData {
 	email: string;
 	password: string;
 	full_name: string;
+	role: "student" | "teacher";
 }
 
 export interface LoginData {
@@ -16,14 +18,15 @@ export interface LoginData {
 }
 
 export const registerUser = (data: RegisterData) => {
-	return axios.post(`${API_URL}/register`, data);
+	return axios.post(`${AUTH_API_URL}/register`, data);
 };
 
 export const loginUser = (data: LoginData) => {
-	// Đảm bảo luôn gửi trường rememberMe (mặc định false nếu không có)
-	return axios.post(`${API_URL}/login`, {
+	return axios.post(`${AUTH_API_URL}/login`, {
 		email: data.email,
 		password: data.password,
 		rememberMe: data.rememberMe ?? false,
 	});
 };
+
+export const getGoogleLoginUrl = () => `${AUTH_API_URL}/google`;
