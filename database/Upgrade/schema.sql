@@ -1183,12 +1183,6 @@ CREATE TRIGGER update_ai_jobs_updated_at BEFORE UPDATE ON ai_jobs
 CREATE TRIGGER update_attempts_updated_at BEFORE UPDATE ON attempts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_learning_paths_updated_at BEFORE UPDATE ON learning_paths
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_question_collections_updated_at BEFORE UPDATE ON question_collections
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_ai_generation_requests_updated_at BEFORE UPDATE ON ai_generation_requests
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -1434,6 +1428,9 @@ CREATE TABLE question_collections (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TRIGGER update_question_collections_updated_at BEFORE UPDATE ON question_collections
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Questions in collections
 CREATE TABLE collection_questions (
     collection_id UUID REFERENCES question_collections(id) ON DELETE CASCADE,
@@ -1550,6 +1547,9 @@ CREATE TABLE learning_paths (
     
     UNIQUE(student_id, course_id)
 );
+
+CREATE TRIGGER update_learning_paths_updated_at BEFORE UPDATE ON learning_paths
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Learning activities log
 CREATE TABLE learning_activities (
