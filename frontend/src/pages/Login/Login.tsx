@@ -1,36 +1,71 @@
-
-import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import Footer from "../Footer/Footer";
-import { loginUser } from "../../api/axios/User";
+import React, { useEffect, useState } from "react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../../components/Footer/Footer";
+import { getGoogleLoginUrl, loginUser } from "../../api/axios/User";
+import { getDashboardPath, saveAuthData } from "../../utils/auth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const googleStatus = searchParams.get("google");
+    if (!googleStatus) return;
+
+    if (googleStatus === "success") {
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const accessToken = hashParams.get("accessToken") || "";
+      const refreshToken = hashParams.get("refreshToken") || "";
+
+      if (!accessToken) {
+        setError("Google login succeeded but token was missing.");
+        return;
+      }
+
+      const role = saveAuthData({ accessToken, refreshToken });
+      window.history.replaceState(null, "", "/login");
+      navigate(getDashboardPath(role), { replace: true });
+      return;
+    }
+
+    if (googleStatus === "pending") {
+      setError("Your account is pending admin approval.");
+    } else {
+      setError(searchParams.get("message") || "Google login failed.");
+    }
+
+    window.history.replaceState(null, "", "/login");
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
     try {
       const res = await loginUser({ email, password, rememberMe });
-      // Lưu token vào localStorage nếu rememberMe, ngược lại chỉ alert
-      if (rememberMe && res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      }
-      alert("Login success! Token: " + res.data.token);
-      // TODO: chuyển hướng trang...
+      const role = saveAuthData(res.data);
+      navigate(getDashboardPath(role));
     } catch (err: any) {
-      alert("Login failed: " + (err.response?.data?.message || err.message));
+      setError(err.response?.data?.error || err.response?.data?.message || err.message);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = getGoogleLoginUrl();
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 via-slate-100 to-teal-100 overflow-x-hidden">
-
-      {/* HEADER */}
       <div className="text-center mt-6 mb-6">
         <Link to="/">
           <h1 className="text-4xl md:text-5xl font-extrabold text-blue-700 cursor-pointer hover:text-blue-800 transition">
@@ -45,13 +80,18 @@ const Login: React.FC = () => {
         </p>
       </div>
 
-      {/* CENTER */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 w-full max-w-lg">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Sign in to your account
+          </h2>
 
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Sign in to your account</h2>
+          {error && (
+            <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </div>
+          )}
 
-          {/* FORM */}
           <form className="space-y-3" onSubmit={handleLogin}>
             <div>
               <label className="text-xs font-semibold text-gray-500">EMAIL ADDRESS</label>
@@ -102,17 +142,18 @@ const Login: React.FC = () => {
               </Link>
             </div>
 
-            {/* BUTTON */}
             <button
               type="submit"
-              className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm shadow hover:scale-[1.02] transition"
+              disabled={isSubmitting}
+              className={`w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm shadow transition ${
+                isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:scale-[1.02]"
+              }`}
             >
-              Sign In
+              {isSubmitting ? "Signing in..." : "Sign In"}
               <ArrowRight size={16} />
             </button>
           </form>
 
-          {/* REGISTER */}
           <div className="text-center text-xs mt-4 text-gray-500">
             Don't have an account?{" "}
             <Link to="/register" className="text-blue-600 font-medium hover:underline">
@@ -120,33 +161,39 @@ const Login: React.FC = () => {
             </Link>
           </div>
 
-          {/* DIVIDER */}
           <div className="flex items-center gap-3 my-4">
             <div className="flex-1 h-px bg-gray-200"></div>
             <span className="text-xs text-gray-400">or continue with</span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 
-          {/* SOCIAL LOGIN */}
           <div className="grid grid-cols-3 gap-2">
-            <button className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50"
+            >
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" />
               Google
             </button>
-            <button className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50">
+            <button
+              type="button"
+              className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50"
+            >
               <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-4 h-4" />
               Facebook
             </button>
-            <button className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50">
+            <button
+              type="button"
+              className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50"
+            >
               <img src="https://www.svgrepo.com/show/475654/github-color.svg" className="w-4 h-4" />
               GitHub
             </button>
           </div>
-
         </div>
       </div>
 
-      {/* FOOTER */}
       <Footer />
     </div>
   );

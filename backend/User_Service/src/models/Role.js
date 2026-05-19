@@ -1,34 +1,29 @@
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../config/sequelize.js";
 
-/**
- * Model lưu vai trò người dùng
- * @module models/Role
- */
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/sequelize');
-
-/**
- * @class Role
- * @property {number} id - Mã vai trò
- * @property {string} name - Tên vai trò
- */
 class Role extends Model {}
 
-Role.init({
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+Role.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    description: DataTypes.TEXT,
+    created_at: DataTypes.DATE,
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-}, {
-  sequelize,
-  modelName: 'Role',
-  tableName: 'roles',
-  timestamps: false,
-});
+  {
+    sequelize,
+    modelName: "Role",
+    tableName: "roles",
+    timestamps: false,
+  }
+);
 
-module.exports = Role;
+export default Role;

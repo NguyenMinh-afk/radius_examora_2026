@@ -1,56 +1,80 @@
-
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { GraduationCap, User, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import Footer from "../Footer/Footer";
-import { registerUser } from "../../api/axios/User";
+import { ArrowRight, Eye, EyeOff, GraduationCap, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../../components/Footer/Footer";
+import { getGoogleLoginUrl, registerUser } from "../../api/axios/User";
+import { getDashboardPath, saveAuthData } from "../../utils/auth";
 
-const roles = [
+type RegisterRole = "student" | "teacher";
+
+const roles: { id: RegisterRole; label: string; icon: React.ReactNode }[] = [
   { id: "student", label: "Student", icon: <GraduationCap size={18} /> },
   { id: "teacher", label: "Teacher", icon: <User size={18} /> },
 ];
 
 const Register: React.FC = () => {
-
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState<RegisterRole>("student");
   const [agreed, setAgreed] = useState(false);
-  const [showOtpModal, setShowOtpModal] = useState(false);
-
-  const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreed) return;
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    setError("");
+    setInfo("");
+
+    if (!agreed) {
+      setError("Please accept the terms before continuing.");
       return;
     }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      await registerUser({ email, password, full_name: fullName });
-      setShowOtpModal(true); // mở modal OTP (giả lập)
+      const res = await registerUser({
+        email,
+        password,
+        full_name: fullName,
+        role,
+      });
+
+      const responseRole = saveAuthData(res.data);
+      if (responseRole) {
+        navigate(getDashboardPath(responseRole));
+        return;
+      }
+
+      if (res.data.user?.approval_status === "pending") {
+        setInfo("Registration submitted. Please wait for admin approval before signing in.");
+      } else {
+        setInfo(res.data.message || "Registration completed.");
+      }
     } catch (err: any) {
-      alert("Register failed: " + (err.response?.data?.message || err.message));
+      setError(err.response?.data?.error || err.response?.data?.message || err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleConfirmOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Thực tế: kiểm tra OTP và xác thực tài khoản
-    alert("Account verified successfully!");
-    setShowOtpModal(false);
+  const handleGoogleLogin = () => {
+    window.location.href = getGoogleLoginUrl();
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 via-slate-100 to-teal-100 overflow-x-hidden">
-
-      {/* HEADER */}
       <div className="text-center mt-6 mb-6">
         <Link to="/">
           <h1 className="text-4xl md:text-5xl font-extrabold text-blue-700 cursor-pointer hover:text-blue-800 transition">
@@ -62,40 +86,54 @@ const Register: React.FC = () => {
         </p>
       </div>
 
-      {/* CENTER CONTENT */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 w-full max-w-lg">
-
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Create your account</h2>
 
-          {/* ROLE SELECTION */}
+          {error && (
+            <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          {info && (
+            <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
+              {info}
+            </div>
+          )}
+
           <p className="text-xs font-semibold text-gray-500 mb-2">Select your role</p>
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {roles.map((r) => {
-              const isActive = role === r.id;
+            {roles.map((item) => {
+              const isActive = role === item.id;
               return (
                 <button
-                  key={r.id}
+                  key={item.id}
                   type="button"
-                  onClick={() => setRole(r.id)}
-                  className={`border rounded-lg p-2 flex flex-col items-center gap-1 transition
-                    ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-blue-400"}`}
+                  onClick={() => setRole(item.id)}
+                  className={`border rounded-lg p-2 flex flex-col items-center gap-1 transition ${
+                    isActive ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-blue-400"
+                  }`}
                 >
-                  <div className={`w-8 h-8 flex items-center justify-center rounded-full transition
-                    ${isActive ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-400"}`}
+                  <div
+                    className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
+                      isActive ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-400"
+                    }`}
                   >
-                    {r.icon}
+                    {item.icon}
                   </div>
-                  <span className={`text-xs font-medium transition
-                    ${isActive ? "text-blue-600" : "text-gray-500"}`}>
-                    {r.label}
+                  <span
+                    className={`text-xs font-medium transition ${
+                      isActive ? "text-blue-600" : "text-gray-500"
+                    }`}
+                  >
+                    {item.label}
                   </span>
                 </button>
               );
             })}
           </div>
 
-          {/* FORM */}
           <form className="space-y-3" onSubmit={handleRegister}>
             <div>
               <label className="text-xs font-semibold text-gray-500">FULL NAME</label>
@@ -136,13 +174,14 @@ const Register: React.FC = () => {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
                     tabIndex={-1}
-                    onClick={() => setShowPassword((v) => !v)}
+                    onClick={() => setShowPassword((value) => !value)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
+
               <div>
                 <label className="text-xs font-semibold text-gray-500">CONFIRM</label>
                 <div className="relative">
@@ -157,7 +196,7 @@ const Register: React.FC = () => {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
                     tabIndex={-1}
-                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    onClick={() => setShowConfirmPassword((value) => !value)}
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -166,7 +205,6 @@ const Register: React.FC = () => {
               </div>
             </div>
 
-            {/* AGREEMENT */}
             <div className="flex items-center gap-2 mt-2">
               <input
                 type="checkbox"
@@ -187,19 +225,18 @@ const Register: React.FC = () => {
               </label>
             </div>
 
-            {/* SUBMIT */}
             <button
               type="submit"
-              disabled={!agreed}
-              className={`w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm shadow transition
-                ${!agreed ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02]"}`}
+              disabled={!agreed || isSubmitting}
+              className={`w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm shadow transition ${
+                !agreed || isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02]"
+              }`}
             >
-              Complete Registration
+              {isSubmitting ? "Creating account..." : "Complete Registration"}
               <ArrowRight size={16} />
             </button>
           </form>
 
-          {/* LOGIN */}
           <div className="text-center text-xs mt-3 text-gray-500">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-600 font-medium hover:underline">
@@ -207,77 +244,40 @@ const Register: React.FC = () => {
             </Link>
           </div>
 
-          {/* DIVIDER */}
           <div className="flex items-center gap-3 my-4">
             <div className="flex-1 h-px bg-gray-200"></div>
             <span className="text-xs text-gray-400">or continue with</span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 
-          {/* SOCIAL SIGNUP */}
           <div className="grid grid-cols-3 gap-2">
-            <button className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50"
+            >
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" />
               Google
             </button>
-            <button className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50">
+            <button
+              type="button"
+              className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50"
+            >
               <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-4 h-4" />
               Facebook
             </button>
-            <button className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50">
+            <button
+              type="button"
+              className="border rounded-lg py-2 flex items-center justify-center gap-2 text-xs hover:bg-gray-50"
+            >
               <img src="https://www.svgrepo.com/show/475654/github-color.svg" className="w-4 h-4" />
               GitHub
             </button>
           </div>
-
         </div>
       </div>
 
-      {/* FOOTER */}
       <Footer />
-
-      {/* OTP / CAPTCHA MODAL */}
-      {showOtpModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md relative">
-            <h3 className="text-xl font-bold text-black mb-3">Verify Your Account</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Enter the OTP sent to your email to complete registration.
-            </p>
-
-            <form className="space-y-3" onSubmit={handleConfirmOtp}>
-              <div>
-                <label className="text-xs font-semibold text-gray-500">OTP / CAPTCHA</label>
-                <input
-                  type="text"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  placeholder="Enter OTP"
-                  className="w-full mt-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-between items-center mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowOtpModal(false)}
-                  className="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Confirm
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };

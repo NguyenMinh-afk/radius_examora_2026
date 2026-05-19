@@ -134,7 +134,7 @@ CREATE TABLE chapters (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(subject_id, grade_level, chapter_number)
+    UNIQUE(course_id, year_level, chapter_number)
 );
 
 CREATE TABLE knowledge_units (
@@ -486,6 +486,61 @@ BEFORE UPDATE ON notifications
 FOR EACH ROW
 EXECUTE FUNCTION set_notification_read_at();
 
+-- Synchronize document and ai_job status
+CREATE OR REPLACE FUNCTION sync_document_ai_job_status()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE documents
+    SET status = NEW.status,
+        error_message = NEW.error_message,
+        trace_id = COALESCE(NEW.trace_id, documents.trace_id),
+        updated_at = CURRENT_TIMESTAMP
+    WHERE document_id = NEW.document_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_sync_ai_job_status
+AFTER UPDATE ON ai_jobs
+FOR EACH ROW EXECUTE FUNCTION sync_document_ai_job_status();
+
+-- Auto-update question statistics from attempt_answers
+CREATE OR REPLACE FUNCTION update_question_statistics_on_submission()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status = 'graded' AND NEW.attempt_id IS NOT NULL THEN
+        INSERT INTO question_statistics (
+            question_id, times_answered, times_correct, difficulty_index, updated_at
+        )
+        SELECT
+            aa.question_id,
+            COUNT(*)::INTEGER,
+            COUNT(*) FILTER (WHERE aa.is_correct = true)::INTEGER,
+            CASE WHEN COUNT(*) > 0
+                 THEN COUNT(*) FILTER (WHERE aa.is_correct = true)::DECIMAL / COUNT(*)
+                 ELSE 0
+            END,
+            CURRENT_TIMESTAMP
+        FROM attempt_answers aa
+        WHERE aa.attempt_id = NEW.attempt_id
+        GROUP BY aa.question_id
+        ON CONFLICT (question_id) DO UPDATE SET
+            times_answered = question_statistics.times_answered + EXCLUDED.times_answered,
+            times_correct = question_statistics.times_correct + EXCLUDED.times_correct,
+            difficulty_index = EXCLUDED.difficulty_index,
+            updated_at = CURRENT_TIMESTAMP;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_question_stats
+AFTER INSERT OR UPDATE OF status ON attempts
+FOR EACH ROW
+WHEN (NEW.status = 'graded')
+EXECUTE FUNCTION update_question_statistics_on_submission();
+
 -- =====================================================
 -- 4.5 OBSERVABILITY (infra_observability)
 -- =====================================================
@@ -716,6 +771,25 @@ CREATE TRIGGER update_ai_jobs_updated_at BEFORE UPDATE ON ai_db.ai_jobs
 CREATE TRIGGER update_email_templates_updated_at BEFORE UPDATE ON notification_db.email_templates
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+-- Question reviews (AI quality review workflow)
+CREATE TABLE question_reviews (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    question_id UUID REFERENCES questions(id) ON DELETE CASCADE NOT NULL,
+    reviewed_by UUID REFERENCES users(id) NOT NULL,
+    quality_score DECIMAL(3,2),
+    comments TEXT,
+    status VARCHAR(20) CHECK (status IN ('pending','approved','rejected')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_question_reviews_question ON question_reviews(question_id);
+
+CREATE TRIGGER update_question_reviews_updated_at BEFORE UPDATE ON question_reviews
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- =====================================================
 -- END OF OPTIMIZED CORE SCHEMA
 -- =====================================================
+
+
