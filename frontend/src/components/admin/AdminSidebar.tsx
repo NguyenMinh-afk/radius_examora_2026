@@ -12,6 +12,7 @@ import {
   LogOut,
   ArrowUpRight,
 } from "lucide-react";
+import { clearAuthData } from "../../utils/auth";
 
 const menu = [
   { label: "System", icon: <LayoutGrid size={18} />, active: true },
@@ -28,7 +29,7 @@ const AdminSidebar: React.FC = () => {
 
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
-    localStorage.removeItem("token");
+    clearAuthData();
     navigate("/login");
   };
 

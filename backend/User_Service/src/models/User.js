@@ -1,108 +1,79 @@
-/**
- * Model User - thông tin người dùng hệ thống
- * @augments Model
- */
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/sequelize.js';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../config/sequelize.js";
 
 class User extends Model {}
 
-User.init({
-  /**
-   * UUID của user
-   */
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  /**
-   * Email đăng nhập
-   */
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: { isEmail: true },
-  },
-  /**
-   * Số điện thoại
-   */
-  phone: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
-  },
-  /**
-   * Role ID (liên kết với bảng roles)
-   */
-  role_id: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: 'roles',
-      key: 'id',
+User.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: { isEmail: true },
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    password_hash: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    full_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    avatar_url: DataTypes.TEXT,
+    role_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "roles",
+        key: "id",
+      },
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    email_verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    phone_verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    approval_status: {
+      type: DataTypes.STRING,
+      defaultValue: "pending",
+    },
+    approved_by: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    approved_at: DataTypes.DATE,
+    approval_note: DataTypes.TEXT,
+    last_login: DataTypes.DATE,
   },
-  /**
-   * Hash mật khẩu
-   */
-  password_hash: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  /**
-   * Họ tên đầy đủ
-   */
-  full_name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  /**
-   * Đường dẫn ảnh đại diện
-   */
-  avatar_url: DataTypes.STRING,
-  /**
-   * Trạng thái hoạt động
-   */
-  is_active: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true,
-  },
-  /**
-   * Đã xác thực email chưa
-   */
-  email_verified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-  },
-  /**
-   * Trạng thái phê duyệt tài khoản
-   */
-  approval_status: {
-    type: DataTypes.STRING,
-    defaultValue: 'pending',
-  },
-  /**
-   * Thời gian phê duyệt
-   */
-  approved_at: DataTypes.DATE,
-  /**
-   * ID người phê duyệt
-   */
-  approved_by: DataTypes.UUID,
-  /**
-   * Ghi chú phê duyệt
-   */
-  approval_note: DataTypes.STRING,
-  /**
-   * Lần đăng nhập cuối
-   */
-  last_login: DataTypes.DATE,
-}, {
-  sequelize,
-  modelName: 'User',
-  tableName: 'users',
-});
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "users",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  }
+);
 
 export default User;
