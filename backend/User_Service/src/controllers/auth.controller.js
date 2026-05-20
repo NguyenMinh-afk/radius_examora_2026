@@ -19,6 +19,11 @@ const DEFAULT_FRONTEND_URL = "http://localhost:5173";
 
 const getFrontendUrl = () => process.env.FRONTEND_URL || DEFAULT_FRONTEND_URL;
 
+const validateGoogleConfig = () => {
+  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
+  return Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET);
+};
+
 const getGoogleClient = () =>
   new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
@@ -140,9 +145,11 @@ const redirectToFrontend = (res, path, searchParams = {}, hashParams = {}) => {
   return res.redirect(url.toString());
 };
 
-const getGoogleUserFromCode = async (code) => {
+const getGoogleUserFromCode = async (code, redirectUri) => {
   const client = getGoogleClient();
-  const { tokens } = await client.getToken(code);
+  const { tokens } = await client.getToken(
+    redirectUri ? { code, redirect_uri: redirectUri } : code
+  );
 
   if (!tokens.id_token) {
     const error = new Error("Google did not return an id_token");
@@ -176,6 +183,37 @@ const getGoogleUserFromCode = async (code) => {
     accessToken: tokens.access_token || null,
     refreshToken: tokens.refresh_token || null,
     tokenExpiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
+  };
+};
+
+const getGoogleUserFromCredential = async (credential) => {
+  const client = getGoogleClient();
+  const ticket = await client.verifyIdToken({
+    idToken: credential,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload?.email || !payload?.sub) {
+    const error = new Error("Google account payload is missing email or subject");
+    error.status = 401;
+    throw error;
+  }
+
+  if (payload.email_verified === false) {
+    const error = new Error("Google email is not verified");
+    error.status = 403;
+    throw error;
+  }
+
+  return {
+    providerUserId: payload.sub,
+    email: payload.email,
+    fullName: payload.name || payload.email,
+    avatarUrl: payload.picture || null,
+    accessToken: null,
+    refreshToken: null,
+    tokenExpiresAt: null,
   };
 };
 
@@ -456,6 +494,12 @@ export const me = async (req, res) => {
 
 export const googleLogin = (req, res) => {
   try {
+    if (!validateGoogleConfig() || !process.env.GOOGLE_CALLBACK_URL) {
+      return res.status(500).json({
+        message: "Missing Google OAuth configuration",
+      });
+    }
+
     const client = getGoogleClient();
     const authUrl = client.generateAuthUrl({
       access_type: "offline",
@@ -472,6 +516,38 @@ export const googleLogin = (req, res) => {
   }
 };
 
+export const googleLoginCredential = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({
+        message: "Google credential is required",
+      });
+    }
+
+    if (!validateGoogleConfig()) {
+      return res.status(500).json({
+        message: "Missing Google OAuth configuration",
+      });
+    }
+
+    const googleUser = await getGoogleUserFromCredential(credential);
+    const user = await findOrCreateGoogleUser(googleUser);
+    assertUserCanLogin(user);
+
+    const authResponse = await issueAuthResponse(req, user);
+    return res.json({
+      message: "Google login successful",
+      ...authResponse,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: "Google login failed",
+      error: err.message,
+    });
+  }
+};
+
 export const googleCallback = async (req, res) => {
   try {
     const { code } = req.query;
@@ -482,7 +558,25 @@ export const googleCallback = async (req, res) => {
       });
     }
 
-    const googleUser = await getGoogleUserFromCode(code);
+    if (!validateGoogleConfig()) {
+      return redirectToFrontend(res, "/login", {
+        google: "failed",
+        reason: "missing_google_config",
+      });
+    }
+
+    const redirectUri = typeof req.query.redirectUri === "string"
+      ? req.query.redirectUri
+      : process.env.GOOGLE_CALLBACK_URL;
+
+    if (!redirectUri) {
+      return redirectToFrontend(res, "/login", {
+        google: "failed",
+        reason: "missing_redirect_uri",
+      });
+    }
+
+    const googleUser = await getGoogleUserFromCode(code, redirectUri);
     const user = await findOrCreateGoogleUser(googleUser);
 
     try {
@@ -497,6 +591,13 @@ export const googleCallback = async (req, res) => {
     }
 
     const authResponse = await issueAuthResponse(req, user);
+
+    if (req.query.response_type === "json") {
+      return res.json({
+        message: "Google login successful",
+        ...authResponse,
+      });
+    }
 
     return redirectToFrontend(
       res,

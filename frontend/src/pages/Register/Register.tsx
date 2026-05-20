@@ -3,7 +3,6 @@ import { ArrowRight, Eye, EyeOff, GraduationCap, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
 import { getGoogleLoginUrl, registerUser } from "../../api/axios/User";
-import { getDashboardPath, saveAuthData } from "../../utils/auth";
 
 type RegisterRole = "student" | "teacher";
 
@@ -22,14 +21,12 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setInfo("");
 
     if (!agreed) {
       setError("Please accept the terms before continuing.");
@@ -51,17 +48,12 @@ const Register: React.FC = () => {
         role,
       });
 
-      const responseRole = saveAuthData(res.data);
-      if (responseRole) {
-        navigate(getDashboardPath(responseRole));
-        return;
-      }
+      const isPending = res.data.user?.approval_status === "pending";
+      const message = isPending
+        ? "Registration submitted. Please wait for admin approval before signing in."
+        : "Registration successful. Please sign in to continue.";
 
-      if (res.data.user?.approval_status === "pending") {
-        setInfo("Registration submitted. Please wait for admin approval before signing in.");
-      } else {
-        setInfo(res.data.message || "Registration completed.");
-      }
+      navigate(`/login?registered=1&message=${encodeURIComponent(message)}`);
     } catch (err: any) {
       setError(err.response?.data?.error || err.response?.data?.message || err.message);
     } finally {
@@ -96,11 +88,6 @@ const Register: React.FC = () => {
             </div>
           )}
 
-          {info && (
-            <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
-              {info}
-            </div>
-          )}
 
           <p className="text-xs font-semibold text-gray-500 mb-2">Select your role</p>
           <div className="grid grid-cols-2 gap-2 mb-4">

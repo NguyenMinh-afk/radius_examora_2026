@@ -11,6 +11,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -43,6 +44,18 @@ const Login: React.FC = () => {
 
     window.history.replaceState(null, "", "/login");
   }, [navigate]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get("google")) return;
+
+    const registered = searchParams.get("registered");
+    const message = searchParams.get("message");
+    if (!registered && !message) return;
+
+    setInfo(message || "Registration successful. Please sign in to continue.");
+    window.history.replaceState(null, "", "/login");
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +102,12 @@ const Login: React.FC = () => {
           {error && (
             <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
               {error}
+            </div>
+          )}
+
+          {info && (
+            <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
+              {info}
             </div>
           )}
 
