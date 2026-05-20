@@ -1,3 +1,20 @@
+const buildRabbitMqUrl = () => {
+  if (process.env.RABBITMQ_URL) {
+    return process.env.RABBITMQ_URL;
+  }
+
+  const host = process.env.RABBITMQ_HOST || 'localhost';
+  const port = process.env.RABBITMQ_PORT || 5672;
+  const user = process.env.RABBITMQ_USER;
+  const pass = process.env.RABBITMQ_PASSWORD;
+
+  if (user && pass) {
+    return `amqp://${user}:${pass}@${host}:${port}`;
+  }
+
+  return `amqp://${host}:${port}`;
+};
+
 module.exports = {
   // SMTP Configuration
   smtp: {
@@ -18,7 +35,7 @@ module.exports = {
   
   // RabbitMQ Configuration
   rabbitmq: {
-    url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
+    url: buildRabbitMqUrl(),
     queues: {
       emailWelcome: 'email.welcome',
       emailApproval: 'email.approval',

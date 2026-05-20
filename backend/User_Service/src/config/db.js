@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // PostgreSQL connection pool
-console.log('DB_PASSWORD (db.js):', typeof process.env.DB_PASSWORD, process.env.DB_PASSWORD);
+const dbSchema = process.env.DB_SCHEMA || 'public';
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 5432,
@@ -17,7 +17,8 @@ const pool = new Pool({
 });
 
 // Test database connection
-pool.on('connect', () => {
+pool.on('connect', (client) => {
+  client.query(`SET search_path TO ${dbSchema}, public`);
   console.log('✅ Connected to PostgreSQL database');
 });
 

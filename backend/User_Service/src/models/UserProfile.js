@@ -1,52 +1,43 @@
-/**
- * Model UserProfile - thông tin hồ sơ chi tiết của user
- * @augments Model
- */
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/sequelize.js';
 
 class UserProfile extends Model {}
 
 UserProfile.init({
-  /**
-   * ID user (khóa chính, liên kết User)
-   */
   user_id: {
     type: DataTypes.UUID,
     primaryKey: true,
     references: { model: 'users', key: 'id' },
   },
-  /** Ngày sinh */
+
   date_of_birth: DataTypes.DATEONLY,
-  /** Giới tính */
   gender: DataTypes.STRING,
-  /** Địa chỉ hiện tại */
   address: DataTypes.STRING,
-  /** Địa chỉ thường trú */
   permanent_address: DataTypes.STRING,
-  /** Thành phố */
   city: DataTypes.STRING,
-  /** Quận/huyện */
   district: DataTypes.STRING,
-  /** Phường/xã */
   ward: DataTypes.STRING,
-  /** Tên trường học */
+
   school_name: DataTypes.STRING,
-  /** Khối/lớp */
+  class_code: DataTypes.STRING,
   grade_level: DataTypes.STRING,
-  /** Mã học sinh */
+
   student_code: DataTypes.STRING,
-  /** Mô tả bản thân */
+
+  teacher_code: DataTypes.STRING,
+  teacher_department: DataTypes.STRING,
+  teacher_specialization: DataTypes.STRING,
+
   bio: DataTypes.STRING,
-  /** Tuỳ chọn cá nhân (JSON) */
   preferences: DataTypes.JSONB,
 }, {
   sequelize,
   modelName: 'UserProfile',
   tableName: 'user_profiles',
+  schema: 'user_db',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
 });
 
-module.exports = UserProfile;
+export default UserProfile;

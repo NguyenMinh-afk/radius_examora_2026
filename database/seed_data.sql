@@ -11,13 +11,16 @@ INSERT INTO roles (id, name, description) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Users
-INSERT INTO users (id, email, phone, password_hash, full_name, role_id, is_active)
+INSERT INTO users (
+    id, email, phone, password_hash, full_name, role_id, is_active,
+    email_verified, approval_status, approved_at, last_login
+)
 VALUES
-    ('10000000-0000-0000-0000-000000000001', 'admin@examora.local', '0900000001', '{{ADMIN_PASSWORD_HASH}}', 'Admin User', 1, true),
-    ('20000000-0000-0000-0000-000000000001', 'teacher1@examora.local', '0900000002', '{{TEACHER_PASSWORD_HASH}}', 'Teacher One', 2, true),
-    ('20000000-0000-0000-0000-000000000002', 'teacher2@examora.local', '0900000003', '{{TEACHER_PASSWORD_HASH}}', 'Teacher Two', 2, true),
-    ('30000000-0000-0000-0000-000000000001', 'student1@examora.local', '0900000004', '{{STUDENT_PASSWORD_HASH}}', 'Student One', 3, true),
-    ('30000000-0000-0000-0000-000000000002', 'student2@examora.local', '0900000005', '{{STUDENT_PASSWORD_HASH}}', 'Student Two', 3, true)
+    ('10000000-0000-0000-0000-000000000001', 'admin@examora.local', '0900000001', '{{ADMIN_PASSWORD_HASH}}', 'Admin User', 1, true, true, 'approved', CURRENT_TIMESTAMP, NULL),
+    ('20000000-0000-0000-0000-000000000001', 'teacher1@examora.local', '0900000002', '{{TEACHER_PASSWORD_HASH}}', 'Teacher One', 2, true, true, 'approved', CURRENT_TIMESTAMP, NULL),
+    ('20000000-0000-0000-0000-000000000002', 'teacher2@examora.local', '0900000003', '{{TEACHER_PASSWORD_HASH}}', 'Teacher Two', 2, true, true, 'approved', CURRENT_TIMESTAMP, NULL),
+    ('30000000-0000-0000-0000-000000000001', 'student1@examora.local', '0900000004', '{{STUDENT_PASSWORD_HASH}}', 'Student One', 3, true, true, 'approved', CURRENT_TIMESTAMP, NULL),
+    ('30000000-0000-0000-0000-000000000002', 'student2@examora.local', '0900000005', '{{STUDENT_PASSWORD_HASH}}', 'Student Two', 3, true, true, 'approved', CURRENT_TIMESTAMP, NULL)
 ON CONFLICT (id) DO NOTHING;
 
 -- User profiles
@@ -35,10 +38,15 @@ VALUES
     ('41000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'device-student-1', 'android', 'Student Phone', 'push-token-001', CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO user_sessions (id, user_id, device_id, refresh_token, ip_address, user_agent, created_at, expires_at)
+INSERT INTO user_sessions (
+    id, user_id, device_id, session_token, refresh_token,
+    device_type, ip_address, user_agent,
+    is_active, last_activity, created_at, updated_at, expires_at
+)
 VALUES
     ('42000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '41000000-0000-0000-0000-000000000001',
-     'refresh-token-001', '127.0.0.1', 'EPU-Mobile/1.0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '30 days')
+     'session-token-001', 'refresh-token-001', 'mobile', '127.0.0.1', 'EPU-Mobile/1.0', true,
+     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '30 days')
 ON CONFLICT (id) DO NOTHING;
 
 -- Faculties
