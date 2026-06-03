@@ -1,9 +1,6 @@
-version: '3.8'
-
 services:
   postgres-db:
     image: postgres:15
-    container_name: postgres-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
@@ -17,7 +14,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -28,7 +24,6 @@ services:
 
   user-service:
     image: node:20-alpine
-    container_name: user-service
     working_dir: /app
     volumes:
       - ./User_Service:/app
@@ -45,7 +40,6 @@ services:
 
   exam-service:
     image: node:20-alpine
-    container_name: exam-service
     working_dir: /app
     volumes:
       - ./Exam_Service:/app
@@ -62,7 +56,6 @@ services:
 
   question-service:
     image: node:20-alpine
-    container_name: question-service
     working_dir: /app
     volumes:
       - ./Question_Service:/app
@@ -79,7 +72,6 @@ services:
 
   ai-generation-service:
     image: node:20-alpine
-    container_name: ai-generation-service
     working_dir: /app
     volumes:
       - ./AI_Generation_Service:/app
@@ -96,7 +88,6 @@ services:
 
   api-gateway:
     image: node:20-alpine
-    container_name: api-gateway
     working_dir: /app
     volumes:
       - ./API_Gateway_Service:/app
@@ -112,18 +103,22 @@ services:
 
   infrastructure-service:
     image: node:20-alpine
-    container_name: infrastructure-service
     working_dir: /app
     volumes:
       - ./Infrastructure_Service:/app
     command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./Infrastructure_Service/.env
+    environment:
+      - PORT=5005
+    ports:
+      - "5005:5005"
     depends_on:
       - postgres-db
       - rabbitmq
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -133,7 +128,6 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
     ports:
       - "3000:3000"
     volumes:
@@ -144,7 +138,6 @@ services:
 
   notification-service:
     image: node:20-alpine
-    container_name: notification-service
     working_dir: /app
     volumes:
       - ./Notification_Service:/app
@@ -160,7 +153,6 @@ services:
 
   frontend:
     image: node:20-alpine
-    container_name: frontend
     working_dir: /app
     volumes:
       - ../frontend:/app
