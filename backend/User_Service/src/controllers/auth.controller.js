@@ -551,10 +551,25 @@ export const googleLoginCredential = async (req, res) => {
 export const googleCallback = async (req, res) => {
   try {
     const { code } = req.query;
+    const googleError = typeof req.query.error === "string" ? req.query.error : null;
+    const googleErrorDescription =
+      typeof req.query.error_description === "string"
+        ? req.query.error_description
+        : null;
+
+    if (googleError) {
+      return redirectToFrontend(res, "/login", {
+        google: "failed",
+        reason: googleError,
+        message: googleErrorDescription || `Google OAuth error: ${googleError}`,
+      });
+    }
+
     if (!code) {
       return redirectToFrontend(res, "/login", {
         google: "failed",
         reason: "missing_code",
+        message: "Google did not return an authorization code.",
       });
     }
 
@@ -562,6 +577,7 @@ export const googleCallback = async (req, res) => {
       return redirectToFrontend(res, "/login", {
         google: "failed",
         reason: "missing_google_config",
+        message: "Missing Google OAuth configuration on backend.",
       });
     }
 
@@ -573,6 +589,7 @@ export const googleCallback = async (req, res) => {
       return redirectToFrontend(res, "/login", {
         google: "failed",
         reason: "missing_redirect_uri",
+        message: "Missing Google OAuth redirect URI.",
       });
     }
 
