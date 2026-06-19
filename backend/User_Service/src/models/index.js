@@ -9,6 +9,7 @@ import AIJob from "./ai/AIJob.js";
 import Course from "./course/Course.js";
 import QueueJob from "./queue/QueueJob.js";
 import AuditLog from "./system/AuditLog.js";
+import SystemEvent from "./system/SystemEvent.js";
 import OAuthProvider from "./user/OAuthProvider.js";
 
 // Keep associations idempotent so importing this module more than once is safe.
@@ -55,6 +56,7 @@ export {
   Course,
   QueueJob,
   AuditLog,
+  SystemEvent,
   OAuthProvider,
 };
 
@@ -69,5 +71,6 @@ export default {
   Course,
   QueueJob,
   AuditLog,
+  SystemEvent,
   OAuthProvider,
 };
