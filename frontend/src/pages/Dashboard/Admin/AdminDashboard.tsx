@@ -11,20 +11,25 @@ import {
   ShieldCheck,
   UserCheck,
   Users,
+  LibraryBig,
 } from "lucide-react";
 
 import {
+  getAdminCourses,
   getAdminDashboard,
   getAdminRoles,
   getAdminUsers,
+  updateAdminCourseStatus,
   updateAdminUserRole,
   updateAdminUserStatus,
+  type AdminCourse,
   type AdminDashboardSummary,
   type AdminRole,
   type AdminUser,
   type Pagination,
 } from "../../../api/axios/Admin";
-import AdminSidebar from "../../../components/admin/AdminSidebar";
+import AdminSidebar, { type AdminSection } from "../../../components/admin/AdminSidebar";
+import CourseTable from "../../../components/admin/CourseTable";
 import UserTable from "../../../components/admin/UserTable";
 
 const DEFAULT_PAGINATION: Pagination = {
@@ -52,41 +57,72 @@ const getStoredUser = () => {
 
 const AdminDashboard: React.FC = () => {
   const storedUser = useMemo(() => getStoredUser(), []);
+  const [activeSection, setActiveSection] = useState<AdminSection>("users");
   const [summary, setSummary] = useState<AdminDashboardSummary>(DEFAULT_SUMMARY);
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [courses, setCourses] = useState<AdminCourse[]>([]);
   const [roles, setRoles] = useState<AdminRole[]>([]);
-  const [pagination, setPagination] = useState<Pagination>(DEFAULT_PAGINATION);
-  const [search, setSearch] = useState("");
+  const [userPagination, setUserPagination] = useState<Pagination>(DEFAULT_PAGINATION);
+  const [coursePagination, setCoursePagination] = useState<Pagination>(DEFAULT_PAGINATION);
+  const [userSearch, setUserSearch] = useState("");
+  const [courseSearch, setCourseSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [accessFilter, setAccessFilter] = useState<boolean | "">("");
+  const [courseAccessFilter, setCourseAccessFilter] = useState<boolean | "">("");
   const [loading, setLoading] = useState(true);
+  const [courseLoading, setCourseLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [actionUserId, setActionUserId] = useState<string | null>(null);
+  const [actionCourseId, setActionCourseId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadUsers = useCallback(
-    async (page = pagination.page) => {
+    async (page = userPagination.page) => {
       setLoading(true);
       setError(null);
 
       try {
         const data = await getAdminUsers({
           page,
-          limit: pagination.limit,
-          search,
+          limit: userPagination.limit,
+          search: userSearch,
           role: roleFilter,
           is_active: accessFilter,
         });
 
         setUsers(data.users);
-        setPagination(data.pagination);
+        setUserPagination(data.pagination);
       } catch (loadError) {
         setError("Unable to load admin users. Please check the backend server and token.");
       } finally {
         setLoading(false);
       }
     },
-    [accessFilter, pagination.limit, pagination.page, roleFilter, search]
+    [accessFilter, roleFilter, userPagination.limit, userPagination.page, userSearch]
+  );
+
+  const loadCourses = useCallback(
+    async (page = coursePagination.page) => {
+      setCourseLoading(true);
+      setError(null);
+
+      try {
+        const data = await getAdminCourses({
+          page,
+          limit: coursePagination.limit,
+          search: courseSearch,
+          is_active: courseAccessFilter,
+        });
+
+        setCourses(data.courses);
+        setCoursePagination(data.pagination);
+      } catch (loadError) {
+        setError("Unable to load courses. Please check the backend server and token.");
+      } finally {
+        setCourseLoading(false);
+      }
+    },
+    [courseAccessFilter, coursePagination.limit, coursePagination.page, courseSearch]
   );
 
   const loadDashboard = useCallback(async () => {
@@ -105,23 +141,32 @@ const AdminDashboard: React.FC = () => {
         getAdminUsers({
           page: 1,
           limit: DEFAULT_PAGINATION.limit,
-          search,
+          search: userSearch,
           role: roleFilter,
           is_active: accessFilter,
         }),
       ]);
+      const courseData = await getAdminCourses({
+        page: 1,
+        limit: DEFAULT_PAGINATION.limit,
+        search: courseSearch,
+        is_active: courseAccessFilter,
+      });
 
       setSummary(dashboardData);
       setRoles(roleData);
       setUsers(userData.users);
-      setPagination(userData.pagination);
+      setUserPagination(userData.pagination);
+      setCourses(courseData.courses);
+      setCoursePagination(courseData.pagination);
     } catch (loadError) {
       setError("Unable to load admin dashboard. Please sign in again or restart the backend.");
     } finally {
       setLoading(false);
+      setCourseLoading(false);
       setRefreshing(false);
     }
-  }, [accessFilter, roleFilter, search]);
+  }, [accessFilter, courseAccessFilter, courseSearch, roleFilter, userSearch]);
 
   useEffect(() => {
     void loadPageData();
@@ -129,6 +174,11 @@ const AdminDashboard: React.FC = () => {
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (activeSection === "courses") {
+      void loadCourses(1);
+      return;
+    }
+
     void loadUsers(1);
   };
 
@@ -163,12 +213,26 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleToggleCourseActive = async (course: AdminCourse) => {
+    setActionCourseId(course.id);
+    setError(null);
+
+    try {
+      await updateAdminCourseStatus(course.id, !course.is_active);
+      await Promise.all([loadCourses(), loadDashboard()]);
+    } catch {
+      setError("Unable to update course status.");
+    } finally {
+      setActionCourseId(null);
+    }
+  };
+
   const activePercent =
     summary.users.total > 0 ? Math.round((summary.users.active / summary.users.total) * 100) : 0;
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <AdminSidebar />
+      <AdminSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
       <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-10">
         <div className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
@@ -189,9 +253,16 @@ const AdminDashboard: React.FC = () => {
               />
               <input
                 type="text"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search users..."
+                value={activeSection === "courses" ? courseSearch : userSearch}
+                onChange={(event) => {
+                  if (activeSection === "courses") {
+                    setCourseSearch(event.target.value);
+                    return;
+                  }
+
+                  setUserSearch(event.target.value);
+                }}
+                placeholder={activeSection === "courses" ? "Search courses..." : "Search users..."}
                 className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-72"
               />
             </form>
@@ -277,6 +348,36 @@ const AdminDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,1fr)_360px]">
           <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-5 flex flex-wrap gap-2 border-b border-slate-100 pb-5">
+              <button
+                type="button"
+                onClick={() => setActiveSection("users")}
+                className={`inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition ${
+                  activeSection === "users"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                <Users size={16} />
+                Users
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveSection("courses")}
+                className={`inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition ${
+                  activeSection === "courses"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                <LibraryBig size={16} />
+                Courses
+              </button>
+            </div>
+
+            {activeSection !== "courses" ? (
+              <>
             <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
               <div>
                 <h2 className="text-lg font-bold text-slate-950">User Management</h2>
@@ -332,13 +433,67 @@ const AdminDashboard: React.FC = () => {
             <UserTable
               users={users}
               roles={roles}
-              pagination={pagination}
+              pagination={userPagination}
               loading={loading}
               actionUserId={actionUserId}
               onPageChange={(page) => void loadUsers(page)}
               onRoleChange={handleRoleChange}
               onToggleActive={handleToggleActive}
             />
+              </>
+            ) : (
+              <>
+                <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-950">Course Management</h2>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Review course catalog visibility and keep academic access clean.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:items-center">
+                    <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Visibility
+                      <select
+                        value={String(courseAccessFilter)}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setCourseAccessFilter(value === "" ? "" : value === "true");
+                        }}
+                        className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium normal-case tracking-normal text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      >
+                        <option value="">All courses</option>
+                        <option value="true">Visible only</option>
+                        <option value="false">Hidden only</option>
+                      </select>
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => void loadCourses(1)}
+                      className="inline-flex h-10 items-center justify-center gap-2 self-end rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700"
+                    >
+                      <CircleDot size={15} />
+                      Apply
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  Teacher assignment is intentionally disabled until the database has a
+                  course-teachers relation.
+                </div>
+
+                <CourseTable
+                  courses={courses}
+                  pagination={coursePagination}
+                  loading={courseLoading}
+                  actionCourseId={actionCourseId}
+                  onPageChange={(page) => void loadCourses(page)}
+                  onToggleActive={handleToggleCourseActive}
+                />
+              </>
+            )}
           </section>
 
           <aside className="space-y-6">

@@ -30,6 +30,18 @@ export interface AdminUser {
   updated_at?: string;
 }
 
+export interface AdminCourse {
+  id: number;
+  faculty_id: number;
+  name: string;
+  code: string;
+  description?: string | null;
+  credits: number;
+  semester_type?: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface AdminDashboardSummary {
   users: {
     total: number;
@@ -71,15 +83,28 @@ export interface UserListResponse {
   pagination: Pagination;
 }
 
+export interface CourseListParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  faculty_id?: number | "";
+  is_active?: boolean | "";
+}
+
+export interface CourseListResponse {
+  courses: AdminCourse[];
+  pagination: Pagination;
+}
+
 const buildAuthHeader = () => {
   const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-const buildQuery = (params: UserListParams) => {
+const buildQuery = <T extends object>(params: T) => {
   const query = new URLSearchParams();
 
-  Object.entries(params).forEach(([key, value]) => {
+  Object.entries(params as Record<string, string | number | boolean | undefined | "">).forEach(([key, value]) => {
     if (value !== undefined && value !== "") {
       query.set(key, String(value));
     }
@@ -106,12 +131,32 @@ export const getAdminUsers = async (params: UserListParams = {}) => {
   return response.data;
 };
 
+export const getAdminCourses = async (params: CourseListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<CourseListResponse>(
+    `${ADMIN_API_URL}/courses${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
 export const getAdminRoles = async () => {
   const response = await axios.get<{ roles: AdminRole[] }>(`${ADMIN_API_URL}/roles`, {
     headers: buildAuthHeader(),
   });
 
   return response.data.roles;
+};
+
+export const updateAdminCourseStatus = async (courseId: number, isActive: boolean) => {
+  const response = await axios.patch<{ message: string; course: AdminCourse }>(
+    `${ADMIN_API_URL}/courses/${courseId}/status`,
+    { is_active: isActive },
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
 };
 
 export const updateAdminUserStatus = async (

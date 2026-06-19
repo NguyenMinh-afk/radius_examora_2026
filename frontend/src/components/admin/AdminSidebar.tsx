@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   Users,
+  LibraryBig,
   MessageSquare,
   Cpu,
   BookOpen,
@@ -14,9 +15,12 @@ import {
 } from "lucide-react";
 import { clearAuthData } from "../../utils/auth";
 
+export type AdminSection = "users" | "courses";
+
 const menu = [
-  { label: "System", icon: <LayoutGrid size={18} />, active: true },
-  { label: "Users", icon: <Users size={18} /> },
+  { label: "System", icon: <LayoutGrid size={18} /> },
+  { id: "users", label: "Users", icon: <Users size={18} /> },
+  { id: "courses", label: "Courses", icon: <LibraryBig size={18} /> },
   { label: "RabbitMQ", icon: <MessageSquare size={18} /> },
   { label: "AI Models", icon: <Cpu size={18} /> },
   { label: "Question Bank", icon: <BookOpen size={18} /> },
@@ -24,7 +28,15 @@ const menu = [
   { label: "Exams", icon: <FileText size={18} /> },
 ];
 
-const AdminSidebar: React.FC = () => {
+interface AdminSidebarProps {
+  activeSection?: AdminSection;
+  onSectionChange?: (section: AdminSection) => void;
+}
+
+const AdminSidebar: React.FC<AdminSidebarProps> = ({
+  activeSection = "users",
+  onSectionChange,
+}) => {
   const navigate = useNavigate();
 
   const handleLogout = (e: React.MouseEvent) => {
@@ -46,19 +58,24 @@ const AdminSidebar: React.FC = () => {
       {/* Menu */}
       <nav className="flex-1 flex flex-col gap-1 overflow-y-auto">
         {menu.map((item) => (
-          <a
+          <button
             key={item.label}
-            href="#"
+            type="button"
+            onClick={() => {
+              if (item.id) {
+                onSectionChange?.(item.id as AdminSection);
+              }
+            }}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm transition
               ${
-                item.active
+                item.id === activeSection
                   ? "bg-blue-50 text-blue-700"
                   : "text-gray-600 hover:bg-slate-50 hover:text-blue-700"
-              }`}
+              } text-left`}
           >
             {item.icon}
             {item.label}
-          </a>
+          </button>
         ))}
       </nav>
 
