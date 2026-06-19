@@ -30,6 +30,7 @@ import {
 } from "../../../api/axios/Admin";
 import AdminSidebar, { type AdminSection } from "../../../components/admin/AdminSidebar";
 import CourseTable from "../../../components/admin/CourseTable";
+import JobMonitoringPanel from "../../../components/admin/JobMonitoringPanel";
 import UserTable from "../../../components/admin/UserTable";
 
 const DEFAULT_PAGINATION: Pagination = {
@@ -174,6 +175,10 @@ const AdminDashboard: React.FC = () => {
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (activeSection === "monitoring") {
+      return;
+    }
+
     if (activeSection === "courses") {
       void loadCourses(1);
       return;
@@ -229,53 +234,60 @@ const AdminDashboard: React.FC = () => {
 
   const activePercent =
     summary.users.total > 0 ? Math.round((summary.users.active / summary.users.total) * 100) : 0;
+  const isMonitoringView = activeSection === "monitoring";
 
   return (
     <div className="flex min-h-screen bg-slate-50">
       <AdminSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-      <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-10">
-        <div className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+      <main className="flex-1 overflow-y-auto px-6 py-6 lg:px-10 lg:py-7">
+        <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-950">
-              Infrastructure Dashboard
+              {isMonitoringView ? "AI/RabbitMQ Operations" : "Infrastructure Dashboard"}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              Monitor access, system queues, and operational status from one admin surface.
+              {isMonitoringView
+                ? "Monitor asynchronous jobs, queue health, and AI generation execution."
+                : "Monitor access, system queues, and operational status from one admin surface."}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <form onSubmit={handleSearchSubmit} className="relative">
-              <Search
-                size={17}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="text"
-                value={activeSection === "courses" ? courseSearch : userSearch}
-                onChange={(event) => {
-                  if (activeSection === "courses") {
-                    setCourseSearch(event.target.value);
-                    return;
-                  }
+            {!isMonitoringView && (
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <Search
+                  size={17}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  type="text"
+                  value={activeSection === "courses" ? courseSearch : userSearch}
+                  onChange={(event) => {
+                    if (activeSection === "courses") {
+                      setCourseSearch(event.target.value);
+                      return;
+                    }
 
-                  setUserSearch(event.target.value);
-                }}
-                placeholder={activeSection === "courses" ? "Search courses..." : "Search users..."}
-                className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-72"
-              />
-            </form>
+                    setUserSearch(event.target.value);
+                  }}
+                  placeholder={activeSection === "courses" ? "Search courses..." : "Search users..."}
+                  className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-72"
+                />
+              </form>
+            )}
 
-            <button
-              type="button"
-              onClick={() => void loadPageData()}
-              disabled={refreshing}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-              Refresh
-            </button>
+            {!isMonitoringView && (
+              <button
+                type="button"
+                onClick={() => void loadPageData()}
+                disabled={refreshing}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
+                Refresh
+              </button>
+            )}
 
             <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white py-1 pl-1 pr-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
@@ -298,6 +310,10 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
+        {isMonitoringView ? (
+          <JobMonitoringPanel />
+        ) : (
+          <>
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
@@ -374,6 +390,7 @@ const AdminDashboard: React.FC = () => {
                 <LibraryBig size={16} />
                 Courses
               </button>
+
             </div>
 
             {activeSection !== "courses" ? (
@@ -571,6 +588,8 @@ const AdminDashboard: React.FC = () => {
             </div>
           </aside>
         </div>
+          </>
+        )}
       </main>
     </div>
   );

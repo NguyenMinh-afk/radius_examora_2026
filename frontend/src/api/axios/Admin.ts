@@ -42,6 +42,41 @@ export interface AdminCourse {
   created_at: string;
 }
 
+export interface AdminAIJob {
+  ai_job_id: string;
+  document_id: string;
+  requested_by: string;
+  status: string;
+  retry_count: number;
+  result_artifact_path?: string | null;
+  error_message?: string | null;
+  trace_id?: string | null;
+  created_at: string;
+  updated_at?: string;
+  completed_at?: string | null;
+}
+
+export interface AdminQueueJob {
+  id: string;
+  job_type: string;
+  queue_name: string;
+  payload: Record<string, unknown>;
+  priority: number;
+  status: string;
+  attempts: number;
+  max_attempts: number;
+  queued_at?: string | null;
+  started_at?: string | null;
+  completed_at?: string | null;
+  failed_at?: string | null;
+  result?: Record<string, unknown> | null;
+  error_message?: string | null;
+  user_id?: string | null;
+  related_id?: string | null;
+  trace_id?: string | null;
+  created_at: string;
+}
+
 export interface AdminDashboardSummary {
   users: {
     total: number;
@@ -96,6 +131,32 @@ export interface CourseListResponse {
   pagination: Pagination;
 }
 
+export interface AIJobListParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  trace_id?: string;
+}
+
+export interface AIJobListResponse {
+  ai_jobs: AdminAIJob[];
+  pagination: Pagination;
+}
+
+export interface QueueJobListParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  queue_name?: string;
+  job_type?: string;
+  trace_id?: string;
+}
+
+export interface QueueJobListResponse {
+  queue_jobs: AdminQueueJob[];
+  pagination: Pagination;
+}
+
 const buildAuthHeader = () => {
   const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -147,6 +208,26 @@ export const getAdminRoles = async () => {
   });
 
   return response.data.roles;
+};
+
+export const getAdminAIJobs = async (params: AIJobListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<AIJobListResponse>(
+    `${ADMIN_API_URL}/ai-jobs${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const getAdminQueueJobs = async (params: QueueJobListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<QueueJobListResponse>(
+    `${ADMIN_API_URL}/queue-jobs${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
 };
 
 export const updateAdminCourseStatus = async (courseId: number, isActive: boolean) => {

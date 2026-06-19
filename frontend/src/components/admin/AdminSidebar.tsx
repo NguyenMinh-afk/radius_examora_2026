@@ -15,13 +15,13 @@ import {
 } from "lucide-react";
 import { clearAuthData } from "../../utils/auth";
 
-export type AdminSection = "users" | "courses";
+export type AdminSection = "users" | "courses" | "monitoring";
 
 const menu = [
   { label: "System", icon: <LayoutGrid size={18} /> },
   { id: "users", label: "Users", icon: <Users size={18} /> },
   { id: "courses", label: "Courses", icon: <LibraryBig size={18} /> },
-  { label: "RabbitMQ", icon: <MessageSquare size={18} /> },
+  { id: "monitoring", label: "RabbitMQ", icon: <MessageSquare size={18} /> },
   { label: "AI Models", icon: <Cpu size={18} /> },
   { label: "Question Bank", icon: <BookOpen size={18} /> },
   { label: "AI Generator", icon: <Sparkles size={18} /> },
