@@ -77,6 +77,29 @@ export interface AdminQueueJob {
   created_at: string;
 }
 
+export interface AdminAuditLog {
+  id: string;
+  actor_id?: string | null;
+  action: string;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  metadata?: Record<string, unknown> | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
+  created_at: string;
+}
+
+export interface AdminSystemLog {
+  id: string;
+  event_type: string;
+  source?: string | null;
+  aggregate_id?: string | null;
+  payload?: Record<string, unknown> | null;
+  status?: string | null;
+  trace_id?: string | null;
+  created_at: string;
+}
+
 export interface AdminDashboardSummary {
   users: {
     total: number;
@@ -157,6 +180,33 @@ export interface QueueJobListResponse {
   pagination: Pagination;
 }
 
+export interface AuditLogListParams {
+  page?: number;
+  limit?: number;
+  action?: string;
+  entity_type?: string;
+  actor_id?: string;
+}
+
+export interface AuditLogListResponse {
+  audit_logs: AdminAuditLog[];
+  pagination: Pagination;
+}
+
+export interface SystemLogListParams {
+  page?: number;
+  limit?: number;
+  event_type?: string;
+  source?: string;
+  status?: string;
+  trace_id?: string;
+}
+
+export interface SystemLogListResponse {
+  system_logs: AdminSystemLog[];
+  pagination: Pagination;
+}
+
 const buildAuthHeader = () => {
   const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -224,6 +274,26 @@ export const getAdminQueueJobs = async (params: QueueJobListParams = {}) => {
   const query = buildQuery(params);
   const response = await axios.get<QueueJobListResponse>(
     `${ADMIN_API_URL}/queue-jobs${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const getAdminAuditLogs = async (params: AuditLogListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<AuditLogListResponse>(
+    `${ADMIN_API_URL}/audit-logs${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const getAdminSystemLogs = async (params: SystemLogListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<SystemLogListResponse>(
+    `${ADMIN_API_URL}/system-logs${query ? `?${query}` : ""}`,
     { headers: buildAuthHeader() }
   );
 

@@ -1,31 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LayoutGrid,
   Users,
   LibraryBig,
   MessageSquare,
-  Cpu,
-  BookOpen,
-  Sparkles,
-  FileText,
+  ScrollText,
+  ServerCog,
   Settings,
   LogOut,
   ArrowUpRight,
 } from "lucide-react";
 import { clearAuthData } from "../../utils/auth";
 
-export type AdminSection = "users" | "courses" | "monitoring";
+export type AdminSection = "users" | "courses" | "monitoring" | "auditLogs" | "systemLogs";
 
 const menu = [
-  { label: "System", icon: <LayoutGrid size={18} /> },
   { id: "users", label: "Users", icon: <Users size={18} /> },
   { id: "courses", label: "Courses", icon: <LibraryBig size={18} /> },
   { id: "monitoring", label: "RabbitMQ", icon: <MessageSquare size={18} /> },
-  { label: "AI Models", icon: <Cpu size={18} /> },
-  { label: "Question Bank", icon: <BookOpen size={18} /> },
-  { label: "AI Generator", icon: <Sparkles size={18} /> },
-  { label: "Exams", icon: <FileText size={18} /> },
+  { id: "auditLogs", label: "Audit Logs", icon: <ScrollText size={18} /> },
+  { id: "systemLogs", label: "System Logs", icon: <ServerCog size={18} /> },
 ];
 
 interface AdminSidebarProps {

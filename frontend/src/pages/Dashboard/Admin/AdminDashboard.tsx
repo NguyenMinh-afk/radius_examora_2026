@@ -29,8 +29,10 @@ import {
   type Pagination,
 } from "../../../api/axios/Admin";
 import AdminSidebar, { type AdminSection } from "../../../components/admin/AdminSidebar";
+import AuditLogsPanel from "../../../components/admin/AuditLogsPanel";
 import CourseTable from "../../../components/admin/CourseTable";
 import JobMonitoringPanel from "../../../components/admin/JobMonitoringPanel";
+import SystemLogsPanel from "../../../components/admin/SystemLogsPanel";
 import UserTable from "../../../components/admin/UserTable";
 
 const DEFAULT_PAGINATION: Pagination = {
@@ -235,6 +237,9 @@ const AdminDashboard: React.FC = () => {
   const activePercent =
     summary.users.total > 0 ? Math.round((summary.users.active / summary.users.total) * 100) : 0;
   const isMonitoringView = activeSection === "monitoring";
+  const isAuditLogsView = activeSection === "auditLogs";
+  const isSystemLogsView = activeSection === "systemLogs";
+  const isStandaloneView = isMonitoringView || isAuditLogsView || isSystemLogsView;
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -244,17 +249,27 @@ const AdminDashboard: React.FC = () => {
         <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-950">
-              {isMonitoringView ? "AI/RabbitMQ Operations" : "Infrastructure Dashboard"}
+              {isMonitoringView
+                ? "AI/RabbitMQ Operations"
+                : isAuditLogsView
+                  ? "Audit Logs"
+                  : isSystemLogsView
+                    ? "System Logs"
+                  : "Infrastructure Dashboard"}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
               {isMonitoringView
                 ? "Monitor asynchronous jobs, queue health, and AI generation execution."
+                : isAuditLogsView
+                  ? "Review admin actions, access changes, and course visibility updates."
+                  : isSystemLogsView
+                    ? "Inspect infrastructure events, service sources, and operational payloads."
                 : "Monitor access, system queues, and operational status from one admin surface."}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            {!isMonitoringView && (
+            {!isStandaloneView && (
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search
                   size={17}
@@ -277,7 +292,7 @@ const AdminDashboard: React.FC = () => {
               </form>
             )}
 
-            {!isMonitoringView && (
+            {!isStandaloneView && (
               <button
                 type="button"
                 onClick={() => void loadPageData()}
@@ -312,6 +327,10 @@ const AdminDashboard: React.FC = () => {
 
         {isMonitoringView ? (
           <JobMonitoringPanel />
+        ) : isAuditLogsView ? (
+          <AuditLogsPanel />
+        ) : isSystemLogsView ? (
+          <SystemLogsPanel />
         ) : (
           <>
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
