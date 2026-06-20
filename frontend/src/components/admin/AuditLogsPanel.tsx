@@ -56,6 +56,37 @@ const metadataPreview = (metadata?: Record<string, unknown> | null) => {
   return text.length > 90 ? `${text.slice(0, 90)}...` : text;
 };
 
+const auditDescription = (log: AdminAuditLog) => {
+  const metadata = log.metadata || {};
+
+  if (log.action.includes("user.update_role")) {
+    const nextRole = metadata.new_role || metadata.new_role_name || metadata.role;
+    return nextRole ? `Changed user role to ${String(nextRole)}` : "Changed user role";
+  }
+
+  if (log.action.includes("user.update_status")) {
+    const isActive = metadata.is_active;
+    if (typeof isActive === "boolean") {
+      return isActive ? "Unlocked user account" : "Locked user account";
+    }
+    return "Updated user access status";
+  }
+
+  if (log.action.includes("course.update_status")) {
+    const isActive = metadata.is_active;
+    if (typeof isActive === "boolean") {
+      return isActive ? "Made course visible" : "Hid course from users";
+    }
+    return "Updated course visibility";
+  }
+
+  if (log.action.includes("ai_job") || log.entity_type === "ai_job") {
+    return "Recorded AI generation job activity";
+  }
+
+  return metadataPreview(log.metadata);
+};
+
 const AuditLogsPanel: React.FC = () => {
   const [logs, setLogs] = useState<AdminAuditLog[]>([]);
   const [pagination, setPagination] = useState<Pagination>(DEFAULT_PAGINATION);
@@ -341,12 +372,11 @@ const AuditLogsPanel: React.FC = () => {
             <thead className="bg-white text-xs font-semibold text-slate-500">
               <tr className="border-b border-slate-100">
                 <th className="px-5 py-4">Time</th>
-                <th className="px-5 py-4">Action</th>
-                <th className="px-5 py-4">Entity</th>
                 <th className="px-5 py-4">Actor</th>
+                <th className="px-5 py-4">Action</th>
+                <th className="px-5 py-4">Target</th>
+                <th className="px-5 py-4">Description</th>
                 <th className="px-5 py-4">IP Address</th>
-                <th className="px-5 py-4">Metadata</th>
-                <th className="px-5 py-4">User Agent</th>
                 <th className="px-5 py-4 text-right">Detail</th>
               </tr>
             </thead>
@@ -354,13 +384,13 @@ const AuditLogsPanel: React.FC = () => {
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td className="px-5 py-12 text-center text-slate-500" colSpan={8}>
+                  <td className="px-5 py-12 text-center text-slate-500" colSpan={7}>
                     Loading audit logs...
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
-                  <td className="px-5 py-12 text-center text-slate-500" colSpan={8}>
+                  <td className="px-5 py-12 text-center text-slate-500" colSpan={7}>
                     No audit logs match the current filters.
                   </td>
                 </tr>
@@ -368,6 +398,7 @@ const AuditLogsPanel: React.FC = () => {
                 logs.map((log) => (
                   <tr key={log.id} className="bg-white transition hover:bg-slate-50/70">
                     <td className="px-5 py-4 text-slate-500">{formatDateTime(log.created_at)}</td>
+                    <td className="px-5 py-4 text-slate-500">{shortId(log.actor_id)}</td>
                     <td className="px-5 py-4">
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${actionTone(
@@ -381,14 +412,10 @@ const AuditLogsPanel: React.FC = () => {
                       <div className="font-semibold text-slate-800">{log.entity_type || "-"}</div>
                       <div className="text-xs text-slate-500">{shortId(log.entity_id)}</div>
                     </td>
-                    <td className="px-5 py-4 text-slate-500">{shortId(log.actor_id)}</td>
+                    <td className="max-w-[340px] px-5 py-4 text-sm text-slate-600">
+                      {auditDescription(log)}
+                    </td>
                     <td className="px-5 py-4 text-slate-500">{log.ip_address || "-"}</td>
-                    <td className="max-w-[280px] truncate px-5 py-4 font-mono text-xs text-slate-600">
-                      {metadataPreview(log.metadata)}
-                    </td>
-                    <td className="max-w-[260px] truncate px-5 py-4 text-slate-500">
-                      {log.user_agent || "-"}
-                    </td>
                     <td className="px-5 py-4 text-right">
                       <button
                         type="button"

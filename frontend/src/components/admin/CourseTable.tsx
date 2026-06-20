@@ -7,7 +7,6 @@ import {
   EyeOff,
   GraduationCap,
   MoreHorizontal,
-  Users,
 } from "lucide-react";
 
 import type { AdminCourse, Pagination } from "../../api/axios/Admin";
@@ -28,6 +27,20 @@ const formatDate = (value?: string | null) => {
     month: "2-digit",
     year: "numeric",
   }).format(new Date(value));
+};
+
+const confirmCourseVisibility = (
+  course: AdminCourse,
+  onToggleActive: (course: AdminCourse) => void
+) => {
+  const action = course.is_active ? "ẩn" : "hiện";
+  const approved = window.confirm(
+    `Bạn có chắc muốn ${action} khóa học ${course.name} không?`
+  );
+
+  if (approved) {
+    onToggleActive(course);
+  }
 };
 
 const CourseTable: React.FC<CourseTableProps> = ({
@@ -111,18 +124,8 @@ const CourseTable: React.FC<CourseTableProps> = ({
                   <div className="flex items-center justify-end gap-2">
                     <button
                       type="button"
-                      disabled
-                      title="Teacher assignment will be enabled after course_teachers is available."
-                      className="inline-flex h-9 cursor-not-allowed items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-400"
-                    >
-                      <Users size={15} />
-                      Teachers
-                    </button>
-
-                    <button
-                      type="button"
                       disabled={actionCourseId === course.id}
-                      onClick={() => onToggleActive(course)}
+                      onClick={() => confirmCourseVisibility(course, onToggleActive)}
                       className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                         course.is_active
                           ? "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"

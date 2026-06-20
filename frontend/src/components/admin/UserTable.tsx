@@ -48,6 +48,40 @@ const getApprovalClass = (status: string) => {
   return "bg-rose-50 text-rose-700 ring-rose-200";
 };
 
+const confirmRoleChange = (
+  user: AdminUser,
+  roleId: number,
+  roles: AdminRole[],
+  onRoleChange: (userId: string, roleId: number) => void
+) => {
+  if (roleId === user.role_id) return;
+
+  const nextRole = roles.find((role) => role.id === roleId);
+  const approved = window.confirm(
+    `Bạn có chắc muốn đổi vai trò của ${user.full_name || user.email} thành ${
+      nextRole?.name || "vai trò mới"
+    } không?`
+  );
+
+  if (approved) {
+    onRoleChange(user.id, roleId);
+  }
+};
+
+const confirmAccessChange = (
+  user: AdminUser,
+  onToggleActive: (user: AdminUser) => void
+) => {
+  const action = user.is_active ? "khóa" : "mở khóa";
+  const approved = window.confirm(
+    `Bạn có chắc muốn ${action} tài khoản ${user.full_name || user.email} không?`
+  );
+
+  if (approved) {
+    onToggleActive(user);
+  }
+};
+
 const UserTable: React.FC<UserTableProps> = ({
   users,
   roles,
@@ -113,7 +147,9 @@ const UserTable: React.FC<UserTableProps> = ({
                   <select
                     value={user.role_id}
                     disabled={actionUserId === user.id}
-                    onChange={(event) => onRoleChange(user.id, Number(event.target.value))}
+                    onChange={(event) =>
+                      confirmRoleChange(user, Number(event.target.value), roles, onRoleChange)
+                    }
                     className="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50"
                   >
                     {roles.map((role) => (
@@ -157,7 +193,7 @@ const UserTable: React.FC<UserTableProps> = ({
                     <button
                       type="button"
                       disabled={actionUserId === user.id}
-                      onClick={() => onToggleActive(user)}
+                      onClick={() => confirmAccessChange(user, onToggleActive)}
                       className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                         user.is_active
                           ? "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"

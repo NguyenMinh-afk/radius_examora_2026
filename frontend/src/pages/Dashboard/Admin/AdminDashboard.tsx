@@ -255,7 +255,7 @@ const AdminDashboard: React.FC = () => {
                   ? "Audit Logs"
                   : isSystemLogsView
                     ? "System Logs"
-                  : "Infrastructure Dashboard"}
+                  : "System Administration Dashboard"}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
               {isMonitoringView
@@ -264,7 +264,7 @@ const AdminDashboard: React.FC = () => {
                   ? "Review admin actions, access changes, and course visibility updates."
                   : isSystemLogsView
                     ? "Inspect infrastructure events, service sources, and operational payloads."
-                : "Monitor access, system queues, and operational status from one admin surface."}
+                : "Manage accounts, courses, AI jobs, queues, and operational logs from one admin surface."}
             </p>
           </div>
 
@@ -348,7 +348,7 @@ const AdminDashboard: React.FC = () => {
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <div className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                Active Users
+                Active Accounts
               </div>
               <UserCheck size={18} className="text-emerald-600" />
             </div>
@@ -359,12 +359,15 @@ const AdminDashboard: React.FC = () => {
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <div className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                RabbitMQ Queue
+                Queued Messages
               </div>
               <Activity size={18} className="text-amber-600" />
             </div>
             <div className="text-3xl font-bold text-slate-950">{summary.queue_jobs.queued}</div>
-            <div className="mt-2 text-sm text-slate-500">{summary.queue_jobs.failed} failed jobs</div>
+            <div className="mt-2 text-sm text-slate-500">
+              {summary.queue_jobs.queued} queued{" "}
+              {summary.queue_jobs.queued === 1 ? "message" : "messages"}
+            </div>
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
@@ -377,7 +380,9 @@ const AdminDashboard: React.FC = () => {
             <div className="text-3xl font-bold text-slate-950">
               {summary.ai_jobs.pending + summary.ai_jobs.running}
             </div>
-            <div className="mt-2 text-sm text-slate-500">{summary.ai_jobs.failed} failed jobs</div>
+            <div className="mt-2 text-sm text-slate-500">
+              {summary.ai_jobs.failed} failed {summary.ai_jobs.failed === 1 ? "job" : "jobs"}
+            </div>
           </div>
         </div>
 
@@ -515,11 +520,6 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                  Teacher assignment is intentionally disabled until the database has a
-                  course-teachers relation.
-                </div>
-
                 <CourseTable
                   courses={courses}
                   pagination={coursePagination}
@@ -535,14 +535,14 @@ const AdminDashboard: React.FC = () => {
           <aside className="space-y-6">
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-950">Access Health</h3>
+                <h3 className="text-base font-bold text-slate-950">System Health</h3>
                 <ShieldCheck size={18} className="text-emerald-600" />
               </div>
 
               <div className="space-y-4">
                 <div>
                   <div className="mb-2 flex items-center justify-between text-sm">
-                    <span className="font-medium text-slate-600">Active coverage</span>
+                    <span className="font-medium text-slate-600">Active accounts</span>
                     <span className="font-bold text-slate-900">{activePercent}%</span>
                   </div>
                   <div className="h-2 rounded-full bg-slate-100">

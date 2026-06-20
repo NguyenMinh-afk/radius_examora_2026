@@ -6,9 +6,7 @@ import {
   MessageSquare,
   ScrollText,
   ServerCog,
-  Settings,
   LogOut,
-  ArrowUpRight,
 } from "lucide-react";
 import { clearAuthData } from "../../utils/auth";
 
@@ -73,29 +71,37 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         ))}
       </nav>
 
-      {/* Bottom section */}
       <div className="mt-8">
-        {/* Pro Access box */}
-        <div className="bg-blue-50 rounded-lg p-4 mb-6">
-          <h3 className="text-sm font-semibold text-blue-600 tracking-wide mb-3">
-            PRO ACCESS
+        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <h3 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+            System Status
           </h3>
-          <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-lg py-2 hover:bg-blue-700 transition">
-            <ArrowUpRight size={16} />
-            Upgrade to Pro
-          </button>
+          <div className="space-y-2 text-xs font-medium text-slate-600">
+            <div className="flex items-center justify-between gap-3">
+              <span>RabbitMQ</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Connected
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>AI Service</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Running
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>Database</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Online
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Settings & Logout */}
         <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
-          <a
-            href="#"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-slate-50 hover:text-blue-700 transition"
-          >
-            <Settings size={18} />
-            Settings
-          </a>
-
           <a
             href="#"
             onClick={handleLogout}
