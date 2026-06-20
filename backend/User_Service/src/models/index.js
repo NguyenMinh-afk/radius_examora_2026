@@ -7,6 +7,7 @@ import UserProfile from "./UserProfile.js";
 import UserSession from "./UserSession.js";
 import AIJob from "./ai/AIJob.js";
 import Course from "./course/Course.js";
+import Notification from "./notification/Notification.js";
 import QueueJob from "./queue/QueueJob.js";
 import AuditLog from "./system/AuditLog.js";
 import SystemEvent from "./system/SystemEvent.js";
@@ -45,6 +46,14 @@ if (!User.associations.oauthProviders) {
   User.hasMany(OAuthProvider, { foreignKey: "user_id", as: "oauthProviders" });
 }
 
+if (!Notification.associations.user) {
+  Notification.belongsTo(User, { foreignKey: "user_id", as: "user" });
+}
+
+if (!User.associations.notifications) {
+  User.hasMany(Notification, { foreignKey: "user_id", as: "notifications" });
+}
+
 export {
   sequelize,
   Op,
@@ -54,6 +63,7 @@ export {
   UserSession,
   AIJob,
   Course,
+  Notification,
   QueueJob,
   AuditLog,
   SystemEvent,
@@ -69,6 +79,7 @@ export default {
   UserSession,
   AIJob,
   Course,
+  Notification,
   QueueJob,
   AuditLog,
   SystemEvent,

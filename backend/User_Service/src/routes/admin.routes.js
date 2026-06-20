@@ -7,6 +7,7 @@ import {
   getAdminCourseById,
   getAdminCourses,
   getAdminDashboard,
+  getAdminNotifications,
   getAdminQueueJobById,
   getAdminQueueJobs,
   getAdminRoles,
@@ -15,6 +16,7 @@ import {
   getAdminUsers,
   updateAdminCourseStatus,
   updateAdminCourseTeachers,
+  createAdminNotification,
   updateAdminUserRole,
   updateAdminUserStatus,
 } from "../controllers/admin.controller.js";
@@ -47,5 +49,8 @@ router.get("/queue-jobs/:id", getAdminQueueJobById);
 
 router.get("/audit-logs", getAdminAuditLogs);
 router.get("/system-logs", getAdminSystemLogs);
+
+router.get("/notifications", getAdminNotifications);
+router.post("/notifications", createAdminNotification);
 
 export default router;

@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Users,
+  BellRing,
   LibraryBig,
   MessageSquare,
   ScrollText,
@@ -10,12 +11,19 @@ import {
 } from "lucide-react";
 import { clearAuthData } from "../../utils/auth";
 
-export type AdminSection = "users" | "courses" | "monitoring" | "auditLogs" | "systemLogs";
+export type AdminSection =
+  | "users"
+  | "courses"
+  | "monitoring"
+  | "notifications"
+  | "auditLogs"
+  | "systemLogs";
 
 const menu = [
   { id: "users", label: "Users", icon: <Users size={18} /> },
   { id: "courses", label: "Courses", icon: <LibraryBig size={18} /> },
   { id: "monitoring", label: "RabbitMQ", icon: <MessageSquare size={18} /> },
+  { id: "notifications", label: "Notifications", icon: <BellRing size={18} /> },
   { id: "auditLogs", label: "Audit Logs", icon: <ScrollText size={18} /> },
   { id: "systemLogs", label: "System Logs", icon: <ServerCog size={18} /> },
 ];

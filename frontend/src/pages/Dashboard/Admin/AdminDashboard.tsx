@@ -4,7 +4,6 @@ import {
   AlertTriangle,
   CircleDot,
   Clock,
-  Mail,
   RefreshCw,
   Search,
   ServerCog,
@@ -32,6 +31,7 @@ import AdminSidebar, { type AdminSection } from "../../../components/admin/Admin
 import AuditLogsPanel from "../../../components/admin/AuditLogsPanel";
 import CourseTable from "../../../components/admin/CourseTable";
 import JobMonitoringPanel from "../../../components/admin/JobMonitoringPanel";
+import NotificationsPanel from "../../../components/admin/NotificationsPanel";
 import SystemLogsPanel from "../../../components/admin/SystemLogsPanel";
 import UserTable from "../../../components/admin/UserTable";
 
@@ -237,9 +237,11 @@ const AdminDashboard: React.FC = () => {
   const activePercent =
     summary.users.total > 0 ? Math.round((summary.users.active / summary.users.total) * 100) : 0;
   const isMonitoringView = activeSection === "monitoring";
+  const isNotificationsView = activeSection === "notifications";
   const isAuditLogsView = activeSection === "auditLogs";
   const isSystemLogsView = activeSection === "systemLogs";
-  const isStandaloneView = isMonitoringView || isAuditLogsView || isSystemLogsView;
+  const isStandaloneView =
+    isMonitoringView || isNotificationsView || isAuditLogsView || isSystemLogsView;
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -251,6 +253,8 @@ const AdminDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold tracking-tight text-slate-950">
               {isMonitoringView
                 ? "AI/RabbitMQ Operations"
+                : isNotificationsView
+                  ? "Notifications"
                 : isAuditLogsView
                   ? "Audit Logs"
                   : isSystemLogsView
@@ -260,6 +264,8 @@ const AdminDashboard: React.FC = () => {
             <p className="mt-1 text-sm text-slate-500">
               {isMonitoringView
                 ? "Monitor asynchronous jobs, queue health, and AI generation execution."
+                : isNotificationsView
+                  ? "Send platform announcements and review broadcast delivery history."
                 : isAuditLogsView
                   ? "Review admin actions, access changes, and course visibility updates."
                   : isSystemLogsView
@@ -327,6 +333,8 @@ const AdminDashboard: React.FC = () => {
 
         {isMonitoringView ? (
           <JobMonitoringPanel />
+        ) : isNotificationsView ? (
+          <NotificationsPanel />
         ) : isAuditLogsView ? (
           <AuditLogsPanel />
         ) : isSystemLogsView ? (
@@ -592,18 +600,6 @@ const AdminDashboard: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </div>
-
-            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-950">Notifications</h3>
-                <Mail size={18} className="text-slate-400" />
-              </div>
-
-              <p className="text-sm leading-6 text-slate-500">
-                Role and access changes are recorded in audit logs for review during system
-                operation.
-              </p>
             </div>
           </aside>
         </div>

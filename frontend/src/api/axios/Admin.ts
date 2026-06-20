@@ -100,6 +100,20 @@ export interface AdminSystemLog {
   created_at: string;
 }
 
+export interface AdminNotification {
+  id: string;
+  user_id: string;
+  recipient_name?: string | null;
+  recipient_email?: string | null;
+  recipient_role?: string | null;
+  target_role?: string | null;
+  type: string;
+  title: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 export interface AdminDashboardSummary {
   users: {
     total: number;
@@ -207,6 +221,31 @@ export interface SystemLogListResponse {
   pagination: Pagination;
 }
 
+export interface NotificationListParams {
+  page?: number;
+  limit?: number;
+  target?: string;
+  search?: string;
+}
+
+export interface NotificationListResponse {
+  notifications: AdminNotification[];
+  pagination: Pagination;
+}
+
+export interface CreateNotificationPayload {
+  title: string;
+  content: string;
+  target_role: "all" | "teacher" | "student";
+}
+
+export interface CreateNotificationResponse {
+  message: string;
+  target_role: string;
+  recipient_count: number;
+  notifications_created: number;
+}
+
 const buildAuthHeader = () => {
   const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -294,6 +333,26 @@ export const getAdminSystemLogs = async (params: SystemLogListParams = {}) => {
   const query = buildQuery(params);
   const response = await axios.get<SystemLogListResponse>(
     `${ADMIN_API_URL}/system-logs${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const getAdminNotifications = async (params: NotificationListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<NotificationListResponse>(
+    `${ADMIN_API_URL}/notifications${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const createAdminNotification = async (payload: CreateNotificationPayload) => {
+  const response = await axios.post<CreateNotificationResponse>(
+    `${ADMIN_API_URL}/notifications`,
+    payload,
     { headers: buildAuthHeader() }
   );
 

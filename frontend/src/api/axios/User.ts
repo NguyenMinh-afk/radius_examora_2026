@@ -4,6 +4,9 @@ import axios from "axios";
 export const AUTH_API_URL =
 	import.meta.env.VITE_AUTH_API_URL || "http://localhost:5000/api/auth";
 
+export const NOTIFICATION_API_URL =
+	import.meta.env.VITE_NOTIFICATION_API_URL || "http://localhost:5000/api/notifications";
+
 export interface RegisterData {
 	email: string;
 	password: string;
@@ -23,6 +26,28 @@ export interface CompleteProfilePayload {
 	teacher_code?: string;
 	department?: string;
 	specialization?: string;
+}
+
+export interface UserNotification {
+	id: string;
+	user_id: string;
+	type: string;
+	title: string;
+	content: string;
+	is_read: boolean;
+	created_at: string;
+}
+
+export interface NotificationPagination {
+	page: number;
+	limit: number;
+	total: number;
+	totalPages: number;
+}
+
+export interface NotificationListResponse {
+	notifications: UserNotification[];
+	pagination: NotificationPagination;
 }
 
 export interface LoginData {
@@ -60,4 +85,29 @@ export const completeProfile = (data: CompleteProfilePayload) => {
 	return axios.post(`${AUTH_API_URL}/profile`, data, {
 		headers: buildAuthHeader(),
 	});
+};
+
+export const getMyNotifications = (params: { page?: number; limit?: number; unread_only?: boolean } = {}) => {
+	const query = new URLSearchParams();
+
+	Object.entries(params).forEach(([key, value]) => {
+		if (value !== undefined) query.set(key, String(value));
+	});
+
+	return axios.get<NotificationListResponse>(
+		`${NOTIFICATION_API_URL}${query.toString() ? `?${query.toString()}` : ""}`,
+		{ headers: buildAuthHeader() }
+	);
+};
+
+export const markNotificationAsRead = (notificationId: string) => {
+	return axios.patch(
+		`${NOTIFICATION_API_URL}/${notificationId}/read`,
+		{},
+		{ headers: buildAuthHeader() }
+	);
+};
+
+export const markAllNotificationsAsRead = () => {
+	return axios.patch(`${NOTIFICATION_API_URL}/read-all`, {}, { headers: buildAuthHeader() });
 };
