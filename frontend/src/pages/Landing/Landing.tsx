@@ -1,30 +1,10 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-
-const features = [
-  {
-    title: "AI Question Generation",
-    desc: "Generate exam questions using AI prompt engineering."
-  },
-  {
-    title: "Distributed Architecture",
-    desc: "RabbitMQ messaging enables scalable exam systems."
-  },
-  {
-    title: "Adaptive Learning",
-    desc: "AI adjusts exam difficulty based on student performance."
-  }
-];
-
-const tags = ["AI Generation", "RabbitMQ", "Adaptive Learning"];
-
-const FeatureCard = ({ title, desc }: { title: string; desc: string }) => (
-  <div className="bg-white p-5 rounded-xl shadow">
-    <h3 className="text-blue-600 font-semibold mb-2">{title}</h3>
-    <p className="text-sm text-gray-600">{desc}</p>
-  </div>
-);
+import StatsSection from "./sections/StatsSection";
+import HowItWorksSection from "./sections/HowItWorksSection";
+import BentoSection from "./sections/BentoSection";
+import CTASection from "./sections/CTASection";
 
 const Landing: React.FC = () => {
   return (
@@ -37,11 +17,11 @@ const Landing: React.FC = () => {
         bg-[size:60px_60px]"
       />
 
-      {/* Header */}
+      {/* Header - Fixed position */}
       <Header />
 
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-1 flex-col">
+      {/* Main Content - Offset for fixed header */}
+      <main className="relative z-10 flex flex-1 flex-col pt-16">
 
         {/* Hero Section */}
         <section className="flex flex-1 items-center justify-center px-16 gap-20 py-16">
@@ -86,7 +66,7 @@ const Landing: React.FC = () => {
 
             {/* Tags */}
             <div className="flex gap-3 mt-6 text-xs text-gray-500">
-              {tags.map((tag) => (
+              {["AI Generation", "RabbitMQ", "Adaptive Learning"].map((tag) => (
                 <span
                   key={tag}
                   className="bg-white shadow px-3 py-1 rounded-full"
@@ -144,12 +124,21 @@ const Landing: React.FC = () => {
 
         </section>
 
-        {/* Feature Section */}
-        <section className="grid grid-cols-3 gap-6 px-16 pb-16">
-          {features.map((feature) => (
-            <FeatureCard key={feature.title} {...feature} />
-          ))}
-        </section>
+        {/* Stats Section */}
+        <StatsSection />
+
+        {/* How It Works Section */}
+        <div id="how-it-works">
+          <HowItWorksSection />
+        </div>
+
+        {/* Bento / Platform Features Section */}
+        <div id="features">
+          <BentoSection />
+        </div>
+
+        {/* CTA Section */}
+        <CTASection />
 
       </main>
 

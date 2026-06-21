@@ -1,62 +1,109 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+/**
+ * =============================================
+ * STICKY HEADER - EXMORA
+ * =============================================
+ * Tính năng: Giữ thanh menu (header) cố định ở đầu trang khi người dùng cuộn chuột xuống.
+ *
+ * UX Benefits:
+ * - Người dùng có thể điều hướng đến các trang khác mà không cần cuộn lên đầu trang
+ * - Cực kỳ hữu ích cho website có nội dung dài
+ *
+ * Cơ chế hoạt động:
+ * 1. isScrolled = false (ở đầu trang) → Header trong suốt, không shadow
+ * 2. isScrolled = true (scroll > 20px) → Header cố định với backdrop-blur + shadow nhẹ
+ * =============================================
+ */
+
 const navItems = [
-  { label: "About", href: "#about" },
-  { label: "Platform", href: "#platform" },
-  { label: "AI Engine", href: "#ai-engine" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: "/", type: "link" },
+  { label: "Features", href: "/#features", type: "link" },
+  { label: "How It Works", href: "/#how-it-works", type: "link" },
+  { label: "About", href: "/about", type: "link" },
+  { label: "Contact", href: "/contact", type: "link" },
 ];
 
-const Header: React.FC = () => (
-  <header className="relative z-10 flex justify-between items-center px-10 py-4 bg-white/70 backdrop-blur border-b">
-    
-    {/* Logo */}
-    <Link to="/" className="flex items-center gap-2 relative">
-      <motion.div
-        className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 via-indigo-500 to-teal-400 flex items-center justify-center shadow-lg relative"
-        whileHover={{ scale: 1.15, rotate: 15 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        {/* Kim cương trắng */}
-        <div
-          style={{
-            width: "20px",
-            height: "20px",
-            backgroundColor: "white",
-            clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-            position: "absolute", // đặt absolute
-          }}
-        />
-      </motion.div>
-      <span className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition">
-        EXMORA
-      </span>
-    </Link>
+const Header: React.FC = () => {
+  // State để theo dõi trạng thái scroll
+  const [isScrolled, setIsScrolled] = useState(false);
 
-    {/* Navigation */}
-    <nav className="flex gap-8 text-gray-600 font-medium">
-      {navItems.map((item) => (
-        <a key={item.label} href={item.href} className="hover:text-blue-600">
-          {item.label}
-        </a>
-      ))}
-    </nav>
+  // Event listener để detect scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // Khi scroll > 20px → active sticky mode
+      setIsScrolled(window.scrollY > 20);
+    };
 
-    {/* Actions */}
-    <div className="flex gap-3">
-      <Link to="/login" className="text-gray-700 hover:text-blue-600 px-3 py-2">
-        Login
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <header
+      className={`fixed top-0 left-0 right-0 z-[9999] flex justify-between items-center px-6 lg:px-10 py-3 transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/95 backdrop-blur-lg shadow-md border-b border-gray-100"
+          : "bg-white/80 backdrop-blur-md border-b border-transparent"
+      }`}
+    >
+      {/* Logo */}
+      <Link to="/" className="flex items-center gap-2 relative">
+        <motion.div
+          className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 via-indigo-500 to-teal-400 flex items-center justify-center shadow-lg relative"
+          whileHover={{ scale: 1.15, rotate: 15 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <div
+            style={{
+              width: "18px",
+              height: "18px",
+              backgroundColor: "white",
+              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+              position: "absolute",
+            }}
+          />
+        </motion.div>
+        <span className="text-xl font-bold text-gray-900 hover:text-blue-600 transition">
+          EXMORA
+        </span>
       </Link>
-      <Link
-        to="/register"
-        className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-      >
-        SignUp
-      </Link>
-    </div>
-  </header>
-);
+
+      {/* Navigation */}
+      <nav className="hidden md:flex gap-6 lg:gap-8 text-sm text-gray-600 font-medium">
+        {navItems.map((item) => (
+          <a key={item.label} href={item.href} className="hover:text-blue-600 transition-colors">
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <Link
+          to="/login"
+          className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+        >
+          Login
+        </Link>
+        <Link
+          to="/register"
+          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          SignUp
+        </Link>
+      </div>
+
+      {/* Mobile Menu Button */}
+      <button className="md:hidden p-2 text-gray-600">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </header>
+  );
+};
 
 export default Header;
