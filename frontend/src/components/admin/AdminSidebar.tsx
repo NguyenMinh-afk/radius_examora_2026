@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Users,
   BellRing,
+  BookOpenCheck,
   LibraryBig,
   MessageSquare,
   ScrollText,
@@ -14,6 +15,7 @@ import { clearAuthData } from "../../utils/auth";
 export type AdminSection =
   | "users"
   | "courses"
+  | "questions"
   | "monitoring"
   | "notifications"
   | "auditLogs"
@@ -22,6 +24,7 @@ export type AdminSection =
 const menu = [
   { id: "users", label: "Users", icon: <Users size={18} /> },
   { id: "courses", label: "Courses", icon: <LibraryBig size={18} /> },
+  { id: "questions", label: "Questions", icon: <BookOpenCheck size={18} /> },
   { id: "monitoring", label: "RabbitMQ", icon: <MessageSquare size={18} /> },
   { id: "notifications", label: "Notifications", icon: <BellRing size={18} /> },
   { id: "auditLogs", label: "Audit Logs", icon: <ScrollText size={18} /> },

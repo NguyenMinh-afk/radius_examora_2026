@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import type { AdminCourse, Pagination } from "../../api/axios/Admin";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface CourseTableProps {
   courses: AdminCourse[];
@@ -29,18 +30,6 @@ const formatDate = (value?: string | null) => {
   }).format(new Date(value));
 };
 
-const confirmCourseVisibility = (
-  course: AdminCourse,
-  onToggleActive: (course: AdminCourse) => void
-) => {
-  const action = course.is_active ? "hide" : "show";
-  const approved = window.confirm(`Are you sure you want to ${action} course ${course.name}?`);
-
-  if (approved) {
-    onToggleActive(course);
-  }
-};
-
 const CourseTable: React.FC<CourseTableProps> = ({
   courses,
   pagination,
@@ -50,9 +39,30 @@ const CourseTable: React.FC<CourseTableProps> = ({
   onToggleActive,
 }) => {
   const [selectedCourse, setSelectedCourse] = useState<AdminCourse | null>(null);
+  const [pendingCourse, setPendingCourse] = useState<AdminCourse | null>(null);
+
+  const handleConfirmVisibility = () => {
+    if (!pendingCourse) return;
+    onToggleActive(pendingCourse);
+    setPendingCourse(null);
+  };
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <ConfirmDialog
+        open={Boolean(pendingCourse)}
+        title={pendingCourse?.is_active ? "Hide course" : "Show course"}
+        message={
+          pendingCourse
+            ? `${pendingCourse.is_active ? "Hide" : "Show"} course ${pendingCourse.name}?`
+            : ""
+        }
+        confirmText={pendingCourse?.is_active ? "Hide course" : "Show course"}
+        tone={pendingCourse?.is_active ? "danger" : "primary"}
+        loading={Boolean(pendingCourse && actionCourseId === pendingCourse.id)}
+        onCancel={() => setPendingCourse(null)}
+        onConfirm={handleConfirmVisibility}
+      />
       {selectedCourse && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6">
           <div className="max-h-[86vh] w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl">
@@ -229,7 +239,7 @@ const CourseTable: React.FC<CourseTableProps> = ({
                       <button
                         type="button"
                         disabled={actionCourseId === course.id}
-                        onClick={() => confirmCourseVisibility(course, onToggleActive)}
+                        onClick={() => setPendingCourse(course)}
                         className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           course.is_active
                             ? "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"

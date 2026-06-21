@@ -8,6 +8,8 @@ import {
   getAdminCourses,
   getAdminDashboard,
   getAdminNotifications,
+  getAdminQuestionById,
+  getAdminQuestions,
   getAdminQueueJobById,
   getAdminQueueJobs,
   getAdminRoles,
@@ -16,6 +18,7 @@ import {
   getAdminUsers,
   updateAdminCourseStatus,
   updateAdminCourseTeachers,
+  updateAdminQuestionStatus,
   createAdminNotification,
   updateAdminUserRole,
   updateAdminUserStatus,
@@ -40,6 +43,10 @@ router.get("/courses", getAdminCourses);
 router.get("/courses/:id", getAdminCourseById);
 router.patch("/courses/:id/status", updateAdminCourseStatus);
 router.patch("/courses/:id/teachers", updateAdminCourseTeachers);
+
+router.get("/questions", getAdminQuestions);
+router.get("/questions/:id", getAdminQuestionById);
+router.patch("/questions/:id/status", updateAdminQuestionStatus);
 
 router.get("/ai-jobs", getAdminAIJobs);
 router.get("/ai-jobs/:id", getAdminAIJobById);

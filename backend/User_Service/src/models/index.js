@@ -8,6 +8,7 @@ import UserSession from "./UserSession.js";
 import AIJob from "./ai/AIJob.js";
 import Course from "./course/Course.js";
 import Notification from "./notification/Notification.js";
+import Question from "./question/Question.js";
 import QueueJob from "./queue/QueueJob.js";
 import AuditLog from "./system/AuditLog.js";
 import SystemEvent from "./system/SystemEvent.js";
@@ -54,6 +55,22 @@ if (!User.associations.notifications) {
   User.hasMany(Notification, { foreignKey: "user_id", as: "notifications" });
 }
 
+if (!Question.associations.creator) {
+  Question.belongsTo(User, { foreignKey: "created_by", as: "creator" });
+}
+
+if (!User.associations.questions) {
+  User.hasMany(Question, { foreignKey: "created_by", as: "questions" });
+}
+
+if (!Question.associations.course) {
+  Question.belongsTo(Course, { foreignKey: "course_id", as: "course" });
+}
+
+if (!Course.associations.questions) {
+  Course.hasMany(Question, { foreignKey: "course_id", as: "questions" });
+}
+
 export {
   sequelize,
   Op,
@@ -64,6 +81,7 @@ export {
   AIJob,
   Course,
   Notification,
+  Question,
   QueueJob,
   AuditLog,
   SystemEvent,
@@ -80,6 +98,7 @@ export default {
   AIJob,
   Course,
   Notification,
+  Question,
   QueueJob,
   AuditLog,
   SystemEvent,

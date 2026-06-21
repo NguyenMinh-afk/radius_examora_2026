@@ -32,6 +32,7 @@ import AuditLogsPanel from "../../../components/admin/AuditLogsPanel";
 import CourseTable from "../../../components/admin/CourseTable";
 import JobMonitoringPanel from "../../../components/admin/JobMonitoringPanel";
 import NotificationsPanel from "../../../components/admin/NotificationsPanel";
+import QuestionModerationPanel from "../../../components/admin/QuestionModerationPanel";
 import SystemLogsPanel from "../../../components/admin/SystemLogsPanel";
 import UserTable from "../../../components/admin/UserTable";
 
@@ -95,7 +96,7 @@ const AdminDashboard: React.FC = () => {
 
         setUsers(data.users);
         setUserPagination(data.pagination);
-      } catch (loadError) {
+      } catch {
         setError("Unable to load admin users. Please check the backend server and token.");
       } finally {
         setLoading(false);
@@ -119,7 +120,7 @@ const AdminDashboard: React.FC = () => {
 
         setCourses(data.courses);
         setCoursePagination(data.pagination);
-      } catch (loadError) {
+      } catch {
         setError("Unable to load courses. Please check the backend server and token.");
       } finally {
         setCourseLoading(false);
@@ -162,7 +163,7 @@ const AdminDashboard: React.FC = () => {
       setUserPagination(userData.pagination);
       setCourses(courseData.courses);
       setCoursePagination(courseData.pagination);
-    } catch (loadError) {
+    } catch {
       setError("Unable to load admin dashboard. Please sign in again or restart the backend.");
     } finally {
       setLoading(false);
@@ -237,11 +238,12 @@ const AdminDashboard: React.FC = () => {
   const activePercent =
     summary.users.total > 0 ? Math.round((summary.users.active / summary.users.total) * 100) : 0;
   const isMonitoringView = activeSection === "monitoring";
+  const isQuestionsView = activeSection === "questions";
   const isNotificationsView = activeSection === "notifications";
   const isAuditLogsView = activeSection === "auditLogs";
   const isSystemLogsView = activeSection === "systemLogs";
   const isStandaloneView =
-    isMonitoringView || isNotificationsView || isAuditLogsView || isSystemLogsView;
+    isMonitoringView || isQuestionsView || isNotificationsView || isAuditLogsView || isSystemLogsView;
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -253,6 +255,8 @@ const AdminDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold tracking-tight text-slate-950">
               {isMonitoringView
                 ? "AI/RabbitMQ Operations"
+                : isQuestionsView
+                  ? "Question Moderation"
                 : isNotificationsView
                   ? "Notifications"
                 : isAuditLogsView
@@ -261,17 +265,19 @@ const AdminDashboard: React.FC = () => {
                     ? "System Logs"
                   : "System Administration Dashboard"}
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              {isMonitoringView
-                ? "Monitor asynchronous jobs, queue health, and AI generation execution."
-                : isNotificationsView
-                  ? "Send platform announcements and review broadcast delivery history."
-                : isAuditLogsView
-                  ? "Review admin actions, access changes, and course visibility updates."
-                  : isSystemLogsView
-                    ? "Inspect infrastructure events, service sources, and operational payloads."
-                : "Manage accounts, courses, AI jobs, queues, and operational logs from one admin surface."}
-            </p>
+            {!isQuestionsView && (
+              <p className="mt-1 text-sm text-slate-500">
+                {isMonitoringView
+                  ? "Monitor asynchronous jobs, queue health, and AI generation execution."
+                  : isNotificationsView
+                    ? "Send platform announcements and review broadcast delivery history."
+                  : isAuditLogsView
+                    ? "Review admin actions, access changes, and course visibility updates."
+                    : isSystemLogsView
+                      ? "Inspect infrastructure events, service sources, and operational payloads."
+                  : "Manage accounts, courses, AI jobs, queues, and operational logs from one admin surface."}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -333,6 +339,8 @@ const AdminDashboard: React.FC = () => {
 
         {isMonitoringView ? (
           <JobMonitoringPanel />
+        ) : isQuestionsView ? (
+          <QuestionModerationPanel />
         ) : isNotificationsView ? (
           <NotificationsPanel />
         ) : isAuditLogsView ? (

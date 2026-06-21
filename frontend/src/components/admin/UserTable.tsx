@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   CheckCircle2,
   ChevronLeft,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import type { AdminRole, AdminUser, Pagination } from "../../api/axios/Admin";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface UserTableProps {
   users: AdminUser[];
@@ -48,40 +49,6 @@ const getApprovalClass = (status: string) => {
   return "bg-rose-50 text-rose-700 ring-rose-200";
 };
 
-const confirmRoleChange = (
-  user: AdminUser,
-  roleId: number,
-  roles: AdminRole[],
-  onRoleChange: (userId: string, roleId: number) => void
-) => {
-  if (roleId === user.role_id) return;
-
-  const nextRole = roles.find((role) => role.id === roleId);
-  const approved = window.confirm(
-    `Bạn có chắc muốn đổi vai trò của ${user.full_name || user.email} thành ${
-      nextRole?.name || "vai trò mới"
-    } không?`
-  );
-
-  if (approved) {
-    onRoleChange(user.id, roleId);
-  }
-};
-
-const confirmAccessChange = (
-  user: AdminUser,
-  onToggleActive: (user: AdminUser) => void
-) => {
-  const action = user.is_active ? "khóa" : "mở khóa";
-  const approved = window.confirm(
-    `Bạn có chắc muốn ${action} tài khoản ${user.full_name || user.email} không?`
-  );
-
-  if (approved) {
-    onToggleActive(user);
-  }
-};
-
 const UserTable: React.FC<UserTableProps> = ({
   users,
   roles,
@@ -91,165 +58,228 @@ const UserTable: React.FC<UserTableProps> = ({
   onPageChange,
   onRoleChange,
   onToggleActive,
-}) => (
-  <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[900px] text-left text-sm">
-        <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          <tr>
-            <th className="px-5 py-4">User</th>
-            <th className="px-5 py-4">Role</th>
-            <th className="px-5 py-4">Access</th>
-            <th className="px-5 py-4">Approval</th>
-            <th className="px-5 py-4">Last login</th>
-            <th className="px-5 py-4 text-right">Actions</th>
-          </tr>
-        </thead>
+}) => {
+  const [pendingAction, setPendingAction] = useState<
+    | { type: "role"; user: AdminUser; roleId: number; roleName: string }
+    | { type: "access"; user: AdminUser }
+    | null
+  >(null);
 
-        <tbody className="divide-y divide-slate-100">
-          {loading ? (
+  const handleRoleSelect = (user: AdminUser, roleId: number) => {
+    if (roleId === user.role_id) return;
+
+    const nextRole = roles.find((role) => role.id === roleId);
+    setPendingAction({
+      type: "role",
+      user,
+      roleId,
+      roleName: nextRole?.name || "new role",
+    });
+  };
+
+  const handleConfirm = () => {
+    if (!pendingAction) return;
+
+    if (pendingAction.type === "role") {
+      onRoleChange(pendingAction.user.id, pendingAction.roleId);
+    } else {
+      onToggleActive(pendingAction.user);
+    }
+
+    setPendingAction(null);
+  };
+
+  const confirmTitle =
+    pendingAction?.type === "role"
+      ? "Confirm role change"
+      : pendingAction?.user.is_active
+        ? "Lock user account"
+        : "Unlock user account";
+
+  const confirmMessage =
+    pendingAction?.type === "role"
+      ? `Change ${pendingAction.user.full_name || pendingAction.user.email} to ${pendingAction.roleName}?`
+      : pendingAction
+        ? `${pendingAction.user.is_active ? "Lock" : "Unlock"} account ${
+            pendingAction.user.full_name || pendingAction.user.email
+          }?`
+        : "";
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <ConfirmDialog
+        open={Boolean(pendingAction)}
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmText={
+          pendingAction?.type === "role"
+            ? "Change role"
+            : pendingAction?.user.is_active
+              ? "Lock account"
+              : "Unlock account"
+        }
+        tone={pendingAction?.type === "access" && pendingAction.user.is_active ? "danger" : "primary"}
+        loading={Boolean(pendingAction && actionUserId === pendingAction.user.id)}
+        onCancel={() => setPendingAction(null)}
+        onConfirm={handleConfirm}
+      />
+
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px] text-left text-sm">
+          <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
-              <td className="px-5 py-12 text-center text-slate-500" colSpan={6}>
-                Loading users...
-              </td>
+              <th className="px-5 py-4">User</th>
+              <th className="px-5 py-4">Role</th>
+              <th className="px-5 py-4">Access</th>
+              <th className="px-5 py-4">Approval</th>
+              <th className="px-5 py-4">Last login</th>
+              <th className="px-5 py-4 text-right">Actions</th>
             </tr>
-          ) : users.length === 0 ? (
-            <tr>
-              <td className="px-5 py-12 text-center text-slate-500" colSpan={6}>
-                No users match the current filters.
-              </td>
-            </tr>
-          ) : (
-            users.map((user) => (
-              <tr key={user.id} className="bg-white transition hover:bg-slate-50/70">
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    {user.avatar_url ? (
-                      <img
-                        src={user.avatar_url}
-                        alt={user.full_name}
-                        className="h-10 w-10 rounded-full object-cover ring-2 ring-white"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700">
-                        {getInitials(user.full_name || user.email)}
-                      </div>
-                    )}
+          </thead>
 
-                    <div>
-                      <div className="font-semibold text-slate-900">{user.full_name}</div>
-                      <div className="text-xs text-slate-500">{user.email}</div>
-                    </div>
-                  </div>
-                </td>
-
-                <td className="px-5 py-4">
-                  <select
-                    value={user.role_id}
-                    disabled={actionUserId === user.id}
-                    onChange={(event) =>
-                      confirmRoleChange(user, Number(event.target.value), roles, onRoleChange)
-                    }
-                    className="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50"
-                  >
-                    {roles.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.name}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-
-                <td className="px-5 py-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
-                      user.is_active
-                        ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-                        : "bg-slate-100 text-slate-500 ring-slate-200"
-                    }`}
-                  >
-                    {user.is_active ? <Unlock size={13} /> : <Lock size={13} />}
-                    {user.is_active ? "Active" : "Locked"}
-                  </span>
-                </td>
-
-                <td className="px-5 py-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${getApprovalClass(
-                      user.approval_status
-                    )}`}
-                  >
-                    <CheckCircle2 size={13} />
-                    {user.approval_status}
-                  </span>
-                </td>
-
-                <td className="px-5 py-4 text-sm text-slate-500">
-                  {formatDateTime(user.last_login)}
-                </td>
-
-                <td className="px-5 py-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
-                      disabled={actionUserId === user.id}
-                      onClick={() => confirmAccessChange(user, onToggleActive)}
-                      className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                        user.is_active
-                          ? "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
-                      }`}
-                    >
-                      {user.is_active ? <Lock size={15} /> : <ShieldCheck size={15} />}
-                      {user.is_active ? "Lock" : "Unlock"}
-                    </button>
-
-                    <button
-                      type="button"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
-                      aria-label={`Open actions for ${user.full_name}`}
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
-                  </div>
+          <tbody className="divide-y divide-slate-100">
+            {loading ? (
+              <tr>
+                <td className="px-5 py-12 text-center text-slate-500" colSpan={6}>
+                  Loading users...
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+            ) : users.length === 0 ? (
+              <tr>
+                <td className="px-5 py-12 text-center text-slate-500" colSpan={6}>
+                  No users match the current filters.
+                </td>
+              </tr>
+            ) : (
+              users.map((user) => (
+                <tr key={user.id} className="bg-white transition hover:bg-slate-50/70">
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      {user.avatar_url ? (
+                        <img
+                          src={user.avatar_url}
+                          alt={user.full_name}
+                          className="h-10 w-10 rounded-full object-cover ring-2 ring-white"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700">
+                          {getInitials(user.full_name || user.email)}
+                        </div>
+                      )}
 
-    <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-sm text-slate-500">
-        Showing page <span className="font-semibold text-slate-700">{pagination.page}</span> of{" "}
-        <span className="font-semibold text-slate-700">{pagination.totalPages || 1}</span>,{" "}
-        <span className="font-semibold text-slate-700">{pagination.total}</span> total users
+                      <div>
+                        <div className="font-semibold text-slate-900">{user.full_name}</div>
+                        <div className="text-xs text-slate-500">{user.email}</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <select
+                      value={user.role_id}
+                      disabled={actionUserId === user.id}
+                      onChange={(event) => handleRoleSelect(user, Number(event.target.value))}
+                      className="h-9 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50"
+                    >
+                      {roles.map((role) => (
+                        <option key={role.id} value={role.id}>
+                          {role.name}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
+                        user.is_active
+                          ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                          : "bg-slate-100 text-slate-500 ring-slate-200"
+                      }`}
+                    >
+                      {user.is_active ? <Unlock size={13} /> : <Lock size={13} />}
+                      {user.is_active ? "Active" : "Locked"}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${getApprovalClass(
+                        user.approval_status
+                      )}`}
+                    >
+                      <CheckCircle2 size={13} />
+                      {user.approval_status}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-4 text-sm text-slate-500">
+                    {formatDateTime(user.last_login)}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        disabled={actionUserId === user.id}
+                        onClick={() => setPendingAction({ type: "access", user })}
+                        className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                          user.is_active
+                            ? "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                      >
+                        {user.is_active ? <Lock size={15} /> : <ShieldCheck size={15} />}
+                        {user.is_active ? "Lock" : "Unlock"}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+                        aria-label={`Open actions for ${user.full_name}`}
+                      >
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          disabled={pagination.page <= 1 || loading}
-          onClick={() => onPageChange(pagination.page - 1)}
-          className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <ChevronLeft size={15} />
-          Previous
-        </button>
+      <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-slate-500">
+          Showing page <span className="font-semibold text-slate-700">{pagination.page}</span> of{" "}
+          <span className="font-semibold text-slate-700">{pagination.totalPages || 1}</span>,{" "}
+          <span className="font-semibold text-slate-700">{pagination.total}</span> total users
+        </div>
 
-        <button
-          type="button"
-          disabled={pagination.page >= pagination.totalPages || loading || pagination.totalPages === 0}
-          onClick={() => onPageChange(pagination.page + 1)}
-          className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Next
-          <ChevronRight size={15} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={pagination.page <= 1 || loading}
+            onClick={() => onPageChange(pagination.page - 1)}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ChevronLeft size={15} />
+            Previous
+          </button>
+
+          <button
+            type="button"
+            disabled={pagination.page >= pagination.totalPages || loading || pagination.totalPages === 0}
+            onClick={() => onPageChange(pagination.page + 1)}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Next
+            <ChevronRight size={15} />
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default UserTable;

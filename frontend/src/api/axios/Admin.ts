@@ -114,6 +114,31 @@ export interface AdminNotification {
   created_at: string;
 }
 
+export interface AdminQuestion {
+  id: string;
+  course_id: number;
+  course_name?: string | null;
+  course_code?: string | null;
+  created_by?: string | null;
+  creator_name?: string | null;
+  creator_email?: string | null;
+  question_type: string;
+  difficulty: string;
+  content: string;
+  options: unknown;
+  correct_answer: string;
+  explanation?: string | null;
+  points?: string | number | null;
+  time_limit?: number | null;
+  keywords?: string[] | null;
+  is_ai_generated: boolean;
+  ai_model?: string | null;
+  is_active: boolean;
+  is_public: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
 export interface AdminDashboardSummary {
   users: {
     total: number;
@@ -233,6 +258,21 @@ export interface NotificationListResponse {
   pagination: Pagination;
 }
 
+export interface QuestionListParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  difficulty?: string;
+  source?: "ai" | "manual" | "";
+  course_id?: number | "";
+  is_active?: boolean | "";
+}
+
+export interface QuestionListResponse {
+  questions: AdminQuestion[];
+  pagination: Pagination;
+}
+
 export interface CreateNotificationPayload {
   title: string;
   content: string;
@@ -349,6 +389,25 @@ export const getAdminNotifications = async (params: NotificationListParams = {})
   return response.data;
 };
 
+export const getAdminQuestions = async (params: QuestionListParams = {}) => {
+  const query = buildQuery(params);
+  const response = await axios.get<QuestionListResponse>(
+    `${ADMIN_API_URL}/questions${query ? `?${query}` : ""}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const getAdminQuestionById = async (questionId: string) => {
+  const response = await axios.get<{ question: AdminQuestion }>(
+    `${ADMIN_API_URL}/questions/${questionId}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data.question;
+};
+
 export const createAdminNotification = async (payload: CreateNotificationPayload) => {
   const response = await axios.post<CreateNotificationResponse>(
     `${ADMIN_API_URL}/notifications`,
@@ -362,6 +421,16 @@ export const createAdminNotification = async (payload: CreateNotificationPayload
 export const updateAdminCourseStatus = async (courseId: number, isActive: boolean) => {
   const response = await axios.patch<{ message: string; course: AdminCourse }>(
     `${ADMIN_API_URL}/courses/${courseId}/status`,
+    { is_active: isActive },
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const updateAdminQuestionStatus = async (questionId: string, isActive: boolean) => {
+  const response = await axios.patch<{ message: string; question: AdminQuestion }>(
+    `${ADMIN_API_URL}/questions/${questionId}/status`,
     { is_active: isActive },
     { headers: buildAuthHeader() }
   );

@@ -21,6 +21,7 @@ import {
   type CreateNotificationPayload,
   type Pagination,
 } from "../../api/axios/Admin";
+import ConfirmDialog from "./ConfirmDialog";
 
 const DEFAULT_PAGINATION: Pagination = {
   page: 1,
@@ -64,6 +65,7 @@ const NotificationsPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedNotification, setSelectedNotification] = useState<AdminNotification | null>(null);
+  const [confirmSendOpen, setConfirmSendOpen] = useState(false);
 
   const loadNotifications = useCallback(
     async (page = pagination.page) => {
@@ -102,17 +104,9 @@ const NotificationsPanel: React.FC = () => {
     return { sentCount, unreadCount, targetCount };
   }, [notifications, pagination.total]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const sendNotification = async () => {
     setError(null);
     setSuccess(null);
-
-    const approved = window.confirm(
-      `Are you sure you want to send this notification to ${targetLabels[targetRole]}?`
-    );
-
-    if (!approved) return;
-
     setSending(true);
 
     try {
@@ -124,6 +118,7 @@ const NotificationsPanel: React.FC = () => {
 
       setTitle("");
       setContent("");
+      setConfirmSendOpen(false);
       setSuccess(`Sent to ${result.recipient_count} recipient(s).`);
       await loadNotifications(1);
     } catch {
@@ -133,6 +128,13 @@ const NotificationsPanel: React.FC = () => {
     }
   };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setConfirmSendOpen(true);
+  };
+
   const handleFilterSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     void loadNotifications(1);
@@ -140,6 +142,15 @@ const NotificationsPanel: React.FC = () => {
 
   return (
     <div className="space-y-5">
+      <ConfirmDialog
+        open={confirmSendOpen}
+        title="Send broadcast notification"
+        message={`Send this notification to ${targetLabels[targetRole]}?`}
+        confirmText="Send notification"
+        loading={sending}
+        onCancel={() => setConfirmSendOpen(false)}
+        onConfirm={() => void sendNotification()}
+      />
       {selectedNotification && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6">
           <div className="max-h-[86vh] w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl">

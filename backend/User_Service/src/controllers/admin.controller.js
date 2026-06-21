@@ -4,6 +4,7 @@ import {
   Course,
   Notification,
   Op,
+  Question,
   QueueJob,
   Role,
   SystemEvent,
@@ -105,6 +106,31 @@ const toNotificationRow = (notification) => ({
   content: notification.content,
   is_read: notification.is_read,
   created_at: notification.created_at,
+});
+
+const toQuestionRow = (question) => ({
+  id: question.id,
+  course_id: question.course_id,
+  course_name: question.course?.name || null,
+  course_code: question.course?.code || null,
+  created_by: question.created_by,
+  creator_name: question.creator?.full_name || null,
+  creator_email: question.creator?.email || null,
+  question_type: question.question_type,
+  difficulty: question.difficulty,
+  content: question.content,
+  options: question.options,
+  correct_answer: question.correct_answer,
+  explanation: question.explanation,
+  points: question.points,
+  time_limit: question.time_limit,
+  keywords: question.keywords,
+  is_ai_generated: question.is_ai_generated,
+  ai_model: question.ai_model,
+  is_active: question.is_active,
+  is_public: question.is_public,
+  created_at: question.created_at,
+  updated_at: question.updated_at,
 });
 
 export const getAdminDashboard = async (_req, res) => {
@@ -354,6 +380,106 @@ export const updateAdminCourseTeachers = async (_req, res) =>
   res.status(501).json({
     message: "Course teacher assignment requires a course_teachers table or equivalent relation.",
   });
+
+export const getAdminQuestions = async (req, res) => {
+  try {
+    const { page, limit, offset } = getPagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const difficulty = String(req.query.difficulty || "").trim().toLowerCase();
+    const source = String(req.query.source || "").trim().toLowerCase();
+    const isActive = parseBooleanFilter(req.query.is_active);
+    const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : undefined;
+
+    const where = {};
+
+    if (search) {
+      where[Op.or] = [
+        { content: { [Op.iLike]: `%${search}%` } },
+        { correct_answer: { [Op.iLike]: `%${search}%` } },
+        { explanation: { [Op.iLike]: `%${search}%` } },
+      ];
+    }
+
+    if (difficulty) where.difficulty = difficulty;
+    if (isActive !== undefined) where.is_active = isActive;
+    if (Number.isInteger(courseId)) where.course_id = courseId;
+    if (source === "ai") where.is_ai_generated = true;
+    if (source === "manual") where.is_ai_generated = false;
+
+    const result = await Question.findAndCountAll({
+      where,
+      include: [
+        { model: Course, as: "course", attributes: ["id", "name", "code"] },
+        { model: User, as: "creator", attributes: ["id", "email", "full_name"] },
+      ],
+      order: [["created_at", "DESC"]],
+      limit,
+      offset,
+    });
+
+    return res.json({
+      questions: result.rows.map(toQuestionRow),
+      pagination: paginationResponse({ page, limit, total: result.count }),
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch questions", error: error.message });
+  }
+};
+
+export const getAdminQuestionById = async (req, res) => {
+  try {
+    const question = await Question.findByPk(req.params.id, {
+      include: [
+        { model: Course, as: "course", attributes: ["id", "name", "code"] },
+        { model: User, as: "creator", attributes: ["id", "email", "full_name"] },
+      ],
+    });
+
+    if (!question) return res.status(404).json({ message: "Question not found" });
+    return res.json({ question: toQuestionRow(question) });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch question", error: error.message });
+  }
+};
+
+export const updateAdminQuestionStatus = async (req, res) => {
+  try {
+    if (typeof req.body.is_active !== "boolean") {
+      return res.status(400).json({ message: "is_active must be boolean" });
+    }
+
+    const question = await Question.findByPk(req.params.id, {
+      include: [
+        { model: Course, as: "course", attributes: ["id", "name", "code"] },
+        { model: User, as: "creator", attributes: ["id", "email", "full_name"] },
+      ],
+    });
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    await question.update({ is_active: req.body.is_active });
+    await writeAuditLog(req, {
+      action: "admin.question.update_status",
+      entityType: "question",
+      entityId: question.id,
+      metadata: {
+        question_id: question.id,
+        course_id: question.course_id,
+        is_active: req.body.is_active,
+      },
+    });
+
+    await question.reload({
+      include: [
+        { model: Course, as: "course", attributes: ["id", "name", "code"] },
+        { model: User, as: "creator", attributes: ["id", "email", "full_name"] },
+      ],
+    });
+
+    return res.json({ message: "Question status updated", question: toQuestionRow(question) });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to update question status", error: error.message });
+  }
+};
 
 export const getAdminAIJobs = async (req, res) => {
   try {
