@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../hooks/useAuth";
+import { getDashboardPath } from "../../utils/auth";
+import { User } from "lucide-react";
 
 /**
  * =============================================
@@ -29,6 +32,8 @@ const navItems = [
 const Header: React.FC = () => {
   // State để theo dõi trạng thái scroll
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   // Event listener để detect scroll
   useEffect(() => {
@@ -40,6 +45,13 @@ const Header: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!isUserMenuOpen) return;
+    const handleClickOutside = () => setIsUserMenuOpen(false);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [isUserMenuOpen]);
 
   return (
     <header
@@ -82,18 +94,68 @@ const Header: React.FC = () => {
 
       {/* Actions */}
       <div className="flex gap-2">
-        <Link
-          to="/login"
-          className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-        >
-          Login
-        </Link>
-        <Link
-          to="/register"
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          SignUp
-        </Link>
+        {isAuthenticated && user ? (
+          <div className="relative">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsUserMenuOpen((prev) => !prev);
+              }}
+              className="flex items-center gap-2"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                {user.avatar_url ? (
+                  <img src={user.avatar_url} alt={user.full_name || user.email} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-xs font-semibold text-white leading-none">
+                    {(user.full_name || user.email || "U").charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+            </button>
+
+            {isUserMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
+                <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                  <p className="text-sm font-medium text-gray-900 truncate">{user.full_name || user.email}</p>
+                  {user.email && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
+                </div>
+                <Link
+                  to={getDashboardPath(user.role)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  onClick={() => setIsUserMenuOpen(false)}
+                >
+                  <User size={16} />
+                  Trang của tôi
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsUserMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 w-full"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <Link
+              to="/login"
+              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              SignUp
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Mobile Menu Button */}

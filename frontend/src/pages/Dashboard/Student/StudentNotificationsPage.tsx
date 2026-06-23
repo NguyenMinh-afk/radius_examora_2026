@@ -4,8 +4,8 @@ import {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  type Notification
-} from "../../../api/studentApi";
+  type Notification,
+} from "../../../api/notificationApi";
 import { StudentPageHeader } from "../../../components/student/layout";
 import { LoadingState, ErrorState, SearchInput } from "../../../components/student/shared";
 import { NotificationFilterBar, NotificationList } from "../../../components/student/notifications";

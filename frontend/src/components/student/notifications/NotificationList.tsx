@@ -1,6 +1,6 @@
 import React from "react";
 import { Bell } from "lucide-react";
-import type { Notification } from "../../../api/studentApi";
+import type { Notification } from "../../../api/notificationApi";
 import NotificationItem from "./NotificationItem";
 
 interface NotificationListProps {

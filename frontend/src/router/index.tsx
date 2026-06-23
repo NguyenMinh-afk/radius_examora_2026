@@ -21,37 +21,33 @@ import StudentNotificationsPage from "../pages/Dashboard/Student/StudentNotifica
 import StudentProfilePage from "../pages/Dashboard/Student/StudentProfilePage";
 import StudentSettingsPage from "../pages/Dashboard/Student/StudentSettingsPage";
 
+import RedirectIfAuthenticated from "../components/auth/RedirectIfAuthenticated";
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Landing */}
+        {/* Landing - ai cũng xem được, kể cả đã đăng nhập */}
         <Route path="/" element={<Landing />} />
 
-        {/* About */}
-        <Route path="/about" element={<About />} />
-
-        {/* Contact */}
-        <Route path="/contact" element={<Contact />} />
-
-        {/* Register */}
-        <Route path="/register" element={<Register />} />
-
-        {/* Login */}
-        <Route path="/login" element={<Login />} />
+        {/* Public pages - redirect if already authenticated */}
+        <Route path="/about" element={<RedirectIfAuthenticated><About /></RedirectIfAuthenticated>} />
+        <Route path="/contact" element={<RedirectIfAuthenticated><Contact /></RedirectIfAuthenticated>} />
+        <Route path="/register" element={<RedirectIfAuthenticated><Register /></RedirectIfAuthenticated>} />
+        <Route path="/login" element={<RedirectIfAuthenticated><Login /></RedirectIfAuthenticated>} />
 
         {/* Google OAuth Callback */}
         <Route path="/oauth/google/callback" element={<GoogleOAuthCallbackPage />} />
 
         {/* Forgot Password */}
-        <Route path="/forgot-password" element={<Forgot />} />
+        <Route path="/forgot-password" element={<RedirectIfAuthenticated><Forgot /></RedirectIfAuthenticated>} />
 
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
 
         {/* Teacher Dashboard */}
-        <Route path="/teacher" element={<TeacherDashboard />} /> 
+        <Route path="/teacher" element={<TeacherDashboard />} />
 
         {/* Student Module - với Layout có Sidebar */}
         <Route element={<StudentLayout />}>

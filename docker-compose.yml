@@ -1,0 +1,191 @@
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: exmora-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: Exam_Bank
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/schema_optimized.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: exmora-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: StrongPassword123
+    restart: unless-stopped
+
+  user-service:
+    image: node:20-alpine
+    container_name: exmora-user-service
+    working_dir: /app
+    volumes:
+      - ./backend/User_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/User_Service/.env.docker
+    environment:
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  exam-service:
+    image: node:20-alpine
+    container_name: exmora-exam-service
+    working_dir: /app
+    volumes:
+      - ./backend/Exam_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/Exam_Service/.env.docker
+    environment:
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  question-service:
+    image: node:20-alpine
+    container_name: exmora-question-service
+    working_dir: /app
+    volumes:
+      - ./backend/Question_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/Question_Service/.env.docker
+    environment:
+      PORT: 3002
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  ai-generation-service:
+    image: node:20-alpine
+    container_name: exmora-ai-generation-service
+    working_dir: /app
+    volumes:
+      - ./backend/AI_Generation_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/AI_Generation_Service/.env.docker
+    environment:
+      PORT: 3003
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  notification-service:
+    image: node:20-alpine
+    container_name: exmora-notification-service
+    working_dir: /app
+    volumes:
+      - ./backend/Notification_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/Notification_Service/.env.docker
+    environment:
+      PORT: 3004
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  infrastructure-service:
+    image: node:20-alpine
+    container_name: exmora-infrastructure-service
+    working_dir: /app
+    volumes:
+      - ./backend/Infrastructure_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/Infrastructure_Service/.env.docker
+    environment:
+      PORT: 5005
+    ports:
+      - "5005:5005"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  api-gateway:
+    image: node:20-alpine
+    container_name: exmora-api-gateway
+    working_dir: /app
+    volumes:
+      - ./backend/API_Gateway_Service:/app
+    command: sh -c "npm install && npm run dev"
+    env_file:
+      - ./backend/API_Gateway_Service/.env.docker
+    environment:
+      PORT: 3000
+    ports:
+      - "3100:3000"
+    depends_on:
+      - user-service
+      - exam-service
+      - question-service
+      - ai-generation-service
+      - notification-service
+      - infrastructure-service
+      - postgres-db
+      - rabbitmq
+
+  frontend:
+    image: node:20-alpine
+    container_name: exmora-frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      VITE_API_BASE_URL: http://localhost:3100
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-gateway
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: exmora-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: exmora-grafana
+    ports:
+      - "3006:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  grafana-data:
+  prometheus-data:

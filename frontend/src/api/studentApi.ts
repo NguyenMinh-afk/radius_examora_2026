@@ -254,44 +254,4 @@ export const getStudentResults = async (limit = 20): Promise<Result[]> => {
   return response.data;
 };
 
-// Notification Types
-export interface NotificationResponse {
-  items: Notification[];
-  total: number;
-  unreadCount: number;
-}
-
-/**
- * Lấy danh sách thông báo
- */
-export const getNotifications = async (filters?: {
-  limit?: number;
-  offset?: number;
-  unreadOnly?: boolean;
-}): Promise<NotificationResponse> => {
-  const params = new URLSearchParams();
-  if (filters?.limit) params.append("limit", filters.limit.toString());
-  if (filters?.offset) params.append("offset", filters.offset.toString());
-  if (filters?.unreadOnly) params.append("unreadOnly", "true");
-
-  const response = await studentApi.get<NotificationResponse>(
-    `/notifications?${params.toString()}`
-  );
-  return response.data;
-};
-
-/**
- * Đánh dấu một thông báo là đã đọc
- */
-export const markNotificationAsRead = async (notificationId: string): Promise<void> => {
-  await studentApi.patch(`/notifications/${notificationId}/read`);
-};
-
-/**
- * Đánh dấu tất cả thông báo là đã đọc
- */
-export const markAllNotificationsAsRead = async (): Promise<void> => {
-  await studentApi.patch(`/notifications/read-all`);
-};
-
 export default studentApi;
