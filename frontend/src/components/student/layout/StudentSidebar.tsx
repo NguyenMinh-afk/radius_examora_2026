@@ -46,7 +46,7 @@ const StudentSidebar: React.FC = () => {
     <aside className="w-64 h-screen sticky top-0 bg-white border-r border-slate-200 flex flex-col">
       {/* Logo */}
       <div className="px-6 py-5 border-b border-slate-100">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/student" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 via-indigo-500 to-teal-400 flex items-center justify-center shadow-md">
             <div
               className="w-4 h-4 bg-white"

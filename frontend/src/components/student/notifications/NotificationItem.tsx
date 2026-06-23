@@ -1,6 +1,6 @@
 import React from "react";
 import { Bell, FileText, Award, AlertCircle, Check, Mail } from "lucide-react";
-import type { Notification } from "../../../api/studentApi";
+import type { Notification } from "../../../api/notificationApi";
 
 interface NotificationItemProps {
   notification: Notification;
