@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class VerificationToken extends Model {}
 
@@ -43,4 +43,4 @@ VerificationToken.init({
   timestamps: false,
 });
 
-module.exports = VerificationToken;
+export default VerificationToken;

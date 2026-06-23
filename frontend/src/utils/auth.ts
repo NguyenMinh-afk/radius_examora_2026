@@ -4,6 +4,7 @@ export interface AuthUser {
   full_name?: string;
   role?: string;
   approval_status?: string;
+  avatar_url?: string;
 }
 
 export interface AuthResponse {
@@ -66,4 +67,32 @@ export const clearAuthData = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
+};
+
+export const getAuthTokens = (): { accessToken: string; refreshToken?: string } | null => {
+  const accessToken = localStorage.getItem("accessToken") || localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
+  
+  if (!accessToken) return null;
+  
+  return { accessToken, refreshToken: refreshToken || undefined };
+};
+
+export const getCurrentUser = (): AuthUser | null => {
+  const userStr = localStorage.getItem("user");
+  if (!userStr) return null;
+  try {
+    return JSON.parse(userStr) as AuthUser;
+  } catch {
+    return null;
+  }
+};
+
+export const isAuthenticated = (): boolean => {
+  return !!getAuthTokens();
+};
+
+export const isStudent = (): boolean => {
+  const user = getCurrentUser();
+  return user?.role === "student";
 };

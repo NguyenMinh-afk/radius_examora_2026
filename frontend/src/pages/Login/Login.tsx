@@ -17,38 +17,17 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    const googleStatus = searchParams.get("google");
-    if (!googleStatus) return;
 
-    if (googleStatus === "success") {
-      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-      const accessToken = hashParams.get("accessToken") || "";
-      const refreshToken = hashParams.get("refreshToken") || "";
-
-      if (!accessToken) {
-        setError("Google login succeeded but token was missing.");
-        return;
-      }
-
-      const role = saveAuthData({ accessToken, refreshToken });
+    // Xử lý thông báo từ OAuth redirect
+    const oauthError = searchParams.get("error");
+    const oauthMessage = searchParams.get("message");
+    if (oauthError) {
+      setError(oauthMessage || `OAuth error: ${oauthError}`);
       window.history.replaceState(null, "", "/login");
-      navigate(getDashboardPath(role), { replace: true });
       return;
     }
 
-    if (googleStatus === "pending") {
-      setError("Your account is pending admin approval.");
-    } else {
-      setError(searchParams.get("message") || "Google login failed.");
-    }
-
-    window.history.replaceState(null, "", "/login");
-  }, [navigate]);
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.get("google")) return;
-
+    // Xử lý đăng ký thành công
     const registered = searchParams.get("registered");
     const message = searchParams.get("message");
     if (!registered && !message) return;

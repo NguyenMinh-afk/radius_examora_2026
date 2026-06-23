@@ -1,109 +1,108 @@
-import UserProfile from "../models/UserProfile.js";
-import { verifyAccessToken } from "../config/jwt.js";
+/**
+ * Profile Controller - HTTP layer cho Profile Module
+ * ESM - Nhận req, gọi service, trả response
+ * KHÔNG chứa auth/exam/question/notification business logic
+ */
+import bcrypt from "bcrypt";
+import {
+  User,
+  UserProfile,
+  StudentProfile,
+  TeacherProfile,
+  Role,
+} from "../models/index.js";
+import profileService from "../services/profile.service.js";
 
-const getBearerToken = (req) => {
-  const header = req.headers.authorization || "";
-  const [scheme, token] = header.split(" ");
-  if (scheme?.toLowerCase() !== "bearer" || !token) {
-    return null;
-  }
-  return token;
-};
-
-const getRoleFromToken = (decoded) =>
-  typeof decoded?.role === "string" ? decoded.role : null;
-
-const isStudentProfileComplete = (profile) =>
-  Boolean(profile?.student_code && profile?.school_name && profile?.class_code);
-
-const isTeacherProfileComplete = (profile) =>
-  Boolean(
-    profile?.teacher_code &&
-      profile?.teacher_department &&
-      profile?.teacher_specialization
-  );
-
-const buildProfilePayload = (role, body) => {
-  if (role === "student") {
-    return {
-      student_code: body.student_code,
-      school_name: body.faculty,
-      class_code: body.class_code,
-    };
-  }
-
-  if (role === "teacher") {
-    return {
-      teacher_code: body.teacher_code,
-      teacher_department: body.department,
-      teacher_specialization: body.specialization,
-    };
-  }
-
-  return {};
-};
-
-export const getProfile = async (req, res) => {
+export const getMyProfile = async (req, res) => {
   try {
-    const token = getBearerToken(req);
-    if (!token) {
-      return res.status(401).json({ message: "Missing bearer token" });
-    }
-
-    const decoded = verifyAccessToken(token);
-    const profile = await UserProfile.findOne({ where: { user_id: decoded.id } });
-    const role = getRoleFromToken(decoded);
-
-    const isComplete = role === "teacher"
-      ? isTeacherProfileComplete(profile)
-      : role === "student"
-        ? isStudentProfileComplete(profile)
-        : true;
-
-    return res.json({ profile, isComplete });
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token", error: err.message });
+    const userId = req.user.id;
+    const profile = await profileService.getProfile(userId);
+    return res.json(profile);
+  } catch (error) {
+    console.error("[Profile] getMyProfile error:", error);
+    return res.status(500).json({
+      error: error.message || "Internal server error",
+    });
   }
 };
 
-export const completeProfile = async (req, res) => {
+export const updateMyProfile = async (req, res) => {
   try {
-    const token = getBearerToken(req);
-    if (!token) {
-      return res.status(401).json({ message: "Missing bearer token" });
-    }
+    const userId = req.user.id;
+    const { fullName, phone, avatarUrl, dateOfBirth, gender, schoolName } = req.body;
 
-    const decoded = verifyAccessToken(token);
-    const role = getRoleFromToken(decoded);
+    const updated = await profileService.updateProfile(userId, {
+      fullName,
+      phone,
+      avatarUrl,
+      dateOfBirth,
+      gender,
+      schoolName,
+    });
 
-    if (!role || !["student", "teacher"].includes(role)) {
-      return res.status(400).json({ message: "Unsupported role" });
-    }
+    return res.json(updated);
+  } catch (error) {
+    console.error("[Profile] updateMyProfile error:", error);
+    const status = error.message?.includes("not found") ? 404 : 500;
+    return res.status(status).json({
+      error: error.message || "Internal server error",
+    });
+  }
+};
 
-    const payload = buildProfilePayload(role, req.body || {});
+export const updateMySettings = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { emailNotifications, theme, language, timezone } = req.body;
 
-    if (role === "student" && !isStudentProfileComplete(payload)) {
+    const updated = await profileService.updateSettings(userId, {
+      emailNotifications,
+      theme,
+      language,
+      timezone,
+    });
+
+    return res.json(updated);
+  } catch (error) {
+    console.error("[Profile] updateMySettings error:", error);
+    return res.status(500).json({
+      error: error.message || "Internal server error",
+    });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
       return res.status(400).json({
-        message: "student_code, faculty and class_code are required",
+        error: "currentPassword and newPassword are required",
       });
     }
 
-    if (role === "teacher" && !isTeacherProfileComplete(payload)) {
+    if (newPassword.length < 6) {
       return res.status(400).json({
-        message: "teacher_code, department and specialization are required",
+        error: "New password must be at least 6 characters",
       });
     }
 
-    const existing = await UserProfile.findOne({ where: { user_id: decoded.id } });
+    const result = await profileService.changePassword(
+      userId,
+      currentPassword,
+      newPassword
+    );
 
-    if (existing) {
-      await existing.update(payload);
-    } else {
-      await UserProfile.create({ user_id: decoded.id, ...payload });
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
     }
 
-    return res.json({ message: "Profile updated", profile: payload, isComplete: true });
-  } catch (err) {
-    return res.status(400).json({ message: "Profile update failed", error: err.message });
+    return res.json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    console.error("[Profile] changePassword error:", error);
+    return res.status(500).json({
+      error: error.message || "Internal server error",
+    });
   }
 };

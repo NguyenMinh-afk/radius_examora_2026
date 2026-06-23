@@ -1,0 +1,87 @@
+import React, { useState, useEffect } from "react";
+import { User } from "lucide-react";
+import { StudentPageHeader } from "../../../components/student/layout";
+import { LoadingState, ErrorState } from "../../../components/student/shared";
+import { ProfileHero, ProfileInfoCard, ProfileAcademicCard, ProfileStatsCard } from "../../../components/student/profile";
+import { getStudentDashboard } from "../../../api/studentApi";
+import { getStudentClasses } from "../../../api/studentApi";
+
+const StudentProfilePage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [studentData, setStudentData] = useState<any>(null);
+  const [classCount, setClassCount] = useState(0);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [dashboardData, classesData] = await Promise.all([
+        getStudentDashboard(),
+        getStudentClasses()
+      ]);
+      setStudentData(dashboardData);
+      setClassCount(classesData?.length || 0);
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { error?: string } }; message?: string };
+      console.error("Error fetching profile:", err);
+      setError(axiosError.response?.data?.error || axiosError.message || "Không thể tải thông tin hồ sơ");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <LoadingState size="lg" text="Đang tải thông tin hồ sơ..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8">
+        <ErrorState message={error} onRetry={fetchData} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-8">
+      <StudentPageHeader
+        title="Hồ sơ cá nhân"
+        icon={User}
+        description="Xem và quản lý thông tin cá nhân của bạn."
+      />
+
+      <ProfileHero
+        fullName={studentData?.student?.fullName || "Học sinh"}
+        email={studentData?.student?.email || ""}
+        avatarUrl={studentData?.student?.avatarUrl}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <ProfileInfoCard
+          fullName={studentData?.student?.fullName || "Học sinh"}
+          email={studentData?.student?.email || ""}
+        />
+        <ProfileAcademicCard />
+      </div>
+
+      <div className="mt-8">
+        <ProfileStatsCard
+          classCount={classCount}
+          completedExams={0}
+          averageScore={studentData?.overview?.averageScore || 0}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default StudentProfilePage;

@@ -61,3 +61,9 @@ export const completeProfile = (data: CompleteProfilePayload) => {
 		headers: buildAuthHeader(),
 	});
 };
+
+export const googleResultApi = (state: string) => {
+	return axios.get(`${AUTH_API_URL}/google/result`, {
+		params: { state },
+	});
+};

@@ -1,0 +1,297 @@
+/**
+ * Student API Service - Gọi API từ Exam Service
+ * Base URL: http://localhost:3001/api/student
+ */
+import axios, { AxiosError } from "axios";
+import { getAuthTokens } from "../utils/auth";
+
+const STUDENT_API_URL = import.meta.env.VITE_STUDENT_API_URL || "http://localhost:3001/api/student";
+
+// Tạo axios instance
+const studentApi = axios.create({
+  baseURL: STUDENT_API_URL,
+  timeout: 15000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor để thêm token vào request
+studentApi.interceptors.request.use(
+  (config) => {
+    const tokens = getAuthTokens();
+    if (tokens?.accessToken) {
+      config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Interceptor để xử lý response
+studentApi.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      // Token hết hạn - clear auth data và redirect
+      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Types
+export interface StudentInfo {
+  id: string;
+  fullName: string;
+  email: string;
+  avatarUrl: string | null;
+  studentCode?: string;
+}
+
+export interface DashboardOverview {
+  classCount: number;
+  upcomingAssignments: number;
+  openAssignments: number;
+  averageScore: number;
+}
+
+export interface NextAssignment {
+  assignmentId: string;
+  title: string;
+  className: string;
+  courseName?: string;
+  teacherName?: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+}
+
+export interface MyClass {
+  classId: string;
+  className: string;
+  classCode: string;
+  courseName?: string;
+  teacherName: string;
+  semester?: string;
+  academicYear?: string;
+}
+
+export interface RecentResult {
+  attemptId: string;
+  assignmentId: string;
+  title: string;
+  className: string;
+  score: number | null;
+  percentage: number | null;
+  submittedAt: string;
+}
+
+export interface Notification {
+  id: string;
+  type: "assignment" | "grade" | "system" | "verification" | "email";
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  actionUrl?: string;
+}
+
+export interface DashboardData {
+  student: StudentInfo;
+  overview: DashboardOverview;
+  nextAssignment: NextAssignment | null;
+  myClasses: MyClass[];
+  recentResults: RecentResult[];
+  notifications: Notification[];
+}
+
+export interface ClassStats {
+  totalAssignments: number;
+  completedAssignments: number;
+  openAssignments: number;
+  upcomingAssignments: number;
+  averageScore: number;
+}
+
+export interface ClassData {
+  classId: string;
+  className: string;
+  classCode: string;
+  courseId: number;
+  courseName?: string;
+  teacherId: string;
+  teacherName: string;
+  yearLevel?: string;
+  semester?: string;
+  academicYear?: string;
+  isActive: boolean;
+  joinedAt: string;
+  stats: ClassStats;
+}
+
+export interface AssignmentLatestAttempt {
+  attemptId: string;
+  score: number | null;
+  percentage: number | null;
+  submittedAt: string;
+}
+
+export interface Assignment {
+  studentAssignmentId: string;
+  assignmentId: string;
+  title: string;
+  courseName: string;
+  className: string;
+  classCode: string;
+  teacherName: string;
+  instructions: string | null;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  maxAttempts: number;
+  attemptsUsed: number;
+  status: "open" | "upcoming" | "submitted" | "expired";
+  latestAttempt: AssignmentLatestAttempt | null;
+}
+
+export interface AssignmentsResponse {
+  items: Assignment[];
+  summary: {
+    total: number;
+    open: number;
+    upcoming: number;
+    submitted: number;
+    expired: number;
+  };
+}
+
+export interface Result {
+  attemptId: string;
+  examId: string;
+  assignmentId: string;
+  title: string;
+  className: string;
+  attemptNumber: number;
+  startedAt: string;
+  submittedAt: string;
+  timeTaken: number | null;
+  status: "submitted" | "graded";
+  score: number | null;
+  percentage: number | null;
+  correctAnswers: number;
+  wrongAnswers: number;
+}
+
+export interface ClassDetailData {
+  classInfo: {
+    classId: string;
+    className: string;
+    classCode: string;
+    courseName?: string;
+    teacherName: string;
+    semester?: string;
+    academicYear?: string;
+  };
+  stats: ClassStats;
+  assignments: Assignment[];
+}
+
+// API Functions
+
+/**
+ * Lấy dashboard data
+ */
+export const getStudentDashboard = async (): Promise<DashboardData> => {
+  const response = await studentApi.get<DashboardData>("/dashboard");
+  return response.data;
+};
+
+/**
+ * Lấy danh sách lớp học
+ */
+export const getStudentClasses = async (): Promise<ClassData[]> => {
+  const response = await studentApi.get<ClassData[]>("/classes");
+  return response.data;
+};
+
+/**
+ * Lấy chi tiết một lớp học
+ */
+export const getClassDetail = async (classId: string): Promise<ClassDetailData> => {
+  const response = await studentApi.get<ClassDetailData>(`/classes/${classId}`);
+  return response.data;
+};
+
+/**
+ * Lấy danh sách bài thi
+ */
+export const getStudentAssignments = async (filters?: {
+  status?: string;
+  search?: string;
+  classId?: string;
+}): Promise<AssignmentsResponse> => {
+  const params = new URLSearchParams();
+  if (filters?.status) params.append("status", filters.status);
+  if (filters?.search) params.append("search", filters.search);
+  if (filters?.classId) params.append("classId", filters.classId);
+
+  const response = await studentApi.get<AssignmentsResponse>(
+    `/assignments?${params.toString()}`
+  );
+  return response.data;
+};
+
+/**
+ * Lấy kết quả bài thi
+ */
+export const getStudentResults = async (limit = 20): Promise<Result[]> => {
+  const response = await studentApi.get<Result[]>(`/results?limit=${limit}`);
+  return response.data;
+};
+
+// Notification Types
+export interface NotificationResponse {
+  items: Notification[];
+  total: number;
+  unreadCount: number;
+}
+
+/**
+ * Lấy danh sách thông báo
+ */
+export const getNotifications = async (filters?: {
+  limit?: number;
+  offset?: number;
+  unreadOnly?: boolean;
+}): Promise<NotificationResponse> => {
+  const params = new URLSearchParams();
+  if (filters?.limit) params.append("limit", filters.limit.toString());
+  if (filters?.offset) params.append("offset", filters.offset.toString());
+  if (filters?.unreadOnly) params.append("unreadOnly", "true");
+
+  const response = await studentApi.get<NotificationResponse>(
+    `/notifications?${params.toString()}`
+  );
+  return response.data;
+};
+
+/**
+ * Đánh dấu một thông báo là đã đọc
+ */
+export const markNotificationAsRead = async (notificationId: string): Promise<void> => {
+  await studentApi.patch(`/notifications/${notificationId}/read`);
+};
+
+/**
+ * Đánh dấu tất cả thông báo là đã đọc
+ */
+export const markAllNotificationsAsRead = async (): Promise<void> => {
+  await studentApi.patch(`/notifications/read-all`);
+};
+
+export default studentApi;

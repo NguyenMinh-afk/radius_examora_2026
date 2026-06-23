@@ -205,20 +205,8 @@ VALUES
     ('50000000-0000-0000-0000-000000000003', 3)
 ON CONFLICT DO NOTHING;
 
--- AI generation request + log
+-- AI generation request + task + log (requests MUST come first due to FK)
 SET search_path = ai_db, public;
-INSERT INTO ai_generation_tasks (
-    id, request_id, subject_id, topic, input_type, input_reference, number_of_questions,
-    difficulty, status, created_by, created_at, completed_at
-) VALUES
-    (
-        '60000000-0000-0000-0000-000000000010', '60000000-0000-0000-0000-000000000001', 1, 'Vong lap co ban', 'text',
-        'Bai giang lap trinh co ban', 2, 'easy', 'completed',
-        '20000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP - INTERVAL '12 minutes',
-        CURRENT_TIMESTAMP - INTERVAL '6 minutes'
-    )
-ON CONFLICT (id) DO NOTHING;
-
 INSERT INTO ai_generation_requests (
     id, user_id, course_id, chapter_id, knowledge_unit_id,
     difficulty, question_type, quantity, context, status, progress,
@@ -228,6 +216,18 @@ INSERT INTO ai_generation_requests (
         '60000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 1, 2, 2,
         'medium', 'multiple_choice', 3, 'Generate basic programming questions', 'completed', 100,
         'trace-ai-0001', CURRENT_TIMESTAMP - INTERVAL '10 minutes', CURRENT_TIMESTAMP - INTERVAL '5 minutes'
+    )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO ai_generation_tasks (
+    id, request_id, subject_id, topic, input_type, input_reference, number_of_questions,
+    difficulty, status, created_by, created_at, completed_at
+) VALUES
+    (
+        '60000000-0000-0000-0000-000000000010', '60000000-0000-0000-0000-000000000001', 1, 'Vong lap co ban', 'text',
+        'Bai giang lap trinh co ban', 2, 'easy', 'completed',
+        '20000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP - INTERVAL '12 minutes',
+        CURRENT_TIMESTAMP - INTERVAL '6 minutes'
     )
 ON CONFLICT (id) DO NOTHING;
 
@@ -408,3 +408,93 @@ INSERT INTO attempt_answers (
     ('D0000000-0000-0000-0000-000000000003', 'D0000000-0000-0000-0000-000000000001',
      '50000000-0000-0000-0000-000000000002', 'A', true, 1.0, 40)
 ON CONFLICT (id) DO NOTHING;
+
+-- =====================================================
+-- SEED DATA BỔ SUNG CHO STUDENT MODULE
+-- Thêm classes cho student test
+-- =====================================================
+INSERT INTO classes (id, teacher_id, name, class_code, course_id, year_level, academic_year, semester, is_active)
+VALUES
+    ('B0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001',
+     'Cơ sở dữ liệu - D22CQCN01', 'CSDL-D22-01', 22, 'Year 2', '2025-2026', 'HK1', true),
+    ('B0000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000002',
+     'Phát triển Web - D22WEB01', 'WEB-D22-01', 29, 'Year 2', '2025-2026', 'HK1', true),
+    ('B0000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000001',
+     'Mạng máy tính - D22MMT01', 'MMT-D22-01', 26, 'Year 2', '2025-2026', 'HK1', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO class_members (id, class_id, user_id, role, joined_at)
+VALUES
+    ('B1000000-0000-0000-0000-000000000001', 'B0000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'student', CURRENT_TIMESTAMP),
+    ('B1000000-0000-0000-0000-000000000002', 'B0000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'student', CURRENT_TIMESTAMP),
+    ('B1000000-0000-0000-0000-000000000003', 'B0000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', 'student', CURRENT_TIMESTAMP)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO exam_assignments (id, exam_id, class_id, assigned_by, title, instructions, start_time, end_time, max_attempts, is_active, trace_id)
+VALUES
+    ('C0000000-0000-0000-0000-000000000002', 'A0000000-0000-0000-0000-000000000001',
+     'B0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001',
+     'Quiz Chương 3 - Cơ sở dữ liệu', 'Đọc kỹ đề trước khi làm. Thời gian 60 phút.',
+     CURRENT_TIMESTAMP + INTERVAL '1 day', CURRENT_TIMESTAMP + INTERVAL '1 day' + INTERVAL '1 hour', 1, true, 'trace-exam-0002'),
+    ('C0000000-0000-0000-0000-000000000003', 'A0000000-0000-0000-0000-000000000001',
+     'B0000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000002',
+     'Quiz React nâng cao', 'Mỗi câu chỉ chọn 1 đáp án. Thời gian 30 phút.',
+     CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP + INTERVAL '12 hours', 1, true, 'trace-exam-0003'),
+    ('C0000000-0000-0000-0000-000000000004', 'A0000000-0000-0000-0000-000000000001',
+     'B0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001',
+     'Kiểm tra Chương 2 - Cơ sở dữ liệu', 'Làm bài trong 45 phút. Không được sử dụng tài liệu.',
+     CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '45 minutes', 1, true, 'trace-exam-0004'),
+    ('C0000000-0000-0000-0000-000000000005', 'A0000000-0000-0000-0000-000000000001',
+     'B0000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000001',
+     'Quiz Mạng LAN', 'Ôn tập chương 4 về mạng LAN.',
+     CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '30 minutes', 1, true, 'trace-exam-0005')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO student_assignments (id, assignment_id, student_id, status, attempts_used)
+VALUES
+    ('EA000000-0000-0000-0000-000000000001', 'C0000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'assigned', 0),
+    ('EA000000-0000-0000-0000-000000000002', 'C0000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'assigned', 0),
+    ('EA000000-0000-0000-0000-000000000003', 'C0000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', 'assigned', 0),
+    ('EA000000-0000-0000-0000-000000000004', 'C0000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000001', 'assigned', 0)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO attempts (attempt_id, exam_id, student_id, assignment_id, attempt_number, started_at, submitted_at, time_taken, status, score, percentage, correct_answers, wrong_answers)
+VALUES
+    ('EB000000-0000-0000-0000-000000000001', 'A0000000-0000-0000-0000-000000000001',
+     '30000000-0000-0000-0000-000000000001', 'C0000000-0000-0000-0000-000000000004',
+     2, CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '8 hours', CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '8 hours' + INTERVAL '45 minutes',
+     45, 'graded', 8.5, 85.0, 17, 3)
+ON CONFLICT (attempt_id) DO NOTHING;
+
+INSERT INTO attempt_answers (id, attempt_id, question_id, selected_answer, is_correct, points_earned, time_spent)
+VALUES
+    ('EC000000-0000-0000-0000-000000000001', 'EB000000-0000-0000-0000-000000000001',
+     '50000000-0000-0000-0000-000000000001', 'A', true, 1.0, 20),
+    ('EC000000-0000-0000-0000-000000000002', 'EB000000-0000-0000-0000-000000000001',
+     '50000000-0000-0000-0000-000000000002', 'A', true, 1.0, 25)
+ON CONFLICT (id) DO NOTHING;
+
+SET search_path = notification_db, public;
+INSERT INTO notifications (id, user_id, type, title, message, action_url, is_read, created_at)
+VALUES
+    ('EE000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'assignment',
+     'Bài thi mới được giao', 'Bài thi "Quiz Chương 3 - Cơ sở dữ liệu" đã được mở. Bạn có thể vào làm bài từ bây giờ.',
+     '/student/assignments/EA000000-0000-0000-0000-000000000001', false, CURRENT_TIMESTAMP - INTERVAL '1 hour'),
+    ('ED000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'grade',
+     'Kết quả đã được công bố', 'Kết quả bài thi "Kiểm tra Chương 2" đã được công bố. Điểm của bạn: 8.5/10.',
+     '/student/results/EB000000-0000-0000-0000-000000000001', false, CURRENT_TIMESTAMP - INTERVAL '1 day'),
+    ('ED000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'system',
+     'Nhắc nhở: Bài thi sắp đóng', 'Bài thi "Quiz React nâng cao" sẽ đóng sau 12 giờ nữa. Hãy hoàn thành bài thi kịp thời.',
+     '/student/assignments/EA000000-0000-0000-0000-000000000002', true, CURRENT_TIMESTAMP - INTERVAL '2 days'),
+    ('EF000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'assignment',
+     'Bạn đã được thêm vào lớp mới', 'Bạn đã được thêm vào lớp "Mạng máy tính - D22MMT01". Giảng viên: Lê Văn C.',
+     '/student/classes/B0000000-0000-0000-0000-000000000004', true, CURRENT_TIMESTAMP - INTERVAL '3 days'),
+    ('F0000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'verification',
+     'Xác minh email thành công', 'Email của bạn đã được xác minh thành công. Cảm ơn bạn đã đăng ký!',
+     NULL, true, CURRENT_TIMESTAMP - INTERVAL '7 days')
+ON CONFLICT (id) DO NOTHING;
+
+SET search_path = exam_db, public;
+UPDATE student_assignments
+SET status = 'submitted'
+WHERE id = 'EA000000-0000-0000-0000-000000000003';

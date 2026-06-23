@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class StudentProfile extends Model {}
 
@@ -20,4 +20,4 @@ StudentProfile.init({
   timestamps: false,
 });
 
-module.exports = StudentProfile;
+export default StudentProfile;

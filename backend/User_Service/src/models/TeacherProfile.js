@@ -3,8 +3,8 @@
  * Model lưu thông tin hồ sơ giáo viên
  * @module models/TeacherProfile
  */
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/sequelize.js';
 
 /**
  * @class TeacherProfile
@@ -31,4 +31,4 @@ TeacherProfile.init({
   timestamps: false,
 });
 
-module.exports = TeacherProfile;
+export default TeacherProfile;

@@ -621,6 +621,8 @@ CREATE TABLE class_members (
     user_id UUID,
     role VARCHAR(50) DEFAULT 'student',
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(class_id, user_id)
 );
 

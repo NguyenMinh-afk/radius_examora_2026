@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const  sequelize  = require('../../config/sequelize');
+/**
+ * ClassCollaborator Model
+ * ESM
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class ClassCollaborator extends Model {}
 
@@ -21,4 +25,4 @@ ClassCollaborator.init({
   timestamps: false,
 });
 
-module.exports = ClassCollaborator;
+export default ClassCollaborator;

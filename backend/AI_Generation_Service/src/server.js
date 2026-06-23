@@ -3,22 +3,17 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config();
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// AI_Generation_Service: AI question generation
+import aiRoutes from "./routes/ai.routes.js";
+app.use("/api/ai", aiRoutes);
 
-import authRoutes from "./routes/auth.routes.js";
-app.use("/api/auth", authRoutes);
+app.get("/", (req, res) => res.send("Examora AI_Generation_Service is running..."));
+app.get("/health", (req, res) => res.json({ status: "ok", service: "AI_Generation_Service" }));
 
-app.get("/", (req, res) => {
-  res.send("Examora API is running...");
-});
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3003;
+app.listen(PORT, () => console.log(`[AI_Generation_Service] running on port ${PORT}`));

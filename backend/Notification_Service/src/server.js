@@ -9,16 +9,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-import authRoutes from "./routes/auth.routes.js";
-app.use("/api/auth", authRoutes);
+// Notification_Service: chỉ chứa notification CRUD
+import notificationRoutes from "./routes/notification.routes.js";
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Examora API is running...");
+  res.send("Examora Notification_Service is running...");
 });
 
-const PORT = process.env.PORT || 5000;
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", service: "Notification_Service" });
+});
 
+const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`[Notification_Service] running on port ${PORT}`);
 });

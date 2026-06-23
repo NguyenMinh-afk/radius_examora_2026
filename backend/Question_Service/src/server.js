@@ -3,22 +3,17 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config();
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Question_Service: question CRUD
+import questionRoutes from "./routes/question.routes.js";
+app.use("/api/questions", questionRoutes);
 
-import authRoutes from "./routes/auth.routes.js";
-app.use("/api/auth", authRoutes);
+app.get("/", (req, res) => res.send("Examora Question_Service is running..."));
+app.get("/health", (req, res) => res.json({ status: "ok", service: "Question_Service" }));
 
-app.get("/", (req, res) => {
-  res.send("Examora API is running...");
-});
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3002;
+app.listen(PORT, () => console.log(`[Question_Service] running on port ${PORT}`));
