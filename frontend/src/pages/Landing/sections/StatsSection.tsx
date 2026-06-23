@@ -12,7 +12,7 @@ const StatsSection: React.FC = () => {
     <section className="px-6 py-20 bg-[#F8FAFC] border-y border-gray-200/60">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-10">
-          {stats.map((stat, index) => (
+          {stats.map((stat) => (
             <div key={stat.label} className="relative group">
               <div className="absolute -inset-px bg-gradient-to-b from-blue-600/10 to-indigo-600/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative bg-white rounded-2xl p-6 text-center border border-gray-200/50 shadow-sm">

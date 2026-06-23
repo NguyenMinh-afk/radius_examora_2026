@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class PasswordResetToken extends Model {}
 
@@ -37,4 +37,4 @@ PasswordResetToken.init({
   timestamps: false,
 });
 
-module.exports = PasswordResetToken;
+export default PasswordResetToken;

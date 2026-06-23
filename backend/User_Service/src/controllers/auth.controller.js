@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { Op } from "sequelize";
 
+import { setOAuthResult, getOAuthResult, deleteOAuthResult } from "../services/oauthTempStore.js";
 import {
   generateTokens,
   getRefreshTokenExpiresAt,
@@ -558,27 +559,21 @@ export const googleCallback = async (req, res) => {
         : null;
 
     if (googleError) {
-      return redirectToFrontend(res, "/login", {
-        google: "failed",
-        reason: googleError,
-        message: googleErrorDescription || `Google OAuth error: ${googleError}`,
-      });
+      return res.redirect(
+        `${getFrontendUrl()}/oauth/google/callback?error=${encodeURIComponent(googleError)}&message=${encodeURIComponent(googleErrorDescription || googleError)}`
+      );
     }
 
     if (!code) {
-      return redirectToFrontend(res, "/login", {
-        google: "failed",
-        reason: "missing_code",
-        message: "Google did not return an authorization code.",
-      });
+      return res.redirect(
+        `${getFrontendUrl()}/oauth/google/callback?error=missing_code&message=Google+did+not+return+an+authorization+code`
+      );
     }
 
     if (!validateGoogleConfig()) {
-      return redirectToFrontend(res, "/login", {
-        google: "failed",
-        reason: "missing_google_config",
-        message: "Missing Google OAuth configuration on backend.",
-      });
+      return res.redirect(
+        `${getFrontendUrl()}/oauth/google/callback?error=missing_google_config&message=Missing+Google+OAuth+configuration`
+      );
     }
 
     const redirectUri = typeof req.query.redirectUri === "string"
@@ -586,11 +581,9 @@ export const googleCallback = async (req, res) => {
       : process.env.GOOGLE_CALLBACK_URL;
 
     if (!redirectUri) {
-      return redirectToFrontend(res, "/login", {
-        google: "failed",
-        reason: "missing_redirect_uri",
-        message: "Missing Google OAuth redirect URI.",
-      });
+      return res.redirect(
+        `${getFrontendUrl()}/oauth/google/callback?error=missing_redirect_uri&message=Missing+Google+OAuth+redirect+URI`
+      );
     }
 
     const googleUser = await getGoogleUserFromCode(code, redirectUri);
@@ -600,36 +593,64 @@ export const googleCallback = async (req, res) => {
       assertUserCanLogin(user);
     } catch (err) {
       if (err.code === "ACCOUNT_PENDING_APPROVAL") {
-        return redirectToFrontend(res, "/login", {
-          google: "pending",
-        });
+        return res.redirect(
+          `${getFrontendUrl()}/oauth/google/callback?error=pending_approval&message=Account+is+pending+admin+approval`
+        );
       }
       throw err;
     }
 
     const authResponse = await issueAuthResponse(req, user);
 
-    if (req.query.response_type === "json") {
-      return res.json({
-        message: "Google login successful",
-        ...authResponse,
+    const oauthStateId = randomUUID();
+    setOAuthResult(oauthStateId, {
+      accessToken: authResponse.accessToken,
+      refreshToken: authResponse.refreshToken,
+      user: authResponse.user,
+    });
+
+    return res.redirect(
+      `${getFrontendUrl()}/oauth/google/callback?state=${encodeURIComponent(oauthStateId)}`
+    );
+  } catch (err) {
+    return res.redirect(
+      `${getFrontendUrl()}/oauth/google/callback?error=callback_error&message=${encodeURIComponent(err.message)}`
+    );
+  }
+};
+
+export const googleResult = async (req, res) => {
+  try {
+    const { state } = req.query;
+
+    if (!state || typeof state !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Missing OAuth state",
       });
     }
 
-    return redirectToFrontend(
-      res,
-      "/login",
-      { google: "success" },
-      {
-        accessToken: authResponse.accessToken,
-        refreshToken: authResponse.refreshToken,
-      }
-    );
+    const authResult = getOAuthResult(state);
+
+    if (!authResult) {
+      return res.status(404).json({
+        success: false,
+        message: "OAuth result expired or not found. Please try logging in again.",
+      });
+    }
+
+    deleteOAuthResult(state);
+
+    return res.json({
+      success: true,
+      accessToken: authResult.accessToken,
+      refreshToken: authResult.refreshToken,
+      user: authResult.user,
+    });
   } catch (err) {
-    return redirectToFrontend(res, "/login", {
-      google: "failed",
-      reason: err.code || "callback_error",
-      message: err.message,
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get Google OAuth result",
     });
   }
 };

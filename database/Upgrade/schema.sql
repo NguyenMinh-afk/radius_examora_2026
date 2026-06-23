@@ -691,6 +691,8 @@ CREATE TABLE class_members (
     
     role VARCHAR(50) DEFAULT 'student', -- 'teacher', 'assistant', 'student'
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     UNIQUE(class_id, user_id)
 );

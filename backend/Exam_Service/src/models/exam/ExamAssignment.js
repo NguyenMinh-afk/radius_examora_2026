@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const  sequelize  = require('../../config/sequelize');
+/**
+ * ExamAssignment Model
+ * ESM - exam_db.exam_assignments
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class ExamAssignment extends Model {}
 
@@ -9,18 +13,56 @@ ExamAssignment.init({
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  exam_id: DataTypes.UUID,
-  user_id: DataTypes.UUID,
-  assigned_by: DataTypes.UUID,
-  assigned_at: DataTypes.DATE,
-  due_date: DataTypes.DATE,
-  status: DataTypes.STRING,
+  exam_id: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  class_id: {
+    type: DataTypes.UUID,
+    allowNull: true,
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  instructions: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  start_time: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  end_time: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  max_attempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1,
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  assigned_by: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  trace_id: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
   created_at: DataTypes.DATE,
+  updated_at: DataTypes.DATE,
 }, {
   sequelize,
   modelName: 'ExamAssignment',
   tableName: 'exam_assignments',
-  timestamps: false,
+  schema: 'exam_db',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-module.exports = ExamAssignment;
+export default ExamAssignment;

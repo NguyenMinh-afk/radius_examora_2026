@@ -1,5 +1,5 @@
 import React from "react";
-import { UserPlus, Wand2, LayoutList, Users, BarChart3, GraduationCap, FileText, Zap, BrainCircuit } from "lucide-react";
+import { UserPlus, Wand2, LayoutList, BarChart3 } from "lucide-react";
 
 const steps = [
   {

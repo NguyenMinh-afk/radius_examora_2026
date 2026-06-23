@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight, Eye, EyeOff, GraduationCap, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
@@ -23,6 +23,16 @@ const Register: React.FC = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const oauthError = searchParams.get("error");
+    const oauthMessage = searchParams.get("message");
+    if (oauthError) {
+      setError(oauthMessage || `OAuth error: ${oauthError}`);
+      window.history.replaceState(null, "", "/register");
+    }
+  }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -3,13 +3,14 @@ import {
   googleCallback,
   googleLogin,
   googleLoginCredential,
+  googleResult,
   login,
   logout,
   me,
   refresh,
   register,
 } from "../controllers/auth.controller.js";
-import { completeProfile, getProfile } from "../controllers/profile.controller.js";
+import { updateMyProfile, getMyProfile } from "../controllers/profile.controller.js";
 
 const router = express.Router();
 
@@ -19,9 +20,10 @@ router.post("/google-login", googleLoginCredential);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.get("/me", me);
-router.get("/profile", getProfile);
-router.post("/profile", completeProfile);
+router.get("/profile", getMyProfile);
+router.post("/profile", updateMyProfile);
 router.get("/google", googleLogin);
 router.get("/google/callback", googleCallback);
+router.get("/google/result", googleResult);
 
 export default router;

@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * Exam Model
+ * ESM
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class Exam extends Model {}
 
@@ -26,6 +30,10 @@ Exam.init({
   sequelize,
   modelName: 'Exam',
   tableName: 'exams',
+  schema: 'exam_db',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-module.exports = Exam;
+export default Exam;

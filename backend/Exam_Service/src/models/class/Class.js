@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const  sequelize  = require('../../config/sequelize');
+/**
+ * Class Model
+ * ESM - exam_db.classes
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class Class extends Model {}
 
@@ -9,16 +13,49 @@ Class.init({
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  name: DataTypes.STRING,
-  grade_level: DataTypes.STRING,
-  school_year: DataTypes.STRING,
-  homeroom_teacher_id: DataTypes.UUID,
+  teacher_id: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  class_code: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  course_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  year_level: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  academic_year: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  semester: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
   created_at: DataTypes.DATE,
+  updated_at: DataTypes.DATE,
 }, {
   sequelize,
   modelName: 'Class',
   tableName: 'classes',
-  timestamps: false,
+  schema: 'exam_db',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-module.exports = Class;
+export default Class;

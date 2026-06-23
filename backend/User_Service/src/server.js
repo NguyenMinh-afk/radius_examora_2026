@@ -15,16 +15,22 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-
+// User_Service: auth + profile/settings
 import authRoutes from "./routes/auth.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
 app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Examora API is running...");
+  res.send("Examora User_Service is running...");
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", service: "User_Service" });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`[User_Service] running on port ${PORT}`);
 });
