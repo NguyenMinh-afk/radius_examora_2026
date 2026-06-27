@@ -35,7 +35,7 @@ import {
   addExamQuestions,
   updateExamQuestion,
   removeExamQuestion,
-} from "../controllers/teacher.controller.js";
+} from "../controllers/teacher/index.js";
 
 const router = express.Router();
 

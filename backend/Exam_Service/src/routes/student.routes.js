@@ -16,7 +16,7 @@ import {
   getAssignments,
   getResults,
   getClassPosts,
-} from "../controllers/student.controller.js";
+} from "../controllers/student/index.js";
 
 const router = express.Router();
 
