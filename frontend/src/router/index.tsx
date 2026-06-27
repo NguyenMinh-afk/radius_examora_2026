@@ -46,9 +46,9 @@ const AppRouter = () => {
         {/* Landing - ai cũng xem được, kể cả đã đăng nhập */}
         <Route path="/" element={<Landing />} />
 
-        {/* Public pages - redirect if already authenticated */}
-        <Route path="/about" element={<RedirectIfAuthenticated><About /></RedirectIfAuthenticated>} />
-        <Route path="/contact" element={<RedirectIfAuthenticated><Contact /></RedirectIfAuthenticated>} />
+        {/* Public pages */}
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<RedirectIfAuthenticated><Register /></RedirectIfAuthenticated>} />
         <Route path="/login" element={<RedirectIfAuthenticated><Login /></RedirectIfAuthenticated>} />
 

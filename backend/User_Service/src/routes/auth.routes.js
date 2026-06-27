@@ -9,7 +9,7 @@ import {
   me,
   refresh,
   register,
-} from "../controllers/auth.controller.js";
+} from "../controllers/auth/index.js";
 import { updateMyProfile, getMyProfile } from "../controllers/profile.controller.js";
 
 const router = express.Router();
