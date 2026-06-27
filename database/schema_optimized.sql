@@ -146,6 +146,15 @@ CREATE TABLE faculties (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Seed data: faculties
+INSERT INTO faculties (id, name, code) VALUES
+(1, 'Khoa học Máy tính', 'CS'),
+(2, 'Toán học', 'MATH'),
+(3, 'Vật lý', 'PHYS'),
+(4, 'Hóa học', 'CHEM'),
+(5, 'Kinh tế', 'ECON')
+ON CONFLICT (id) DO NOTHING;
+
 CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     faculty_id INTEGER REFERENCES faculties(id) ON UPDATE CASCADE ON DELETE RESTRICT NOT NULL,
@@ -155,7 +164,8 @@ CREATE TABLE courses (
     credits INTEGER DEFAULT 3,
     semester_type VARCHAR(20),
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_courses_faculty ON courses(faculty_id);
@@ -217,7 +227,8 @@ CREATE TABLE question_tags (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
     category VARCHAR(50),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE question_tag_relations (
@@ -225,6 +236,18 @@ CREATE TABLE question_tag_relations (
     tag_id INTEGER REFERENCES question_tags(id) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (question_id, tag_id)
 );
+
+CREATE TABLE answers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    question_id UUID NOT NULL REFERENCES questions(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    is_correct BOOLEAN DEFAULT false,
+    order_index INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_answers_question ON answers(question_id);
 
 CREATE INDEX idx_questions_course ON questions(course_id);
 CREATE INDEX idx_questions_chapter ON questions(chapter_id);
@@ -497,7 +520,8 @@ CREATE TABLE email_logs (
     max_attempts INTEGER DEFAULT 3,
     provider VARCHAR(50),
     message_id TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_email_logs_user ON email_logs(to_user_id);
@@ -598,7 +622,9 @@ CREATE TABLE exam_questions (
     time_limit INTEGER,
     is_required BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(exam_id, question_order)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(exam_id, question_order),
+    UNIQUE(exam_id, question_id)
 );
 
 CREATE TABLE classes (
@@ -620,11 +646,35 @@ CREATE TABLE class_members (
     class_id UUID REFERENCES classes(id) ON UPDATE CASCADE ON DELETE CASCADE,
     user_id UUID,
     role VARCHAR(50) DEFAULT 'student',
+    status VARCHAR(30) DEFAULT 'active'
+        CHECK (status IN ('active', 'pending', 'removed')),
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(class_id, user_id)
 );
+
+-- Thông báo/Posts của lớp học (giống Google Classroom)
+CREATE TABLE class_posts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    class_id UUID REFERENCES classes(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    author_id UUID NOT NULL,
+    title VARCHAR(500),
+    content TEXT NOT NULL,
+    type VARCHAR(50) DEFAULT 'announcement', -- announcement, material, assignment, question
+    is_pinned BOOLEAN DEFAULT false,
+    attachments JSONB DEFAULT '[]',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_class_posts_class_id ON class_posts(class_id);
+CREATE INDEX idx_class_posts_created_at ON class_posts(created_at DESC);
+CREATE INDEX idx_class_posts_author ON class_posts(author_id);
+CREATE INDEX idx_class_posts_type ON class_posts(type);
+
+CREATE INDEX idx_class_members_class ON class_members(class_id);
+CREATE INDEX idx_exam_questions_order ON exam_questions(exam_id, question_order);
 
 CREATE TABLE exam_assignments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -637,6 +687,10 @@ CREATE TABLE exam_assignments (
     end_time TIMESTAMP NOT NULL,
     CHECK (end_time > start_time),
     max_attempts INTEGER DEFAULT 1,
+    shuffle_questions BOOLEAN DEFAULT false,
+    shuffle_answers BOOLEAN DEFAULT false,
+    show_result BOOLEAN DEFAULT true,
+    show_answer BOOLEAN DEFAULT false,
     is_active BOOLEAN DEFAULT true,
     trace_id VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -660,6 +714,7 @@ CREATE TABLE attempts (
 
     attempt_number INTEGER NOT NULL CHECK (attempt_number > 0),
     started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ended_at TIMESTAMP,
     submitted_at TIMESTAMP,
     time_taken INTEGER,
 
@@ -670,6 +725,7 @@ CREATE TABLE attempts (
     percentage DECIMAL(5,2),
     correct_answers INTEGER DEFAULT 0,
     wrong_answers INTEGER DEFAULT 0,
+    graded_at TIMESTAMP,
 
     trace_id VARCHAR(100),
 
@@ -683,7 +739,7 @@ CREATE TABLE attempt_answers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     attempt_id UUID REFERENCES attempts(attempt_id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL,
     question_id UUID NOT NULL,
-    selected_answer TEXT,
+    selected_answer JSONB,
     is_correct BOOLEAN,
     points_earned DECIMAL(5,2) DEFAULT 0,
     time_spent INTEGER,
@@ -750,6 +806,24 @@ CREATE TRIGGER update_ai_jobs_updated_at BEFORE UPDATE ON ai_db.ai_jobs
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE TRIGGER update_email_templates_updated_at BEFORE UPDATE ON notification_db.email_templates
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_email_logs_updated_at BEFORE UPDATE ON notification_db.email_logs
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_answers_updated_at BEFORE UPDATE ON question_db.answers
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_question_tags_updated_at BEFORE UPDATE ON question_db.question_tags
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_exam_questions_updated_at BEFORE UPDATE ON exam_db.exam_questions
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_class_members_updated_at BEFORE UPDATE ON exam_db.class_members
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_class_posts_updated_at BEFORE UPDATE ON exam_db.class_posts
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- =====================================================

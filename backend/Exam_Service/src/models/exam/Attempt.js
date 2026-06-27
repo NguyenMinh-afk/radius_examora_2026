@@ -35,6 +35,10 @@ Attempt.init({
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
+  ended_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
   submitted_at: {
     type: DataTypes.DATE,
     allowNull: true,
@@ -62,6 +66,10 @@ Attempt.init({
   wrong_answers: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
+  },
+  graded_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
   },
   trace_id: {
     type: DataTypes.STRING(100),

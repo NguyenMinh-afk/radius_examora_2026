@@ -25,6 +25,10 @@ ClassMember.init({
     type: DataTypes.STRING(50),
     defaultValue: 'student',
   },
+  status: {
+    type: DataTypes.STRING(30),
+    defaultValue: 'active',
+  },
   joined_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
@@ -42,7 +46,9 @@ ClassMember.init({
   modelName: 'ClassMember',
   tableName: 'class_members',
   schema: 'exam_db',
-  timestamps: false,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
 export default ClassMember;

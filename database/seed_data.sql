@@ -153,11 +153,15 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Question tags
 SET search_path = question_db, public;
-INSERT INTO question_tags (id, name, category)
+INSERT INTO question_tags (id, name, category, updated_at)
 VALUES
-    (1, 'algebra', 'math'),
-    (2, 'calculus', 'math'),
-    (3, 'basics', 'cs')
+    (1, 'algebra', 'math', CURRENT_TIMESTAMP),
+    (2, 'calculus', 'math', CURRENT_TIMESTAMP),
+    (3, 'basics', 'cs', CURRENT_TIMESTAMP),
+    (4, 'loops', 'cs', CURRENT_TIMESTAMP),
+    (5, 'database', 'cs', CURRENT_TIMESTAMP),
+    (6, 'network', 'cs', CURRENT_TIMESTAMP),
+    (7, 'web', 'cs', CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 -- Questions
@@ -371,42 +375,47 @@ INSERT INTO classes (
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO class_members (
-    id, class_id, user_id, role
+    id, class_id, user_id, role, status, joined_at
 ) VALUES
-    ('B0000000-0000-0000-0000-000000000002', 'B0000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'student'),
-    ('B0000000-0000-0000-0000-000000000003', 'B0000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', 'student')
+    ('B0000000-0000-0000-0000-000000000002', 'B0000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'student', 'active', CURRENT_TIMESTAMP),
+    ('B0000000-0000-0000-0000-000000000003', 'B0000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', 'student', 'active', CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_assignments (
-    id, exam_id, class_id, assigned_by, title, instructions, start_time, end_time, max_attempts, is_active, trace_id
+    id, exam_id, class_id, assigned_by, title, instructions, start_time, end_time, max_attempts,
+    shuffle_questions, shuffle_answers, show_result, show_answer, is_active, trace_id
 ) VALUES
     ('C0000000-0000-0000-0000-000000000001', 'A0000000-0000-0000-0000-000000000001', 'B0000000-0000-0000-0000-000000000001',
      '20000000-0000-0000-0000-000000000001', 'Calculus Quiz 1', 'Complete within 30 minutes',
-     CURRENT_TIMESTAMP - INTERVAL '1 day', CURRENT_TIMESTAMP + INTERVAL '1 day', 1, true, 'trace-exam-0001')
+     CURRENT_TIMESTAMP - INTERVAL '1 day', CURRENT_TIMESTAMP + INTERVAL '1 day', 1,
+     false, false, true, false, true, 'trace-exam-0001')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO student_assignments (
-    id, assignment_id, student_id, status, attempts_used
-) VALUES
+-- Student assignments (exam_db)
+SET search_path = exam_db, public;
+INSERT INTO student_assignments (id, assignment_id, student_id, status, attempts_used)
+VALUES
     ('C0000000-0000-0000-0000-000000000002', 'C0000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'assigned', 0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO attempts (
-    attempt_id, exam_id, student_id, assignment_id, attempt_number, status, score, percentage,
-    correct_answers, wrong_answers, trace_id
+    attempt_id, exam_id, student_id, assignment_id, attempt_number, started_at, ended_at, submitted_at,
+    time_taken, status, score, percentage, correct_answers, wrong_answers, graded_at, trace_id
 ) VALUES
     ('D0000000-0000-0000-0000-000000000001', 'A0000000-0000-0000-0000-000000000001',
      '30000000-0000-0000-0000-000000000001', 'C0000000-0000-0000-0000-000000000001',
-     1, 'graded', 8.0, 80.0, 2, 0, 'trace-exam-0001')
+     1, CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP - INTERVAL '30 minutes',
+     CURRENT_TIMESTAMP - INTERVAL '30 minutes', 30, 'graded', 8.0, 80.0, 2, 0,
+     CURRENT_TIMESTAMP - INTERVAL '29 minutes', 'trace-exam-0001')
 ON CONFLICT (attempt_id) DO NOTHING;
 
 INSERT INTO attempt_answers (
     id, attempt_id, question_id, selected_answer, is_correct, points_earned, time_spent
 ) VALUES
     ('D0000000-0000-0000-0000-000000000002', 'D0000000-0000-0000-0000-000000000001',
-     '50000000-0000-0000-0000-000000000001', 'A', true, 1.0, 30),
+     '50000000-0000-0000-0000-000000000001', '"A"', true, 1.0, 30),
     ('D0000000-0000-0000-0000-000000000003', 'D0000000-0000-0000-0000-000000000001',
-     '50000000-0000-0000-0000-000000000002', 'A', true, 1.0, 40)
+     '50000000-0000-0000-0000-000000000002', '"A"', true, 1.0, 40)
 ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
@@ -423,31 +432,36 @@ VALUES
      'Mạng máy tính - D22MMT01', 'MMT-D22-01', 26, 'Year 2', '2025-2026', 'HK1', true)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO class_members (id, class_id, user_id, role, joined_at)
+INSERT INTO class_members (id, class_id, user_id, role, status, joined_at)
 VALUES
-    ('B1000000-0000-0000-0000-000000000001', 'B0000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'student', CURRENT_TIMESTAMP),
-    ('B1000000-0000-0000-0000-000000000002', 'B0000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'student', CURRENT_TIMESTAMP),
-    ('B1000000-0000-0000-0000-000000000003', 'B0000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', 'student', CURRENT_TIMESTAMP)
+    ('B1000000-0000-0000-0000-000000000001', 'B0000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'student', 'active', CURRENT_TIMESTAMP),
+    ('B1000000-0000-0000-0000-000000000002', 'B0000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'student', 'active', CURRENT_TIMESTAMP),
+    ('B1000000-0000-0000-0000-000000000003', 'B0000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', 'student', 'active', CURRENT_TIMESTAMP),
+    ('B1000000-0000-0000-0000-000000000004', 'B0000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000002', 'student', 'pending', CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO exam_assignments (id, exam_id, class_id, assigned_by, title, instructions, start_time, end_time, max_attempts, is_active, trace_id)
+INSERT INTO exam_assignments (id, exam_id, class_id, assigned_by, title, instructions, start_time, end_time, max_attempts, shuffle_questions, shuffle_answers, show_result, show_answer, is_active, trace_id)
 VALUES
     ('C0000000-0000-0000-0000-000000000002', 'A0000000-0000-0000-0000-000000000001',
      'B0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001',
      'Quiz Chương 3 - Cơ sở dữ liệu', 'Đọc kỹ đề trước khi làm. Thời gian 60 phút.',
-     CURRENT_TIMESTAMP + INTERVAL '1 day', CURRENT_TIMESTAMP + INTERVAL '1 day' + INTERVAL '1 hour', 1, true, 'trace-exam-0002'),
+     CURRENT_TIMESTAMP + INTERVAL '1 day', CURRENT_TIMESTAMP + INTERVAL '1 day' + INTERVAL '1 hour', 2,
+     false, false, true, false, true, 'trace-exam-0002'),
     ('C0000000-0000-0000-0000-000000000003', 'A0000000-0000-0000-0000-000000000001',
      'B0000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000002',
      'Quiz React nâng cao', 'Mỗi câu chỉ chọn 1 đáp án. Thời gian 30 phút.',
-     CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP + INTERVAL '12 hours', 1, true, 'trace-exam-0003'),
+     CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP + INTERVAL '12 hours', 1,
+     true, true, false, false, true, 'trace-exam-0003'),
     ('C0000000-0000-0000-0000-000000000004', 'A0000000-0000-0000-0000-000000000001',
      'B0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001',
      'Kiểm tra Chương 2 - Cơ sở dữ liệu', 'Làm bài trong 45 phút. Không được sử dụng tài liệu.',
-     CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '45 minutes', 1, true, 'trace-exam-0004'),
+     CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '45 minutes', 1,
+     false, false, true, true, true, 'trace-exam-0004'),
     ('C0000000-0000-0000-0000-000000000005', 'A0000000-0000-0000-0000-000000000001',
      'B0000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000001',
      'Quiz Mạng LAN', 'Ôn tập chương 4 về mạng LAN.',
-     CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '30 minutes', 1, true, 'trace-exam-0005')
+     CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '30 minutes', 3,
+     true, false, true, false, true, 'trace-exam-0005')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO student_assignments (id, assignment_id, student_id, status, attempts_used)
@@ -458,20 +472,21 @@ VALUES
     ('EA000000-0000-0000-0000-000000000004', 'C0000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000001', 'assigned', 0)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO attempts (attempt_id, exam_id, student_id, assignment_id, attempt_number, started_at, submitted_at, time_taken, status, score, percentage, correct_answers, wrong_answers)
+INSERT INTO attempts (attempt_id, exam_id, student_id, assignment_id, attempt_number, started_at, ended_at, submitted_at, time_taken, status, score, percentage, correct_answers, wrong_answers, graded_at)
 VALUES
     ('EB000000-0000-0000-0000-000000000001', 'A0000000-0000-0000-0000-000000000001',
      '30000000-0000-0000-0000-000000000001', 'C0000000-0000-0000-0000-000000000004',
      2, CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '8 hours', CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '8 hours' + INTERVAL '45 minutes',
-     45, 'graded', 8.5, 85.0, 17, 3)
+     CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '8 hours' + INTERVAL '45 minutes',
+     45, 'graded', 8.5, 85.0, 17, 3, CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '8 hours' + INTERVAL '46 minutes')
 ON CONFLICT (attempt_id) DO NOTHING;
 
 INSERT INTO attempt_answers (id, attempt_id, question_id, selected_answer, is_correct, points_earned, time_spent)
 VALUES
     ('EC000000-0000-0000-0000-000000000001', 'EB000000-0000-0000-0000-000000000001',
-     '50000000-0000-0000-0000-000000000001', 'A', true, 1.0, 20),
+     '50000000-0000-0000-0000-000000000001', '"A"', true, 1.0, 20),
     ('EC000000-0000-0000-0000-000000000002', 'EB000000-0000-0000-0000-000000000001',
-     '50000000-0000-0000-0000-000000000002', 'A', true, 1.0, 25)
+     '50000000-0000-0000-0000-000000000002', '"A"', true, 1.0, 25)
 ON CONFLICT (id) DO NOTHING;
 
 SET search_path = notification_db, public;
@@ -498,3 +513,86 @@ SET search_path = exam_db, public;
 UPDATE student_assignments
 SET status = 'submitted'
 WHERE id = 'EA000000-0000-0000-0000-000000000003';
+
+-- =====================================================
+-- SEED DATA CHO CLASS POSTS (THÔNG BÁO LỚP HỌC)
+-- =====================================================
+
+INSERT INTO class_posts (
+    id, class_id, author_id, title, content, type, is_pinned, attachments, created_at
+) VALUES
+    (
+        'F0000000-0000-0000-0000-000000000001',
+        'B0000000-0000-0000-0000-000000000001',
+        '20000000-0000-0000-0000-000000000001',
+        'Chào mừng các bạn đến với lớp Calculus Class A!',
+        'Chào mừng các bạn sinh viên đã tham gia lớp học. Chúng ta sẽ bắt đầu học về giới hạn và đạo hàm trong tuần này.',
+        'announcement',
+        true,
+        '[]',
+        CURRENT_TIMESTAMP - INTERVAL '5 days'
+    ),
+    (
+        'F0000000-0000-0000-0000-000000000002',
+        'B0000000-0000-0000-0000-000000000001',
+        '20000000-0000-0000-0000-000000000001',
+        'Bài giảng Chương 1 - Giới hạn',
+        'Đây là tài liệu bài giảng về giới hạn hàm số. Các bạn đọc trước và chuẩn bị câu hỏi cho buổi seminar tuần sau.',
+        'material',
+        false,
+        '[{"name":"Chuong1_GioiHan.pdf","url":"/materials/chuong1.pdf","type":"pdf"}]',
+        CURRENT_TIMESTAMP - INTERVAL '3 days'
+    ),
+    (
+        'F0000000-0000-0000-0000-000000000003',
+        'B0000000-0000-0000-0000-000000000002',
+        '20000000-0000-0000-0000-000000000001',
+        'Nhắc nhở: Quiz sắp diễn ra',
+        'Nhắc nhở các bạn rằng quiz Chương 3 sẽ diễn ra vào ngày mai. Hãy ôn tập kỹ các kiến thức về mô hình quan hệ.',
+        'assignment',
+        true,
+        '[]',
+        CURRENT_TIMESTAMP - INTERVAL '1 day'
+    ),
+    (
+        'F0000000-0000-0000-0000-000000000004',
+        'B0000000-0000-0000-0000-000000000003',
+        '20000000-0000-0000-0000-000000000002',
+        'Cài đặt môi trường React',
+        'Trước buổi học React nâng cao, hãy cài đặt Node.js và create-react-app để chuẩn bị code theo.',
+        'material',
+        false,
+        '[{"name":"Setup_Guide.pdf","url":"/materials/react-setup.pdf","type":"pdf"}]',
+        CURRENT_TIMESTAMP - INTERVAL '2 days'
+    ),
+    (
+        'F0000000-0000-0000-0000-000000000005',
+        'B0000000-0000-0000-0000-000000000001',
+        '20000000-0000-0000-0000-000000000001',
+        'Câu hỏi thảo luận về đạo hàm',
+        'Có bạn nào thắc mắc về cách tính đạo hàm của hàm hợp không? Để lại câu hỏi ở đây để cả lớp cùng thảo luận nhé!',
+        'question',
+        false,
+        '[]',
+        CURRENT_TIMESTAMP - INTERVAL '1 day'
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- =====================================================
+-- THÔNG BÁO CHO STUDENT 2 (pending membership)
+-- =====================================================
+
+INSERT INTO class_posts (
+    id, class_id, author_id, title, content, type, is_pinned, attachments
+) VALUES
+    (
+        'F0000000-0000-0000-0000-000000000006',
+        'B0000000-0000-0000-0000-000000000002',
+        '20000000-0000-0000-0000-000000000001',
+        'Yêu cầu tham gia lớp đang chờ duyệt',
+        'Bạn đã yêu cầu tham gia lớp Cơ sở dữ liệu. Vui lòng chờ giảng viên duyệt.',
+        'announcement',
+        false,
+        '[]'
+    )
+ON CONFLICT (id) DO NOTHING;
