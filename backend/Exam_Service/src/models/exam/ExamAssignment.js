@@ -41,6 +41,22 @@ ExamAssignment.init({
     type: DataTypes.INTEGER,
     defaultValue: 1,
   },
+  shuffle_questions: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  shuffle_answers: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  show_result: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  show_answer: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

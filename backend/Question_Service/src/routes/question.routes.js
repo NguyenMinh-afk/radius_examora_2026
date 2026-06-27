@@ -4,7 +4,7 @@
  */
 import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import questionController from "../controllers/question.controller.js";
+import * as questionController from "../controllers/question.controller.js";
 
 const router = express.Router();
 router.use(authenticate);

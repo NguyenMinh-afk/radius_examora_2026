@@ -254,4 +254,46 @@ export const getStudentResults = async (limit = 20): Promise<Result[]> => {
   return response.data;
 };
 
+// ============== Class Posts (Thông báo lớp học) ==============
+
+export interface ClassPostAttachment {
+  name: string;
+  url: string;
+  type: string;
+}
+
+export interface ClassPost {
+  postId: string;
+  title: string | null;
+  content: string;
+  type: "announcement" | "material" | "assignment" | "question";
+  isPinned: boolean;
+  attachments: ClassPostAttachment[];
+  authorName: string;
+  authorAvatar: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClassPostsResponse {
+  items: ClassPost[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export const getClassPosts = async (
+  classId: string,
+  filters?: { type?: string; search?: string; page?: number; limit?: number }
+): Promise<ClassPostsResponse> => {
+  const params = new URLSearchParams();
+  if (filters?.type) params.append("type", filters.type);
+  if (filters?.search) params.append("search", filters.search);
+  if (filters?.page) params.append("page", filters.page.toString());
+  if (filters?.limit) params.append("limit", filters.limit.toString());
+
+  const response = await studentApi.get<ClassPostsResponse>(`/classes/${classId}/posts?${params.toString()}`);
+  return response.data;
+};
+
 export default studentApi;

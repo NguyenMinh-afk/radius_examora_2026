@@ -5,11 +5,14 @@ import questionService from "../services/question.service.js";
 
 export const getQuestions = async (req, res) => {
   try {
-    const { search, chapterId, tagId, limit = 50, offset = 0 } = req.query;
+    const { search, courseId, chapterId, tagId, difficulty, questionType, limit = 50, offset = 0 } = req.query;
     const data = await questionService.getQuestions({
       search,
+      courseId,
       chapterId,
       tagId,
+      difficulty,
+      questionType,
       limit: parseInt(limit, 10),
       offset: parseInt(offset, 10),
     });

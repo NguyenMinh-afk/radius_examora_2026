@@ -1,27 +1,26 @@
-I. KIẾN TRÚC NGHIỆP VỤ STUDENT THEO SCHEMA CỦA BẠN
+I. KIẾN TRÚC NGHIỆP VỤ STUDENT THEO SCHEMA THẬT
 
 Trước khi vào UI, chốt luôn luồng dữ liệu thật trong hệ thống Exmora:
 
-user_db.users / user_profiles
+user_db.users / user_db.user_profiles
         ↓
-exam_db.class_members
+exam_db.classes (lớp do giáo viên tạo)
         ↓
-exam_db.classes
+exam_db.class_members (sinh viên tham gia lớp)
         ↓
-course_db.courses
+exam_db.exam_assignments (giao bài cho lớp)
         ↓
-exam_db.exam_assignments
+exam_db.student_assignments (ánh xạ bài giao → sinh viên cụ thể)
         ↓
-exam_db.student_assignments
+exam_db.attempts (mỗi lần sinh viên làm bài)
         ↓
-exam_db.attempts
-        ↓
-exam_db.attempt_answers
+exam_db.attempt_answers (đáp án từng câu trong attempt)
+
 Nghĩa là với sinh viên:
-Lớp học của tôi = lớp trong class_members
-Bài thi của tôi = assignment trong student_assignments
-Kết quả của tôi = dữ liệu từ attempts
-Thông báo của tôi = notification_db.notifications
+- Lớp học của tôi = exam_db.class_members → exam_db.classes
+- Bài thi của tôi = exam_db.student_assignments → exam_db.exam_assignments → exam_db.exams
+- Kết quả của tôi = exam_db.attempts
+- Thông báo của tôi = notification_db.notifications
 II. SIDEBAR SINH VIÊN CHUẨN THEO SCHEMA
 
 Sau khi bám đúng schema, mình khuyên sidebar sinh viên không nên để “Môn học” là menu chính nữa, mà nên để “Lớp học của tôi”. Vì sinh viên được giao bài thông qua lớp, không phải trực tiếp qua course.
@@ -409,33 +408,34 @@ Nguồn:
 user_db.users
 user_db.user_profiles
 UI field	Bảng	Cột
-studentId	users	id
-fullName	users	full_name
-email	users	email
-avatar	users	avatar_url
-isActive	users	is_active
-studentCode	user_profiles	student_code
-classCodeProfile	user_profiles	class_code
-schoolName	user_profiles	school_name
+studentId	users.id
+fullName	users.full_name
+email	users.email
+avatar	users.avatar_url
+isActive	users.is_active
+studentCode	user_profiles.student_code
+classCodeProfile	user_profiles.class_code
+schoolName	user_profiles.school_name
+
 B. “LỚP HỌC CỦA TÔI”
 Nguồn chính:
 exam_db.class_members
 exam_db.classes
 course_db.courses
-user_db.users as teacher
+user_db.users (teacher)
 UI field	Bảng	Cột
-classId	classes	id
-className	classes	name
-classCode	classes	class_code
-courseId	classes / courses	course_id / id
-courseName	courses	name
-teacherId	classes	teacher_id
-teacherName	users	full_name
-yearLevel	classes	year_level
-academicYear	classes	academic_year
-semester	classes	semester
-isActive	classes	is_active
-joinedAt	class_members	joined_at
+classId	classes.id
+className	classes.name
+classCode	classes.class_code
+courseId	classes.course_id
+courseName	courses.name
+teacherId	classes.teacher_id
+teacherName	users.full_name
+yearLevel	classes.year_level
+academicYear	classes.academic_year
+semester	classes.semester
+isActive	classes.is_active
+joinedAt	class_members.joined_at
 Field tổng hợp nên tính thêm:
 UI field	Logic
 totalAssignments	count exam_assignments theo class_id
@@ -444,35 +444,36 @@ openAssignments	count assignment đang mở
 upcomingAssignments	count assignment sắp diễn ra
 C. “BÀI THI”
 Nguồn chính:
-student_assignments
-exam_assignments
-exams
-classes
-courses
-users
-attempts
+exam_db.student_assignments
+exam_db.exam_assignments
+exam_db.exams
+exam_db.classes
+course_db.courses
+user_db.users (teacher)
+exam_db.attempts
+
 UI field	Bảng	Cột
-studentAssignmentId	student_assignments	id
-assignmentId	student_assignments	assignment_id
-studentId	student_assignments	student_id
-assignmentStatusRaw	student_assignments	status
-attemptsUsed	student_assignments	attempts_used
-assignmentTitle	exam_assignments	title
-instructions	exam_assignments	instructions
-startTime	exam_assignments	start_time
-endTime	exam_assignments	end_time
-maxAttempts	exam_assignments	max_attempts
-examId	exam_assignments	exam_id
-classId	exam_assignments	class_id
-examTitle	exams	title
-examDescription	exams	description
-examDuration	exams	duration
-totalPoints	exams	total_points
-passingScore	exams	passing_score
-className	classes	name
-classCode	classes	class_code
-courseName	courses	name
-teacherName	users	full_name
+studentAssignmentId	student_assignments.id
+assignmentId	student_assignments.assignment_id
+studentId	student_assignments.student_id
+assignmentStatusRaw	student_assignments.status
+attemptsUsed	student_assignments.attempts_used
+assignmentTitle	exam_assignments.title
+instructions	exam_assignments.instructions
+startTime	exam_assignments.start_time
+endTime	exam_assignments.end_time
+maxAttempts	exam_assignments.max_attempts
+examId	exam_assignments.exam_id
+classId	exam_assignments.class_id
+examTitle	exams.title
+examDescription	exams.description
+examDuration	exams.duration
+totalPoints	exams.total_points
+passingScore	exams.passing_score
+className	classes.name
+classCode	classes.class_code
+courseName	courses.name
+teacherName	users.full_name (join classes.teacher_id)
 Field tính toán thêm cho UI:
 UI field	Logic
 displayTitle	ưu tiên exam_assignments.title, fallback exams.title
@@ -483,11 +484,13 @@ canStart	status = đang mở && attemptsUsed < maxAttempts
 canViewResult	có attempt submitted/graded
 D. “KẾT QUẢ”
 Nguồn:
-attempts
-exams
-exam_assignments
-classes
-courses
+exam_db.attempts
+exam_db.exams
+exam_db.exam_assignments
+exam_db.classes
+course_db.courses
+
+user_db.users (teacher, qua classes.teacher_id)
 UI field	Bảng	Cột
 attemptId	attempts	attempt_id
 examId	attempts	exam_id
@@ -497,14 +500,15 @@ attemptNumber	attempts	attempt_number
 startedAt	attempts	started_at
 submittedAt	attempts	submitted_at
 timeTaken	attempts	time_taken
-attemptStatus	attempts	status
+attemptStatus	attempts	status (giá trị: in_progress | submitted | graded | abandoned)
 score	attempts	score
 percentage	attempts	percentage
 correctAnswers	attempts	correct_answers
 wrongAnswers	attempts	wrong_answers
 assignmentTitle	exam_assignments	title
-className	classes	name
-courseName	courses	name
+className	classes.name (join qua exam_assignments.class_id)
+courseName	courses.name (join qua exams.course_id)
+teacherName	users.full_name (join classes.teacher_id → users.id)
 E. “THÔNG BÁO”
 Nguồn:
 notification_db.notifications
@@ -560,7 +564,7 @@ Response đề xuất
       "endTime": "2026-06-24T15:00:00",
       "status": "upcoming",
       "attemptsUsed": 0,
-      "maxAttempts": 1
+      "max_attempts": 1
     }
   ],
   "recentResults": [
@@ -665,7 +669,7 @@ GET /api/student/assignments
       "startTime": "2026-06-24T14:00:00",
       "endTime": "2026-06-24T15:00:00",
       "duration": 60,
-      "maxAttempts": 1,
+      "max_attempts": 1,
       "attemptsUsed": 0,
       "status": "upcoming",
       "latestAttempt": null
@@ -682,7 +686,7 @@ GET /api/student/assignments
       "startTime": "2026-06-21T08:00:00",
       "endTime": "2026-06-21T23:59:00",
       "duration": 30,
-      "maxAttempts": 1,
+      "max_attempts": 1,
       "attemptsUsed": 0,
       "status": "open",
       "latestAttempt": null
@@ -699,7 +703,7 @@ GET /api/student/assignments
       "startTime": "2026-06-18T08:00:00",
       "endTime": "2026-06-18T09:00:00",
       "duration": 45,
-      "maxAttempts": 1,
+      "max_attempts": 1,
       "attemptsUsed": 1,
       "status": "submitted",
       "latestAttempt": {
@@ -924,7 +928,7 @@ Response:
       "endTime": "2026-06-24T15:00:00",
       "status": "upcoming",
       "attemptsUsed": 0,
-      "maxAttempts": 1
+      "max_attempts": 1
     }
   ],
   "recentResults": [
@@ -1032,7 +1036,7 @@ Response:
       "startTime": "2026-06-24T14:00:00",
       "endTime": "2026-06-24T15:00:00",
       "duration": 60,
-      "maxAttempts": 1,
+      "max_attempts": 1,
       "attemptsUsed": 0,
       "status": "upcoming",
       "latestAttempt": null
@@ -1049,7 +1053,7 @@ Response:
       "startTime": "2026-06-21T08:00:00",
       "endTime": "2026-06-21T23:59:00",
       "duration": 30,
-      "maxAttempts": 1,
+      "max_attempts": 1,
       "attemptsUsed": 0,
       "status": "open",
       "latestAttempt": null
@@ -1066,7 +1070,7 @@ Response:
       "startTime": "2026-06-18T08:00:00",
       "endTime": "2026-06-18T09:00:00",
       "duration": 45,
-      "maxAttempts": 1,
+      "max_attempts": 1,
       "attemptsUsed": 1,
       "status": "submitted",
       "latestAttempt": {

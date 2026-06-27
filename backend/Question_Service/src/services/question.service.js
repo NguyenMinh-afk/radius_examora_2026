@@ -5,15 +5,24 @@ import { Question, Answer, QuestionTag, QuestionTagRelation } from "../models/in
 
 class QuestionService {
 
-  async getQuestions({ search, chapterId, tagId, limit = 50, offset = 0 } = {}) {
+  async getQuestions({ search, courseId, chapterId, tagId, difficulty, questionType, limit = 50, offset = 0 } = {}) {
     const where = {};
     if (search) {
       where[Question.sequelize.Sequelize.Op.or] = [
         { content: { [Question.sequelize.Sequelize.Op.iLike]: `%${search}%` } },
       ];
     }
+    if (courseId) {
+      where.course_id = courseId;
+    }
     if (chapterId) {
       where.chapter_id = chapterId;
+    }
+    if (difficulty) {
+      where.difficulty = difficulty;
+    }
+    if (questionType) {
+      where.question_type = questionType;
     }
 
     const { rows, count } = await Question.findAndCountAll({

@@ -15,6 +15,7 @@ import {
   getClassDetail,
   getAssignments,
   getResults,
+  getClassPosts,
 } from "../controllers/student.controller.js";
 
 const router = express.Router();
@@ -38,6 +39,13 @@ router.get("/classes", requireStudent, getClasses);
  * Chi tiết một lớp học
  */
 router.get("/classes/:classId", requireStudent, getClassDetail);
+
+/**
+ * GET /api/student/classes/:classId/posts
+ * Lấy danh sách thông báo của lớp (học sinh)
+ * Query: type, search, page, limit
+ */
+router.get("/classes/:classId/posts", requireStudent, getClassPosts);
 
 /**
  * GET /api/student/assignments

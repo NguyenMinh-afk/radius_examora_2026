@@ -16,14 +16,17 @@ import ExamAssignment from './exam/ExamAssignment.js';
 import Submission from './exam/Submission.js';
 import SubmissionAnswer from './exam/SubmissionAnswer.js';
 import Attempt from './exam/Attempt.js';
+import AttemptAnswer from './exam/AttemptAnswer.js';
 
 // ============ Class Models ============
 import Class from './class/Class.js';
 import ClassMember from './class/ClassMember.js';
+import ClassPost from './class/ClassPost.js';
 
 // ============ Student progress mapping (chỉ phần gắn với exam) ============
 import StudentAssignment from './user/StudentAssignment.js';
 import StudentProgress from './user/StudentProgress.js';
+import UserProfile from './user/UserProfile.js';
 
 // ============ Course Model (cross-schema từ course_db) ============
 import Course from './course/Course.js';
@@ -32,6 +35,10 @@ import Course from './course/Course.js';
 // ExamAssignment - Class
 ExamAssignment.belongsTo(Class, { foreignKey: 'class_id', as: 'class' });
 Class.hasMany(ExamAssignment, { foreignKey: 'class_id', as: 'examAssignments' });
+
+// ExamAssignment - Exam
+ExamAssignment.belongsTo(Exam, { foreignKey: 'exam_id', as: 'exam' });
+Exam.hasMany(ExamAssignment, { foreignKey: 'exam_id', as: 'examAssignments' });
 
 // StudentAssignment - ExamAssignment
 StudentAssignment.belongsTo(ExamAssignment, { foreignKey: 'assignment_id', as: 'assignment' });
@@ -55,6 +62,14 @@ ExamAssignment.hasMany(Attempt, { foreignKey: 'assignment_id', as: 'attempts' })
 // ClassMember - Class
 ClassMember.belongsTo(Class, { foreignKey: 'class_id', as: 'class' });
 Class.hasMany(ClassMember, { foreignKey: 'class_id', as: 'members' });
+
+// ClassPost - Class
+ClassPost.belongsTo(Class, { foreignKey: 'class_id', as: 'class' });
+Class.hasMany(ClassPost, { foreignKey: 'class_id', as: 'posts' });
+
+// ClassPost - User (author)
+ClassPost.belongsTo(User, { foreignKey: 'author_id', as: 'author' });
+User.hasMany(ClassPost, { foreignKey: 'author_id', as: 'posts' });
 
 // ClassMember - User (user là thành viên lớp)
 ClassMember.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
@@ -87,6 +102,14 @@ User.hasMany(StudentAssignment, { foreignKey: 'student_id', as: 'studentAssignme
 Class.belongsTo(Course, { foreignKey: 'course_id', as: 'course' });
 Course.hasMany(Class, { foreignKey: 'course_id', as: 'classes' });
 
+// UserProfile - User
+UserProfile.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasOne(UserProfile, { foreignKey: 'user_id', as: 'profile' });
+
+// AttemptAnswer - Attempt
+AttemptAnswer.belongsTo(Attempt, { foreignKey: 'attempt_id', as: 'attempt' });
+Attempt.hasMany(AttemptAnswer, { foreignKey: 'attempt_id', as: 'answers' });
+
 // ============ Export ============
 export {
   sequelize,
@@ -97,10 +120,13 @@ export {
   Submission,
   SubmissionAnswer,
   Attempt,
+  AttemptAnswer,
   Class,
   ClassMember,
+  ClassPost,
   StudentAssignment,
   StudentProgress,
   User,
+  UserProfile,
   Course,
 };
