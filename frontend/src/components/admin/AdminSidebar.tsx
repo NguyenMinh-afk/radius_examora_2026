@@ -1,30 +1,45 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LayoutGrid,
   Users,
+  BellRing,
+  BookOpenCheck,
+  LibraryBig,
   MessageSquare,
-  Cpu,
-  BookOpen,
-  Sparkles,
-  FileText,
-  Settings,
+  ScrollText,
+  ServerCog,
   LogOut,
-  ArrowUpRight,
 } from "lucide-react";
 import { clearAuthData } from "../../utils/auth";
 
+export type AdminSection =
+  | "users"
+  | "courses"
+  | "questions"
+  | "monitoring"
+  | "notifications"
+  | "auditLogs"
+  | "systemLogs";
+
 const menu = [
-  { label: "System", icon: <LayoutGrid size={18} />, active: true },
-  { label: "Users", icon: <Users size={18} /> },
-  { label: "RabbitMQ", icon: <MessageSquare size={18} /> },
-  { label: "AI Models", icon: <Cpu size={18} /> },
-  { label: "Question Bank", icon: <BookOpen size={18} /> },
-  { label: "AI Generator", icon: <Sparkles size={18} /> },
-  { label: "Exams", icon: <FileText size={18} /> },
+  { id: "users", label: "Users", icon: <Users size={18} /> },
+  { id: "courses", label: "Courses", icon: <LibraryBig size={18} /> },
+  { id: "questions", label: "Questions", icon: <BookOpenCheck size={18} /> },
+  { id: "monitoring", label: "RabbitMQ", icon: <MessageSquare size={18} /> },
+  { id: "notifications", label: "Notifications", icon: <BellRing size={18} /> },
+  { id: "auditLogs", label: "Audit Logs", icon: <ScrollText size={18} /> },
+  { id: "systemLogs", label: "System Logs", icon: <ServerCog size={18} /> },
 ];
 
-const AdminSidebar: React.FC = () => {
+interface AdminSidebarProps {
+  activeSection?: AdminSection;
+  onSectionChange?: (section: AdminSection) => void;
+}
+
+const AdminSidebar: React.FC<AdminSidebarProps> = ({
+  activeSection = "users",
+  onSectionChange,
+}) => {
   const navigate = useNavigate();
 
   const handleLogout = (e: React.MouseEvent) => {
@@ -46,45 +61,58 @@ const AdminSidebar: React.FC = () => {
       {/* Menu */}
       <nav className="flex-1 flex flex-col gap-1 overflow-y-auto">
         {menu.map((item) => (
-          <a
+          <button
             key={item.label}
-            href="#"
+            type="button"
+            onClick={() => {
+              if (item.id) {
+                onSectionChange?.(item.id as AdminSection);
+              }
+            }}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm transition
               ${
-                item.active
+                item.id === activeSection
                   ? "bg-blue-50 text-blue-700"
                   : "text-gray-600 hover:bg-slate-50 hover:text-blue-700"
-              }`}
+              } text-left`}
           >
             {item.icon}
             {item.label}
-          </a>
+          </button>
         ))}
       </nav>
 
-      {/* Bottom section */}
       <div className="mt-8">
-        {/* Pro Access box */}
-        <div className="bg-blue-50 rounded-lg p-4 mb-6">
-          <h3 className="text-sm font-semibold text-blue-600 tracking-wide mb-3">
-            PRO ACCESS
+        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <h3 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+            System Status
           </h3>
-          <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold rounded-lg py-2 hover:bg-blue-700 transition">
-            <ArrowUpRight size={16} />
-            Upgrade to Pro
-          </button>
+          <div className="space-y-2 text-xs font-medium text-slate-600">
+            <div className="flex items-center justify-between gap-3">
+              <span>RabbitMQ</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Connected
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>AI Service</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Running
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>Database</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Online
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Settings & Logout */}
         <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
-          <a
-            href="#"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-slate-50 hover:text-blue-700 transition"
-          >
-            <Settings size={18} />
-            Settings
-          </a>
-
           <a
             href="#"
             onClick={handleLogout}
