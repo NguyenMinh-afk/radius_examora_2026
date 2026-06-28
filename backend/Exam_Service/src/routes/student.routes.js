@@ -13,9 +13,15 @@ import {
   getDashboard,
   getClasses,
   getClassDetail,
+  joinClass,
   getAssignments,
   getResults,
   getClassPosts,
+  getProfile,
+  updateProfile,
+  getNotificationSettings,
+  updateNotificationSettings,
+  changePassword,
 } from "../controllers/student/index.js";
 
 const router = express.Router();
@@ -29,6 +35,18 @@ router.use(authenticate);
 router.get("/dashboard", requireStudent, getDashboard);
 
 /**
+ * GET /api/student/profile
+ * Lấy thông tin profile học sinh
+ */
+router.get("/profile", requireStudent, getProfile);
+
+/**
+ * PUT /api/student/profile
+ * Cập nhật thông tin profile học sinh
+ */
+router.put("/profile", requireStudent, updateProfile);
+
+/**
  * GET /api/student/classes
  * Lấy danh sách lớp học của học sinh
  */
@@ -39,6 +57,13 @@ router.get("/classes", requireStudent, getClasses);
  * Chi tiết một lớp học
  */
 router.get("/classes/:classId", requireStudent, getClassDetail);
+
+/**
+ * POST /api/student/classes/join
+ * Tham gia lớp học bằng mã lớp
+ * Body: { classCode: string }
+ */
+router.post("/classes/join", requireStudent, joinClass);
 
 /**
  * GET /api/student/classes/:classId/posts
@@ -60,5 +85,23 @@ router.get("/assignments", requireStudent, getAssignments);
  * Query: limit (default 20)
  */
 router.get("/results", requireStudent, getResults);
+
+/**
+ * GET /api/student/settings/notifications
+ * Lấy cài đặt thông báo
+ */
+router.get("/settings/notifications", requireStudent, getNotificationSettings);
+
+/**
+ * PUT /api/student/settings/notifications
+ * Cập nhật cài đặt thông báo
+ */
+router.put("/settings/notifications", requireStudent, updateNotificationSettings);
+
+/**
+ * POST /api/student/settings/change-password
+ * Đổi mật khẩu
+ */
+router.post("/settings/change-password", requireStudent, changePassword);
 
 export default router;

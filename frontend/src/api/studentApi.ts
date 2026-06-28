@@ -50,7 +50,16 @@ export interface StudentInfo {
   fullName: string;
   email: string;
   avatarUrl: string | null;
-  studentCode?: string;
+  phone?: string | null;
+  studentCode?: string | null;
+  dateOfBirth?: string | null;
+  gender?: string | null;
+  schoolName?: string | null;
+  academic?: {
+    yearLevel?: string;
+    semester?: string;
+    academicYear?: string;
+  };
 }
 
 export interface DashboardOverview {
@@ -293,6 +302,97 @@ export const getClassPosts = async (
   if (filters?.limit) params.append("limit", filters.limit.toString());
 
   const response = await studentApi.get<ClassPostsResponse>(`/classes/${classId}/posts?${params.toString()}`);
+  return response.data;
+};
+
+// ============== Join Class ==============
+
+export interface JoinClassResponse {
+  success: boolean;
+  message: string;
+  member: {
+    id: string;
+    classId: string;
+    className: string;
+    classCode: string;
+    courseName?: string;
+    teacherName?: string;
+  };
+}
+
+export const joinClass = async (classCode: string): Promise<JoinClassResponse> => {
+  const response = await studentApi.post<JoinClassResponse>("/classes/join", { classCode });
+  return response.data;
+};
+
+// ============== User Settings ==============
+
+export interface NotificationSettings {
+  emailNotifications: boolean;
+  examReminders: boolean;
+  deadlineReminders: boolean;
+  gradeNotifications: boolean;
+}
+
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  avatarUrl: string | null;
+  phone?: string | null;
+  studentCode?: string | null;
+  dateOfBirth?: string | null;
+  gender?: string | null;
+}
+
+export interface UpdateProfileData {
+  fullName?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  avatarUrl?: string;
+}
+
+/**
+ * Lấy thông tin profile
+ */
+export const getProfile = async (): Promise<UserProfile> => {
+  const response = await studentApi.get<UserProfile>("/profile");
+  return response.data;
+};
+
+/**
+ * Cập nhật thông tin profile
+ */
+export const updateProfile = async (data: UpdateProfileData): Promise<UserProfile> => {
+  const response = await studentApi.put<UserProfile>("/profile", data);
+  return response.data;
+};
+
+/**
+ * Lấy cài đặt thông báo
+ */
+export const getNotificationSettings = async (): Promise<NotificationSettings> => {
+  const response = await studentApi.get<NotificationSettings>("/settings/notifications");
+  return response.data;
+};
+
+/**
+ * Cập nhật cài đặt thông báo
+ */
+export const updateNotificationSettings = async (settings: NotificationSettings): Promise<NotificationSettings> => {
+  const response = await studentApi.put<NotificationSettings>("/settings/notifications", settings);
+  return response.data;
+};
+
+/**
+ * Đổi mật khẩu
+ */
+export const changePassword = async (data: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<{ success: boolean; message: string }> => {
+  const response = await studentApi.post<{ success: boolean; message: string }>("/settings/change-password", data);
   return response.data;
 };
 

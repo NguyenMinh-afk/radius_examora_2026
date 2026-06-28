@@ -4,7 +4,9 @@
 import {
   Course,
   Class,
-  Exam
+  ClassMember,
+  Exam,
+  ExamQuestion
 } from '../../models/index.js';
 
 class CourseService {
@@ -26,9 +28,18 @@ class CourseService {
     const result = [];
     for (const course of courses) {
       const classIds = teacherClasses.filter(c => c.course_id === course.id).map(c => c.id);
-      const examCount = await Exam.count({
-        where: { created_by: teacherId }
+      
+      // Get exams created by teacher for this course
+      const exams = await Exam.findAll({
+        where: { created_by: teacherId, course_id: course.id }
       });
+      const examIds = exams.map(e => e.id);
+      
+      // Count questions from these exams
+      const questionCount = examIds.length > 0
+        ? await ExamQuestion.count({ where: { exam_id: examIds } })
+        : 0;
+      
       result.push({
         courseId: course.id,
         name: course.name,
@@ -37,8 +48,8 @@ class CourseService {
         credits: course.credits || 0,
         facultyName: '',
         classCount: classIds.length,
-        examCount,
-        questionCount: 0
+        examCount: exams.length,
+        questionCount
       });
     }
 
@@ -55,7 +66,31 @@ class CourseService {
       where: { course_id: courseId, teacher_id: teacherId, is_active: true }
     });
 
-    const examCount = await Exam.count({ where: { created_by: teacherId } });
+    // Get exams for this course
+    const exams = await Exam.findAll({
+      where: { created_by: teacherId, course_id: courseId }
+    });
+    const examIds = exams.map(e => e.id);
+    
+    // Count questions from these exams
+    const questionCount = examIds.length > 0
+      ? await ExamQuestion.count({ where: { exam_id: examIds } })
+      : 0;
+
+    // Get student count for each class
+    const classesWithStudentCount = await Promise.all(
+      classes.map(async (c) => {
+        const studentCount = await ClassMember.count({
+          where: { class_id: c.id, role: 'student' }
+        });
+        return {
+          classId: c.id,
+          classCode: c.class_code,
+          name: c.name,
+          studentCount
+        };
+      })
+    );
 
     return {
       courseId: course.id,
@@ -66,13 +101,9 @@ class CourseService {
       semesterType: course.semester_type,
       facultyName: '',
       classCount: classes.length,
-      examCount,
-      questionCount: 0,
-      classes: classes.map(c => ({
-        classId: c.id,
-        name: c.name,
-        studentCount: 0
-      }))
+      examCount: exams.length,
+      questionCount,
+      classes: classesWithStudentCount
     };
   }
 
