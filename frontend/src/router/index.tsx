@@ -15,6 +15,7 @@ import AdminDashboard from "../pages/Dashboard/Admin/AdminDashboard";
 import TeacherLayout from "../layouts/TeacherLayout";
 import TeacherDashboardPage from "../pages/Dashboard/Teacher/TeacherDashboardPage";
 import TeacherCoursesPage from "../pages/Dashboard/Teacher/TeacherCoursesPage";
+import TeacherCourseDetailPage from "../pages/Dashboard/Teacher/TeacherCourseDetailPage";
 import TeacherClassesPage from "../pages/Dashboard/Teacher/TeacherClassesPage";
 import TeacherClassDetailPage from "../pages/Dashboard/Teacher/TeacherClassDetailPage";
 import TeacherQuestionsPage from "../pages/Dashboard/Teacher/TeacherQuestionsPage";
@@ -72,7 +73,7 @@ const AppRouter = () => {
 
           {/* Courses */}
           <Route path="/teacher/courses" element={<TeacherCoursesPage />} />
-          <Route path="/teacher/courses/:courseId" element={<TeacherCoursesPage />} />
+          <Route path="/teacher/courses/:courseId" element={<TeacherCourseDetailPage />} />
 
           {/* Classes */}
           <Route path="/teacher/classes" element={<TeacherClassesPage />} />

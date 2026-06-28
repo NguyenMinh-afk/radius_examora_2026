@@ -30,3 +30,21 @@ export const getClassDetail = async (req, res) => {
     });
   }
 };
+
+export const joinClass = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { classCode } = req.body;
+
+    if (!classCode) {
+      return res.status(400).json({ error: "Mã lớp là bắt buộc" });
+    }
+
+    const result = await classService.joinClass(studentId, classCode);
+    return res.status(201).json(result);
+  } catch (error) {
+    console.error("[Student] joinClass error:", error);
+    const status = error.message?.includes("không hợp lệ") ? 400 : 500;
+    return res.status(status).json({ error: error.message || "Internal server error" });
+  }
+};

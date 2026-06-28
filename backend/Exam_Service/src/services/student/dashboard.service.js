@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import sequelize from '../../config/sequelize.js';
 import {
   User,
+  UserProfile,
   Class,
   ClassMember,
   ExamAssignment,
@@ -19,7 +20,12 @@ class DashboardService {
     const now = new Date();
 
     const student = await User.findByPk(studentId, {
-      attributes: ['id', 'email', 'full_name', 'avatar_url']
+      attributes: ['id', 'email', 'full_name', 'avatar_url', 'phone'],
+      include: [{
+        model: UserProfile,
+        as: 'profile',
+        attributes: ['student_code', 'date_of_birth', 'gender', 'school_name']
+      }]
     });
 
     if (!student) {
@@ -126,7 +132,12 @@ class DashboardService {
         id: student.id,
         fullName: student.full_name,
         email: student.email,
-        avatarUrl: student.avatar_url
+        avatarUrl: student.avatar_url,
+        phone: student.phone,
+        studentCode: student.profile?.student_code,
+        dateOfBirth: student.profile?.date_of_birth,
+        gender: student.profile?.gender,
+        schoolName: student.profile?.school_name
       },
       overview: {
         classCount,

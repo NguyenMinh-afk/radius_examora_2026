@@ -37,12 +37,17 @@ class ClassService {
 
       const totalAssignments = cls.examAssignments?.length || 0;
 
-      const completedCount = await StudentAssignment.count({
-        where: { student_id: studentId },
+      // Count completed assignments by checking attempts directly
+      const completedCount = await Attempt.count({
+        where: {
+          student_id: studentId,
+          status: { [Op.in]: ['submitted', 'graded'] }
+        },
         include: [{
-          model: Attempt,
-          as: 'attempts',
-          where: { status: { [Op.in]: ['submitted', 'graded'] } }
+          model: ExamAssignment,
+          as: 'assignment',
+          where: { class_id: cls.id },
+          required: true
         }]
       });
 
@@ -209,6 +214,58 @@ class ClassService {
     }
 
     return 'unknown';
+  }
+
+  async joinClass(studentId, classCode) {
+    // Find class by code
+    const cls = await Class.findOne({
+      where: { class_code: classCode, is_active: true }
+    });
+
+    if (!cls) {
+      throw new Error('Mã lớp không hợp lệ hoặc lớp đã bị đóng');
+    }
+
+    // Check if already a member
+    const existingMember = await ClassMember.findOne({
+      where: { user_id: studentId, class_id: cls.id }
+    });
+
+    if (existingMember) {
+      if (existingMember.role === 'student') {
+        throw new Error('Bạn đã tham gia lớp này rồi');
+      }
+      throw new Error('Bạn không phải là học sinh trong lớp này');
+    }
+
+    // Add as student member
+    const member = await ClassMember.create({
+      user_id: studentId,
+      class_id: cls.id,
+      role: 'student',
+      joined_at: new Date()
+    });
+
+    // Get class info for response
+    const classInfo = await Class.findByPk(cls.id, {
+      include: [
+        { model: User, as: 'teacher', attributes: ['full_name'] },
+        { model: Course, as: 'course', attributes: ['name'] }
+      ]
+    });
+
+    return {
+      success: true,
+      message: 'Tham gia lớp thành công',
+      member: {
+        id: member.id,
+        classId: cls.id,
+        className: cls.name,
+        classCode: cls.class_code,
+        courseName: classInfo?.course?.name,
+        teacherName: classInfo?.teacher?.full_name
+      }
+    };
   }
 }
 

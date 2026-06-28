@@ -2,11 +2,11 @@ import React from "react";
 import { GraduationCap, BookOpen, Award } from "lucide-react";
 
 interface ProfileAcademicCardProps {
-  studentCode?: string;
+  studentCode?: string | null;
   className?: string;
-  yearLevel?: string;
-  semester?: string;
-  academicYear?: string;
+  yearLevel?: string | null;
+  semester?: string | null;
+  academicYear?: string | null;
 }
 
 const ProfileAcademicCard: React.FC<ProfileAcademicCardProps> = ({

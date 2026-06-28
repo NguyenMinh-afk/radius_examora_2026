@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Plus } from "lucide-react";
 import { getStudentClasses, type ClassData } from "../../../api/studentApi";
 import { StudentPageHeader } from "../../../components/student/layout";
 import { SearchInput, LoadingState, ErrorState } from "../../../components/student/shared";
 import { ClassList } from "../../../components/student/classes";
+import { JoinClassDialog } from "../../../components/student/classes/JoinClassDialog";
 
 const StudentClassesPage: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showJoinDialog, setShowJoinDialog] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -53,12 +55,21 @@ const StudentClassesPage: React.FC = () => {
         description="Theo dõi các lớp học bạn đang tham gia, giảng viên phụ trách và các bài thi được giao."
       />
 
-      <div className="mb-6">
-        <SearchInput
-          value={searchTerm}
-          onChange={setSearchTerm}
-          placeholder="Tìm kiếm lớp học..."
-        />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex-1 max-w-md">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Tìm kiếm lớp học..."
+          />
+        </div>
+        <button
+          onClick={() => setShowJoinDialog(true)}
+          className="ml-4 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Tham gia lớp
+        </button>
       </div>
 
       {error ? (
@@ -66,6 +77,12 @@ const StudentClassesPage: React.FC = () => {
       ) : (
         <ClassList classes={filteredClasses} />
       )}
+
+      <JoinClassDialog
+        isOpen={showJoinDialog}
+        onClose={() => setShowJoinDialog(false)}
+        onSuccess={fetchData}
+      />
     </div>
   );
 };
