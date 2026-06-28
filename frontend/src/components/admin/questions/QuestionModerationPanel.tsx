@@ -18,8 +18,8 @@ import {
   updateAdminQuestionStatus,
   type AdminQuestion,
   type Pagination,
-} from "../../api/Admin";
-import ConfirmDialog from "./ConfirmDialog";
+} from "../../../api/Admin";
+import ConfirmDialog from "../shared/ConfirmDialog";
 
 const DEFAULT_PAGINATION: Pagination = {
   page: 1,

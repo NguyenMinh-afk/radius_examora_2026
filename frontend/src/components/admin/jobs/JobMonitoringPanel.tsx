@@ -18,7 +18,7 @@ import {
   type AdminAIJob,
   type AdminQueueJob,
   type Pagination,
-} from "../../api/Admin";
+} from "../../../api/Admin";
 
 type MonitoringTab = "ai" | "queue";
 

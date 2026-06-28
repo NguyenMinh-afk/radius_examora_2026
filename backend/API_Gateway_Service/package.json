@@ -1,0 +1,17 @@
+{
+  "name": "api-gateway-service",
+  "version": "1.0.0",
+  "description": "API Gateway - Proxy/routing layer",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0"
+  }
+}

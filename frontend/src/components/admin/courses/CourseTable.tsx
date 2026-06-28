@@ -9,8 +9,8 @@ import {
   X,
 } from "lucide-react";
 
-import type { AdminCourse, Pagination } from "../../api/Admin";
-import ConfirmDialog from "./ConfirmDialog";
+import type { AdminCourse, Pagination } from "../../../api/Admin";
+import ConfirmDialog from "../shared/ConfirmDialog";
 
 interface CourseTableProps {
   courses: AdminCourse[];

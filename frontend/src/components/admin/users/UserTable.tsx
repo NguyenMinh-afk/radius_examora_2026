@@ -9,8 +9,8 @@ import {
   Unlock,
 } from "lucide-react";
 
-import type { AdminRole, AdminUser, Pagination } from "../../api/Admin";
-import ConfirmDialog from "./ConfirmDialog";
+import type { AdminRole, AdminUser, Pagination } from "../../../api/Admin";
+import ConfirmDialog from "../shared/ConfirmDialog";
 
 interface UserTableProps {
   users: AdminUser[];
