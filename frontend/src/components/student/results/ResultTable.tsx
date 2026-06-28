@@ -33,8 +33,8 @@ const ResultTable: React.FC<ResultTableProps> = ({ results, isLoading }) => {
 
   return (
     <div className="space-y-4">
-      {results.map((result) => (
-        <ResultCard key={result.attemptId} result={result} />
+      {results.map((result, index) => (
+        <ResultCard key={result.attemptId || `result-${index}`} result={result} />
       ))}
     </div>
   );

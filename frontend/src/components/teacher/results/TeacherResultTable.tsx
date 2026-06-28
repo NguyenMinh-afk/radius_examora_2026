@@ -30,8 +30,8 @@ const TeacherResultTable: React.FC<TeacherResultTableProps> = ({ results, isLoad
 
   return (
     <div className="space-y-3">
-      {results.map((result) => (
-        <TeacherResultCard key={result.attemptId} result={result} />
+      {results.map((result, index) => (
+        <TeacherResultCard key={result.attemptId || `result-${index}`} result={result} />
       ))}
     </div>
   );
