@@ -38,9 +38,9 @@ const RecentResultsCard: React.FC<RecentResultsCardProps> = ({ results, maxDispl
       </div>
       <div className="p-5 space-y-4">
         {displayedResults.length > 0 ? (
-          displayedResults.map((result) => (
+          displayedResults.map((result, index) => (
             <div
-              key={result.attemptId}
+              key={result.attemptId || `recent-result-${index}`}
               className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition"
             >
               <div>
