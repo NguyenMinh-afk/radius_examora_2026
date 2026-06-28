@@ -4,6 +4,8 @@ import GoogleOAuthCallbackPage from "../pages/GoogleOAuthCallback/GoogleOAuthCal
 import Landing from "../pages/Landing/Landing";
 import About from "../pages/About/About";
 import Contact from "../pages/Contact/Contact";
+import Terms from "../pages/Terms/Terms";
+import Privacy from "../pages/Privacy/Privacy";
 import Register from "../pages/Register/Register";
 import Login from "../pages/Login/Login";
 import Forgot from "../pages/Forgot/Forgot";
@@ -49,6 +51,8 @@ const AppRouter = () => {
         {/* Public pages */}
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="/register" element={<RedirectIfAuthenticated><Register /></RedirectIfAuthenticated>} />
         <Route path="/login" element={<RedirectIfAuthenticated><Login /></RedirectIfAuthenticated>} />
 

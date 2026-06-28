@@ -5,6 +5,10 @@ import StatsSection from "./sections/StatsSection";
 import HowItWorksSection from "./sections/HowItWorksSection";
 import BentoSection from "./sections/BentoSection";
 import CTASection from "./sections/CTASection";
+import TestimonialsSection from "./sections/TestimonialsSection";
+import PricingSection from "./sections/PricingSection";
+import IntegrationsSection from "./sections/IntegrationsSection";
+import VideoDemoSection from "./sections/VideoDemoSection";
 
 const Landing: React.FC = () => {
   return (
@@ -124,7 +128,7 @@ const Landing: React.FC = () => {
 
         </section>
 
-        {/* Stats Section */}
+        {/* Stats Section - with animated counters */}
         <StatsSection />
 
         {/* How It Works Section */}
@@ -132,10 +136,22 @@ const Landing: React.FC = () => {
           <HowItWorksSection />
         </div>
 
+        {/* Integrations Section */}
+        <IntegrationsSection />
+
         {/* Bento / Platform Features Section */}
         <div id="features">
           <BentoSection />
         </div>
+
+        {/* Video Demo Section */}
+        <VideoDemoSection />
+
+        {/* Testimonials Section */}
+        <TestimonialsSection />
+
+        {/* Pricing Section */}
+        <PricingSection />
 
         {/* CTA Section */}
         <CTASection />

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Facebook, Linkedin, Twitter, Instagram, Youtube } from "lucide-react";
 
 const Footer: React.FC = () => {
@@ -34,11 +35,11 @@ const Footer: React.FC = () => {
         <div>
           <h3 className="text-blue-600 font-semibold mb-2.5">Company</h3>
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-blue-600 transition">About Us</li>
+            <li><Link to="/about" className="hover:text-blue-600 transition">About Us</Link></li>
             <li className="hover:text-blue-600 transition">Careers</li>
             <li className="hover:text-blue-600 transition">Research</li>
-            <li className="hover:text-blue-600 transition">Contact</li>
-            <li className="hover:text-blue-600 transition">Legal</li>
+            <li><Link to="/contact" className="hover:text-blue-600 transition">Contact</Link></li>
+            <li><Link to="/terms" className="hover:text-blue-600 transition">Legal</Link></li>
           </ul>
         </div>
 
@@ -82,7 +83,13 @@ const Footer: React.FC = () => {
 
       {/* Bottom */}
       <div className="max-w-7xl mx-auto px-8 py-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-        <span>© {new Date().getFullYear()} EXMORA. All rights reserved.</span>
+        <div className="flex items-center gap-4">
+          <span>© {new Date().getFullYear()} EXMORA. All rights reserved.</span>
+          <div className="hidden md:flex items-center gap-4 text-xs">
+            <Link to="/terms" className="hover:text-blue-600 transition">Terms</Link>
+            <Link to="/privacy" className="hover:text-blue-600 transition">Privacy Policy</Link>
+          </div>
+        </div>
         <span className="mt-1.5 md:mt-0 hover:text-blue-600 transition cursor-pointer">
           Intelligent AI Examination Platform
         </span>
