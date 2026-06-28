@@ -1,85 +1,46 @@
 /**
- * Notification Service - Business logic cho Notification Module
- * ESM - Xử lý notification CRUD, không chứa exam/user/auth
+ * Notification Service - Business logic cho notifications
  */
-import { Notification } from "../models/index.js";
-import { Op } from "sequelize";
+import { publishNotification, publishEmail } from "../config/rabbitmq.js";
 
 class NotificationService {
 
-  async getNotifications(userId, { limit = 50, offset = 0, unreadOnly = false } = {}) {
-    const where = { user_id: userId };
-    if (unreadOnly) {
-      where.read_at = null;
+  /**
+   * Gửi notification qua queue (async)
+   */
+  async sendNotification(userId, type, title, content, metadata = {}) {
+    try {
+      await publishNotification({
+        userId,
+        type,
+        title,
+        content,
+        metadata,
+        traceId: metadata.traceId,
+      });
+      return { success: true, message: "Notification queued" };
+    } catch (error) {
+      console.error("[NotificationService] Failed to queue notification:", error.message);
+      throw error;
     }
-
-    const { rows: items, count: total } = await Notification.findAndCountAll({
-      where,
-      order: [["created_at", "DESC"]],
-      limit,
-      offset,
-    });
-
-    const unreadCount = await Notification.count({
-      where: { user_id: userId, read_at: null },
-    });
-
-    return {
-      items: items.map((n) => ({
-        id: n.id,
-        type: n.type,
-        message: n.message,
-        actionUrl: n.action_url,
-        actionData: n.action_data,
-        isRead: !!n.read_at,
-        readAt: n.read_at,
-        createdAt: n.created_at,
-      })),
-      total,
-      unreadCount,
-    };
   }
 
-  async getUnreadCount(userId) {
-    return Notification.count({
-      where: { user_id: userId, read_at: null },
-    });
-  }
-
-  async markAsRead(notificationId, userId) {
-    const [updated] = await Notification.update(
-      { read_at: new Date() },
-      {
-        where: {
-          id: notificationId,
-          user_id: userId,
-          read_at: null,
-        },
-      }
-    );
-    return updated > 0;
-  }
-
-  async markAllAsRead(userId) {
-    await Notification.update(
-      { read_at: new Date() },
-      {
-        where: {
-          user_id: userId,
-          read_at: null,
-        },
-      }
-    );
-  }
-
-  async createNotification({ userId, type, message, actionUrl = null, actionData = null }) {
-    return Notification.create({
-      user_id: userId,
-      type,
-      message,
-      action_url: actionUrl,
-      action_data: actionData,
-    });
+  /**
+   * Gửi email qua queue (async)
+   */
+  async sendEmail(to, subject, html, text = "") {
+    try {
+      await publishEmail({
+        to,
+        subject,
+        html,
+        text,
+      });
+      return { success: true, message: "Email queued" };
+    } catch (error) {
+      console.error("[NotificationService] Failed to queue email:", error.message);
+      throw error;
+    }
   }
 }
 

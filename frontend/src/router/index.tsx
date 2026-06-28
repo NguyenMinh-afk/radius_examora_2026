@@ -9,7 +9,14 @@ import Privacy from "../pages/Privacy/Privacy";
 import Register from "../pages/Register/Register";
 import Login from "../pages/Login/Login";
 import Forgot from "../pages/Forgot/Forgot";
-import AdminDashboard from "../pages/Dashboard/Admin/AdminDashboard";
+
+// Admin Pages
+import AdminDashboardPage from "../pages/Dashboard/Admin/AdminDashboardPage";
+import AdminMonitoringPage from "../pages/Dashboard/Admin/AdminMonitoringPage";
+import AdminNotificationsPage from "../pages/Dashboard/Admin/AdminNotificationsPage";
+import AdminAuditLogsPage from "../pages/Dashboard/Admin/AdminAuditLogsPage";
+import AdminSystemLogsPage from "../pages/Dashboard/Admin/AdminSystemLogsPage";
+import AdminQuestionsPage from "../pages/Dashboard/Admin/AdminQuestionsPage";
 
 // Teacher Layout & Pages
 import TeacherLayout from "../layouts/TeacherLayout";
@@ -63,8 +70,15 @@ const AppRouter = () => {
         {/* Forgot Password */}
         <Route path="/forgot-password" element={<RedirectIfAuthenticated><Forgot /></RedirectIfAuthenticated>} />
 
-        {/* Admin Dashboard */}
-        <Route path="/admin" element={<AdminDashboard />} />
+        {/* Admin Module */}
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/users" element={<AdminDashboardPage />} />
+        <Route path="/admin/courses" element={<AdminDashboardPage />} />
+        <Route path="/admin/questions" element={<AdminQuestionsPage />} />
+        <Route path="/admin/monitoring" element={<AdminMonitoringPage />} />
+        <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+        <Route path="/admin/audit-logs" element={<AdminAuditLogsPage />} />
+        <Route path="/admin/system-logs" element={<AdminSystemLogsPage />} />
 
         {/* Teacher Module - với Layout có Sidebar */}
         <Route element={<TeacherLayout />}>
