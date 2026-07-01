@@ -21,12 +21,10 @@ OAuthProvider.init(
     provider: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: "oauth_provider_user",
     },
     provider_user_id: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: "oauth_provider_user",
     },
     access_token: DataTypes.TEXT,
     refresh_token: DataTypes.TEXT,
@@ -37,7 +35,14 @@ OAuthProvider.init(
     sequelize,
     modelName: "OAuthProvider",
     tableName: "oauth_providers",
+    schema: "user_db",
     timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["provider", "provider_user_id"],
+      },
+    ],
   }
 );
 
