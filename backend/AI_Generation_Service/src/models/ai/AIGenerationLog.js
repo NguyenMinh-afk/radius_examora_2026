@@ -1,6 +1,6 @@
 /**
- * AI Generation Log Model
- * Lưu trữ log của quá trình generation
+ * AI Generation Log Model - ai_db.ai_generation_logs
+ * Lưu trữ log chi tiết của từng lần generation
  */
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/sequelize.js';
@@ -14,21 +14,50 @@ const AIGenerationLog = sequelize.define('AIGenerationLog', {
   request_id: {
     type: DataTypes.UUID,
     allowNull: false,
+    references: {
+      model: 'ai_generation_requests',
+      key: 'id',
+    },
   },
-  level: {
-    type: DataTypes.ENUM('info', 'warning', 'error'),
-    defaultValue: 'info',
+  question_id: {
+    type: DataTypes.UUID,
+    allowNull: true,
   },
-  message: {
-    type: DataTypes.TEXT,
+  ai_model: {
+    type: DataTypes.STRING(100),
     allowNull: false,
   },
-  metadata: {
-    type: DataTypes.JSONB,
-    defaultValue: {},
+  prompt: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  response: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  tokens_used: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  cost: {
+    type: DataTypes.DECIMAL(10, 4),
+    allowNull: true,
+  },
+  status: {
+    type: DataTypes.STRING(50),
+    defaultValue: 'success',
+  },
+  error_message: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  trace_id: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
   },
 }, {
   tableName: 'ai_generation_logs',
+  schema: 'ai_db',
   timestamps: true,
   underscored: true,
 });
