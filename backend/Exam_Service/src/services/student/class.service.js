@@ -1,6 +1,7 @@
 /**
  * Student Class Service
  */
+import axios from 'axios';
 import { Op } from 'sequelize';
 import sequelize from '../../config/sequelize.js';
 import {
@@ -14,6 +15,21 @@ import {
 } from '../../models/index.js';
 
 class ClassService {
+
+  async sendNotification(userId, { type, title, content, metadata = {} }) {
+    try {
+      const notificationUrl = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3004';
+      await axios.post(`${notificationUrl}/api/notifications/internal`, {
+        user_id: userId,
+        type: type || 'system',
+        title,
+        content,
+        metadata,
+      });
+    } catch (error) {
+      console.error('[ClassService] Failed to send notification:', error.message);
+    }
+  }
 
   async getClasses(studentId) {
     const classMembers = await ClassMember.findAll({
@@ -253,6 +269,21 @@ class ClassService {
         { model: Course, as: 'course', attributes: ['name'] }
       ]
     });
+
+    // Send notification to student about joining class
+    if (classInfo) {
+      await this.sendNotification(studentId, {
+        type: 'system',
+        title: 'Tham gia lớp thành công',
+        content: `Bạn đã tham gia lớp ${classInfo.name || cls.name}${classInfo.course?.name ? ` - ${classInfo.course.name}` : ''}`,
+        metadata: {
+          classId: cls.id,
+          className: classInfo.name || cls.name,
+          courseName: classInfo.course?.name || null,
+          action_url: `/student/classes/${cls.id}`,
+        },
+      });
+    }
 
     return {
       success: true,

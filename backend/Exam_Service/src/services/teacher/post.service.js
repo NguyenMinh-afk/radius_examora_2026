@@ -1,6 +1,7 @@
 /**
  * Teacher Post Service - Class Posts Management
  */
+import axios from 'axios';
 import { Op } from 'sequelize';
 import {
   Class,
@@ -167,19 +168,25 @@ class PostService {
       const classInfo = await Class.findByPk(classId, { attributes: ['name'] });
       const notificationPayloads = members.map(m => ({
         user_id: m.user_id,
-        title: `Thông báo mới từ lớp ${classInfo?.name || 'N/A'}`,
-        message: post.title || post.content.substring(0, 100),
         type: 'class_post',
-        reference_id: post.id,
-        reference_type: 'class_post',
-        data: {
+        title: `Thông báo mới từ lớp ${classInfo?.name || 'N/A'}`,
+        content: post.title || post.content.substring(0, 100),
+        metadata: {
           classId,
           postId: post.id,
-          postType: post.type
+          postType: post.type,
         }
       }));
 
-      console.log(`[ClassPost] Would notify ${members.length} students about post ${post.id}`);
+      const notificationUrl = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3004';
+      await Promise.all(
+        notificationPayloads.map(payload =>
+          axios.post(`${notificationUrl}/api/notifications/internal`, payload)
+            .catch(error => {
+              console.error('[ClassPost] Failed to send notification:', error.message);
+            })
+        )
+      );
 
       return notificationPayloads;
     } catch (error) {
