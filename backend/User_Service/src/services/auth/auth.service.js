@@ -95,20 +95,15 @@ export const login = async (body) => {
       throw error;
     }
 
-    console.log("[Auth] login attempt:", { loginId });
-
     const user = await User.findOne({
       where: {
         [Op.or]: [{ email: loginId }, { phone: loginId }],
       },
     });
 
-    console.log("[Auth] login user lookup:", { found: !!user, userId: user?.id });
-
     assertUserCanLogin(user);
 
     const validPassword = await bcrypt.compare(password, user.password_hash);
-    console.log("[Auth] password valid:", validPassword);
     if (!validPassword) {
       const error = new Error("Invalid email or password");
       error.status = 401;
@@ -117,7 +112,6 @@ export const login = async (body) => {
 
     return { user };
   } catch (err) {
-    console.error("[Auth] login service error:", err);
     throw err;
   }
 };
