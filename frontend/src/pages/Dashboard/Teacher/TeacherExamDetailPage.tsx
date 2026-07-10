@@ -88,7 +88,12 @@ const TeacherExamDetailPage: React.FC = () => {
 
   // Edit modal
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editData, setEditData] = useState({ title: "", description: "" });
+  const [editData, setEditData] = useState({ 
+    title: "", 
+    description: "",
+    duration: 60,
+    passingScore: 0
+  });
 
   const fetchExamDetail = useCallback(async () => {
     if (!examId) return;
@@ -97,7 +102,12 @@ const TeacherExamDetailPage: React.FC = () => {
       setError(null);
       const data = await getExamDetail(examId);
       setExam(data);
-      setEditData({ title: data.title, description: data.description || "" });
+      setEditData({ 
+        title: data.title, 
+        description: data.description || "",
+        duration: data.duration,
+        passingScore: data.passingScore
+      });
     } catch (err) {
       const axiosErr = err as AxiosErrorWithResponse;
       setError(axiosErr.response?.data?.error || axiosErr.message || "Không thể tải chi tiết đề thi");
@@ -241,6 +251,8 @@ const TeacherExamDetailPage: React.FC = () => {
       await updateExam(examId, {
         title: editData.title,
         description: editData.description,
+        duration: editData.duration,
+        passingScore: editData.passingScore,
         published: exam?.published,
       });
       setShowEditModal(false);
@@ -258,6 +270,8 @@ const TeacherExamDetailPage: React.FC = () => {
       await updateExam(examId, {
         title: exam.title,
         description: exam.description,
+        duration: exam.duration,
+        passingScore: exam.passingScore,
         published: !exam.published,
       });
       fetchExamDetail();
@@ -679,6 +693,37 @@ const TeacherExamDetailPage: React.FC = () => {
                   rows={3}
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Thời gian (phút)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editData.duration}
+                    onChange={(e) =>
+                      setEditData({ ...editData, duration: parseInt(e.target.value) || 0 })
+                    }
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Điểm đạt
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={editData.passingScore}
+                    onChange={(e) =>
+                      setEditData({ ...editData, passingScore: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">

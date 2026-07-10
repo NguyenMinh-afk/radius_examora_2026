@@ -10,7 +10,7 @@ export { getDashboard } from './dashboard.controller.js';
 export { getClasses, getClassDetail, joinClass } from './class.controller.js';
 
 // Assignment
-export { getAssignments } from './assignment.controller.js';
+export { getAssignments, startAssignment, getAssignmentQuestions, submitAssignment } from './assignment.controller.js';
 
 // Result
 export { getResults } from './result.controller.js';

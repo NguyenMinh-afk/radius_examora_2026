@@ -18,20 +18,21 @@ import {
 } from "lucide-react";
 
 const menu = [
-  { label: "Trang chủ", icon: <LayoutGrid size={18} />, path: "/teacher" },
-  { label: "Khóa học", icon: <BookOpen size={18} />, path: "/teacher/courses" },
-  { label: "Lớp học", icon: <GraduationCap size={18} />, path: "/teacher/classes" },
-  { label: "Ngân hàng câu hỏi", icon: <HelpCircle size={18} />, path: "/teacher/questions" },
-  { label: "Đề thi", icon: <FileText size={18} />, path: "/teacher/exams" },
-  { label: "Bài thi đã giao", icon: <ClipboardList size={18} />, path: "/teacher/assignments" },
-  { label: "Lịch thi", icon: <CalendarClock size={18} />, path: "/teacher/schedule" },
-  { label: "Kết quả", icon: <BarChart3 size={18} />, path: "/teacher/results" },
-  { label: "Thông báo", icon: <Bell size={18} />, path: "/teacher/notifications" },
+  { label: "Home", icon: <LayoutGrid size={18} />, path: "/teacher" },
+  { label: "Courses", icon: <BookOpen size={18} />, path: "/teacher/courses" },
+  { label: "Classes", icon: <GraduationCap size={18} />, path: "/teacher/classes" },
+  { label: "Questions", icon: <HelpCircle size={18} />, path: "/teacher/questions" },
+  { label: "Exams", icon: <FileText size={18} />, path: "/teacher/exams" },
+  { label: "Assignments", icon: <ClipboardList size={18} />, path: "/teacher/assignments" },
+  { label: "Schedule", icon: <CalendarClock size={18} />, path: "/teacher/schedule" },
+  { label: "Results", icon: <BarChart3 size={18} />, path: "/teacher/results" },
+  { label: "Notifications", icon: <Bell size={18} />, path: "/teacher/notifications" },
 ];
 
 const bottomMenu = [
-  { label: "Hồ sơ", icon: <User size={18} />, path: "/teacher/profile" },
-  { label: "Cài đặt", icon: <Settings size={18} />, path: "/teacher/settings" },
+  { label: "Profile", icon: <User size={18} />, path: "/teacher/profile" },
+  { label: "Settings", icon: <Settings size={18} />, path: "/teacher/settings" },
+  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/teacher/help" },
 ];
 
 const TeacherSidebar: React.FC = () => {
@@ -114,7 +115,7 @@ const TeacherSidebar: React.FC = () => {
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
           >
             <LogOut size={18} />
-            Đăng xuất
+            Logout
           </button>
         </div>
       </div>

@@ -38,6 +38,7 @@ interface ExamInfo {
 
 interface SelectedQuestion {
   id: string;
+  questionId: string;
   content: string;
   questionType: string;
   difficulty: string;
@@ -155,9 +156,26 @@ const ExamBuilderWizard: React.FC<ExamBuilderWizardProps> = ({
 
   const loadExistingQuestions = async (id: string) => {
     try {
-      await getExamQuestions(id);
+      setLoadingQuestions(true);
+      const data = await getExamQuestions(id);
+      // Map exam questions to selected questions format
+      const mappedQuestions: SelectedQuestion[] = data.questions.map((eq, index: number) => ({
+        id: eq.questionId,
+        questionId: eq.questionId,
+        content: `Câu hỏi ${index + 1}`,
+        questionType: "multiple_choice",
+        difficulty: "medium",
+        points: eq.points || 1,
+        answers: [],
+      }));
+      setSelectedQuestions(mappedQuestions);
+      
+      // Also set selectedQuestionIds so questions appear selected in picker
+      setSelectedQuestionIds(new Set(mappedQuestions.map((q: SelectedQuestion) => q.id)));
     } catch (err) {
       console.error("Failed to load exam questions:", err);
+    } finally {
+      setLoadingQuestions(false);
     }
   };
 
@@ -179,6 +197,7 @@ const ExamBuilderWizard: React.FC<ExamBuilderWizardProps> = ({
         const data: { items: QuestionServiceQuestion[] } = await response.json();
         const questions = data.items.map((q: QuestionServiceQuestion) => ({
           id: q.id,
+          questionId: q.id,
           content: q.content,
           questionType: q.questionType,
           difficulty: q.difficulty,
@@ -249,7 +268,16 @@ const ExamBuilderWizard: React.FC<ExamBuilderWizardProps> = ({
     setError(null);
 
     try {
-      const selected = availableQuestions.filter((q) => selectedQuestionIds.has(q.id));
+      // Merge: giữ points cũ nếu đã load từ DB, dùng points mới nếu là câu mới
+      const selected = availableQuestions
+        .filter((q) => selectedQuestionIds.has(q.id))
+        .map((q) => {
+          const existing = selectedQuestions.find((sq) => sq.id === q.id);
+          return {
+            ...q,
+            points: existing ? existing.points : q.points,
+          };
+        });
       setSelectedQuestions(selected);
 
       // Create exam if in create mode
@@ -257,6 +285,9 @@ const ExamBuilderWizard: React.FC<ExamBuilderWizardProps> = ({
         const examPayload = {
           title: examInfo.title,
           description: examInfo.description,
+          duration: examInfo.duration,
+          totalPoints: selected.reduce((sum, q) => sum + q.points, 0),
+          passingScore: examInfo.passingScore,
         };
         const result = await createExam(examPayload);
         setExamId(result.examId);
@@ -284,12 +315,12 @@ const ExamBuilderWizard: React.FC<ExamBuilderWizardProps> = ({
 
   const handleUpdatePoints = (questionId: string, points: number) => {
     setSelectedQuestions((prev) =>
-      prev.map((q) => (q.id === questionId ? { ...q, points } : q))
+      prev.map((q) => (q.questionId === questionId ? { ...q, points } : q))
     );
   };
 
   const handleRemoveQuestion = (questionId: string) => {
-    setSelectedQuestions((prev) => prev.filter((q) => q.id !== questionId));
+    setSelectedQuestions((prev) => prev.filter((q) => q.questionId !== questionId));
     setSelectedQuestionIds((prev) => {
       const newSet = new Set(prev);
       newSet.delete(questionId);

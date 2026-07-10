@@ -64,6 +64,15 @@ export interface QuestionsResponse {
   total: number;
 }
 
+export interface CreateQuestionPayload {
+  content: string;
+  questionType: string;
+  difficulty: string;
+  chapterId?: number;
+  answers: { id?: string; content: string; isCorrect: boolean }[];
+  tagIds?: string[];
+}
+
 export const getQuestions = async (filters?: {
   search?: string;
   chapterId?: number;
@@ -76,6 +85,26 @@ export const getQuestions = async (filters?: {
   if (filters?.limit) params.append("limit", String(filters.limit));
 
   const response = await questionApi.get<QuestionsResponse>(`/?${params.toString()}`);
+  return response.data;
+};
+
+export const getQuestionById = async (id: string): Promise<QuestionItem> => {
+  const response = await questionApi.get<QuestionItem>(`/${id}`);
+  return response.data;
+};
+
+export const createQuestion = async (payload: CreateQuestionPayload): Promise<QuestionItem> => {
+  const response = await questionApi.post<QuestionItem>("/", payload);
+  return response.data;
+};
+
+export const updateQuestion = async (id: string, payload: CreateQuestionPayload): Promise<QuestionItem> => {
+  const response = await questionApi.patch<QuestionItem>(`/${id}`, payload);
+  return response.data;
+};
+
+export const deleteQuestionApi = async (id: string): Promise<{ success: boolean }> => {
+  const response = await questionApi.delete<{ success: boolean }>(`/${id}`);
   return response.data;
 };
 

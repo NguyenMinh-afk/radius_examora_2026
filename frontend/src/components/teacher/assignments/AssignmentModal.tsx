@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Loader2, AlertTriangle } from "lucide-react";
+import { X, Save, Loader2 } from "lucide-react";
 import { getExams, getClasses } from "../../../api/teacherApi";
 import type { Exam, ClassData } from "../../../api/teacherApi";
 
@@ -34,6 +34,16 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({ isOpen, onClose, onSu
 
   useEffect(() => {
     if (isOpen) {
+      const now = new Date();
+      const defaultStart = now.toISOString().slice(0, 16);
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const defaultEnd = tomorrow.toISOString().slice(0, 16);
+
+      setFormData((prev) => ({
+        ...prev,
+        startTime: defaultStart,
+        endTime: defaultEnd,
+      }));
       fetchData();
     }
   }, [isOpen]);
@@ -48,7 +58,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({ isOpen, onClose, onSu
       ]);
       setExams(examsData);
       setClasses(classesData);
-    } catch (err) {
+    } catch {
       setError("Không thể tải dữ liệu");
     } finally {
       setLoading(false);
@@ -99,20 +109,14 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({ isOpen, onClose, onSu
 
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.message || "Giao bài thi thất bại");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Giao bài thi thất bại");
     } finally {
       setSubmitting(false);
     }
   };
 
   if (!isOpen) return null;
-
-  // Set default times
-  const now = new Date();
-  const defaultStart = now.toISOString().slice(0, 16);
-  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  const defaultEnd = tomorrow.toISOString().slice(0, 16);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -211,7 +215,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({ isOpen, onClose, onSu
                   <input
                     type="datetime-local"
                     name="startTime"
-                    value={formData.startTime || defaultStart}
+                    value={formData.startTime}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
@@ -224,7 +228,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({ isOpen, onClose, onSu
                   <input
                     type="datetime-local"
                     name="endTime"
-                    value={formData.endTime || defaultEnd}
+                    value={formData.endTime}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"

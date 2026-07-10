@@ -8,7 +8,8 @@ import {
   ExamAssignment,
   StudentAssignment,
   Attempt,
-  Course
+  Course,
+  Exam
 } from '../../models/index.js';
 
 class AssignmentService {
@@ -54,7 +55,12 @@ class AssignmentService {
       model: ExamAssignment,
       as: 'assignment',
       where: { is_active: true },
-      required: true
+      required: true,
+      include: [{
+        model: Exam,
+        as: 'exam',
+        attributes: ['title', 'duration', 'total_points', 'passing_score']
+      }]
     };
 
     if (classId) {
@@ -88,6 +94,7 @@ class AssignmentService {
 
     const items = assignments.map(sa => {
       const assignment = sa.assignment;
+      const exam = assignment?.exam;
       const latestAttempt = attempts.find(at => at.assignment_id === sa.assignment_id);
       const cls = assignment?.class_id ? classMap[assignment.class_id] : null;
 
@@ -102,7 +109,9 @@ class AssignmentService {
         instructions: assignment?.instructions,
         startTime: assignment?.start_time,
         endTime: assignment?.end_time,
-        duration: 60,
+        duration: exam?.duration || 60,
+        totalPoints: exam?.total_points || 0,
+        passingScore: exam?.passing_score || 0,
         maxAttempts: assignment?.max_attempts || 1,
         attemptsUsed: sa.attempts_used,
         status: this.deriveAssignmentStatus(sa, latestAttempt),

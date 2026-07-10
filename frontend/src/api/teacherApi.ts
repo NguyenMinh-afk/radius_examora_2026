@@ -180,6 +180,7 @@ export interface ClassDetailData {
 export interface Exam {
   examId: string;
   title: string;
+  description: string;
   courseId: number;
   courseName: string;
   questionCount: number;
@@ -369,6 +370,9 @@ export interface CreateExamPayload {
 export interface UpdateExamPayload {
   title?: string;
   description?: string;
+  duration?: number;
+  totalPoints?: number;
+  passingScore?: number;
   published?: boolean;
 }
 
@@ -589,11 +593,19 @@ export interface ClassPost {
   content: string;
   type: "announcement" | "material" | "assignment" | "question";
   isPinned: boolean;
-  attachments: any[];
+  attachments: Attachment[];
   authorName: string;
   authorAvatar: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Attachment {
+  id: string;
+  name: string;
+  url: string;
+  type: string;
+  size: number;
 }
 
 export interface ClassPostsResponse {
@@ -608,7 +620,7 @@ export interface CreateClassPostPayload {
   content: string;
   type?: "announcement" | "material" | "assignment" | "question";
   isPinned?: boolean;
-  attachments?: any[];
+  attachments?: Attachment[];
 }
 
 export const getClassPosts = async (

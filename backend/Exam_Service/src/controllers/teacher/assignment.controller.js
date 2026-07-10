@@ -26,3 +26,23 @@ export const getSchedule = async (req, res) => {
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
 };
+
+export const createAssignment = async (req, res) => {
+  try {
+    const teacherId = req.user.id;
+    const { examId, classId, startTime, endTime, maxAttempts } = req.body;
+
+    const result = await assignmentService.createAssignment(teacherId, {
+      examId,
+      classId,
+      startTime,
+      endTime,
+      maxAttempts,
+    });
+
+    return res.status(201).json(result);
+  } catch (error) {
+    console.error("[Teacher] createAssignment error:", error);
+    return res.status(400).json({ error: error.message || "Failed to create assignment" });
+  }
+};

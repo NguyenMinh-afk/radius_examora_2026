@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Eye, Edit, Trash2, Copy } from "lucide-react";
 import type { QuestionItem } from "../../../api/questionApi";
-import StatusBadge from "../shared/StatusBadge";
-import type { BadgeVariant } from "../shared/StatusBadge";
+import StatusBadge, { type BadgeVariant } from "../shared/StatusBadge";
 
 interface QuestionCardProps {
   question: QuestionItem;
+  onDeleted?: (id: string) => void;
 }
 
 const difficultyConfig: Record<string, { label: string; variant: string }> = {
@@ -22,8 +23,24 @@ const typeLabels: Record<string, string> = {
   fill_blank: "Điền chỗ trống",
 };
 
-const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
+const QuestionCard: React.FC<QuestionCardProps> = ({ question, onDeleted }) => {
   const diff = difficultyConfig[question.difficulty] || { label: question.difficulty, variant: "neutral" };
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Bạn có chắc muốn xóa câu hỏi này?");
+    if (!confirmed) return;
+    try {
+      setDeleting(true);
+      const { deleteQuestionApi } = await import("../../../api/questionApi");
+      await deleteQuestionApi(question.id);
+      onDeleted?.(question.id);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Xóa câu hỏi thất bại");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:border-blue-200 transition">
@@ -60,13 +77,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Xem">
             <Eye size={16} />
           </button>
-          <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Sửa">
+          <Link to={`/teacher/questions/${question.id}`} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Sửa">
             <Edit size={16} />
-          </button>
+          </Link>
           <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition" title="Nhân bản">
             <Copy size={16} />
           </button>
-          <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Xóa">
+          <button disabled={deleting} onClick={handleDelete} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-60" title="Xóa">
             <Trash2 size={16} />
           </button>
         </div>
