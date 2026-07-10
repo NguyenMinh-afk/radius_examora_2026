@@ -12,6 +12,7 @@ import {
   getClassDetail,
   getAssignments,
   getSchedule,
+  createAssignment,
   getClassPosts,
   createClassPost,
   updateClassPost,
@@ -92,6 +93,13 @@ router.delete("/posts/:postId", deleteClassPost);
  * Query: status, classId, search
  */
 router.get("/assignments", getAssignments);
+
+/**
+ * POST /api/teacher/assignments
+ * Giao bài thi cho lớp
+ * Body: { examId, classId, startTime, endTime, maxAttempts }
+ */
+router.post("/assignments", createAssignment);
 
 /**
  * GET /api/teacher/assignments/schedule

@@ -15,6 +15,9 @@ import {
   getClassDetail,
   joinClass,
   getAssignments,
+  startAssignment,
+  getAssignmentQuestions,
+  submitAssignment,
   getResults,
   getClassPosts,
   getProfile,
@@ -78,6 +81,10 @@ router.get("/classes/:classId/posts", requireStudent, getClassPosts);
  * Query: status, search, classId
  */
 router.get("/assignments", requireStudent, getAssignments);
+
+router.get("/assignments/:assignmentId/questions", requireStudent, getAssignmentQuestions);
+router.post("/assignments/:assignmentId/start", requireStudent, startAssignment);
+router.post("/assignments/:assignmentId/attempts/:attemptId/submit", requireStudent, submitAssignment);
 
 /**
  * GET /api/student/results

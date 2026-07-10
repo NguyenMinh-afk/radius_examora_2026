@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -9,6 +9,7 @@ import {
   MessageSquare,
   ScrollText,
   ServerCog,
+  HelpCircle,
   LogOut,
 } from "lucide-react";
 import { clearAuthData } from "../../../utils/auth";
@@ -22,6 +23,10 @@ const menu = [
   { label: "Notifications", icon: <BellRing size={18} />, path: "/admin/notifications" },
   { label: "Audit Logs", icon: <ScrollText size={18} />, path: "/admin/audit-logs" },
   { label: "System Logs", icon: <ServerCog size={18} />, path: "/admin/system-logs" },
+];
+
+const bottomMenu = [
+  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/admin/help" },
 ];
 
 const AdminSidebar: React.FC = () => {
@@ -88,6 +93,16 @@ const AdminSidebar: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
+          {bottomMenu.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-slate-50 hover:text-blue-700 transition"
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          ))}
           <a
             href="#"
             onClick={handleLogout}

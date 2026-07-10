@@ -11,19 +11,21 @@ import {
   LogOut,
   ChevronRight,
   User,
+  HelpCircle,
 } from "lucide-react";
 
 const menu = [
-  { label: "Trang chủ", icon: <LayoutGrid size={18} />, path: "/student" },
-  { label: "Lớp học của tôi", icon: <GraduationCap size={18} />, path: "/student/classes" },
-  { label: "Bài thi", icon: <FileText size={18} />, path: "/student/assignments" },
-  { label: "Kết quả", icon: <BookOpen size={18} />, path: "/student/results" },
-  { label: "Thông báo", icon: <Bell size={18} />, path: "/student/notifications" },
-  { label: "Hồ sơ", icon: <User size={18} />, path: "/student/profile" },
+  { label: "Home", icon: <LayoutGrid size={18} />, path: "/student" },
+  { label: "Classes", icon: <GraduationCap size={18} />, path: "/student/classes" },
+  { label: "Assignments", icon: <FileText size={18} />, path: "/student/assignments" },
+  { label: "Results", icon: <BookOpen size={18} />, path: "/student/results" },
+  { label: "Notifications", icon: <Bell size={18} />, path: "/student/notifications" },
+  { label: "Profile", icon: <User size={18} />, path: "/student/profile" },
 ];
 
 const bottomMenu = [
-  { label: "Cài đặt", icon: <Settings size={18} />, path: "/student/settings" },
+  { label: "Settings", icon: <Settings size={18} />, path: "/student/settings" },
+  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/student/help" },
 ];
 
 const StudentSidebar: React.FC = () => {
@@ -106,7 +108,7 @@ const StudentSidebar: React.FC = () => {
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
           >
             <LogOut size={18} />
-            Đăng xuất
+            Logout
           </button>
         </div>
       </div>

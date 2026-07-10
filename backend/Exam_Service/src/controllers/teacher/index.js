@@ -13,7 +13,7 @@ export { getCourses, getCourseDetail, createCourse, updateCourse, deleteCourse }
 export { getClasses, getClassDetail, createClass, updateClass, deleteClass } from './class.controller.js';
 
 // Assignment
-export { getAssignments, getSchedule } from './assignment.controller.js';
+export { getAssignments, getSchedule, createAssignment } from './assignment.controller.js';
 
 // Post
 export { getClassPosts, createClassPost, updateClassPost, deleteClassPost } from './post.controller.js';

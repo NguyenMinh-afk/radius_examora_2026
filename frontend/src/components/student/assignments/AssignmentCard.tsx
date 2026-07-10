@@ -34,7 +34,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
         <AssignmentStatusBadge status={assignment.status} />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4 text-sm">
         <div>
           <p className="text-gray-400">Mở lúc</p>
           <p className="font-medium text-gray-700">{formatDateTime(assignment.startTime)}</p>
@@ -44,12 +44,16 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
           <p className="font-medium text-gray-700">{formatDateTime(assignment.endTime)}</p>
         </div>
         <div>
-          <p className="text-gray-400">Thời lượng</p>
+          <p className="text-gray-400">Thời gian</p>
           <p className="font-medium text-gray-700">{assignment.duration || 60} phút</p>
         </div>
         <div>
+          <p className="text-gray-400">Điểm đạt</p>
+          <p className="font-medium text-gray-700">{assignment.passingScore || 0} điểm</p>
+        </div>
+        <div>
           <p className="text-gray-400">Số lần làm</p>
-          <p className="font-medium text-gray-700">{assignment.attemptsUsed}/{assignment.maxAttempts}</p>
+          <p className="font-medium text-gray-700">{assignment.attemptsUsed || 0}/{assignment.maxAttempts}</p>
         </div>
       </div>
 
@@ -65,7 +69,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
       <div className="flex gap-3">
         {assignment.status === "open" && (
           <Link
-            to={`/student/assignments/${assignment.assignmentId}/start`}
+            to={`/student/assignments/${assignment.assignmentId}/take`}
             className="px-5 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition"
           >
             Vào thi

@@ -67,7 +67,7 @@ const TeacherExamsPage: React.FC = () => {
     setSelectedExamDetail({
       examId: exam.examId,
       title: exam.title,
-      description: "",
+      description: exam.description || "",
       courseId: exam.courseId,
       courseName: exam.courseName,
       questionCount: exam.questionCount,

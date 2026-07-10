@@ -7,6 +7,7 @@ import {
   ClassMember,
   Exam,
   ExamAssignment,
+  StudentAssignment,
   Attempt
 } from '../../models/index.js';
 
@@ -35,7 +36,7 @@ class AssignmentService {
       where: whereClause,
       include: [
         { model: Class, as: 'class', attributes: ['name', 'class_code'] },
-        { model: Exam, as: 'exam', attributes: ['title'] }
+        { model: Exam, as: 'exam', attributes: ['title', 'duration', 'total_points', 'passing_score'] }
       ],
       order: [['start_time', 'DESC']]
     });
@@ -62,7 +63,11 @@ class AssignmentService {
         studentAssigned,
         submitted: submittedCount,
         graded: gradedCount,
-        status: assignmentStatus
+        status: assignmentStatus,
+        // Exam properties
+        duration: a.exam?.duration || 60,
+        totalPoints: a.exam?.total_points || 0,
+        passingScore: a.exam?.passing_score || 0,
       });
     }
 
@@ -129,6 +134,63 @@ class AssignmentService {
     };
 
     return { items, summary };
+  }
+
+  async createAssignment(teacherId, data) {
+    const { examId, classId, startTime, endTime, maxAttempts = 1 } = data;
+
+    // Verify exam exists
+    const exam = await Exam.findByPk(examId);
+    if (!exam) {
+      throw new Error("Exam not found");
+    }
+
+    // Verify class exists and belongs to teacher
+    const cls = await Class.findOne({
+      where: { id: classId, teacher_id: teacherId }
+    });
+    if (!cls) {
+      throw new Error("Class not found or you don't have permission");
+    }
+
+    // Get all students in the class
+    const classMembers = await ClassMember.findAll({
+      where: { class_id: classId, role: 'student' }
+    });
+
+    // Create assignment
+    const assignment = await ExamAssignment.create({
+      exam_id: examId,
+      class_id: classId,
+      title: exam.title,
+      start_time: new Date(startTime),
+      end_time: new Date(endTime),
+      max_attempts: maxAttempts,
+      is_active: true,
+      assigned_by: teacherId,
+    });
+
+    // Create student assignment records for all students in class
+    if (classMembers.length > 0) {
+      const studentAssignmentRecords = classMembers.map(member => ({
+        student_id: member.user_id,
+        assignment_id: assignment.id,
+        status: 'assigned',
+        attempts_used: 0,
+      }));
+      await StudentAssignment.bulkCreate(studentAssignmentRecords);
+    }
+
+    return {
+      assignmentId: assignment.id,
+      title: assignment.title,
+      examName: exam.title,
+      className: cls.name,
+      startTime: assignment.start_time,
+      endTime: assignment.end_time,
+      maxAttempts: assignment.max_attempts,
+      studentAssigned: classMembers.length,
+    };
   }
 }
 

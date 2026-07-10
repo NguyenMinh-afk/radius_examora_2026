@@ -147,7 +147,19 @@ export interface AssignmentLatestAttempt {
   attemptId: string;
   score: number | null;
   percentage: number | null;
-  submittedAt: string;
+  submittedAt: string | null;
+}
+
+export interface AssignmentQuestionAnswer {
+  id: string;
+  content: string;
+  isCorrect: boolean;
+}
+
+export interface AssignmentQuestion {
+  questionId: string;
+  content: string;
+  answers: AssignmentQuestionAnswer[];
 }
 
 export interface Assignment {
@@ -164,8 +176,11 @@ export interface Assignment {
   duration: number;
   maxAttempts: number;
   attemptsUsed: number;
+  passingScore: number;
+  totalPoints: number;
   status: "open" | "upcoming" | "submitted" | "expired";
   latestAttempt: AssignmentLatestAttempt | null;
+  questions?: AssignmentQuestion[];
 }
 
 export interface AssignmentsResponse {
@@ -210,6 +225,52 @@ export interface ClassDetailData {
   assignments: Assignment[];
 }
 
+export interface AssignmentStartResponse {
+  status: string;
+  assignment: {
+    id: string;
+    exam_id: string;
+    title: string;
+    instructions: string | null;
+    duration: number;
+    total_points: number;
+    examQuestions?: AssignmentQuestion[];
+  };
+  attempt: {
+    attemptId: string;
+    attempt_number: number;
+    started_at: string;
+  };
+}
+
+export interface AssignmentSubmitAnswer {
+  questionId: string;
+  answerId: string | null;
+  isCorrect: boolean;
+  timeSpent: number;
+}
+
+export interface AssignmentSubmitPayload {
+  answers: AssignmentSubmitAnswer[];
+}
+
+export interface AssignmentSubmitResponse {
+  attempt: {
+    attemptId: string;
+    score: number;
+    percentage: number;
+    correct_answers: number;
+    wrong_answers: number;
+    submitted_at: string;
+  };
+  summary: {
+    score: number;
+    percentage: number;
+    correctAnswers: number;
+    wrongAnswers: number;
+  };
+}
+
 // API Functions
 
 /**
@@ -252,6 +313,42 @@ export const getStudentAssignments = async (filters?: {
   const response = await studentApi.get<AssignmentsResponse>(
     `/assignments?${params.toString()}`
   );
+  return response.data;
+};
+
+/**
+ * Bắt đầu làm bài thi
+ */
+export const startAssignment = async (assignmentId: string): Promise<AssignmentStartResponse> => {
+  const response = await studentApi.post<AssignmentStartResponse>(`/assignments/${assignmentId}/start`);
+  return response.data;
+};
+
+export interface AssignmentQuestionsResponse {
+  assignmentId: string;
+  title: string;
+  instructions: string | null;
+  duration: number;
+  totalPoints: number;
+  questions: AssignmentQuestion[];
+}
+
+export const getAssignmentQuestions = async (assignmentId: string): Promise<AssignmentQuestionsResponse> => {
+  const response = await studentApi.get<AssignmentQuestionsResponse>(`/assignments/${assignmentId}/questions`);
+  return response.data;
+};
+
+/**
+ * Nộp bài thi
+ */
+export const submitStudentAssignment = async (
+  assignmentId: string,
+  attemptId: string,
+  answers: AssignmentSubmitAnswer[]
+): Promise<AssignmentSubmitResponse> => {
+  const response = await studentApi.post<AssignmentSubmitResponse>(`/assignments/${assignmentId}/attempts/${attemptId}/submit`, {
+    answers,
+  });
   return response.data;
 };
 

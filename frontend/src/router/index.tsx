@@ -26,6 +26,7 @@ import TeacherCourseDetailPage from "../pages/Dashboard/Teacher/TeacherCourseDet
 import TeacherClassesPage from "../pages/Dashboard/Teacher/TeacherClassesPage";
 import TeacherClassDetailPage from "../pages/Dashboard/Teacher/TeacherClassDetailPage";
 import TeacherQuestionsPage from "../pages/Dashboard/Teacher/TeacherQuestionsPage";
+import TeacherQuestionFormPage from "../pages/Dashboard/Teacher/TeacherQuestionFormPage";
 import TeacherExamsPage from "../pages/Dashboard/Teacher/TeacherExamsPage";
 import TeacherExamDetailPage from "../pages/Dashboard/Teacher/TeacherExamDetailPage";
 import TeacherAssignmentsPage from "../pages/Dashboard/Teacher/TeacherAssignmentsPage";
@@ -42,6 +43,7 @@ import StudentClassesPage from "../pages/Dashboard/Student/StudentClassesPage";
 import StudentClassDetailPage from "../pages/Dashboard/Student/StudentClassDetailPage";
 import StudentAssignmentsPage from "../pages/Dashboard/Student/StudentAssignmentsPage";
 import StudentResultsPage from "../pages/Dashboard/Student/StudentResultsPage";
+import StudentExamTakingPage from "../pages/Dashboard/Student/StudentExamTakingPage";
 import StudentNotificationsPage from "../pages/Dashboard/Student/StudentNotificationsPage";
 import StudentProfilePage from "../pages/Dashboard/Student/StudentProfilePage";
 import StudentSettingsPage from "../pages/Dashboard/Student/StudentSettingsPage";
@@ -95,8 +97,8 @@ const AppRouter = () => {
 
           {/* Questions */}
           <Route path="/teacher/questions" element={<TeacherQuestionsPage />} />
-          <Route path="/teacher/questions/create" element={<TeacherQuestionsPage />} />
-          <Route path="/teacher/questions/:id" element={<TeacherQuestionsPage />} />
+          <Route path="/teacher/questions/create" element={<TeacherQuestionFormPage />} />
+          <Route path="/teacher/questions/:id" element={<TeacherQuestionFormPage />} />
 
           {/* Exams */}
           <Route path="/teacher/exams" element={<TeacherExamsPage />} />
@@ -150,6 +152,9 @@ const AppRouter = () => {
           {/* Settings */}
           <Route path="/student/settings" element={<StudentSettingsPage />} />
         </Route>
+
+        {/* Exam Taking Page - Full screen, KHÔNG có sidebar */}
+        <Route path="/student/assignments/:assignmentId/take" element={<StudentExamTakingPage />} />
 
       </Routes>
     </BrowserRouter>

@@ -44,8 +44,9 @@ Exam.hasMany(ExamAssignment, { foreignKey: 'exam_id', as: 'examAssignments' });
 StudentAssignment.belongsTo(ExamAssignment, { foreignKey: 'assignment_id', as: 'assignment' });
 ExamAssignment.hasMany(StudentAssignment, { foreignKey: 'assignment_id', as: 'studentAssignments' });
 
-// Exam - Question (through ExamQuestion)
-Exam.belongsToMany(Exam, { through: ExamQuestion, foreignKey: 'exam_id', otherKey: 'question_id', as: 'questions' });
+// ExamAssignment - ExamQuestion (to get questions for an assignment)
+ExamAssignment.hasMany(ExamQuestion, { foreignKey: 'exam_id', as: 'examQuestions', sourceKey: 'exam_id' });
+ExamQuestion.belongsTo(ExamAssignment, { foreignKey: 'exam_id', as: 'assignment' });
 
 // Submission - Exam
 Submission.belongsTo(Exam, { foreignKey: 'exam_id', as: 'exam' });

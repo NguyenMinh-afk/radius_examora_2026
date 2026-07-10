@@ -31,12 +31,13 @@ class ExamService {
       result.push({
         examId: exam.id,
         title: exam.title,
+        description: exam.description || "",
         courseId: null,
         courseName: '',
         questionCount,
-        duration: 0,
-        totalPoints: 0,
-        passingScore: 0,
+        duration: exam.duration || 0,
+        totalPoints: parseFloat(exam.total_points) || 0,
+        passingScore: parseFloat(exam.passing_score) || 0,
         published: exam.is_public,
         createdAt: exam.created_at?.toISOString() || ''
       });
@@ -65,9 +66,9 @@ class ExamService {
       courseId: null,
       courseName: '',
       questionCount: examQuestions.length,
-      duration: 0,
-      totalPoints: 0,
-      passingScore: 0,
+      duration: exam.duration || 60,
+      totalPoints: parseFloat(exam.total_points) || 0,
+      passingScore: parseFloat(exam.passing_score) || 0,
       published: exam.is_public,
       createdAt: exam.created_at?.toISOString() || '',
       questions: examQuestions.map(eq => ({
@@ -79,15 +80,16 @@ class ExamService {
   }
 
   async createExam(teacherId, data) {
-    const { title, description } = data;
+    const { title, description, duration, totalPoints, passingScore } = data;
 
     const exam = await Exam.create({
       title: title,
       description: description || null,
       created_by: teacherId,
       course_id: 0,
-      duration: 60,
-      total_points: 100,
+      duration: duration || 60,
+      total_points: totalPoints || 100,
+      passing_score: passingScore || 0,
       is_public: false
     });
 
@@ -97,8 +99,8 @@ class ExamService {
       courseId: exam.course_id,
       courseName: '',
       questionCount: 0,
-      duration: exam.duration || 60,
-      totalPoints: parseFloat(exam.total_points) || 100,
+      duration: exam.duration,
+      totalPoints: parseFloat(exam.total_points),
       passingScore: parseFloat(exam.passing_score) || 0,
       published: false,
       createdAt: exam.created_at?.toISOString() || ''
@@ -116,6 +118,9 @@ class ExamService {
     const updateData = {};
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined) updateData.description = data.description;
+    if (data.duration !== undefined) updateData.duration = data.duration;
+    if (data.totalPoints !== undefined) updateData.total_points = data.totalPoints;
+    if (data.passingScore !== undefined) updateData.passing_score = data.passingScore;
     if (data.published !== undefined) updateData.is_public = data.published;
 
     if (Object.keys(updateData).length > 0) {
@@ -129,9 +134,9 @@ class ExamService {
       courseId: null,
       courseName: '',
       questionCount: 0,
-      duration: 0,
-      totalPoints: 0,
-      passingScore: 0,
+      duration: exam.duration,
+      totalPoints: parseFloat(exam.total_points),
+      passingScore: parseFloat(exam.passing_score) || 0,
       published: exam.is_public,
       createdAt: exam.created_at?.toISOString() || ''
     };

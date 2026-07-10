@@ -1,6 +1,6 @@
 import React from "react";
 
-type BadgeVariant = "success" | "warning" | "danger" | "info" | "neutral" | "purple";
+export type BadgeVariant = "success" | "warning" | "danger" | "info" | "neutral" | "purple";
 
 interface StatusBadgeProps {
   status: string;
