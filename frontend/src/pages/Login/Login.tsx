@@ -45,8 +45,14 @@ const Login: React.FC = () => {
       const res = await loginUser({ email, password, rememberMe });
       const role = saveAuthData(res.data);
       navigate(getDashboardPath(role));
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { error?: string; message?: string } }; message?: string };
+      const serverMessage =
+        axiosError.response?.data?.error ||
+        axiosError.response?.data?.message ||
+        axiosError.message ||
+        "Login failed";
+      setError(serverMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -61,11 +67,11 @@ const Login: React.FC = () => {
       <div className="text-center mt-6 mb-6">
         <Link to="/">
           <h1 className="text-4xl md:text-5xl font-extrabold text-blue-700 cursor-pointer hover:text-blue-800 transition">
-            EXMORA
+            EXAMORA
           </h1>
         </Link>
         <p className="text-2xl font-bold text-black mt-4">
-          Welcome back to EXMORA.
+          Welcome back to EXAMORA.
         </p>
         <p className="text-lg text-black mt-1">
           Sign in to access your curated intellectual journey.
@@ -130,7 +136,7 @@ const Login: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
+                  onChange={(e) => setRememberMe((e.target as HTMLInputElement).checked)}
                   className="accent-blue-600"
                 />
                 Remember me

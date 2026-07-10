@@ -3,50 +3,81 @@ import { AxiosError } from "axios";
 import { NotificationList } from "../../../components/teacher/notifications";
 import { LoadingState, ErrorState, SectionCard } from "../../../components/teacher/shared";
 import type { Notification } from "../../../api/teacherApi";
-
-// TODO: Gọi Notification_Service
-const mockNotifications: Notification[] = [];
+import {
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+} from "../../../api/notificationApi";
 
 const TeacherNotificationsPage: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
-  const [loading, setLoading] = useState(false); // TODO: = true when API connected
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [displayNotifications, setDisplayNotifications] = useState<Notification[]>(mockNotifications);
+  const [displayNotifications, setDisplayNotifications] = useState<Notification[]>([]);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (filterParam: "all" | "unread" = filter) => {
     try {
       setLoading(true);
       setError(null);
-      // TODO: const data = await getTeacherNotifications();
-      // setNotifications(data);
+      const data = await getNotifications({
+        limit: 100,
+        unreadOnly: filterParam === "unread",
+      });
+      setNotifications(data.items);
     } catch (err) {
       const axiosError = err as AxiosError<{ error?: string }>;
-      setError(axiosError.response?.data?.error || (err as Error).message || "Không thể tải thông báo");
+      setError(
+        axiosError.response?.data?.error ||
+          (err as Error).message ||
+          "Không thể tải thông báo"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchNotifications();
+    fetchNotifications("all");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const filtered = filter === "unread"
-      ? notifications.filter((n) => !n.isRead)
-      : notifications;
+    const filtered =
+      filter === "unread"
+        ? notifications.filter((n) => !n.isRead)
+        : notifications;
     setDisplayNotifications(filtered);
   }, [filter, notifications]);
 
-  const handleMarkRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-    );
+  const handleMarkRead = async (id: string) => {
+    try {
+      await markNotificationAsRead(id);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      );
+    } catch (err) {
+      const axiosError = err as AxiosError<{ error?: string }>;
+      setError(
+        axiosError.response?.data?.error ||
+          (err as Error).message ||
+          "Không thể đánh dấu đã đọc"
+      );
+    }
   };
 
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  const handleMarkAllRead = async () => {
+    try {
+      await markAllNotificationsAsRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    } catch (err) {
+      const axiosError = err as AxiosError<{ error?: string }>;
+      setError(
+        axiosError.response?.data?.error ||
+          (err as Error).message ||
+          "Không thể đánh dấu tất cả đã đọc"
+      );
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;

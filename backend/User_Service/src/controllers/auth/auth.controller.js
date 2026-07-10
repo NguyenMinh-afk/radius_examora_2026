@@ -48,10 +48,12 @@ export const login = async (req, res) => {
       ...authResponse,
     });
   } catch (err) {
+    console.error("[Auth] login error:", err);
     return res.status(err.status || 500).json({
       message: "Login failed",
       error: err.message,
       code: err.code,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
     });
   }
 };

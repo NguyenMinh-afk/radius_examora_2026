@@ -28,12 +28,41 @@ notificationApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Interceptor để transform response - map snake_case -> camelCase
+const transformNotification = (notification: {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  is_read: boolean;
+  created_at?: string;
+  action_url?: string | null;
+  actionUrl?: string | null;
+}) => ({
+  id: notification.id,
+  type: notification.type,
+  title: notification.title,
+  message: notification.message,
+  isRead: notification.is_read,
+  createdAt: notification.created_at || "",
+  actionUrl: notification.action_url || notification.actionUrl || null,
+});
+
 // Interceptor để xử lý response
 notificationApi.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Transform items array if present
+    if (response.data?.items && Array.isArray(response.data.items)) {
+      response.data.items = response.data.items.map(transformNotification);
+    }
+    // Transform single notification response
+    if (response.data && response.data.id && !Array.isArray(response.data)) {
+      response.data = transformNotification(response.data);
+    }
+    return response;
+  },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Token hết hạn - clear auth data và redirect
       localStorage.removeItem("token");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");

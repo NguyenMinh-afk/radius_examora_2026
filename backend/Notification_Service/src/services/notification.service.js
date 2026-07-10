@@ -25,13 +25,11 @@ class NotificationService {
     });
 
     return {
-      notifications,
-      pagination: {
-        total,
-        limit,
-        offset,
-        hasMore: offset + notifications.length < total,
-      },
+      items: notifications,
+      total,
+      limit,
+      offset,
+      hasMore: offset + notifications.length < total,
     };
   }
 

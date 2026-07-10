@@ -1,6 +1,7 @@
 /**
  * Teacher Assignment Service
  */
+import axios from 'axios';
 import { Op } from 'sequelize';
 import {
   Class,
@@ -179,6 +180,28 @@ class AssignmentService {
         attempts_used: 0,
       }));
       await StudentAssignment.bulkCreate(studentAssignmentRecords);
+
+      // Notify each student about the new assignment
+      const notificationUrl = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3004';
+      await Promise.all(
+        classMembers.map(member =>
+          axios.post(`${notificationUrl}/api/notifications/internal`, {
+            user_id: member.user_id,
+            type: 'assignment',
+            title: 'Bài thi mới được giao',
+            content: `Bạn có bài thi mới "${exam.title}" trong lớp "${cls.name}"`,
+            metadata: {
+              assignmentId: assignment.id,
+              classId: cls.id,
+              className: cls.name,
+              examName: exam.title,
+              action_url: '/student/assignments',
+            },
+          }).catch(error => {
+            console.error('[AssignmentService] Failed to send notification:', error.message);
+          })
+        )
+      );
     }
 
     return {

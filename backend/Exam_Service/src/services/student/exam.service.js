@@ -5,6 +5,8 @@ import {
   Attempt,
   AttemptAnswer,
   ExamQuestion,
+  User,
+  Class
 } from '../../models/index.js';
 
 const QUESTION_SERVICE_URL = process.env.QUESTION_SERVICE_URL || 'http://localhost:3002';
@@ -264,6 +266,25 @@ class ExamService {
       attempts_used: (resolved.studentAssignment.attempts_used || 0) + 1,
     });
 
+    // Notify teacher about submission
+    const assignmentClass = await Class.findByPk(resolved.assignment.class_id, { attributes: ['id', 'teacher_id', 'name'] });
+    if (assignmentClass?.teacher_id) {
+      const student = await User.findByPk(resolved.attempt.student_id, { attributes: ['full_name'] });
+      await this.sendNotification(assignmentClass.teacher_id, {
+        type: 'exam_submit',
+        title: 'Học sinh đã nộp bài thi',
+        content: `${student?.full_name || 'Học sinh'} đã nộp bài "${resolved.assignment.title}" - Điểm: ${score} (${percentage}%)`,
+        metadata: {
+          assignmentId: resolved.assignment.id,
+          classId: assignmentClass.id,
+          attemptId: resolved.attempt.id,
+          score,
+          percentage,
+          action_url: '/teacher/results',
+        },
+      });
+    }
+
     return {
       attempt: resolved.attempt,
       answers: attemptAnswers,
@@ -274,6 +295,25 @@ class ExamService {
         wrongAnswers,
       },
     };
+  }
+
+  async sendNotification(userId, { type, title, content, metadata = {} }) {
+    try {
+      const notificationUrl = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3004';
+      await fetch(`${notificationUrl}/api/notifications/internal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          type: type || 'system',
+          title,
+          content,
+          metadata,
+        }),
+      });
+    } catch (error) {
+      console.error('[ExamService] Failed to send notification:', error.message);
+    }
   }
 }
 

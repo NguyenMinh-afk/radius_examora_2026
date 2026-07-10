@@ -9,13 +9,9 @@ import notificationService from "../services/notification.service.js";
 
 const router = express.Router();
 
+// Các endpoint đọc/đánh dấu cần auth của user hiện tại
 router.use(authenticate);
 
-/**
- * GET /api/notifications
- * Lấy danh sách notifications của user hiện tại
- * Query: limit, offset, unreadOnly
- */
 router.get("/", async (req, res) => {
   try {
     const { limit = 50, offset = 0, unreadOnly = "false" } = req.query;
@@ -25,17 +21,30 @@ router.get("/", async (req, res) => {
       offset: parseInt(offset, 10),
       unreadOnly: unreadOnly === "true",
     });
-    res.json(data);
+
+    const items = (data.items || []).map((notification) => ({
+      id: notification.id,
+      type: notification.type,
+      title: notification.title,
+      message: notification.message,
+      isRead: notification.is_read,
+      createdAt: notification.created_at ? new Date(notification.created_at).toISOString() : new Date().toISOString(),
+      actionUrl: notification.action_url || null,
+    }));
+
+    res.json({
+      items,
+      total: data.total,
+      limit: data.limit,
+      offset: data.offset,
+      hasMore: data.hasMore,
+    });
   } catch (error) {
     console.error("[Notification] getNotifications error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 });
 
-/**
- * GET /api/notifications/unread-count
- * Lấy số notification chưa đọc
- */
 router.get("/unread-count", async (req, res) => {
   try {
     const userId = req.user.id;
@@ -47,10 +56,6 @@ router.get("/unread-count", async (req, res) => {
   }
 });
 
-/**
- * PATCH /api/notifications/:id/read
- * Đánh dấu 1 notification là đã đọc
- */
 router.patch("/:id/read", async (req, res) => {
   try {
     const { id } = req.params;
@@ -66,10 +71,6 @@ router.patch("/:id/read", async (req, res) => {
   }
 });
 
-/**
- * PATCH /api/notifications/read-all
- * Đánh dấu tất cả notifications là đã đọc
- */
 router.patch("/read-all", async (req, res) => {
   try {
     const userId = req.user.id;
@@ -77,6 +78,53 @@ router.patch("/read-all", async (req, res) => {
     res.json({ success: true, message: "All notifications marked as read" });
   } catch (error) {
     console.error("[Notification] markAllAsRead error:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+});
+
+// Endpoint nội bộ cho các service khác gọi trực tiếp, KHÔNG yêu cầu auth
+router.post("/internal", async (req, res) => {
+  try {
+    const { user_id, type, title, content, metadata = {} } = req.body || {};
+
+    if (!user_id || !title || !content) {
+      return res.status(400).json({ error: "Missing required notification fields" });
+    }
+
+    const allowedTypes = [
+      "assignment",
+      "grade",
+      "ai_complete",
+      "system",
+      "verification",
+      "password_reset",
+      "email",
+      "class_post",
+      "exam_submit",
+    ];
+    const safeType = allowedTypes.includes(type) ? type : "system";
+
+    const notification = await Notification.create({
+      user_id,
+      type: safeType,
+      title,
+      message: content,
+      action_url: metadata.action_url || null,
+      action_data: metadata.action_data || null,
+      is_read: false,
+    });
+
+    res.status(201).json({
+      id: notification.id,
+      userId: notification.user_id,
+      type: notification.type,
+      title: notification.title,
+      message: notification.message,
+      isRead: notification.is_read,
+      createdAt: notification.created_at ? new Date(notification.created_at).toISOString() : new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("[Notification] create notification error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 });

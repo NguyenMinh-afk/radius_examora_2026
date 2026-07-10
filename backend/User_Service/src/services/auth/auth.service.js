@@ -84,32 +84,42 @@ export const register = async (body) => {
 };
 
 export const login = async (body) => {
-  const { email, phone, identifier, password } = body;
-  const rawLoginId = email || phone || identifier;
-  const loginId = rawLoginId?.trim().toLowerCase();
+  try {
+    const { email, phone, identifier, password } = body;
+    const rawLoginId = email || phone || identifier;
+    const loginId = rawLoginId?.trim().toLowerCase();
 
-  if (!loginId || !password) {
-    const error = new Error("email or phone and password are required");
-    error.status = 400;
-    throw error;
+    if (!loginId || !password) {
+      const error = new Error("email or phone and password are required");
+      error.status = 400;
+      throw error;
+    }
+
+    console.log("[Auth] login attempt:", { loginId });
+
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ email: loginId }, { phone: loginId }],
+      },
+    });
+
+    console.log("[Auth] login user lookup:", { found: !!user, userId: user?.id });
+
+    assertUserCanLogin(user);
+
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    console.log("[Auth] password valid:", validPassword);
+    if (!validPassword) {
+      const error = new Error("Invalid email or password");
+      error.status = 401;
+      throw error;
+    }
+
+    return { user };
+  } catch (err) {
+    console.error("[Auth] login service error:", err);
+    throw err;
   }
-
-  const user = await User.findOne({
-    where: {
-      [Op.or]: [{ email: loginId }, { phone: loginId }],
-    },
-  });
-
-  assertUserCanLogin(user);
-
-  const validPassword = await bcrypt.compare(password, user.password_hash);
-  if (!validPassword) {
-    const error = new Error("Invalid email or password");
-    error.status = 401;
-    throw error;
-  }
-
-  return { user };
 };
 
 export const refreshTokens = async (refreshToken) => {
