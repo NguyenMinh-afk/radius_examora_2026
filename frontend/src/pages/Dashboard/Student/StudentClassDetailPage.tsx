@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { GraduationCap, BookOpen, Bell, Pin } from "lucide-react";
 import { getClassDetail, getClassPosts, type ClassDetailData, type ClassPost } from "../../../api/studentApi";
-import { SectionCard, LoadingState, ErrorState } from "../../../components/student/shared";
+import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ClassStatsCard } from "../../../components/student/classes";
 import { AssignmentList } from "../../../components/student/assignments";
+import { PageHeader, Card } from "../../../components/shared";
 
 const StudentClassDetailPage: React.FC = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -13,7 +14,6 @@ const StudentClassDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"assignments" | "posts">("assignments");
 
-  // Posts state
   const [posts, setPosts] = useState<ClassPost[]>([]);
   const [postsLoading, setPostsLoading] = useState(false);
 
@@ -87,7 +87,7 @@ const StudentClassDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <LoadingState size="lg" text="Đang tải thông tin lớp học..." />
       </div>
     );
@@ -95,42 +95,29 @@ const StudentClassDetailPage: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="p-8">
+      <div>
         <ErrorState message={error || "Không tìm thấy lớp học"} onRetry={fetchData} />
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <a
-        href="/student/classes"
-        className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-6 transition text-sm"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-        Quay lại Lớp học của tôi
-      </a>
-
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-          <GraduationCap size={28} className="text-blue-600" />
-          {data.classInfo?.className || "Chi tiết lớp học"}
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Mã lớp: {data.classInfo?.classCode} | Môn: {data.classInfo?.courseName || "Chưa có"} | GV: {data.classInfo?.teacherName || "N/A"}
-        </p>
-      </div>
+    <div>
+      <PageHeader
+        title={data.classInfo?.className || "Chi tiết lớp học"}
+        icon={GraduationCap}
+        description={`Mã lớp: ${data.classInfo?.classCode} | Môn: ${data.classInfo?.courseName || "Chưa có"} | GV: ${data.classInfo?.teacherName || "N/A"}`}
+        subtitle="Xem thông tin lớp học, bài thi và thông báo"
+      />
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 mb-6">
+      <div className="mb-6 flex gap-2">
         <button
           onClick={() => setActiveTab("assignments")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+          className={`flex items-center gap-2 h-10 px-4 rounded-lg font-semibold text-sm transition ${
             activeTab === "assignments"
               ? "bg-blue-600 text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
           <BookOpen size={18} />
@@ -138,10 +125,10 @@ const StudentClassDetailPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab("posts")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+          className={`flex items-center gap-2 h-10 px-4 rounded-lg font-semibold text-sm transition ${
             activeTab === "posts"
               ? "bg-blue-600 text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
           <Bell size={18} />
@@ -150,25 +137,18 @@ const StudentClassDetailPage: React.FC = () => {
       </div>
 
       {activeTab === "assignments" && (
-        <>
-          <ClassStatsCard stats={data.stats || { totalAssignments: 0, completedAssignments: 0, openAssignments: 0, upcomingAssignments: 0, averageScore: 0 }} />
-
-          <div className="mt-8">
-            <SectionCard
-              title="Danh sách bài thi"
-              icon={<BookOpen size={20} className="text-blue-600" />}
-            >
-              <AssignmentList assignments={data.assignments || []} />
-            </SectionCard>
-          </div>
-        </>
+        <div className="space-y-6">
+          <Card>
+            <ClassStatsCard stats={data.stats || { totalAssignments: 0, completedAssignments: 0, openAssignments: 0, upcomingAssignments: 0, averageScore: 0 }} />
+          </Card>
+          <Card title="Danh sách bài thi" icon={<BookOpen size={18} className="text-blue-600" />}>
+            <AssignmentList assignments={data.assignments || []} />
+          </Card>
+        </div>
       )}
 
       {activeTab === "posts" && (
-        <SectionCard
-          title="Thông báo từ giáo viên"
-          icon={<Bell size={20} className="text-blue-600" />}
-        >
+        <Card title="Thông báo từ giáo viên" icon={<Bell size={18} className="text-blue-600" />}>
           {postsLoading ? (
             <LoadingState size="md" text="Đang tải thông báo..." />
           ) : posts.length === 0 ? (
@@ -204,7 +184,7 @@ const StudentClassDetailPage: React.FC = () => {
               ))}
             </div>
           )}
-        </SectionCard>
+        </Card>
       )}
     </div>
   );

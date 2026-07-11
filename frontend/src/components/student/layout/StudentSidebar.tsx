@@ -25,7 +25,7 @@ const menu = [
 
 const bottomMenu = [
   { label: "Settings", icon: <Settings size={18} />, path: "/student/settings" },
-  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/student/help" },
+  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/help" },
 ];
 
 const StudentSidebar: React.FC = () => {

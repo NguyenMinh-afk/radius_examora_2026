@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { User } from "lucide-react";
-import { StudentPageHeader } from "../../../components/student/layout";
 import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ProfileHero, ProfileInfoCard, ProfileAcademicCard, ProfileStatsCard } from "../../../components/student/profile";
 import { getStudentDashboard, getStudentClasses, type DashboardData } from "../../../api/studentApi";
+import { PageHeader, Card, CardGridTwoCol } from "../../../components/shared";
 
 const StudentProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const StudentProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <LoadingState size="lg" text="Đang tải thông tin hồ sơ..." />
       </div>
     );
@@ -44,15 +44,15 @@ const StudentProfilePage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-8">
+      <div>
         <ErrorState message={error} onRetry={fetchData} />
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <StudentPageHeader
+    <div>
+      <PageHeader
         title="Hồ sơ cá nhân"
         icon={User}
         description="Xem và quản lý thông tin cá nhân của bạn."
@@ -65,30 +65,34 @@ const StudentProfilePage: React.FC = () => {
         studentCode={studentData?.student?.studentCode}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <ProfileInfoCard
-          fullName={studentData?.student?.fullName || "Học sinh"}
-          email={studentData?.student?.email || ""}
-          phone={studentData?.student?.phone}
-          studentCode={studentData?.student?.studentCode}
-          dateOfBirth={studentData?.student?.dateOfBirth}
-          gender={studentData?.student?.gender}
-        />
-        <ProfileAcademicCard
-          studentCode={studentData?.student?.studentCode}
-          yearLevel={studentData?.student?.academic?.yearLevel}
-          semester={studentData?.student?.academic?.semester}
-          academicYear={studentData?.student?.academic?.academicYear}
-        />
-      </div>
+      <CardGridTwoCol className="mt-6">
+        <Card>
+          <ProfileInfoCard
+            fullName={studentData?.student?.fullName || "Học sinh"}
+            email={studentData?.student?.email || ""}
+            phone={studentData?.student?.phone}
+            studentCode={studentData?.student?.studentCode}
+            dateOfBirth={studentData?.student?.dateOfBirth}
+            gender={studentData?.student?.gender}
+          />
+        </Card>
+        <Card>
+          <ProfileAcademicCard
+            studentCode={studentData?.student?.studentCode}
+            yearLevel={studentData?.student?.academic?.yearLevel}
+            semester={studentData?.student?.academic?.semester}
+            academicYear={studentData?.student?.academic?.academicYear}
+          />
+        </Card>
+      </CardGridTwoCol>
 
-      <div className="mt-8">
+      <Card className="mt-6">
         <ProfileStatsCard
           classCount={classCount}
           completedExams={0}
           averageScore={studentData?.overview?.averageScore || 0}
         />
-      </div>
+      </Card>
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { GraduationCap, Plus } from "lucide-react";
 import { getStudentClasses, type ClassData } from "../../../api/studentApi";
-import { StudentPageHeader } from "../../../components/student/layout";
-import { SearchInput, LoadingState, ErrorState } from "../../../components/student/shared";
+import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ClassList } from "../../../components/student/classes";
 import { JoinClassDialog } from "../../../components/student/classes/JoinClassDialog";
+import { PageHeader, Card, FilterBar } from "../../../components/shared";
 
 const StudentClassesPage: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
@@ -41,42 +41,45 @@ const StudentClassesPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <LoadingState size="lg" text="Đang tải danh sách lớp..." />
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <StudentPageHeader
+    <div>
+      <PageHeader
         title="Lớp học của tôi"
         icon={GraduationCap}
         description="Theo dõi các lớp học bạn đang tham gia, giảng viên phụ trách và các bài thi được giao."
+        actions={
+          <button
+            onClick={() => setShowJoinDialog(true)}
+            className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Tham gia lớp
+          </button>
+        }
       />
 
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex-1 max-w-md">
-          <SearchInput
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="Tìm kiếm lớp học..."
-          />
-        </div>
-        <button
-          onClick={() => setShowJoinDialog(true)}
-          className="ml-4 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Tham gia lớp
-        </button>
-      </div>
-
-      {error ? (
-        <ErrorState message={error} onRetry={fetchData} />
-      ) : (
-        <ClassList classes={filteredClasses} />
-      )}
+      <Card className="mt-6">
+        {error ? (
+          <ErrorState message={error} onRetry={fetchData} />
+        ) : (
+          <>
+            <div className="mb-4">
+              <FilterBar
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Tìm kiếm lớp học..."
+              />
+            </div>
+            <ClassList classes={filteredClasses} />
+          </>
+        )}
+      </Card>
 
       <JoinClassDialog
         isOpen={showJoinDialog}

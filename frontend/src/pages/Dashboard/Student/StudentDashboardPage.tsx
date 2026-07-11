@@ -9,6 +9,7 @@ import {
   QuickActionsCard,
 } from "../../../components/student/dashboard";
 import { LoadingState, ErrorState } from "../../../components/student/shared";
+import { Card, CardGridTwoCol } from "../../../components/shared";
 
 const formatDateTime = (dateString: string | undefined | null) => {
   if (!dateString) return "N/A";
@@ -49,7 +50,7 @@ const StudentDashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <LoadingState size="lg" text="Đang tải dữ liệu..." />
       </div>
     );
@@ -57,14 +58,14 @@ const StudentDashboardPage: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="p-8">
+      <div>
         <ErrorState message={error || "Không thể tải dữ liệu dashboard"} onRetry={fetchData} />
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div>
       <DashboardHero
         studentName={data.student?.fullName || "Học sinh"}
         overview={data.overview || { classCount: 0, upcomingAssignments: 0, openAssignments: 0, averageScore: 0 }}
@@ -74,22 +75,26 @@ const StudentDashboardPage: React.FC = () => {
 
       <DashboardOverviewStats overview={data.overview || { classCount: 0, upcomingAssignments: 0, openAssignments: 0, averageScore: 0 }} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+      <CardGridTwoCol className="mt-6">
         {data.nextAssignment && (
-          <NextAssignmentCard assignment={data.nextAssignment} />
+          <Card>
+            <NextAssignmentCard assignment={data.nextAssignment} />
+          </Card>
         )}
         {data.myClasses && data.myClasses.length > 0 && (
-          <MyClassesCard classes={data.myClasses} maxDisplay={4} />
+          <Card>
+            <MyClassesCard classes={data.myClasses} maxDisplay={4} />
+          </Card>
         )}
-      </div>
+      </CardGridTwoCol>
 
-      <div className="mt-8">
+      <Card className="mt-6">
         <RecentResultsCard results={data.recentResults || []} />
-      </div>
+      </Card>
 
-      <div className="mt-8">
+      <Card className="mt-6">
         <QuickActionsCard />
-      </div>
+      </Card>
     </div>
   );
 };

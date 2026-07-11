@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BookOpen } from "lucide-react";
 import { getStudentResults, type Result } from "../../../api/studentApi";
-import { StudentPageHeader } from "../../../components/student/layout";
-import { LoadingState, ErrorState, SearchInput } from "../../../components/student/shared";
+import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ResultSummaryCards, ResultTable } from "../../../components/student/results";
+import { PageHeader, Card, FilterBar } from "../../../components/shared";
 
 const StudentResultsPage: React.FC = () => {
   const [results, setResults] = useState<Result[]>([]);
@@ -53,52 +53,51 @@ const StudentResultsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <LoadingState size="lg" text="Đang tải kết quả bài thi..." />
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <StudentPageHeader
+    <div>
+      <PageHeader
         title="Kết quả bài thi"
         icon={BookOpen}
         description="Xem lại kết quả các bài thi đã nộp và lịch sử làm bài của bạn."
       />
 
-      {error ? (
-        <ErrorState message={error} onRetry={fetchData} />
-      ) : (
-        <>
-          <ResultSummaryCards
-            totalResults={results.length}
-            averageScore={averageScore}
-            passedCount={passedCount}
-          />
-
-          <div className="mt-6 flex flex-col sm:flex-row gap-4">
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Tìm kiếm bài thi..."
-              className="flex-1 max-w-md"
+      <Card className="mt-6">
+        {error ? (
+          <ErrorState message={error} onRetry={fetchData} />
+        ) : (
+          <>
+            <ResultSummaryCards
+              totalResults={results.length}
+              averageScore={averageScore}
+              passedCount={passedCount}
             />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "newest" | "score")}
-              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
-            >
-              <option value="newest">Mới nhất</option>
-              <option value="score">Điểm cao nhất</option>
-            </select>
-          </div>
 
-          <div className="mt-6">
+            <FilterBar
+              searchValue={searchTerm}
+              onSearchChange={setSearchTerm}
+              searchPlaceholder="Tìm kiếm bài thi..."
+              actions={
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as "newest" | "score")}
+                  className="h-11 px-4 border border-slate-200 rounded-lg bg-white text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                >
+                  <option value="newest">Mới nhất</option>
+                  <option value="score">Điểm cao nhất</option>
+                </select>
+              }
+            />
+
             <ResultTable results={filteredResults} />
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </Card>
     </div>
   );
 };

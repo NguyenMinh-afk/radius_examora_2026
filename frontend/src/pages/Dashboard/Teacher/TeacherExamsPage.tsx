@@ -6,6 +6,7 @@ import ExamBuilderWizard from "../../../components/teacher/exams/ExamBuilderWiza
 import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
 import { getExams, deleteExam } from "../../../api/teacherApi";
 import type { Exam, ExamDetail } from "../../../api/teacherApi";
+import { PageHeader, Card, StatCard, StatGrid } from "../../../components/shared";
 
 const TeacherExamsPage: React.FC = () => {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -105,77 +106,84 @@ const TeacherExamsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Đề thi</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            {exams.length > 0 ? `${exams.length} đề thi` : "Quản lý đề thi"}
-          </p>
-        </div>
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold rounded-xl px-5 py-2.5 hover:bg-blue-700 transition"
-        >
-          <Plus size={18} />
-          Tạo đề thi
-        </button>
-      </div>
+    <div>
+      <PageHeader
+        title="Đề thi"
+        icon={FileText}
+        description={exams.length > 0 ? `${exams.length} đề thi` : "Quản lý đề thi"}
+        actions={
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            <Plus size={18} />
+            Tạo đề thi
+          </button>
+        }
+      />
 
-      {/* Filters */}
-      <div className="mb-6">
-        <ExamFilters
-          search={search}
-          onSearchChange={setSearch}
-          filterPublished={filterPublished}
-          onFilterChange={setFilterPublished}
+      {/* Stats */}
+      <StatGrid className="mt-6" columns={3}>
+        <StatCard
+          label="Tổng đề thi"
+          value={exams.length}
+          icon={FileText}
+          variant="blue"
         />
-      </div>
-
-      {/* Summary */}
-      {!loading && exams.length > 0 && (
-        <div className="flex gap-4 mb-6">
-          <div className="bg-blue-50 rounded-xl px-4 py-2 text-sm">
-            <span className="font-bold text-blue-700">{exams.length}</span> đề thi
-          </div>
-          <div className="bg-green-50 rounded-xl px-4 py-2 text-sm">
-            <span className="font-bold text-green-700">{publishedCount}</span> đã xuất bản
-          </div>
-          <div className="bg-slate-50 rounded-xl px-4 py-2 text-sm">
-            <span className="font-bold text-slate-700">{draftCount}</span> bản nháp
-          </div>
-        </div>
-      )}
-
-      {/* Loading */}
-      {loading && <LoadingState size="lg" text="Đang tải đề thi..." />}
-
-      {/* Error */}
-      {error && !loading && <ErrorState message={error} onRetry={fetchExams} />}
-
-      {/* Empty */}
-      {!loading && !error && displayExams.length === 0 && (
-        <EmptyState
-          icon={<FileText size={36} className="text-slate-300" />}
-          title="Không tìm thấy đề thi nào"
-          description={search || filterPublished ? "Thử thay đổi bộ lọc." : "Bắt đầu tạo đề thi mới."}
+        <StatCard
+          label="Đã xuất bản"
+          value={publishedCount}
+          icon={FileText}
+          variant="green"
         />
-      )}
+        <StatCard
+          label="Bản nháp"
+          value={draftCount}
+          icon={FileText}
+          variant="default"
+        />
+      </StatGrid>
 
-      {/* Grid */}
-      {!loading && !error && displayExams.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {displayExams.map((exam) => (
-            <ExamCard
-              key={exam.examId}
-              exam={exam}
-              onEdit={handleOpenEdit}
-              onDelete={handleDelete}
+      <Card className="mt-6">
+        {error ? (
+          <ErrorState message={error} onRetry={fetchExams} />
+        ) : (
+          <>
+            <ExamFilters
+              search={search}
+              onSearchChange={setSearch}
+              filterPublished={filterPublished}
+              onFilterChange={setFilterPublished}
             />
-          ))}
-        </div>
-      )}
+
+            {/* Loading */}
+            {loading && <LoadingState size="lg" text="Đang tải đề thi..." />}
+
+            {/* Empty */}
+            {!loading && displayExams.length === 0 && (
+              <EmptyState
+                icon={<FileText size={36} className="text-slate-300" />}
+                title="Không tìm thấy đề thi nào"
+                description={search || filterPublished ? "Thử thay đổi bộ lọc." : "Bắt đầu tạo đề thi mới."}
+              />
+            )}
+
+            {/* Grid */}
+            {!loading && displayExams.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {displayExams.map((exam) => (
+                  <ExamCard
+                    key={exam.examId}
+                    exam={exam}
+                    onEdit={handleOpenEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </Card>
 
       {/* Modal */}
       <ExamBuilderWizard

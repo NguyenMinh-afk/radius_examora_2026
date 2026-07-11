@@ -6,9 +6,9 @@ import {
   markAllNotificationsAsRead,
   type Notification,
 } from "../../../api/notificationApi";
-import { StudentPageHeader } from "../../../components/student/layout";
-import { LoadingState, ErrorState, SearchInput } from "../../../components/student/shared";
+import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { NotificationFilterBar, NotificationList } from "../../../components/student/notifications";
+import { PageHeader, Card, FilterBar } from "../../../components/shared";
 
 const StudentNotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -17,6 +17,7 @@ const StudentNotificationsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchNotifications = async () => {
     try {
@@ -40,6 +41,12 @@ const StudentNotificationsPage: React.FC = () => {
   useEffect(() => {
     fetchNotifications();
   }, [filter]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchNotifications();
+    setRefreshing(false);
+  };
 
   const markAsRead = async (id: string) => {
     try {
@@ -72,9 +79,17 @@ const StudentNotificationsPage: React.FC = () => {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  if (loading) {
+    return (
+      <div>
+        <LoadingState size="lg" text="Đang tải thông báo..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-8">
-      <StudentPageHeader
+    <div>
+      <PageHeader
         title="Thông báo"
         icon={Bell}
         description={
@@ -82,46 +97,45 @@ const StudentNotificationsPage: React.FC = () => {
             ? `Bạn có ${unreadCount} thông báo chưa đọc`
             : "Tất cả thông báo đã được đọc"
         }
+        actions={
+          unreadCount > 0 && (
+            <button
+              onClick={markAllAsRead}
+              className="inline-flex h-11 items-center gap-2 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm"
+            >
+              Đánh dấu tất cả đã đọc
+            </button>
+          )
+        }
       />
 
-      {unreadCount > 0 && (
-        <button
-          onClick={markAllAsRead}
-          className="mb-6 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
-        >
-          Đánh dấu đã đọc tất cả
-        </button>
-      )}
-
-      {loading ? (
-        <LoadingState size="lg" text="Đang tải thông báo..." />
-      ) : error ? (
-        <ErrorState message={error} onRetry={fetchNotifications} />
-      ) : (
-        <>
-          <NotificationFilterBar
-            filter={filter}
-            onFilterChange={setFilter}
-            total={total}
-            unreadCount={unreadCount}
-          />
-
-          <div className="mt-4">
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Tìm kiếm thông báo..."
+      <Card className="mt-6">
+        {error ? (
+          <ErrorState message={error} onRetry={fetchNotifications} />
+        ) : (
+          <>
+            <NotificationFilterBar
+              filter={filter}
+              onFilterChange={setFilter}
+              total={total}
+              unreadCount={unreadCount}
             />
-          </div>
 
-          <div className="mt-6">
+            <FilterBar
+              searchValue={searchTerm}
+              onSearchChange={setSearchTerm}
+              searchPlaceholder="Tìm kiếm thông báo..."
+              onRefresh={handleRefresh}
+              refreshing={refreshing}
+            />
+
             <NotificationList
               notifications={filteredNotifications}
               onMarkAsRead={markAsRead}
             />
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </Card>
     </div>
   );
 };

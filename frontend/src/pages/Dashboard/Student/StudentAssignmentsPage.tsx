@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FileText } from "lucide-react";
 import { getStudentAssignments, type AssignmentsResponse } from "../../../api/studentApi";
-import { StudentPageHeader } from "../../../components/student/layout";
 import { LoadingState, ErrorState } from "../../../components/student/shared";
-import { AssignmentFilters, AssignmentList } from "../../../components/student/assignments";
+import { AssignmentList } from "../../../components/student/assignments";
+import { PageHeader, Card, FilterBar, TabFilter } from "../../../components/shared";
 
 const StudentAssignmentsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,37 +54,47 @@ const StudentAssignmentsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <LoadingState size="lg" text="Đang tải danh sách bài thi..." />
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <StudentPageHeader
+    <div>
+      <PageHeader
         title="Bài thi của tôi"
         icon={FileText}
         description="Theo dõi tất cả bài thi được giao từ các lớp học mà bạn đang tham gia."
       />
 
-      {error ? (
-        <ErrorState message={error} onRetry={fetchData} />
-      ) : (
-        <>
-          <AssignmentFilters
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            summary={data?.summary || { total: 0, open: 0, upcoming: 0, submitted: 0, expired: 0 }}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          />
+      <Card className="mt-6">
+        {error ? (
+          <ErrorState message={error} onRetry={fetchData} />
+        ) : (
+          <>
+            <TabFilter
+              tabs={[
+                { value: "all", label: "Tất cả", count: data?.summary?.total },
+                { value: "open", label: "Đang mở", count: data?.summary?.open },
+                { value: "upcoming", label: "Sắp tới", count: data?.summary?.upcoming },
+                { value: "submitted", label: "Đã nộp", count: data?.summary?.submitted },
+                { value: "expired", label: "Hết hạn", count: data?.summary?.expired },
+              ]}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+            />
 
-          <div className="mt-6">
+            <FilterBar
+              searchValue={searchTerm}
+              onSearchChange={setSearchTerm}
+              searchPlaceholder="Tìm kiếm bài thi..."
+            />
+
             <AssignmentList assignments={filteredItems || []} />
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </Card>
     </div>
   );
 };
