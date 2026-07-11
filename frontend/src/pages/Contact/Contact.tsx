@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Mail, MapPin, Github, MessageSquare, Phone, Clock, Send, CheckCircle, AlertCircle, ExternalLink } from "lucide-react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { useTheme } from "../../contexts/useTheme";
 
 const contactInfo = [
   {
@@ -74,6 +75,8 @@ interface FormErrors {
 }
 
 const Contact: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -131,17 +134,7 @@ const Contact: React.FC = () => {
     setSubmitStatus("idle");
 
     try {
-      // Simulate API call - replace with actual API endpoint
       await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Example API call:
-      // const response = await fetch('/api/contact', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-      // if (!response.ok) throw new Error('Failed to send');
-
       setSubmitStatus("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch {
@@ -151,45 +144,40 @@ const Contact: React.FC = () => {
     }
   };
 
-  const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-    blue: { bg: "bg-blue-100", text: "text-blue-600", border: "hover:border-blue-300" },
-    green: { bg: "bg-green-100", text: "text-green-600", border: "hover:border-green-300" },
-    purple: { bg: "bg-purple-100", text: "text-purple-600", border: "hover:border-purple-300" },
-    orange: { bg: "bg-orange-100", text: "text-orange-600", border: "hover:border-orange-300" },
+  const colorMap: Record<string, { bg: string; text: string }> = {
+    blue: { bg: isDark ? "bg-blue-500/20" : "bg-blue-100", text: isDark ? "text-blue-400" : "text-blue-600" },
+    green: { bg: isDark ? "bg-green-500/20" : "bg-green-100", text: isDark ? "text-green-400" : "text-green-600" },
+    purple: { bg: isDark ? "bg-purple-500/20" : "bg-purple-100", text: isDark ? "text-purple-400" : "text-purple-600" },
+    orange: { bg: isDark ? "bg-orange-500/20" : "bg-orange-100", text: isDark ? "text-orange-400" : "text-orange-600" },
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-blue-50 to-indigo-50">
+    <div className={`min-h-screen flex flex-col ${isDark ? "bg-slate-900" : "bg-gradient-to-br from-white via-blue-50 to-indigo-50"}`}>
 
-      {/* HEADER */}
       <Header />
 
-      {/* MAIN CONTENT */}
       <main className="flex-1 px-4 sm:px-6 py-16 lg:py-24">
         <div className="max-w-6xl mx-auto">
 
-          {/* Hero Section */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-700"}`}>
               <MessageSquare size={16} />
               Get in Touch
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>
               Contact <span className="text-blue-600">EXMORA</span>
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className={`text-lg max-w-2xl mx-auto ${isDark ? "text-gray-400" : "text-gray-600"}`}>
               Questions about our AI-powered examination platform, research collaboration, or system integration? Our team is ready to help.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
 
-            {/* LEFT SIDE - Contact Info & FAQ */}
             <div className="lg:col-span-2 space-y-10">
 
-              {/* Contact Info Cards */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-5">
+                <h2 className={`text-xl font-semibold mb-5 ${isDark ? "text-white" : "text-gray-900"}`}>
                   Contact Information
                 </h2>
                 <div className="space-y-3">
@@ -197,17 +185,17 @@ const Contact: React.FC = () => {
                     <a
                       key={item.title}
                       href={item.link || undefined}
-                      className={`block bg-white p-4 rounded-xl shadow-sm border border-gray-100 transition-all duration-200 ${item.link ? 'hover:shadow-md hover:border-blue-200 cursor-pointer' : 'cursor-default'} ${colorMap[item.color]?.border || ''}`}
+                      className={`block p-4 rounded-xl border transition-all duration-200 ${isDark ? "bg-slate-800 border-white/10 hover:border-blue-500/50" : "bg-white border-gray-100 hover:shadow-md hover:border-blue-200"}`}
                     >
                       <div className="flex items-center gap-4">
-                        <div className={`${colorMap[item.color]?.bg} ${colorMap[item.color]?.text} p-3 rounded-xl`}>
+                        <div className={`${colorMap[item.color].bg} ${colorMap[item.color].text} p-3 rounded-xl`}>
                           {item.icon}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-800 text-sm">
+                          <h3 className={`font-semibold text-sm ${isDark ? "text-gray-200" : "text-gray-800"}`}>
                             {item.title}
                           </h3>
-                          <p className="text-gray-600 text-sm">
+                          <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                             {item.value}
                           </p>
                         </div>
@@ -217,9 +205,8 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
-              {/* Social Links */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-5">
+                <h2 className={`text-xl font-semibold mb-5 ${isDark ? "text-white" : "text-gray-900"}`}>
                   Connect With Us
                 </h2>
                 <div className="flex flex-wrap gap-3">
@@ -229,7 +216,7 @@ const Contact: React.FC = () => {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200"
+                      className={`inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg shadow-sm text-sm font-medium transition-all duration-200 ${isDark ? "bg-slate-800 border-white/10 text-gray-300 hover:bg-blue-500/20 hover:border-blue-500/50 hover:text-blue-400" : "bg-white border-gray-200 text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"}`}
                     >
                       {link.icon}
                       {link.name}
@@ -238,26 +225,25 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
-              {/* FAQ Section */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-5">
+                <h2 className={`text-xl font-semibold mb-5 ${isDark ? "text-white" : "text-gray-900"}`}>
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
                   {faq.map((item, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+                      className={`rounded-xl border overflow-hidden ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-100 shadow-sm"}`}
                     >
                       <button
                         onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                        className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                        className={`w-full flex items-center justify-between p-4 text-left transition-colors ${isDark ? "hover:bg-white/5" : "hover:bg-gray-50"}`}
                       >
-                        <span className="font-medium text-gray-800 pr-4">
+                        <span className={`font-medium pr-4 ${isDark ? "text-gray-200" : "text-gray-800"}`}>
                           {item.q}
                         </span>
                         <svg
-                          className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-200 ${expandedFaq === index ? 'rotate-180' : ''}`}
+                          className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${isDark ? "text-gray-400" : "text-gray-500"} ${expandedFaq === index ? "rotate-180" : ""}`}
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -267,7 +253,7 @@ const Contact: React.FC = () => {
                       </button>
                       {expandedFaq === index && (
                         <div className="px-4 pb-4">
-                          <p className="text-gray-600 text-sm leading-relaxed">
+                          <p className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                             {item.a}
                           </p>
                         </div>
@@ -278,37 +264,34 @@ const Contact: React.FC = () => {
               </div>
             </div>
 
-            {/* RIGHT SIDE - Contact Form */}
             <div className="lg:col-span-3">
-              <div className="bg-white p-8 md:p-10 rounded-2xl shadow-lg border border-gray-100">
+              <div className={`p-8 md:p-10 rounded-2xl shadow-lg border ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-100"}`}>
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="bg-blue-100 text-blue-600 p-3 rounded-xl">
+                  <div className={`p-3 rounded-xl ${isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600"}`}>
                     <Send size={22} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
                       Send us a Message
                     </h2>
-                    <p className="text-sm text-gray-500">
+                    <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                       We typically respond within 24 hours
                     </p>
                   </div>
                 </div>
 
-                {/* Success Message */}
                 {submitStatus === "success" && (
-                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
+                  <div className={`mb-6 p-4 border rounded-xl flex items-center gap-3 ${isDark ? "bg-green-500/20 border-green-500/30 text-green-400" : "bg-green-50 border-green-200 text-green-700"}`}>
                     <CheckCircle size={20} />
                     <div>
                       <p className="font-medium">Message sent successfully!</p>
-                      <p className="text-sm">We'll get back to you soon.</p>
+                      <p className="text-sm">We&apos;ll get back to you soon.</p>
                     </div>
                   </div>
                 )}
 
-                {/* Error Message */}
                 {submitStatus === "error" && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
+                  <div className={`mb-6 p-4 border rounded-xl flex items-center gap-3 ${isDark ? "bg-red-500/20 border-red-500/30 text-red-400" : "bg-red-50 border-red-200 text-red-700"}`}>
                     <AlertCircle size={20} />
                     <div>
                       <p className="font-medium">Failed to send message</p>
@@ -320,7 +303,7 @@ const Contact: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid md:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label htmlFor="name" className={`block text-sm font-medium mb-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                         Full Name
                       </label>
                       <input
@@ -330,15 +313,15 @@ const Contact: React.FC = () => {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Nguyen Van A"
-                        className={`w-full border rounded-xl px-4 py-3 bg-gray-50 focus:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                        className={`w-full border rounded-xl px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? (isDark ? "border-red-400 bg-red-500/20" : "border-red-400 bg-red-50") : (isDark ? "border-white/10 bg-slate-700 text-gray-200 placeholder-gray-500" : "border-gray-200 bg-gray-50")}`}
                       />
                       {errors.name && (
-                        <p className="mt-1.5 text-sm text-red-600">{errors.name}</p>
+                        <p className={`mt-1.5 text-sm ${isDark ? "text-red-400" : "text-red-600"}`}>{errors.name}</p>
                       )}
                     </div>
 
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label htmlFor="email" className={`block text-sm font-medium mb-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                         Email Address
                       </label>
                       <input
@@ -348,16 +331,16 @@ const Contact: React.FC = () => {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="contact@example.com"
-                        className={`w-full border rounded-xl px-4 py-3 bg-gray-50 focus:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                        className={`w-full border rounded-xl px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? (isDark ? "border-red-400 bg-red-500/20" : "border-red-400 bg-red-50") : (isDark ? "border-white/10 bg-slate-700 text-gray-200 placeholder-gray-500" : "border-gray-200 bg-gray-50")}`}
                       />
                       {errors.email && (
-                        <p className="mt-1.5 text-sm text-red-600">{errors.email}</p>
+                        <p className={`mt-1.5 text-sm ${isDark ? "text-red-400" : "text-red-600"}`}>{errors.email}</p>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label htmlFor="subject" className={`block text-sm font-medium mb-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       Subject
                     </label>
                     <select
@@ -365,7 +348,7 @@ const Contact: React.FC = () => {
                       name="subject"
                       value={formData.subject}
                       onChange={handleChange}
-                      className={`w-full border rounded-xl px-4 py-3 bg-gray-50 focus:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.subject ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                      className={`w-full border rounded-xl px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.subject ? (isDark ? "border-red-400 bg-red-500/20" : "border-red-400 bg-red-50") : (isDark ? "border-white/10 bg-slate-700 text-gray-200" : "border-gray-200 bg-gray-50")}`}
                     >
                       <option value="">Select a topic</option>
                       <option value="general">General Inquiry</option>
@@ -376,12 +359,12 @@ const Contact: React.FC = () => {
                       <option value="feedback">Feedback</option>
                     </select>
                     {errors.subject && (
-                      <p className="mt-1.5 text-sm text-red-600">{errors.subject}</p>
+                      <p className={`mt-1.5 text-sm ${isDark ? "text-red-400" : "text-red-600"}`}>{errors.subject}</p>
                     )}
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label htmlFor="message" className={`block text-sm font-medium mb-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       Message
                     </label>
                     <textarea
@@ -391,15 +374,15 @@ const Contact: React.FC = () => {
                       onChange={handleChange}
                       placeholder="How can we help you?"
                       rows={6}
-                      className={`w-full border rounded-xl px-4 py-3 bg-gray-50 focus:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${errors.message ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                      className={`w-full border rounded-xl px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${errors.message ? (isDark ? "border-red-400 bg-red-500/20" : "border-red-400 bg-red-50") : (isDark ? "border-white/10 bg-slate-700 text-gray-200 placeholder-gray-500" : "border-gray-200 bg-gray-50")}`}
                     />
                     <div className="flex justify-between mt-1.5">
                       {errors.message ? (
-                        <p className="text-sm text-red-600">{errors.message}</p>
+                        <p className={`text-sm ${isDark ? "text-red-400" : "text-red-600"}`}>{errors.message}</p>
                       ) : (
                         <span />
                       )}
-                      <span className="text-sm text-gray-400">
+                      <span className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>
                         {formData.message.length} characters
                       </span>
                     </div>
@@ -433,7 +416,6 @@ const Contact: React.FC = () => {
         </div>
       </main>
 
-      {/* FOOTER */}
       <Footer />
     </div>
   );

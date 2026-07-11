@@ -4,18 +4,22 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 interface ErrorStateProps {
   message?: string;
   onRetry?: () => void;
+  isDark?: boolean;
 }
 
 const ErrorState: React.FC<ErrorStateProps> = ({
   message = "Đã xảy ra lỗi khi tải dữ liệu",
   onRetry,
+  isDark,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-6">
-      <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+      <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
+        isDark ? "bg-red-500/20" : "bg-red-50"
+      }`}>
         <AlertCircle size={32} className="text-red-500" />
       </div>
-      <p className="text-base font-medium text-slate-700 mb-4 text-center">{message}</p>
+      <p className={`text-base font-medium mb-4 text-center ${isDark ? "text-gray-200" : "text-slate-700"}`}>{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}

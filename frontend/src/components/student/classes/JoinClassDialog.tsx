@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Plus, Loader2 } from "lucide-react";
 import { joinClass } from "../../../api/studentApi";
+import { useTheme } from "../../../contexts/useTheme";
 
 interface JoinClassDialogProps {
   isOpen: boolean;
@@ -13,6 +14,8 @@ export const JoinClassDialog: React.FC<JoinClassDialogProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [classCode, setClassCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,26 +59,32 @@ export const JoinClassDialog: React.FC<JoinClassDialogProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl">
+      <div className={`w-full max-w-md rounded-xl shadow-2xl ${
+        isDark ? "bg-slate-900 border border-white/10" : "bg-white"
+      }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">Tham gia lớp học</h2>
+        <div className={`flex items-center justify-between p-4 border-b ${
+          isDark ? "border-white/10" : "border-slate-200"
+        }`}>
+          <h2 className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>Tham gia lớp học</h2>
           <button
             onClick={handleClose}
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+            className={`p-1 rounded-lg transition-colors ${
+              isDark ? "hover:bg-white/5" : "hover:bg-gray-100"
+            }`}
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className={`w-5 h-5 ${isDark ? "text-gray-400" : "text-gray-500"}`} />
           </button>
         </div>
 
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-4">
-          <p className="text-sm text-gray-600 mb-4">
+          <p className={`text-sm mb-4 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
             Nhập mã lớp được giáo viên cung cấp để tham gia lớp học.
           </p>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
               Mã lớp
             </label>
             <input
@@ -86,21 +95,33 @@ export const JoinClassDialog: React.FC<JoinClassDialogProps> = ({
                 setError(null);
               }}
               placeholder="Ví dụ: ABC123"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              className={`w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all border ${
+                isDark
+                  ? "bg-slate-800 border-white/10 text-white placeholder:text-gray-500"
+                  : "bg-white border-gray-300 text-gray-900"
+              }`}
               disabled={loading}
               autoFocus
             />
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className={`mb-4 p-3 rounded-lg border ${
+              isDark
+                ? "bg-red-500/20 border-red-500/30"
+                : "bg-red-50 border-red-200"
+            }`}>
+              <p className={`text-sm ${isDark ? "text-red-400" : "text-red-600"}`}>{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-600">{success}</p>
+            <div className={`mb-4 p-3 rounded-lg border ${
+              isDark
+                ? "bg-emerald-500/20 border-emerald-500/30"
+                : "bg-green-50 border-green-200"
+            }`}>
+              <p className={`text-sm ${isDark ? "text-emerald-400" : "text-green-600"}`}>{success}</p>
             </div>
           )}
 
@@ -108,7 +129,11 @@ export const JoinClassDialog: React.FC<JoinClassDialogProps> = ({
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className={`flex-1 px-4 py-2 rounded-lg transition-colors border ${
+                isDark
+                  ? "border-white/10 text-gray-300 hover:bg-white/5"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
               disabled={loading}
             >
               Hủy

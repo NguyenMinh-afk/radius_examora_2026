@@ -509,6 +509,14 @@ export const getAssignments = async (filters?: {
   return response.data;
 };
 
+export const updateAssignment = async (id: string, payload: { status: string }): Promise<void> => {
+  await teacherApi.put(`/assignments/${id}`, payload);
+};
+
+export const deleteAssignment = async (id: string): Promise<void> => {
+  await teacherApi.delete(`/assignments/${id}`);
+};
+
 export const getResults = async (filters?: {
   classId?: string;
   assignmentId?: string;

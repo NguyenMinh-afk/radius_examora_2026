@@ -16,14 +16,12 @@ interface DashboardHeroProps {
 const DashboardHero: React.FC<DashboardHeroProps> = ({ teacherName, overview }) => {
   return (
     <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-8 text-white relative overflow-hidden">
-      {/* Decorative background */}
       <div className="absolute right-0 top-0 opacity-10">
         <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
           <circle cx="250" cy="50" r="200" fill="white" />
         </svg>
       </div>
 
-      {/* Content */}
       <div className="relative z-10">
         <h1 className="text-3xl font-extrabold mb-2">
           Xin chào, {teacherName}!
@@ -35,7 +33,6 @@ const DashboardHero: React.FC<DashboardHeroProps> = ({ teacherName, overview }) 
           )}
         </p>
 
-        {/* Quick stats */}
         <div className="flex flex-wrap gap-6 mb-6">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-400" />
@@ -57,7 +54,6 @@ const DashboardHero: React.FC<DashboardHeroProps> = ({ teacherName, overview }) 
           </div>
         </div>
 
-        {/* CTA Buttons */}
         <div className="flex flex-wrap gap-3">
           <Link
             to="/teacher/exams"

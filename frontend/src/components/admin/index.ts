@@ -18,7 +18,7 @@ export { default as QuestionModerationPanel } from "./questions/QuestionModerati
 export { default as JobMonitoringPanel } from "./jobs/JobMonitoringPanel";
 
 // Admin Logs
-export { AuditLogsPanel, SystemLogsPanel } from "./logs";
+export { AuditLogsPanel, SystemLogsPanel } from "./adminLogs";
 
 // Admin Notifications
 export { default as NotificationsPanel } from "./notifications/NotificationsPanel";

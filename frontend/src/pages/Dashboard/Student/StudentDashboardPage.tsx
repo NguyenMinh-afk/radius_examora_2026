@@ -10,6 +10,7 @@ import {
 } from "../../../components/student/dashboard";
 import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { Card, CardGridTwoCol } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const formatDateTime = (dateString: string | undefined | null) => {
   if (!dateString) return "N/A";
@@ -25,6 +26,8 @@ const formatDateTime = (dateString: string | undefined | null) => {
 };
 
 const StudentDashboardPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +54,7 @@ const StudentDashboardPage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải dữ liệu..." />
+        <LoadingState size="lg" text="Đang tải dữ liệu..." isDark={isDark} />
       </div>
     );
   }
@@ -59,7 +62,7 @@ const StudentDashboardPage: React.FC = () => {
   if (error || !data) {
     return (
       <div>
-        <ErrorState message={error || "Không thể tải dữ liệu dashboard"} onRetry={fetchData} />
+        <ErrorState message={error || "Không thể tải dữ liệu dashboard"} onRetry={fetchData} isDark={isDark} />
       </div>
     );
   }

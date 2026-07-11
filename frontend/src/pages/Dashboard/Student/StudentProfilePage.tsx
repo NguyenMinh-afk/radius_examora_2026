@@ -4,8 +4,11 @@ import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ProfileHero, ProfileInfoCard, ProfileAcademicCard, ProfileStatsCard } from "../../../components/student/profile";
 import { getStudentDashboard, getStudentClasses, type DashboardData } from "../../../api/studentApi";
 import { PageHeader, Card, CardGridTwoCol } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const StudentProfilePage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [studentData, setStudentData] = useState<DashboardData | null>(null);
@@ -37,7 +40,7 @@ const StudentProfilePage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải thông tin hồ sơ..." />
+        <LoadingState size="lg" text="Đang tải thông tin hồ sơ..." isDark={isDark} />
       </div>
     );
   }
@@ -45,7 +48,7 @@ const StudentProfilePage: React.FC = () => {
   if (error) {
     return (
       <div>
-        <ErrorState message={error} onRetry={fetchData} />
+        <ErrorState message={error} onRetry={fetchData} isDark={isDark} />
       </div>
     );
   }

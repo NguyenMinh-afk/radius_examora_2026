@@ -14,6 +14,7 @@ interface TeacherInfoCardProps {
     gender?: string | null;
     schoolName?: string | null;
   };
+  isDark?: boolean;
 }
 
 const formatDate = (dateStr: string | null | undefined) => {
@@ -29,7 +30,7 @@ const formatGender = (gender: string | null | undefined) => {
   return gender;
 };
 
-const TeacherInfoCard: React.FC<TeacherInfoCardProps> = ({ teacher }) => {
+const TeacherInfoCard: React.FC<TeacherInfoCardProps> = ({ teacher, isDark }) => {
   const infoItems = [
     { label: "Họ và tên", value: teacher.fullName, icon: <User size={16} /> },
     { label: "Email", value: teacher.email, icon: <Mail size={16} /> },
@@ -43,32 +44,42 @@ const TeacherInfoCard: React.FC<TeacherInfoCardProps> = ({ teacher }) => {
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-      <h3 className="text-base font-bold text-slate-900 mb-4">Thông tin cá nhân</h3>
+    <div className={`rounded-2xl border shadow-sm p-6 ${
+      isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
+    }`}>
+      <h3 className={`text-base font-bold mb-4 ${isDark ? "text-white" : "text-slate-900"}`}>Thông tin cá nhân</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {infoItems.map((item) => (
-          <div key={item.label} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-slate-500 flex-shrink-0 shadow-sm">
+          <div
+            key={item.label}
+            className={`flex items-start gap-3 p-3 rounded-xl ${
+              isDark ? "bg-slate-800" : "bg-slate-50"
+            }`}
+          >
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm ${
+              isDark ? "bg-slate-700 text-gray-300" : "bg-white text-slate-500"
+            }`}>
               {item.icon}
             </div>
             <div>
-              <p className="text-xs text-slate-400 mb-0.5">{item.label}</p>
-              <p className="text-sm font-medium text-slate-900">{item.value}</p>
+              <p className={`text-xs mb-0.5 ${isDark ? "text-gray-500" : "text-slate-400"}`}>{item.label}</p>
+              <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{item.value}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Bio */}
       {teacher.bio && (
-        <div className="mt-4 p-4 bg-slate-50 rounded-xl">
+        <div className={`mt-4 p-4 rounded-xl ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-slate-500 flex-shrink-0 shadow-sm">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm ${
+              isDark ? "bg-slate-700 text-gray-300" : "bg-white text-slate-500"
+            }`}>
               <FileText size={16} />
             </div>
             <div>
-              <p className="text-xs text-slate-400 mb-0.5">Giới thiệu</p>
-              <p className="text-sm font-medium text-slate-900">{teacher.bio}</p>
+              <p className={`text-xs mb-0.5 ${isDark ? "text-gray-500" : "text-slate-400"}`}>Giới thiệu</p>
+              <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{teacher.bio}</p>
             </div>
           </div>
         </div>

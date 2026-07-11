@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { motion } from "framer-motion";
+import { useTheme } from "../../contexts/useTheme";
 import {
   Brain,
   Zap,
@@ -22,16 +23,16 @@ import {
 } from "lucide-react";
 
 // ---- Section 1: Hero ----
-const HeroSection: React.FC = () => (
-  <section className="relative bg-white overflow-hidden">
+const HeroSection: React.FC<{ isDark: boolean }> = ({ isDark }) => (
+  <section className={`relative overflow-hidden ${isDark ? "bg-slate-900" : "bg-white"}`}>
     {/* Background decoration */}
     <div className="absolute inset-0 pointer-events-none">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-100 via-indigo-50 to-transparent rounded-full blur-3xl opacity-50 translate-x-1/3 -translate-y-1/3" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-violet-100 to-indigo-50 rounded-full blur-3xl opacity-50 -translate-x-1/3 translate-y-1/3" />
+      <div className={`absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br rounded-full blur-3xl opacity-50 translate-x-1/3 -translate-y-1/3 ${isDark ? "from-blue-900/30 via-indigo-900/20 to-transparent" : "from-blue-100 via-indigo-50 to-transparent"}`} />
+      <div className={`absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr rounded-full blur-3xl opacity-50 -translate-x-1/3 translate-y-1/3 ${isDark ? "from-violet-900/30 to-indigo-900/20" : "from-violet-100 to-indigo-50"}`} />
       <div
-        className="absolute inset-0 opacity-[0.015] pointer-events-none
+        className={`absolute inset-0 opacity-[0.015] pointer-events-none
         bg-[linear-gradient(#000_1px,transparent_1px),linear-gradient(90deg,#000_1px,transparent_1px)]
-        bg-[size:60px_60px]"
+        bg-[size:60px_60px]`}
       />
     </div>
 
@@ -41,10 +42,10 @@ const HeroSection: React.FC = () => (
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-6"
+          className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-6 ${isDark ? "bg-blue-500/20 border-blue-500/30" : "bg-blue-50 border-blue-100"}`}
         >
-          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-          <span className="text-xs font-semibold text-blue-600 tracking-wider uppercase">
+          <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? "bg-blue-400" : "bg-blue-500"}`} />
+          <span className={`text-xs font-semibold tracking-wider uppercase ${isDark ? "text-blue-400" : "text-blue-600"}`}>
             About Exmora
           </span>
         </motion.div>
@@ -53,7 +54,7 @@ const HeroSection: React.FC = () => (
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+          className={`text-4xl lg:text-6xl font-bold mb-6 leading-tight ${isDark ? "text-white" : "text-gray-900"}`}
         >
           Empowering educators with{" "}
           <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -65,7 +66,7 @@ const HeroSection: React.FC = () => (
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-lg text-gray-500 mb-8 max-w-2xl leading-relaxed"
+          className={`text-lg mb-8 max-w-2xl leading-relaxed ${isDark ? "text-gray-400" : "text-gray-500"}`}
         >
           Exmora is an AI-powered exam management platform designed for modern
           educational institutions. We help teachers create better questions,
@@ -88,7 +89,7 @@ const HeroSection: React.FC = () => (
           </a>
           <a
             href="/register"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition"
+            className={`inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-xl border transition ${isDark ? "bg-slate-800 text-gray-200 border-white/10 hover:border-white/20 hover:bg-slate-700" : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}
           >
             Start Free Trial
           </a>
@@ -99,7 +100,7 @@ const HeroSection: React.FC = () => (
 );
 
 // ---- Section 2: Mission & Vision ----
-const MissionSection: React.FC = () => {
+const MissionSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const items = [
     {
       icon: <BookOpen className="w-5 h-5" />,
@@ -119,26 +120,26 @@ const MissionSection: React.FC = () => {
   ];
 
   return (
-    <section className="px-6 py-20 bg-[#F8FAFC] border-y border-gray-200/60">
+    <section className={`px-6 py-20 border-y ${isDark ? "bg-slate-800/50 border-white/10" : "bg-[#F8FAFC] border-gray-200/60"}`}>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Text */}
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full mb-4">
-              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-              <span className="text-xs font-semibold text-indigo-600 tracking-wider uppercase">
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${isDark ? "bg-indigo-500/20 border-indigo-500/30" : "bg-indigo-50 border-indigo-100"}`}>
+              <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? "bg-indigo-400" : "bg-indigo-500"}`} />
+              <span className={`text-xs font-semibold tracking-wider uppercase ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>
                 Our Mission
               </span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className={`text-3xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>
               Building the future of academic assessment
             </h2>
-            <p className="text-gray-500 leading-relaxed mb-6">
+            <p className={`leading-relaxed mb-6 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               Founded with a belief that technology should serve education — not
               the other way around — Exmora bridges the gap between traditional
               testing methods and the demands of 21st-century learning.
             </p>
-            <p className="text-gray-500 leading-relaxed">
+            <p className={`leading-relaxed ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               We combine cutting-edge AI, distributed systems engineering, and
               deep pedagogical research to deliver a platform where educators
               spend less time on administrative tasks and more time inspiring
@@ -155,17 +156,17 @@ const MissionSection: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15, duration: 0.4 }}
-                className="group bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300"
+                className={`group rounded-xl p-5 border shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 ${isDark ? "bg-slate-800 border-white/10 hover:border-blue-500/50" : "bg-white border-gray-200"}`}
               >
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center group-hover:text-white transition-colors ${isDark ? "bg-blue-500/20 text-blue-400 group-hover:bg-blue-500 group-hover:text-white" : "bg-blue-50 text-blue-600 group-hover:bg-blue-600"}`}>
                     {item.icon}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                    <h3 className={`font-semibold mb-1 group-hover:text-blue-600 transition-colors ${isDark ? "text-white" : "text-gray-900"}`}>
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
+                    <p className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                       {item.desc}
                     </p>
                   </div>
@@ -180,7 +181,7 @@ const MissionSection: React.FC = () => {
 };
 
 // ---- Section 3: Core Values ----
-const ValuesSection: React.FC = () => {
+const ValuesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const values = [
     {
       icon: <Shield className="w-6 h-6" />,
@@ -215,19 +216,19 @@ const ValuesSection: React.FC = () => {
   ];
 
   return (
-    <section className="px-6 py-24 bg-white">
+    <section className={`px-6 py-24 ${isDark ? "bg-slate-900" : "bg-white"}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-50 border border-violet-100 rounded-full mb-4">
-            <div className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-violet-600 tracking-wider uppercase">
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${isDark ? "bg-violet-500/20 border-violet-500/30" : "bg-violet-50 border-violet-100"}`}>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? "bg-violet-400" : "bg-violet-500"}`} />
+            <span className={`text-xs font-semibold tracking-wider uppercase ${isDark ? "text-violet-400" : "text-violet-600"}`}>
               Our Values
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${isDark ? "text-white" : "text-gray-900"}`}>
             Principles that drive every decision
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">
+          <p className={`max-w-xl mx-auto ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             From the classroom to the server room, these values guide how we build
             and how we serve.
           </p>
@@ -241,15 +242,15 @@ const ValuesSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.4 }}
-              className="group bg-[#F8FAFC] rounded-2xl p-6 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all duration-300"
+              className={`group rounded-2xl p-6 border hover:border-blue-200 hover:shadow-md transition-all duration-300 ${isDark ? "bg-slate-800 border-white/10" : "bg-[#F8FAFC] border-gray-200"}`}
             >
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:text-white transition-colors ${isDark ? "bg-blue-500/20 text-blue-400 group-hover:bg-blue-500" : "bg-blue-50 text-blue-600 group-hover:bg-blue-600"}`}>
                 {value.icon}
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2">
+              <h3 className={`text-base font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
                 {value.title}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
+              <p className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                 {value.desc}
               </p>
             </motion.div>
@@ -261,7 +262,7 @@ const ValuesSection: React.FC = () => {
 };
 
 // ---- Section 4: Tech Stack ----
-const TechSection: React.FC = () => {
+const TechSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const techStack = [
     { icon: <Code2 className="w-6 h-6" />, name: "Node.js / Express", category: "Backend Runtime" },
     { icon: <Layers className="w-6 h-6" />, name: "React 19 + TypeScript", category: "Frontend Framework" },
@@ -274,19 +275,19 @@ const TechSection: React.FC = () => {
   ];
 
   return (
-    <section className="px-6 py-24 bg-[#F8FAFC] border-y border-gray-200/60">
+    <section className={`px-6 py-24 border-y ${isDark ? "bg-slate-800/50 border-white/10" : "bg-[#F8FAFC] border-gray-200/60"}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-blue-600 tracking-wider uppercase">
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${isDark ? "bg-blue-500/20 border-blue-500/30" : "bg-blue-50 border-blue-100"}`}>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? "bg-blue-400" : "bg-blue-500"}`} />
+            <span className={`text-xs font-semibold tracking-wider uppercase ${isDark ? "text-blue-400" : "text-blue-600"}`}>
               Technology
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${isDark ? "text-white" : "text-gray-900"}`}>
             Built on proven, modern technology
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">
+          <p className={`max-w-xl mx-auto ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             We choose our tools based on reliability, scalability, and the ability
             to serve educators at any institution size.
           </p>
@@ -300,15 +301,15 @@ const TechSection: React.FC = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.06, duration: 0.35 }}
-              className="group bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 text-center"
+              className={`group rounded-xl p-5 border shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 text-center ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-200"}`}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white transition-all duration-300">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 ${isDark ? "bg-blue-500/20 text-blue-400 group-hover:bg-blue-500 group-hover:text-white" : "bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white"}`}>
                 {tech.icon}
               </div>
-              <div className="text-sm font-bold text-gray-900 mb-0.5">
+              <div className={`text-sm font-bold mb-0.5 ${isDark ? "text-white" : "text-gray-900"}`}>
                 {tech.name}
               </div>
-              <div className="text-xs text-gray-400 font-medium">
+              <div className={`text-xs font-medium ${isDark ? "text-gray-500" : "text-gray-400"}`}>
                 {tech.category}
               </div>
             </motion.div>
@@ -320,7 +321,7 @@ const TechSection: React.FC = () => {
 };
 
 // ---- Section 5: Journey / Milestones ----
-const JourneySection: React.FC = () => {
+const JourneySection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const milestones = [
     { year: "2023", title: "Platform Founded", desc: "Started with a simple idea: make AI-generated questions accessible to every teacher." },
     { year: "2024 Q1", title: "Beta Launch", desc: "Rolled out to 10 pilot institutions. Gathered real-world feedback from educators." },
@@ -331,19 +332,19 @@ const JourneySection: React.FC = () => {
   ];
 
   return (
-    <section className="px-6 py-24 bg-white">
+    <section className={`px-6 py-24 ${isDark ? "bg-slate-900" : "bg-white"}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full mb-4">
-            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-indigo-600 tracking-wider uppercase">
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${isDark ? "bg-indigo-500/20 border-indigo-500/30" : "bg-indigo-50 border-indigo-100"}`}>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? "bg-indigo-400" : "bg-indigo-500"}`} />
+            <span className={`text-xs font-semibold tracking-wider uppercase ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>
               Our Journey
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${isDark ? "text-white" : "text-gray-900"}`}>
             From concept to 500+ institutions
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">
+          <p className={`max-w-xl mx-auto ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             Three years of relentless iteration, guided by what educators
             actually need.
           </p>
@@ -351,7 +352,7 @@ const JourneySection: React.FC = () => {
 
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-4 lg:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-blue-400 via-indigo-400 to-violet-400" />
+          <div className={`absolute left-4 lg:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b ${isDark ? "from-blue-500/50 via-indigo-500/50 to-violet-500/50" : "from-blue-400 via-indigo-400 to-violet-400"}`} />
 
           <div className="space-y-8">
             {milestones.map((m, i) => (
@@ -366,18 +367,18 @@ const JourneySection: React.FC = () => {
                 }`}
               >
                 {/* Timeline dot */}
-                <div className="absolute left-4 lg:left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-2 border-blue-500 rounded-full z-10 mt-5 shadow-sm shadow-blue-500/30" />
+                <div className={`absolute left-4 lg:left-1/2 -translate-x-1/2 w-3 h-3 border-2 rounded-full z-10 mt-5 shadow-sm ${isDark ? "bg-slate-900 border-blue-400 shadow-blue-400/30" : "bg-white border-blue-500 shadow-blue-500/30"}`} />
 
                 {/* Content card */}
                 <div className={`ml-10 lg:ml-0 lg:w-5/12 ${i % 2 === 0 ? "lg:pr-10" : "lg:pl-10"}`}>
-                  <div className="bg-[#F8FAFC] rounded-xl p-5 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all duration-300">
-                    <div className="inline-block text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg mb-2">
+                  <div className={`rounded-xl p-5 border hover:border-blue-200 hover:shadow-md transition-all duration-300 ${isDark ? "bg-slate-800 border-white/10" : "bg-[#F8FAFC] border-gray-200"}`}>
+                    <div className={`inline-block text-xs font-bold px-2.5 py-1 rounded-lg mb-2 ${isDark ? "text-blue-400 bg-blue-500/20" : "text-blue-600 bg-blue-50"}`}>
                       {m.year}
                     </div>
-                    <h3 className="text-base font-bold text-gray-900 mb-1">
+                    <h3 className={`text-base font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}>
                       {m.title}
                     </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
+                    <p className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                       {m.desc}
                     </p>
                   </div>
@@ -392,7 +393,7 @@ const JourneySection: React.FC = () => {
 };
 
 // ---- Section 6: Team / Open Roles ----
-const TeamSection: React.FC = () => {
+const TeamSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const roles = [
     { title: "Senior AI Engineer", type: "Full-time", location: "Remote / Hanoi" },
     { title: "Frontend Developer", type: "Full-time", location: "Hanoi, Vietnam" },
@@ -401,21 +402,21 @@ const TeamSection: React.FC = () => {
   ];
 
   return (
-    <section className="px-6 py-24 bg-[#F8FAFC] border-y border-gray-200/60">
+    <section className={`px-6 py-24 border-y ${isDark ? "bg-slate-800/50 border-white/10" : "bg-[#F8FAFC] border-gray-200/60"}`}>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Message */}
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-50 border border-violet-100 rounded-full mb-4">
-              <div className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse" />
-              <span className="text-xs font-semibold text-violet-600 tracking-wider uppercase">
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${isDark ? "bg-violet-500/20 border-violet-500/30" : "bg-violet-50 border-violet-100"}`}>
+              <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDark ? "bg-violet-400" : "bg-violet-500"}`} />
+              <span className={`text-xs font-semibold tracking-wider uppercase ${isDark ? "text-violet-400" : "text-violet-600"}`}>
                 Join Us
               </span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className={`text-3xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>
               We&apos;re building something meaningful
             </h2>
-            <p className="text-gray-500 leading-relaxed mb-6">
+            <p className={`leading-relaxed mb-6 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               Education is one of the most impactful areas where technology can
               make a difference. If you&apos;re passionate about AI, distributed
               systems, or educational technology, we&apos;d love to hear from you.
@@ -438,13 +439,13 @@ const TeamSection: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.35 }}
-                className="group bg-white rounded-xl p-4 border border-gray-200 hover:border-violet-200 hover:shadow-md transition-all duration-300 flex items-center justify-between"
+                className={`group rounded-xl p-4 border hover:border-violet-200 hover:shadow-md transition-all duration-300 flex items-center justify-between ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-200"}`}
               >
                 <div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-violet-600 transition-colors">
+                  <h3 className={`font-semibold group-hover:text-violet-600 transition-colors ${isDark ? "text-white" : "text-gray-900"}`}>
                     {role.title}
                   </h3>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                  <div className={`flex items-center gap-3 mt-1 text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>
                     <span className="inline-flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                       {role.type}
@@ -452,7 +453,7 @@ const TeamSection: React.FC = () => {
                     <span>{role.location}</span>
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-all" />
+                <ArrowRight className={`w-4 h-4 group-hover:translate-x-1 transition-all ${isDark ? "text-gray-500 group-hover:text-violet-400" : "text-gray-300 group-hover:text-violet-500"}`} />
               </motion.div>
             ))}
           </div>
@@ -463,8 +464,8 @@ const TeamSection: React.FC = () => {
 };
 
 // ---- Section 7: CTA ----
-const CTASection: React.FC = () => (
-  <section className="px-6 py-20 bg-white">
+const CTASection: React.FC<{ isDark: boolean }> = ({ isDark }) => (
+  <section className={`px-6 py-20 ${isDark ? "bg-slate-900" : "bg-white"}`}>
     <div className="max-w-6xl mx-auto">
       <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 rounded-3xl overflow-hidden">
         <div
@@ -525,17 +526,20 @@ const CTASection: React.FC = () => (
 
 // ---- Main Page ----
 const About: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className={`min-h-screen flex flex-col ${isDark ? "bg-slate-900" : "bg-white"}`}>
       <Header />
       <main className="flex-1">
-        <HeroSection />
-        <MissionSection />
-        <ValuesSection />
-        <TechSection />
-        <JourneySection />
-        <TeamSection />
-        <CTASection />
+        <HeroSection isDark={isDark} />
+        <MissionSection isDark={isDark} />
+        <ValuesSection isDark={isDark} />
+        <TechSection isDark={isDark} />
+        <JourneySection isDark={isDark} />
+        <TeamSection isDark={isDark} />
+        <CTASection isDark={isDark} />
       </main>
       <Footer />
     </div>

@@ -6,8 +6,11 @@ import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ClassStatsCard } from "../../../components/student/classes";
 import { AssignmentList } from "../../../components/student/assignments";
 import { PageHeader, Card } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const StudentClassDetailPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const { classId } = useParams<{ classId: string }>();
   const [data, setData] = useState<ClassDetailData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,6 +79,15 @@ const StudentClassDetailPage: React.FC = () => {
   };
 
   const getPostTypeColor = (type: string) => {
+    if (isDark) {
+      switch (type) {
+        case "announcement": return "bg-blue-500/20 text-blue-400";
+        case "material": return "bg-emerald-500/20 text-emerald-400";
+        case "assignment": return "bg-purple-500/20 text-purple-400";
+        case "question": return "bg-white/5 text-gray-400";
+        default: return "bg-white/5 text-gray-400";
+      }
+    }
     switch (type) {
       case "announcement": return "bg-blue-100 text-blue-700";
       case "material": return "bg-green-100 text-green-700";
@@ -88,7 +100,7 @@ const StudentClassDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải thông tin lớp học..." />
+        <LoadingState size="lg" text="Đang tải thông tin lớp học..." isDark={isDark} />
       </div>
     );
   }
@@ -96,7 +108,7 @@ const StudentClassDetailPage: React.FC = () => {
   if (error || !data) {
     return (
       <div>
-        <ErrorState message={error || "Không tìm thấy lớp học"} onRetry={fetchData} />
+        <ErrorState message={error || "Không tìm thấy lớp học"} onRetry={fetchData} isDark={isDark} />
       </div>
     );
   }
@@ -117,6 +129,8 @@ const StudentClassDetailPage: React.FC = () => {
           className={`flex items-center gap-2 h-10 px-4 rounded-lg font-semibold text-sm transition ${
             activeTab === "assignments"
               ? "bg-blue-600 text-white"
+              : isDark
+              ? "bg-slate-800 border border-white/10 text-gray-300 hover:bg-white/5"
               : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
@@ -128,6 +142,8 @@ const StudentClassDetailPage: React.FC = () => {
           className={`flex items-center gap-2 h-10 px-4 rounded-lg font-semibold text-sm transition ${
             activeTab === "posts"
               ? "bg-blue-600 text-white"
+              : isDark
+              ? "bg-slate-800 border border-white/10 text-gray-300 hover:bg-white/5"
               : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
@@ -141,28 +157,34 @@ const StudentClassDetailPage: React.FC = () => {
           <Card>
             <ClassStatsCard stats={data.stats || { totalAssignments: 0, completedAssignments: 0, openAssignments: 0, upcomingAssignments: 0, averageScore: 0 }} />
           </Card>
-          <Card title="Danh sách bài thi" icon={<BookOpen size={18} className="text-blue-600" />}>
+          <Card title="Danh sách bài thi" icon={<BookOpen size={18} className="text-blue-500" />}>
             <AssignmentList assignments={data.assignments || []} />
           </Card>
         </div>
       )}
 
       {activeTab === "posts" && (
-        <Card title="Thông báo từ giáo viên" icon={<Bell size={18} className="text-blue-600" />}>
+        <Card title="Thông báo từ giáo viên" icon={<Bell size={18} className="text-blue-500" />}>
           {postsLoading ? (
-            <LoadingState size="md" text="Đang tải thông báo..." />
+            <LoadingState size="md" text="Đang tải thông báo..." isDark={isDark} />
           ) : posts.length === 0 ? (
             <div className="text-center py-12">
-              <Bell size={48} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-gray-500">Chưa có thông báo nào</p>
+              <Bell size={48} className={`mx-auto mb-3 ${isDark ? "text-gray-600" : "text-slate-300"}`} />
+              <p className={isDark ? "text-gray-400" : "text-gray-500"}>Chưa có thông báo nào</p>
             </div>
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
                 <div
                   key={post.postId}
-                  className={`p-4 border border-slate-100 rounded-xl ${
-                    post.isPinned ? "bg-amber-50 border-amber-200" : "bg-white"
+                  className={`p-4 border rounded-xl ${
+                    post.isPinned
+                      ? isDark
+                        ? "bg-amber-500/10 border-amber-500/30"
+                        : "bg-amber-50 border-amber-200"
+                      : isDark
+                      ? "bg-slate-800 border-white/10"
+                      : "bg-white border-slate-100"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
@@ -172,10 +194,10 @@ const StudentClassDetailPage: React.FC = () => {
                     </span>
                   </div>
                   {post.title && (
-                    <h4 className="font-semibold text-gray-900 mb-2">{post.title}</h4>
+                    <h4 className={`font-semibold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>{post.title}</h4>
                   )}
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{post.content}</p>
-                  <div className="flex items-center gap-2 mt-3 text-xs text-gray-400">
+                  <p className={`text-sm whitespace-pre-wrap ${isDark ? "text-gray-300" : "text-gray-600"}`}>{post.content}</p>
+                  <div className={`flex items-center gap-2 mt-3 text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>
                     <span>{post.authorName}</span>
                     <span>·</span>
                     <span>{formatDateTime(post.createdAt)}</span>

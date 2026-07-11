@@ -7,8 +7,11 @@ import { TeacherClassCard } from "../../../components/teacher/classes";
 import ClassModal from "../../../components/teacher/classes/ClassModal";
 import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
 import { PageHeader, Card, FilterBar } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherClassesPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +95,7 @@ const TeacherClassesPage: React.FC = () => {
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchClasses} />
+          <ErrorState message={error} onRetry={fetchClasses} isDark={isDark} />
         ) : (
           <>
             <FilterBar
@@ -103,39 +106,35 @@ const TeacherClassesPage: React.FC = () => {
               refreshing={loading}
             />
 
-            {/* Summary badges */}
             {!loading && classes.length > 0 && (
-              <div className="flex gap-4 mb-6">
-                <div className="bg-blue-50 rounded-lg px-4 py-2 text-sm">
-                  <span className="font-bold text-blue-700">{classes.length}</span>{" "}
-                  lớp
+              <div className="flex flex-wrap gap-3 mb-6">
+                <div className={`rounded-lg px-4 py-2 text-sm ${isDark ? "bg-blue-500/20 text-blue-300" : "bg-blue-50 text-slate-700"}`}>
+                  <span className={`font-bold ${isDark ? "text-blue-300" : "text-blue-700"}`}>{classes.length}</span> lớp
                 </div>
-                <div className="bg-emerald-50 rounded-lg px-4 py-2 text-sm">
-                  <span className="font-bold text-emerald-700">
+                <div className={`rounded-lg px-4 py-2 text-sm ${isDark ? "bg-emerald-500/20 text-emerald-300" : "bg-emerald-50 text-slate-700"}`}>
+                  <span className={`font-bold ${isDark ? "text-emerald-300" : "text-emerald-700"}`}>
                     {classes.reduce((a, c) => a + c.studentCount, 0)}
                   </span> sinh viên
                 </div>
-                <div className="bg-amber-50 rounded-lg px-4 py-2 text-sm">
-                  <span className="font-bold text-amber-700">
+                <div className={`rounded-lg px-4 py-2 text-sm ${isDark ? "bg-amber-500/20 text-amber-300" : "bg-amber-50 text-slate-700"}`}>
+                  <span className={`font-bold ${isDark ? "text-amber-300" : "text-amber-700"}`}>
                     {classes.reduce((a, c) => a + c.openAssignments, 0)}
                   </span> bài đang mở
                 </div>
               </div>
             )}
 
-            {/* Loading */}
-            {loading && <LoadingState size="lg" text="Đang tải lớp học..." />}
+            {loading && <LoadingState size="lg" text="Đang tải lớp học..." isDark={isDark} />}
 
-            {/* Empty */}
             {!loading && displayClasses.length === 0 && (
               <EmptyState
-                icon={<GraduationCap size={36} className="text-slate-300" />}
+                icon={<GraduationCap size={36} className={isDark ? "text-slate-600" : "text-slate-300"} />}
                 title="Không tìm thấy lớp học nào"
                 description={search ? "Thử thay đổi từ khóa tìm kiếm." : "Bạn chưa có lớp học nào."}
+                isDark={isDark}
               />
             )}
 
-            {/* Grid */}
             {!loading && displayClasses.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {displayClasses.map((cls) => (
@@ -143,6 +142,7 @@ const TeacherClassesPage: React.FC = () => {
                     key={cls.classId}
                     classData={cls}
                     onEdit={handleOpenEdit}
+                    isDark={isDark}
                   />
                 ))}
               </div>
@@ -151,7 +151,6 @@ const TeacherClassesPage: React.FC = () => {
         )}
       </Card>
 
-      {/* Modal */}
       <ClassModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

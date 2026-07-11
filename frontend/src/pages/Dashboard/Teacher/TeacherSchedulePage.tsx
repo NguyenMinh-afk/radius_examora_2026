@@ -3,10 +3,13 @@ import { Calendar, ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
 import { getSchedule } from "../../../api/teacherApi";
 import type { ScheduleItem } from "../../../api/teacherApi";
 import { LoadingState, ErrorState } from "../../../components/teacher/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 type ViewMode = "month" | "week" | "list";
 
 const TeacherSchedulePage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
@@ -103,7 +106,7 @@ const TeacherSchedulePage: React.FC = () => {
 
   const getScheduleForDay = (day: number) => {
     return filteredSchedule.filter((item) => {
-      const itemDate = new Date(item.scheduledAt);
+      const itemDate = new Date(item.startTime);
       return (
         itemDate.getDate() === day &&
         itemDate.getMonth() === currentDate.getMonth() &&
@@ -136,10 +139,22 @@ const TeacherSchedulePage: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "open": return "bg-green-100 text-green-700";
-      case "upcoming": return "bg-blue-100 text-blue-700";
-      case "closed": return "bg-gray-100 text-gray-600";
-      default: return "bg-gray-100 text-gray-600";
+      case "open":
+        return isDark
+          ? "bg-emerald-500/20 text-emerald-400"
+          : "bg-green-100 text-green-700";
+      case "upcoming":
+        return isDark
+          ? "bg-blue-500/20 text-blue-400"
+          : "bg-blue-100 text-blue-700";
+      case "closed":
+        return isDark
+          ? "bg-slate-700 text-gray-300"
+          : "bg-gray-100 text-gray-600";
+      default:
+        return isDark
+          ? "bg-slate-700 text-gray-300"
+          : "bg-gray-100 text-gray-600";
     }
   };
 
@@ -171,18 +186,24 @@ const TeacherSchedulePage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Lịch thi</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Lịch thi</h1>
+          <p className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-slate-500"}`}>
             Quản lý và xem lịch thi theo ngày/tháng
           </p>
         </div>
         <div className="flex items-center gap-3">
           {/* View Mode Toggle */}
-          <div className="flex bg-slate-100 rounded-lg p-1">
+          <div className={`flex rounded-lg p-1 ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
             <button
               onClick={() => setViewMode("month")}
               className={`px-3 py-1.5 text-sm rounded-md transition ${
-                viewMode === "month" ? "bg-white shadow text-blue-600" : "text-slate-600"
+                viewMode === "month"
+                  ? isDark
+                    ? "bg-slate-700 shadow text-blue-400"
+                    : "bg-white shadow text-blue-600"
+                  : isDark
+                    ? "text-gray-300"
+                    : "text-slate-600"
               }`}
             >
               Tháng
@@ -190,7 +211,13 @@ const TeacherSchedulePage: React.FC = () => {
             <button
               onClick={() => setViewMode("list")}
               className={`px-3 py-1.5 text-sm rounded-md transition ${
-                viewMode === "list" ? "bg-white shadow text-blue-600" : "text-slate-600"
+                viewMode === "list"
+                  ? isDark
+                    ? "bg-slate-700 shadow text-blue-400"
+                    : "bg-white shadow text-blue-600"
+                  : isDark
+                    ? "text-gray-300"
+                    : "text-slate-600"
               }`}
             >
               Danh sách
@@ -199,7 +226,13 @@ const TeacherSchedulePage: React.FC = () => {
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`p-2 rounded-lg border transition ${
-              showFilters ? "bg-blue-50 border-blue-200 text-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"
+              showFilters
+                ? isDark
+                  ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
+                  : "bg-blue-50 border-blue-200 text-blue-600"
+                : isDark
+                  ? "border-white/10 text-gray-300 hover:bg-slate-800"
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
             }`}
           >
             <Filter size={18} />
@@ -209,12 +242,16 @@ const TeacherSchedulePage: React.FC = () => {
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
+        <div className={`rounded-xl border p-4 mb-6 ${
+          isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
+        }`}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-slate-800">Bộ lọc</h3>
+            <h3 className={`font-semibold ${isDark ? "text-white" : "text-slate-800"}`}>Bộ lọc</h3>
             <button
               onClick={clearFilters}
-              className="text-sm text-slate-500 hover:text-red-500 flex items-center gap-1"
+              className={`text-sm flex items-center gap-1 ${
+                isDark ? "text-gray-400 hover:text-red-400" : "text-slate-500 hover:text-red-500"
+              }`}
             >
               <X size={14} />
               Xóa lọc
@@ -223,14 +260,18 @@ const TeacherSchedulePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Year */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Năm</label>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Năm</label>
               <select
                 value={selectedYear}
                 onChange={(e) => {
                   setSelectedYear(parseInt(e.target.value));
                   setCurrentDate(new Date(parseInt(e.target.value), currentDate.getMonth(), 1));
                 }}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark
+                    ? "bg-slate-800 border-white/10 text-white"
+                    : "bg-white border-slate-200"
+                }`}
               >
                 {yearOptions.map(y => (
                   <option key={y} value={y}>{y}</option>
@@ -240,14 +281,18 @@ const TeacherSchedulePage: React.FC = () => {
 
             {/* Month */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tháng</label>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Tháng</label>
               <select
                 value={selectedMonth}
                 onChange={(e) => {
                   setSelectedMonth(parseInt(e.target.value));
                   setCurrentDate(new Date(currentDate.getFullYear(), parseInt(e.target.value) - 1, 1));
                 }}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark
+                    ? "bg-slate-800 border-white/10 text-white"
+                    : "bg-white border-slate-200"
+                }`}
               >
                 {monthNames.map((name, idx) => (
                   <option key={idx} value={idx + 1}>{name}</option>
@@ -257,11 +302,15 @@ const TeacherSchedulePage: React.FC = () => {
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Trạng thái</label>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Trạng thái</label>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark
+                    ? "bg-slate-800 border-white/10 text-white"
+                    : "bg-white border-slate-200"
+                }`}
               >
                 <option value="all">Tất cả</option>
                 <option value="open">Đang mở</option>
@@ -272,20 +321,28 @@ const TeacherSchedulePage: React.FC = () => {
 
             {/* Date Range */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Từ ngày - Đến ngày</label>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Từ ngày - Đến ngày</label>
               <div className="flex items-center gap-2">
                 <input
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isDark
+                      ? "bg-slate-800 border-white/10 text-white"
+                      : "bg-white border-slate-200"
+                  }`}
                 />
-                <span className="text-slate-400">-</span>
+                <span className={isDark ? "text-gray-500" : "text-slate-400"}>-</span>
                 <input
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isDark
+                      ? "bg-slate-800 border-white/10 text-white"
+                      : "bg-white border-slate-200"
+                  }`}
                 />
               </div>
             </div>
@@ -295,31 +352,39 @@ const TeacherSchedulePage: React.FC = () => {
 
       {/* Calendar View */}
       {viewMode === "month" && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div className={`rounded-2xl shadow-sm border p-6 ${
+          isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
+        }`}>
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={prevMonth}
-              className="p-2 hover:bg-slate-100 rounded-lg transition"
+              className={`p-2 rounded-lg transition ${
+                isDark ? "hover:bg-slate-800" : "hover:bg-slate-100"
+              }`}
             >
-              <ChevronLeft size={20} className="text-slate-600" />
+              <ChevronLeft size={20} className={isDark ? "text-gray-400" : "text-slate-600"} />
             </button>
             <div className="flex items-center gap-4">
-              <h2 className="text-lg font-semibold text-slate-800">
+              <h2 className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-800"}`}>
                 {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
               </h2>
               <button
                 onClick={goToToday}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className={`text-sm font-medium ${
+                  isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"
+                }`}
               >
                 Hôm nay
               </button>
             </div>
             <button
               onClick={nextMonth}
-              className="p-2 hover:bg-slate-100 rounded-lg transition"
+              className={`p-2 rounded-lg transition ${
+                isDark ? "hover:bg-slate-800" : "hover:bg-slate-100"
+              }`}
             >
-              <ChevronRight size={20} className="text-slate-600" />
+              <ChevronRight size={20} className={isDark ? "text-gray-400" : "text-slate-600"} />
             </button>
           </div>
 
@@ -328,7 +393,9 @@ const TeacherSchedulePage: React.FC = () => {
             {dayNames.map((day) => (
               <div
                 key={day}
-                className="text-center text-sm font-medium text-slate-500 py-2"
+                className={`text-center text-sm font-medium py-2 ${
+                  isDark ? "text-gray-400" : "text-slate-500"
+                }`}
               >
                 {day}
               </div>
@@ -337,9 +404,9 @@ const TeacherSchedulePage: React.FC = () => {
 
           {/* Calendar Grid */}
           {loading ? (
-            <LoadingState size="md" text="Đang tải lịch thi..." />
+            <LoadingState size="md" text="Đang tải lịch thi..." isDark={isDark} />
           ) : error ? (
-            <ErrorState message={error} onRetry={fetchSchedule} />
+            <ErrorState message={error} onRetry={fetchSchedule} isDark={isDark} />
           ) : (
             <div className="grid grid-cols-7 gap-1">
               {days.map((day, index) => {
@@ -353,9 +420,20 @@ const TeacherSchedulePage: React.FC = () => {
                   <div
                     key={index}
                     className={`
-                      min-h-[90px] p-2 border border-slate-100 rounded-lg
-                      ${day ? "bg-white" : "bg-slate-50"}
-                      ${isToday ? "ring-2 ring-blue-500" : ""}
+                      min-h-[90px] p-2 border rounded-lg
+                      ${day
+                        ? isDark
+                          ? "bg-slate-900 border-white/10"
+                          : "bg-white border-slate-100"
+                        : isDark
+                          ? "bg-slate-950/50 border-white/5"
+                          : "bg-slate-50 border-slate-100"
+                      }
+                      ${isToday
+                        ? isDark
+                          ? "ring-2 ring-blue-400"
+                          : "ring-2 ring-blue-500"
+                        : ""}
                     `}
                   >
                     {day && (
@@ -363,7 +441,14 @@ const TeacherSchedulePage: React.FC = () => {
                         <span
                           className={`
                             text-sm font-medium
-                            ${isToday ? "text-blue-600" : "text-slate-700"}
+                            ${isToday
+                              ? isDark
+                                ? "text-blue-400"
+                                : "text-blue-600"
+                              : isDark
+                                ? "text-gray-200"
+                                : "text-slate-700"
+                            }
                           `}
                         >
                           {day}
@@ -373,14 +458,20 @@ const TeacherSchedulePage: React.FC = () => {
                             {daySchedule.slice(0, 3).map((item) => (
                               <div
                                 key={item.assignmentId}
-                                className="text-xs p-1 bg-blue-50 text-blue-700 rounded truncate"
+                                className={`text-xs p-1 rounded truncate ${
+                                  isDark
+                                    ? "bg-blue-500/20 text-blue-300"
+                                    : "bg-blue-50 text-blue-700"
+                                }`}
                                 title={`${item.examTitle} (${item.className})`}
                               >
                                 {item.examTitle}
                               </div>
                             ))}
                             {daySchedule.length > 3 && (
-                              <span className="text-xs text-slate-500">
+                              <span className={`text-xs ${
+                                isDark ? "text-gray-400" : "text-slate-500"
+                              }`}>
                                 +{daySchedule.length - 3} khác
                               </span>
                             )}
@@ -398,36 +489,42 @@ const TeacherSchedulePage: React.FC = () => {
 
       {/* List View */}
       {viewMode === "list" && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className={`rounded-2xl shadow-sm border overflow-hidden ${
+          isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
+        }`}>
           {loading ? (
             <div className="p-8">
-              <LoadingState size="lg" text="Đang tải lịch thi..." />
+              <LoadingState size="lg" text="Đang tải lịch thi..." isDark={isDark} />
             </div>
           ) : error ? (
             <div className="p-8">
-              <ErrorState message={error} onRetry={fetchSchedule} />
+              <ErrorState message={error} onRetry={fetchSchedule} isDark={isDark} />
             </div>
           ) : filteredSchedule.length === 0 ? (
             <div className="p-8 text-center">
-              <Calendar size={48} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-slate-500">Không có lịch thi nào</p>
+              <Calendar size={48} className={`mx-auto mb-3 ${
+                isDark ? "text-slate-600" : "text-slate-300"
+              }`} />
+              <p className={isDark ? "text-gray-400" : "text-slate-500"}>Không có lịch thi nào</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className={`divide-y ${isDark ? "divide-white/10" : "divide-slate-100"}`}>
               {filteredSchedule.map((item) => (
                 <div
                   key={item.assignmentId}
-                  className="p-4 hover:bg-slate-50 transition"
+                  className={`p-4 transition ${
+                    isDark ? "hover:bg-slate-800" : "hover:bg-slate-50"
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-slate-800">{item.examTitle}</h3>
+                        <h3 className={`font-semibold ${isDark ? "text-white" : "text-slate-800"}`}>{item.examTitle}</h3>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
                           {getStatusLabel(item.status)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-slate-500">
+                      <div className={`flex items-center gap-4 text-sm ${isDark ? "text-gray-400" : "text-slate-500"}`}>
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
                           {formatDate(item.startTime)}
@@ -448,7 +545,7 @@ const TeacherSchedulePage: React.FC = () => {
       )}
 
       {/* Legend */}
-      <div className="mt-4 flex items-center gap-6 text-sm text-slate-500">
+      <div className={`mt-4 flex items-center gap-6 text-sm ${isDark ? "text-gray-400" : "text-slate-500"}`}>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded bg-green-500"></span>
           <span>Đang mở</span>

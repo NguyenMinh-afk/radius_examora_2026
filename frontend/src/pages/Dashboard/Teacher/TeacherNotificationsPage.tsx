@@ -8,8 +8,11 @@ import {
   markNotificationAsRead,
   markAllNotificationsAsRead,
 } from "../../../api/notificationApi";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherNotificationsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,8 +90,8 @@ const TeacherNotificationsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Thông báo</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Thông báo</h1>
+          <p className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-slate-500"}`}>
             {unreadCount > 0
               ? `${unreadCount} thông báo chưa đọc`
               : "Tất cả đã được đọc"}
@@ -97,11 +100,19 @@ const TeacherNotificationsPage: React.FC = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-1 mb-6 bg-slate-100 p-1 rounded-xl w-fit">
+      <div className={`flex gap-1 mb-6 p-1 rounded-xl w-fit ${
+        isDark ? "bg-slate-800" : "bg-slate-100"
+      }`}>
         <button
           onClick={() => setFilter("all")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-            filter === "all" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filter === "all"
+              ? isDark
+                ? "bg-slate-700 text-blue-400 shadow-sm"
+                : "bg-white text-blue-700 shadow-sm"
+              : isDark
+                ? "text-gray-300 hover:text-white"
+                : "text-slate-500 hover:text-slate-700"
           }`}
         >
           Tất cả
@@ -109,7 +120,13 @@ const TeacherNotificationsPage: React.FC = () => {
         <button
           onClick={() => setFilter("unread")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-            filter === "unread" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filter === "unread"
+              ? isDark
+                ? "bg-slate-700 text-blue-400 shadow-sm"
+                : "bg-white text-blue-700 shadow-sm"
+              : isDark
+                ? "text-gray-300 hover:text-white"
+                : "text-slate-500 hover:text-slate-700"
           }`}
         >
           Chưa đọc {unreadCount > 0 && `(${unreadCount})`}
@@ -117,16 +134,17 @@ const TeacherNotificationsPage: React.FC = () => {
       </div>
 
       {/* Content */}
-      <SectionCard>
+      <SectionCard isDark={isDark}>
         {loading ? (
-          <LoadingState text="Đang tải thông báo..." />
+          <LoadingState text="Đang tải thông báo..." isDark={isDark} />
         ) : error ? (
-          <ErrorState message={error} onRetry={fetchNotifications} />
+          <ErrorState message={error} onRetry={fetchNotifications} isDark={isDark} />
         ) : (
           <NotificationList
             notifications={displayNotifications}
             onMarkRead={handleMarkRead}
             onMarkAllRead={handleMarkAllRead}
+            isDark={isDark}
           />
         )}
       </SectionCard>

@@ -5,8 +5,11 @@ import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ClassList } from "../../../components/student/classes";
 import { JoinClassDialog } from "../../../components/student/classes/JoinClassDialog";
 import { PageHeader, Card, FilterBar } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const StudentClassesPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +45,7 @@ const StudentClassesPage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải danh sách lớp..." />
+        <LoadingState size="lg" text="Đang tải danh sách lớp..." isDark={isDark} />
       </div>
     );
   }
@@ -66,7 +69,7 @@ const StudentClassesPage: React.FC = () => {
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchData} />
+          <ErrorState message={error} onRetry={fetchData} isDark={isDark} />
         ) : (
           <>
             <div className="mb-4">

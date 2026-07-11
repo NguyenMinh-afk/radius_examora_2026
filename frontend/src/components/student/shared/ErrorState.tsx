@@ -4,13 +4,14 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 interface ErrorStateProps {
   message: string;
   onRetry?: () => void;
+  isDark?: boolean;
 }
 
-const ErrorState: React.FC<ErrorStateProps> = ({ message, onRetry }) => {
+const ErrorState: React.FC<ErrorStateProps> = ({ message, onRetry, isDark }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center px-4">
       <AlertCircle size={48} className="text-red-400 mb-4" />
-      <p className="text-gray-600 mb-4">{message}</p>
+      <p className={`mb-4 ${isDark ? "text-gray-300" : "text-gray-600"}`}>{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}

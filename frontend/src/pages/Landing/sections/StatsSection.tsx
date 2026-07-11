@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTheme } from "../../../contexts/useTheme";
 
 interface Stat {
   value: string;
@@ -58,9 +59,10 @@ const useCountUp = (end: number, duration: number = 2000, start: number = 0, isI
 interface AnimatedNumberProps {
   stat: Stat;
   isInView: boolean;
+  isDark: boolean;
 }
 
-const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ stat, isInView }) => {
+const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ stat, isInView, isDark }) => {
   const count = useCountUp(stat.numericValue, 2000, 0, isInView);
   
   // Format the number based on the suffix/prefix
@@ -78,15 +80,22 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ stat, isInView }) => {
   };
 
   return (
-    <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">
+    <div className={`text-3xl lg:text-4xl font-bold bg-clip-text mb-1 ${
+      isDark 
+        ? "bg-gradient-to-r from-indigo-400 to-violet-400 text-transparent" 
+        : "bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent"
+    }`}>
       {stat.prefix || ""}{formatNumber(count)}{stat.suffix || ""}
     </div>
   );
 };
 
 const StatsSection: React.FC = () => {
+  const { theme } = useTheme();
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -107,7 +116,9 @@ const StatsSection: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="px-6 py-20 bg-[#F8FAFC] border-y border-gray-200/60">
+    <section ref={sectionRef} className={`px-6 py-20 border-y ${
+      isDark ? "bg-slate-900/50 border-white/10" : "bg-[#F8FAFC] border-gray-200/60"
+    }`}>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-10">
           {stats.map((stat, index) => (
@@ -121,26 +132,38 @@ const StatsSection: React.FC = () => {
               }}
             >
               {/* Hover Effect */}
-              <div className="absolute -inset-px bg-gradient-to-b from-blue-600/10 to-indigo-600/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className={`absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                isDark ? "bg-gradient-to-b from-indigo-500/10 to-violet-500/10" : "bg-gradient-to-b from-blue-600/10 to-indigo-600/10"
+              }`} />
               
-              <div className="relative bg-white rounded-2xl p-6 text-center border border-gray-200/50 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300">
+              <div className={`relative rounded-2xl p-6 text-center border shadow-sm hover:shadow-md transition-all duration-300 ${
+                isDark 
+                  ? "bg-slate-800/50 border-white/10 hover:border-indigo-500/30" 
+                  : "bg-white border-gray-200/50 hover:border-blue-200"
+              }`}>
                 {/* Animated Number */}
-                <AnimatedNumber stat={stat} isInView={isInView} />
+                <AnimatedNumber stat={stat} isInView={isInView} isDark={isDark} />
                 
                 {/* Label */}
-                <div className="text-sm font-medium text-gray-700 mb-1">
+                <div className={`text-sm font-medium mb-1 ${
+                  isDark ? "text-gray-300" : "text-gray-700"
+                }`}>
                   {stat.label}
                 </div>
                 
                 {/* Trend Badge */}
                 <div 
-                  className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 px-2 py-1 rounded-full bg-blue-50"
+                  className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full ${
+                    isDark ? "text-indigo-400 bg-indigo-500/10" : "text-blue-600 bg-blue-50"
+                  }`}
                   style={{
                     opacity: isInView ? 1 : 0,
                     transition: `opacity 0.4s ease-out ${0.4 + index * 0.1}s`
                   }}
                 >
-                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                    isDark ? "bg-indigo-400" : "bg-blue-500"
+                  }`} />
                   {stat.trend}
                 </div>
               </div>
@@ -164,10 +187,12 @@ const StatsSection: React.FC = () => {
           ].map((item) => (
             <div
               key={item.label}
-              className="text-center p-4 bg-white/50 rounded-xl border border-gray-100"
+              className={`text-center p-4 rounded-xl border ${
+                isDark ? "bg-white/5 border-white/10" : "bg-white/50 border-gray-100"
+              }`}
             >
-              <div className="text-xl font-bold text-gray-700">{item.value}</div>
-              <div className="text-xs text-gray-500">{item.label}</div>
+              <div className={`text-xl font-bold ${isDark ? "text-gray-200" : "text-gray-700}"}`}>{item.value}</div>
+              <div className={`text-xs ${isDark ? "text-gray-500" : "text-gray-500"}`}>{item.label}</div>
             </div>
           ))}
         </div>

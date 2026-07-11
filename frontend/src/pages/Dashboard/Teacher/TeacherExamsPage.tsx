@@ -7,8 +7,11 @@ import { LoadingState, ErrorState, EmptyState } from "../../../components/teache
 import { getExams, deleteExam } from "../../../api/teacherApi";
 import type { Exam, ExamDetail } from "../../../api/teacherApi";
 import { PageHeader, Card, StatCard, StatGrid } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherExamsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +105,7 @@ const TeacherExamsPage: React.FC = () => {
       setExams((prev) => prev.map((e) => (e.examId === exam.examId ? exam : e)));
     }
     setIsWizardOpen(false);
-    fetchExams(); // Refresh to get updated data
+    fetchExams();
   };
 
   return (
@@ -122,31 +125,15 @@ const TeacherExamsPage: React.FC = () => {
         }
       />
 
-      {/* Stats */}
       <StatGrid className="mt-6" columns={3}>
-        <StatCard
-          label="Tổng đề thi"
-          value={exams.length}
-          icon={FileText}
-          variant="blue"
-        />
-        <StatCard
-          label="Đã xuất bản"
-          value={publishedCount}
-          icon={FileText}
-          variant="green"
-        />
-        <StatCard
-          label="Bản nháp"
-          value={draftCount}
-          icon={FileText}
-          variant="default"
-        />
+        <StatCard label="Tổng đề thi" value={exams.length} icon={FileText} variant="blue" />
+        <StatCard label="Đã xuất bản" value={publishedCount} icon={FileText} variant="green" />
+        <StatCard label="Bản nháp" value={draftCount} icon={FileText} variant="default" />
       </StatGrid>
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchExams} />
+          <ErrorState message={error} onRetry={fetchExams} isDark={isDark} />
         ) : (
           <>
             <ExamFilters
@@ -154,21 +141,20 @@ const TeacherExamsPage: React.FC = () => {
               onSearchChange={setSearch}
               filterPublished={filterPublished}
               onFilterChange={setFilterPublished}
+              isDark={isDark}
             />
 
-            {/* Loading */}
-            {loading && <LoadingState size="lg" text="Đang tải đề thi..." />}
+            {loading && <LoadingState size="lg" text="Đang tải đề thi..." isDark={isDark} />}
 
-            {/* Empty */}
             {!loading && displayExams.length === 0 && (
               <EmptyState
-                icon={<FileText size={36} className="text-slate-300" />}
+                icon={<FileText size={36} className={isDark ? "text-slate-600" : "text-slate-300"} />}
                 title="Không tìm thấy đề thi nào"
                 description={search || filterPublished ? "Thử thay đổi bộ lọc." : "Bắt đầu tạo đề thi mới."}
+                isDark={isDark}
               />
             )}
 
-            {/* Grid */}
             {!loading && displayExams.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {displayExams.map((exam) => (
@@ -177,6 +163,7 @@ const TeacherExamsPage: React.FC = () => {
                     exam={exam}
                     onEdit={handleOpenEdit}
                     onDelete={handleDelete}
+                    isDark={isDark}
                   />
                 ))}
               </div>
@@ -185,7 +172,6 @@ const TeacherExamsPage: React.FC = () => {
         )}
       </Card>
 
-      {/* Modal */}
       <ExamBuilderWizard
         isOpen={isWizardOpen}
         onClose={() => setIsWizardOpen(false)}
