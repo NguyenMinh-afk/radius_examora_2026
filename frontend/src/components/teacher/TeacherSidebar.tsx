@@ -32,7 +32,7 @@ const menu = [
 const bottomMenu = [
   { label: "Profile", icon: <User size={18} />, path: "/teacher/profile" },
   { label: "Settings", icon: <Settings size={18} />, path: "/teacher/settings" },
-  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/teacher/help" },
+  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/help" },
 ];
 
 const TeacherSidebar: React.FC = () => {

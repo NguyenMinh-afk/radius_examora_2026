@@ -10,6 +10,7 @@ import {
 } from "../../../components/teacher/dashboard";
 import { getTeacherDashboard } from "../../../api/teacherApi";
 import type { DashboardData } from "../../../api/teacherApi";
+import { Card, CardGridTwoCol } from "../../../components/shared";
 
 const TeacherDashboardPage: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -37,7 +38,7 @@ const TeacherDashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div>
         <div className="animate-pulse space-y-6">
           <div className="h-48 bg-slate-200 rounded-2xl" />
           <div className="grid grid-cols-6 gap-4">
@@ -56,7 +57,7 @@ const TeacherDashboardPage: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="p-8">
+      <div>
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
           <p className="text-red-600 font-medium mb-3">{error || "Không thể tải dữ liệu dashboard"}</p>
           <button
@@ -71,7 +72,7 @@ const TeacherDashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="p-8">
+    <div>
       {/* Hero */}
       <DashboardHero
         teacherName={data.teacher?.fullName || data.teacher?.email || "Giảng viên"}
@@ -109,16 +110,24 @@ const TeacherDashboardPage: React.FC = () => {
       />
 
       {/* Content Row 1: Upcoming Assignments + Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <UpcomingAssignmentsCard assignments={data.upcomingAssignments || []} />
-        <NotificationCard notifications={data.notifications || []} />
-      </div>
+      <CardGridTwoCol className="mt-6">
+        <Card>
+          <UpcomingAssignmentsCard assignments={data.upcomingAssignments || []} />
+        </Card>
+        <Card>
+          <NotificationCard notifications={data.notifications || []} />
+        </Card>
+      </CardGridTwoCol>
 
       {/* Content Row 2: Recent Results + My Classes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <RecentResultsCard results={data.recentResults || []} />
-        <MyClassesCard classes={data.myClasses || []} />
-      </div>
+      <CardGridTwoCol className="mt-6">
+        <Card>
+          <RecentResultsCard results={data.recentResults || []} />
+        </Card>
+        <Card>
+          <MyClassesCard classes={data.myClasses || []} />
+        </Card>
+      </CardGridTwoCol>
     </div>
   );
 };

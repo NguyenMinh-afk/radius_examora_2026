@@ -5,7 +5,8 @@ import { getClasses } from "../../../api/teacherApi";
 import type { ClassData } from "../../../api/teacherApi";
 import { TeacherClassCard } from "../../../components/teacher/classes";
 import ClassModal from "../../../components/teacher/classes/ClassModal";
-import { SearchInput, LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
+import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
+import { PageHeader, Card, FilterBar } from "../../../components/shared";
 
 const TeacherClassesPage: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
@@ -70,81 +71,85 @@ const TeacherClassesPage: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Lớp học</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            {classes.length > 0
-              ? `${classes.length} lớp · ${classes.reduce((a, c) => a + c.studentCount, 0)} sinh viên`
-              : "Quản lý các lớp học của bạn"}
-          </p>
-        </div>
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold rounded-xl px-5 py-2.5 hover:bg-blue-700 transition"
-        >
-          <Plus size={18} />
-          Tạo lớp mới
-        </button>
-      </div>
+    <div>
+      <PageHeader
+        title="Lớp học"
+        icon={GraduationCap}
+        description={classes.length > 0
+          ? `${classes.length} lớp · ${classes.reduce((a, c) => a + c.studentCount, 0)} sinh viên`
+          : "Quản lý các lớp học của bạn"
+        }
+        actions={
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            <Plus size={18} />
+            Tạo lớp mới
+          </button>
+        }
+      />
 
-      {/* Search */}
-      <div className="mb-6">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder="Tìm kiếm lớp học..."
-        />
-      </div>
-
-      {/* Summary */}
-      {!loading && !error && classes.length > 0 && (
-        <div className="flex gap-4 mb-6">
-          <div className="bg-blue-50 rounded-xl px-4 py-2 text-sm">
-            <span className="font-bold text-blue-700">{classes.length}</span> lớp
-          </div>
-          <div className="bg-green-50 rounded-xl px-4 py-2 text-sm">
-            <span className="font-bold text-green-700">
-              {classes.reduce((a, c) => a + c.studentCount, 0)}
-            </span> sinh viên
-          </div>
-          <div className="bg-amber-50 rounded-xl px-4 py-2 text-sm">
-            <span className="font-bold text-amber-700">
-              {classes.reduce((a, c) => a + c.openAssignments, 0)}
-            </span> bài đang mở
-          </div>
-        </div>
-      )}
-
-      {/* Loading */}
-      {loading && <LoadingState size="lg" text="Đang tải lớp học..." />}
-
-      {/* Error */}
-      {error && !loading && <ErrorState message={error} onRetry={fetchClasses} />}
-
-      {/* Empty */}
-      {!loading && !error && displayClasses.length === 0 && (
-        <EmptyState
-          icon={<GraduationCap size={36} className="text-slate-300" />}
-          title="Không tìm thấy lớp học nào"
-          description={search ? "Thử thay đổi từ khóa tìm kiếm." : "Bạn chưa có lớp học nào."}
-        />
-      )}
-
-      {/* Grid */}
-      {!loading && !error && displayClasses.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayClasses.map((cls) => (
-            <TeacherClassCard
-              key={cls.classId}
-              classData={cls}
-              onEdit={handleOpenEdit}
+      <Card className="mt-6">
+        {error ? (
+          <ErrorState message={error} onRetry={fetchClasses} />
+        ) : (
+          <>
+            <FilterBar
+              searchValue={search}
+              onSearchChange={setSearch}
+              searchPlaceholder="Tìm kiếm lớp học..."
+              onRefresh={fetchClasses}
+              refreshing={loading}
             />
-          ))}
-        </div>
-      )}
+
+            {/* Summary badges */}
+            {!loading && classes.length > 0 && (
+              <div className="flex gap-4 mb-6">
+                <div className="bg-blue-50 rounded-lg px-4 py-2 text-sm">
+                  <span className="font-bold text-blue-700">{classes.length}</span>{" "}
+                  lớp
+                </div>
+                <div className="bg-emerald-50 rounded-lg px-4 py-2 text-sm">
+                  <span className="font-bold text-emerald-700">
+                    {classes.reduce((a, c) => a + c.studentCount, 0)}
+                  </span> sinh viên
+                </div>
+                <div className="bg-amber-50 rounded-lg px-4 py-2 text-sm">
+                  <span className="font-bold text-amber-700">
+                    {classes.reduce((a, c) => a + c.openAssignments, 0)}
+                  </span> bài đang mở
+                </div>
+              </div>
+            )}
+
+            {/* Loading */}
+            {loading && <LoadingState size="lg" text="Đang tải lớp học..." />}
+
+            {/* Empty */}
+            {!loading && displayClasses.length === 0 && (
+              <EmptyState
+                icon={<GraduationCap size={36} className="text-slate-300" />}
+                title="Không tìm thấy lớp học nào"
+                description={search ? "Thử thay đổi từ khóa tìm kiếm." : "Bạn chưa có lớp học nào."}
+              />
+            )}
+
+            {/* Grid */}
+            {!loading && displayClasses.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {displayClasses.map((cls) => (
+                  <TeacherClassCard
+                    key={cls.classId}
+                    classData={cls}
+                    onEdit={handleOpenEdit}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </Card>
 
       {/* Modal */}
       <ClassModal

@@ -1,26 +1,36 @@
 import React from "react";
-import { Settings as SettingsIcon } from "lucide-react";
-import { StudentPageHeader } from "../../../components/student/layout";
+import { Settings } from "lucide-react";
 import {
   AccountSettingsCard,
   NotificationSettingsCard,
   SecuritySettingsCard,
   DangerZoneCard
 } from "../../../components/student/settings";
+import { PageHeader, Card } from "../../../components/shared";
 
 const StudentSettingsPage: React.FC = () => {
   return (
-    <div className="p-8">
-      <StudentPageHeader
+    <div>
+      <PageHeader
         title="Cài đặt"
-        icon={SettingsIcon}
+        icon={Settings}
         description="Quản lý tài khoản và tùy chọn của bạn."
       />
 
-      <AccountSettingsCard />
-      <NotificationSettingsCard />
-      <SecuritySettingsCard />
-      <DangerZoneCard />
+      <div className="space-y-6">
+        <Card>
+          <AccountSettingsCard />
+        </Card>
+        <Card>
+          <NotificationSettingsCard />
+        </Card>
+        <Card>
+          <SecuritySettingsCard />
+        </Card>
+        <Card>
+          <DangerZoneCard />
+        </Card>
+      </div>
     </div>
   );
 };

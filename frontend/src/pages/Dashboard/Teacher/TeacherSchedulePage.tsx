@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
 import { getSchedule } from "../../../api/teacherApi";
-import type { ScheduleItem, ScheduleResponse } from "../../../api/teacherApi";
+import type { ScheduleItem } from "../../../api/teacherApi";
 import { LoadingState, ErrorState } from "../../../components/teacher/shared";
 
 type ViewMode = "month" | "week" | "list";
@@ -19,7 +19,6 @@ const TeacherSchedulePage: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
-  const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   const fetchSchedule = async () => {
@@ -130,7 +129,6 @@ const TeacherSchedulePage: React.FC = () => {
   const clearFilters = () => {
     setDateFrom("");
     setDateTo("");
-    setSelectedClassId("");
     setSelectedStatus("all");
   };
 

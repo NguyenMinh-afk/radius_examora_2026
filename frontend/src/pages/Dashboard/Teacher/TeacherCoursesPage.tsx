@@ -6,6 +6,7 @@ import type { Course } from "../../../api/teacherApi";
 import { CourseCard, CourseFilters } from "../../../components/teacher/courses";
 import CourseModal from "../../../components/teacher/courses/CourseModal";
 import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
+import { PageHeader, Card } from "../../../components/shared";
 
 const TeacherCoursesPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -69,59 +70,56 @@ const TeacherCoursesPage: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Khóa học</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            {courses.length > 0 ? `${courses.length} khóa học` : "Quản lý các khóa học của bạn"}
-          </p>
-        </div>
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold rounded-xl px-5 py-2.5 hover:bg-blue-700 transition"
-        >
-          <Plus size={18} />
-          Thêm khóa học
-        </button>
-      </div>
+    <div>
+      <PageHeader
+        title="Khóa học"
+        icon={BookOpen}
+        description={courses.length > 0 ? `${courses.length} khóa học` : "Quản lý các khóa học của bạn"}
+        actions={
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            <Plus size={18} />
+            Thêm khóa học
+          </button>
+        }
+      />
 
-      {/* Filters */}
-      <div className="mb-6">
-        <CourseFilters search={search} onSearchChange={setSearch} />
-      </div>
-
-      {/* Loading */}
-      {loading && <LoadingState size="lg" text="Đang tải khóa học..." />}
-
-      {/* Error */}
-      {error && !loading && (
-        <div className="mb-6">
+      <Card className="mt-6">
+        {error ? (
           <ErrorState message={error} onRetry={fetchCourses} />
-        </div>
-      )}
+        ) : (
+          <>
+            <CourseFilters search={search} onSearchChange={setSearch} />
 
-      {/* Grid */}
-      {!loading && !error && displayCourses.length === 0 && (
-        <EmptyState
-          icon={<BookOpen size={36} className="text-slate-300" />}
-          title="Không tìm thấy khóa học nào"
-          description={search ? "Thử thay đổi từ khóa tìm kiếm." : "Bạn chưa có khóa học nào."}
-        />
-      )}
+            {/* Loading */}
+            {loading && <LoadingState size="lg" text="Đang tải khóa học..." />}
 
-      {!loading && !error && displayCourses.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayCourses.map((course) => (
-            <CourseCard
-              key={course.courseId}
-              course={course}
-              onEdit={handleOpenEdit}
-            />
-          ))}
-        </div>
-      )}
+            {/* Empty */}
+            {!loading && displayCourses.length === 0 && (
+              <EmptyState
+                icon={<BookOpen size={36} className="text-slate-300" />}
+                title="Không tìm thấy khóa học nào"
+                description={search ? "Thử thay đổi từ khóa tìm kiếm." : "Bạn chưa có khóa học nào."}
+              />
+            )}
+
+            {/* Grid */}
+            {!loading && displayCourses.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {displayCourses.map((course) => (
+                  <CourseCard
+                    key={course.courseId}
+                    course={course}
+                    onEdit={handleOpenEdit}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </Card>
 
       {/* Modal */}
       <CourseModal
