@@ -246,21 +246,21 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO generated_questions (
     id, task_id, question_content, option_a, option_b, option_c, option_d,
-    correct_answer, difficulty, topic, explanation, status, created_at
+    correct_answer, difficulty, topic, explanation, status, display_order, generation_source, created_at
 ) VALUES
     (
         '60000000-0000-0000-0000-000000000011', '60000000-0000-0000-0000-000000000010',
         'Vong lap for trong C co dang nao?',
         'for(i=0;i<5;i++)', 'while(i<5)', 'loop(i=0; i<5)', 'repeat 5 times',
         'A', 'easy', 'Vong lap co ban', 'Cau lenh for dung theo cu phap chuan.',
-        'approved', CURRENT_TIMESTAMP - INTERVAL '5 minutes'
+        'approved', 1, 'gemini', CURRENT_TIMESTAMP - INTERVAL '5 minutes'
     ),
     (
         '60000000-0000-0000-0000-000000000012', '60000000-0000-0000-0000-000000000010',
         'Kieu du lieu int dung de luu gi?',
         'So nguyen', 'So thuc', 'Chuoi ky tu', 'Gia tri logic',
         'A', 'easy', 'Kieu du lieu', 'int luu so nguyen.',
-        'pending_review', CURRENT_TIMESTAMP - INTERVAL '4 minutes'
+        'pending_review', 2, 'gemini', CURRENT_TIMESTAMP - INTERVAL '4 minutes'
     )
 ON CONFLICT (id) DO NOTHING;
 

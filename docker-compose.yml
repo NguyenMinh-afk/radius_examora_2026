@@ -93,6 +93,28 @@ services:
       - postgres-db
       - rabbitmq
 
+  ai-worker-service:
+    build:
+      context: ./backend/AI_Worker_Service
+      dockerfile: Dockerfile
+    container_name: exmora-ai-worker-service
+    working_dir: /app
+    volumes:
+      - ./backend/AI_Worker_Service:/app
+      - ./backend/AI_Worker_Service/data:/app/data
+    env_file:
+      - ./backend/AI_Worker_Service/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672/
+      USE_RABBITMQ: "true"
+      RAW_UPLOAD_DIR: /app/data/raw
+    command: ["python", "run_worker.py"]
+    depends_on:
+      - postgres-db
+      - rabbitmq
+    restart: unless-stopped
+
   notification-service:
     image: node:20-alpine
     container_name: exmora-notification-service

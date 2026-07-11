@@ -1,6 +1,7 @@
 /**
  * Generated Question Model - ai_db.generated_questions
  * Lưu trữ câu hỏi được AI sinh ra (trước khi review/approve)
+ * Fields match Python model: display_order, generation_source
  */
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/sequelize.js';
@@ -58,6 +59,17 @@ const GeneratedQuestion = sequelize.define('GeneratedQuestion', {
   status: {
     type: DataTypes.ENUM('pending_review', 'approved', 'rejected', 'edited'),
     defaultValue: 'pending_review',
+  },
+  // Thứ tự hiển thị câu hỏi
+  display_order: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  // Nguồn sinh: 'gemini' hoặc 'local_fallback'
+  generation_source: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    defaultValue: 'gemini',
   },
 }, {
   tableName: 'generated_questions',

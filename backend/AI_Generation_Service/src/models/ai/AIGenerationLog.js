@@ -13,7 +13,7 @@ const AIGenerationLog = sequelize.define('AIGenerationLog', {
   },
   request_id: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,  // nullable để khớp với schema_optimized.sql
     references: {
       model: 'ai_generation_requests',
       key: 'id',

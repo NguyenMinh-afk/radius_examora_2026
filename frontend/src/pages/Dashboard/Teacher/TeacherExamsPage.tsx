@@ -126,9 +126,9 @@ const TeacherExamsPage: React.FC = () => {
       />
 
       <StatGrid className="mt-6" columns={3}>
-        <StatCard label="Tổng đề thi" value={exams.length} icon={FileText} variant="blue" />
-        <StatCard label="Đã xuất bản" value={publishedCount} icon={FileText} variant="green" />
-        <StatCard label="Bản nháp" value={draftCount} icon={FileText} variant="default" />
+        <StatCard label="Tổng đề thi" value={exams.length} icon={FileText} variant="blue" isDark={isDark} />
+        <StatCard label="Đã xuất bản" value={publishedCount} icon={FileText} variant="green" isDark={isDark} />
+        <StatCard label="Bản nháp" value={draftCount} icon={FileText} variant="default" isDark={isDark} />
       </StatGrid>
 
       <Card className="mt-6">

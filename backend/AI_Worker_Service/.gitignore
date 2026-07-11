@@ -1,0 +1,57 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.dev
+.env.prod
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Logs and temp files
+*.log
+*.tmp
+*.bak
+*.swp
+pip-log.txt
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Project-specific directories
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+data/samples/
+data/uploads/
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+
+# IDE and Editors
+.vscode/
+.idea/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
