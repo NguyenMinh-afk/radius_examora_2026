@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import type { Assignment } from "../../../api/studentApi";
 import AssignmentStatusBadge from "./AssignmentStatusBadge";
+import { useTheme } from "../../../contexts/useTheme";
 
 interface AssignmentCardProps {
   assignment: Assignment;
@@ -21,45 +22,54 @@ const formatDateTime = (dateString: string | undefined | null) => {
 };
 
 const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow p-5">
+    <div className={`rounded-xl shadow-sm border hover:shadow-md transition-shadow p-5 ${
+      isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
+    }`}>
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-semibold text-gray-900 text-lg">{assignment.title}</h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <h3 className={`font-semibold text-lg ${isDark ? "text-white" : "text-gray-900"}`}>{assignment.title}</h3>
+          <p className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             {assignment.courseName} • {assignment.className}
           </p>
-          <p className="text-xs text-gray-400">GV: {assignment.teacherName}</p>
+          <p className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>GV: {assignment.teacherName}</p>
         </div>
-        <AssignmentStatusBadge status={assignment.status} />
+        <AssignmentStatusBadge status={assignment.status} isDark={isDark} />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4 text-sm">
         <div>
-          <p className="text-gray-400">Mở lúc</p>
-          <p className="font-medium text-gray-700">{formatDateTime(assignment.startTime)}</p>
+          <p className={isDark ? "text-gray-500" : "text-gray-400"}>Mở lúc</p>
+          <p className={`font-medium ${isDark ? "text-gray-200" : "text-gray-700"}`}>{formatDateTime(assignment.startTime)}</p>
         </div>
         <div>
-          <p className="text-gray-400">Đóng lúc</p>
-          <p className="font-medium text-gray-700">{formatDateTime(assignment.endTime)}</p>
+          <p className={isDark ? "text-gray-500" : "text-gray-400"}>Đóng lúc</p>
+          <p className={`font-medium ${isDark ? "text-gray-200" : "text-gray-700"}`}>{formatDateTime(assignment.endTime)}</p>
         </div>
         <div>
-          <p className="text-gray-400">Thời gian</p>
-          <p className="font-medium text-gray-700">{assignment.duration || 60} phút</p>
+          <p className={isDark ? "text-gray-500" : "text-gray-400"}>Thời gian</p>
+          <p className={`font-medium ${isDark ? "text-gray-200" : "text-gray-700"}`}>{assignment.duration || 60} phút</p>
         </div>
         <div>
-          <p className="text-gray-400">Điểm đạt</p>
-          <p className="font-medium text-gray-700">{assignment.passingScore || 0} điểm</p>
+          <p className={isDark ? "text-gray-500" : "text-gray-400"}>Điểm đạt</p>
+          <p className={`font-medium ${isDark ? "text-gray-200" : "text-gray-700"}`}>{assignment.passingScore || 0} điểm</p>
         </div>
         <div>
-          <p className="text-gray-400">Số lần làm</p>
-          <p className="font-medium text-gray-700">{assignment.attemptsUsed || 0}/{assignment.maxAttempts}</p>
+          <p className={isDark ? "text-gray-500" : "text-gray-400"}>Số lần làm</p>
+          <p className={`font-medium ${isDark ? "text-gray-200" : "text-gray-700"}`}>{assignment.attemptsUsed || 0}/{assignment.maxAttempts}</p>
         </div>
       </div>
 
       {assignment.latestAttempt && (
-        <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-100">
-          <p className="text-sm text-green-700">
+        <div className={`mb-4 p-3 rounded-lg border ${
+          isDark
+            ? "bg-emerald-500/10 border-emerald-500/30"
+            : "bg-green-50 border-green-100"
+        }`}>
+          <p className={`text-sm ${isDark ? "text-emerald-400" : "text-green-700"}`}>
             <strong>Điểm: {assignment.latestAttempt.score ?? "-"}</strong> ({assignment.latestAttempt.percentage ?? 0}%)
             {" | "}Nộp: {formatDateTime(assignment.latestAttempt.submittedAt)}
           </p>
@@ -70,7 +80,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
         {assignment.status === "open" && (
           <Link
             to={`/student/assignments/${assignment.assignmentId}/take`}
-            className="px-5 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition"
+            className="px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition"
           >
             Vào thi
           </Link>
@@ -92,7 +102,9 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
           </Link>
         )}
         {assignment.status === "expired" && (
-          <span className="px-5 py-2.5 bg-slate-100 text-gray-500 font-medium rounded-lg cursor-not-allowed">
+          <span className={`px-5 py-2.5 font-medium rounded-lg cursor-not-allowed ${
+            isDark ? "bg-white/5 text-gray-500" : "bg-slate-100 text-gray-500"
+          }`}>
             Đã quá hạn
           </span>
         )}

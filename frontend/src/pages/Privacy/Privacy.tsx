@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Shield, Search, Eye, Lock, FileText, Mail, Users, Database, Globe, AlertTriangle, CheckCircle, Bell, Cookie } from "lucide-react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { useTheme } from "../../contexts/useTheme";
 
 interface Section {
   id: string;
@@ -12,6 +13,8 @@ interface Section {
 }
 
 const Privacy: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [activeSection, setActiveSection] = useState<string>("introduction");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCookieConsent, setShowCookieConsent] = useState(true);
@@ -51,8 +54,8 @@ const Privacy: React.FC = () => {
           <p>
             This policy applies to all users of our Services, including students, educators, administrators, and visitors. By using our Services, you consent to the collection and use of your information as described in this Privacy Policy.
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <p className="text-sm text-blue-800">
+          <div className={`${isDark ? "bg-blue-500/20 border-white/10" : "bg-blue-50 border-blue-200"} border rounded-xl p-4`}>
+            <p className={`text-sm ${isDark ? "text-blue-300" : "text-blue-800"}`}>
               <strong>Effective Date:</strong> January 1, 2025<br />
               <strong>Last Updated:</strong> June 15, 2025
             </p>
@@ -67,7 +70,7 @@ const Privacy: React.FC = () => {
       content: (
         <div className="space-y-6">
           <div className="text-gray-600 leading-relaxed">
-            <h4 className="font-semibold text-gray-900 mb-2">2.1 Information You Provide</h4>
+            <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>2.1 Information You Provide</h4>
             <p>We collect information you voluntarily provide when you:</p>
             <ul className="space-y-1 ml-4 mt-2">
               <li>• Create an account (name, email, password, role)</li>
@@ -79,7 +82,7 @@ const Privacy: React.FC = () => {
           </div>
 
           <div className="text-gray-600 leading-relaxed">
-            <h4 className="font-semibold text-gray-900 mb-2">2.2 Information Collected Automatically</h4>
+            <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>2.2 Information Collected Automatically</h4>
             <p>When you use our Services, we automatically collect:</p>
             <ul className="space-y-1 ml-4 mt-2">
               <li>• <strong>Device Information:</strong> Browser type, operating system, device identifiers</li>
@@ -90,7 +93,7 @@ const Privacy: React.FC = () => {
           </div>
 
           <div className="text-gray-600 leading-relaxed">
-            <h4 className="font-semibold text-gray-900 mb-2">2.3 Educational Records</h4>
+            <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>2.3 Educational Records</h4>
             <p>
               For educational institution users, we may collect and process:
             </p>
@@ -100,9 +103,9 @@ const Privacy: React.FC = () => {
               <li>• Performance analytics and reports</li>
               <li>• Class and course information</li>
             </ul>
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mt-4 flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-green-800">
+            <div className={`${isDark ? "bg-green-500/20 border-white/10" : "bg-green-50 border-green-200"} border rounded-xl p-4 mt-4 flex items-start gap-3`}>
+              <CheckCircle className={`w-5 h-5 ${isDark ? "text-green-400" : "text-green-600"} flex-shrink-0 mt-0.5`} />
+              <p className={`text-sm ${isDark ? "text-green-300" : "text-green-800"}`}>
                 We treat educational records with special care and comply with FERPA, GDPR Article 89, and other applicable educational data protection laws.
               </p>
             </div>
@@ -129,15 +132,15 @@ const Privacy: React.FC = () => {
               <li key={item.title} className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-gray-900">{item.title}</strong>
+                  <strong className={isDark ? "text-white" : "text-gray-900"}>{item.title}</strong>
                   <p className="text-sm">{item.desc}</p>
                 </div>
               </li>
             ))}
           </ul>
 
-          <div className="bg-gray-100 rounded-xl p-4 mt-4">
-            <p className="text-sm text-gray-700">
+          <div className={`${isDark ? "bg-slate-700" : "bg-gray-100"} rounded-xl p-4 mt-4`}>
+            <p className={`text-sm ${isDark ? "text-gray-200" : "text-gray-700"}`}>
               <strong>AI Processing Notice:</strong> Your content may be processed by our AI systems to generate examination questions and provide adaptive learning features. We implement safeguards to protect your data during AI processing.
             </p>
           </div>
@@ -153,38 +156,38 @@ const Privacy: React.FC = () => {
           <p>We share your information only in the following circumstances:</p>
 
           <div className="space-y-4">
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">4.1 With Your Institution</h4>
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>4.1 With Your Institution</h4>
               <p className="text-sm">
                 If you are a student or teacher, your examination results and progress data may be shared with your educational institution's administrators.
               </p>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">4.2 Service Providers</h4>
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>4.2 Service Providers</h4>
               <p className="text-sm">
                 We share data with trusted third-party providers who help us operate: cloud hosting (AWS), payment processing (Stripe), email delivery, and analytics. These providers are bound by confidentiality agreements.
               </p>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">4.3 Legal Requirements</h4>
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>4.3 Legal Requirements</h4>
               <p className="text-sm">
                 We may disclose information if required by law, court order, or government request, or if we believe disclosure is necessary to protect our rights, ensure safety, or prevent fraud.
               </p>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">4.4 Business Transfers</h4>
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>4.4 Business Transfers</h4>
               <p className="text-sm">
                 In the event of a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction.
               </p>
             </div>
           </div>
 
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">
+          <div className={`${isDark ? "bg-red-500/20 border-white/10" : "bg-red-50 border-red-200"} border rounded-xl p-4 flex items-start gap-3`}>
+            <AlertTriangle className={`w-5 h-5 ${isDark ? "text-red-400" : "text-red-600"} flex-shrink-0 mt-0.5`} />
+            <p className={`text-sm ${isDark ? "text-red-300" : "text-red-800"}`}>
               <strong>We never sell your personal information</strong> to advertisers or third parties for marketing purposes.
             </p>
           </div>
@@ -197,7 +200,7 @@ const Privacy: React.FC = () => {
       icon: <Lock className="w-5 h-5" />,
       content: (
         <div className="space-y-4 text-gray-600 leading-relaxed">
-          <h4 className="font-semibold text-gray-900">5.1 Security Measures</h4>
+          <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>5.1 Security Measures</h4>
           <p>We implement industry-standard security measures including:</p>
           <ul className="space-y-2 ml-4">
             <li>• <strong>Encryption:</strong> AES-256 encryption for data at rest; TLS 1.3 for data in transit</li>
@@ -206,33 +209,33 @@ const Privacy: React.FC = () => {
             <li>• <strong>Regular Audits:</strong> Annual third-party security audits and penetration testing</li>
           </ul>
 
-          <h4 className="font-semibold text-gray-900 mt-6">5.2 Data Retention</h4>
+          <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mt-6`}>5.2 Data Retention</h4>
           <p>We retain your information for as long as your account is active or as needed to provide services:</p>
-          <div className="bg-gray-50 rounded-xl p-4 mt-2">
+          <div className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-4 mt-2`}>
             <table className="w-full text-sm">
               <tbody>
-                <tr className="border-b border-gray-200">
-                  <td className="py-2 font-medium text-gray-900">Account Data</td>
+                <tr className={`border-b ${isDark ? "border-white/10" : "border-gray-200"}`}>
+                  <td className={`py-2 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>Account Data</td>
                   <td className="py-2 text-right">Until account deletion + 30 days</td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="py-2 font-medium text-gray-900">Examination Records</td>
+                <tr className={`border-b ${isDark ? "border-white/10" : "border-gray-200"}`}>
+                  <td className={`py-2 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>Examination Records</td>
                   <td className="py-2 text-right">7 years (as required by law)</td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="py-2 font-medium text-gray-900">Analytics Data</td>
+                <tr className={`border-b ${isDark ? "border-white/10" : "border-gray-200"}`}>
+                  <td className={`py-2 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>Analytics Data</td>
                   <td className="py-2 text-right">2 years (anonymized)</td>
                 </tr>
                 <tr>
-                  <td className="py-2 font-medium text-gray-900">Support Communications</td>
+                  <td className={`py-2 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>Support Communications</td>
                   <td className="py-2 text-right">3 years</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-4">
-            <p className="text-sm text-amber-800">
+          <div className={`${isDark ? "bg-amber-500/20 border-white/10" : "bg-amber-50 border-amber-200"} border rounded-xl p-4 mt-4`}>
+            <p className={`text-sm ${isDark ? "text-amber-300" : "text-amber-800"}`}>
               <strong>No method of transmission over the Internet is 100% secure.</strong> While we strive to protect your data, we cannot guarantee absolute security. You are responsible for keeping your credentials confidential.
             </p>
           </div>
@@ -256,22 +259,22 @@ const Privacy: React.FC = () => {
               { title: "Object", desc: "Opt out of certain processing activities" },
               { title: "Restrict", desc: "Limit how we process your data" },
             ].map((right) => (
-              <div key={right.title} className="bg-gray-50 rounded-xl p-4">
-                <h4 className="font-semibold text-gray-900 mb-1">{right.title}</h4>
+              <div key={right.title} className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-4`}>
+                <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>{right.title}</h4>
                 <p className="text-sm">{right.desc}</p>
               </div>
             ))}
           </div>
 
           <div className="mt-6">
-            <h4 className="font-semibold text-gray-900 mb-2">How to Exercise Your Rights</h4>
+            <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>How to Exercise Your Rights</h4>
             <p className="text-sm">
               You can exercise most rights through your account settings. For data export or deletion requests, contact privacy@exmora.ai. We will respond within 30 days.
             </p>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <p className="text-sm text-blue-800">
+          <div className={`${isDark ? "bg-blue-500/20 border-white/10" : "bg-blue-50 border-blue-200"} border rounded-xl p-4`}>
+            <p className={`text-sm ${isDark ? "text-blue-300" : "text-blue-800"}`}>
               <strong>European Users (GDPR):</strong> You have additional rights including the right to lodge a complaint with your local data protection authority. Contact us at dpo@exmora.ai for GDPR-related inquiries.
             </p>
           </div>
@@ -288,30 +291,30 @@ const Privacy: React.FC = () => {
             We use cookies and similar technologies to enhance your experience on our platform.
           </p>
 
-          <h4 className="font-semibold text-gray-900">Types of Cookies We Use</h4>
+          <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>Types of Cookies We Use</h4>
           <div className="space-y-3">
-            <div className="border border-gray-200 rounded-xl p-4">
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded">Essential</span>
-                <span className="text-green-600 text-xs">Always Active</span>
+                <span className={`${isDark ? "bg-blue-500/20 text-blue-300" : "bg-blue-100 text-blue-700"} text-xs font-semibold px-2 py-1 rounded`}>Essential</span>
+                <span className={`${isDark ? "text-green-400" : "text-green-600"} text-xs`}>Always Active</span>
               </div>
               <p className="text-sm">
                 Required for basic platform functionality: authentication, security, session management.
               </p>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-1 rounded">Functional</span>
+                <span className={`${isDark ? "bg-purple-500/20 text-purple-300" : "bg-purple-100 text-purple-700"} text-xs font-semibold px-2 py-1 rounded`}>Functional</span>
               </div>
               <p className="text-sm">
                 Remember your preferences: language, theme, notification settings.
               </p>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
+            <div className={`border ${isDark ? "border-white/10" : "border-gray-200"} rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-1 rounded">Analytics</span>
+                <span className={`${isDark ? "bg-amber-500/20 text-amber-300" : "bg-amber-100 text-amber-700"} text-xs font-semibold px-2 py-1 rounded`}>Analytics</span>
               </div>
               <p className="text-sm">
                 Help us understand how users interact with our platform to improve services.
@@ -319,21 +322,21 @@ const Privacy: React.FC = () => {
             </div>
           </div>
 
-          <h4 className="font-semibold text-gray-900 mt-6">Managing Cookies</h4>
+          <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mt-6`}>Managing Cookies</h4>
           <p className="text-sm">
             You can control cookies through your browser settings. Disabling essential cookies may affect platform functionality. Our platform respects "Do Not Track" signals from browsers.
           </p>
 
           {showCookieConsent && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
+            <div className={`fixed bottom-0 left-0 right-0 ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-200"} border-t p-4 shadow-lg z-50`}>
               <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-gray-600">
+                <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                   We use cookies to enhance your experience. By continuing, you agree to our <Link to="/terms" className="text-blue-600 hover:underline">Terms</Link> and <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>.
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowCookieConsent(false)}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition"
+                    className={`px-4 py-2 ${isDark ? "bg-slate-700 text-gray-200 hover:bg-slate-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"} rounded-lg text-sm transition`}
                   >
                     Customize
                   </button>
@@ -359,22 +362,22 @@ const Privacy: React.FC = () => {
           <p>Our Services may include links to or integration with third-party services:</p>
 
           <div className="space-y-3">
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-1">LMS Integrations</h4>
+            <div className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>LMS Integrations</h4>
               <p className="text-sm">
                 When you connect with Canvas, Moodle, or other LMS platforms, data may be shared according to their privacy policies. We recommend reviewing their privacy practices.
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-1">AI Service Providers</h4>
+            <div className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>AI Service Providers</h4>
               <p className="text-sm">
                 We use AI services from OpenAI and Google Cloud to power our question generation. These providers process your content according to their privacy policies.
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-1">Analytics Services</h4>
+            <div className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-4`}>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Analytics Services</h4>
               <p className="text-sm">
                 We use tools like Google Analytics to understand platform usage. Data collected is anonymized and subject to their privacy policies.
               </p>
@@ -395,8 +398,8 @@ const Privacy: React.FC = () => {
           <p>
             If you are a parent or guardian and believe your child has provided us with personal information without your consent, please contact us immediately at privacy@exmora.ai.
           </p>
-          <div className="bg-gray-100 rounded-xl p-4">
-            <p className="text-sm text-gray-700">
+          <div className={`${isDark ? "bg-slate-700" : "bg-gray-100"} rounded-xl p-4`}>
+            <p className={`text-sm ${isDark ? "text-gray-200" : "text-gray-700"}`}>
               <strong>For Schools (FERPA/COPPA):</strong> We work with educational institutions that serve as "school officials" with legitimate educational interests. Schools are responsible for obtaining appropriate parental consent as required by FERPA or COPPA.
             </p>
           </div>
@@ -420,8 +423,8 @@ const Privacy: React.FC = () => {
             <li>• Binding Corporate Rules for intra-group transfers</li>
             <li>• Compliance with applicable data protection frameworks</li>
           </ul>
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
-            <p className="text-sm text-blue-800">
+          <div className={`${isDark ? "bg-blue-500/20 border-white/10" : "bg-blue-50 border-blue-200"} border rounded-xl p-4 mt-4`}>
+            <p className={`text-sm ${isDark ? "text-blue-300" : "text-blue-800"}`}>
               <strong>GDPR Users:</strong> International transfers are conducted under Article 46 of the GDPR with appropriate safeguards.
             </p>
           </div>
@@ -446,8 +449,8 @@ const Privacy: React.FC = () => {
           <p>
             Your continued use of our Services after changes take effect constitutes acceptance of the updated policy.
           </p>
-          <div className="bg-gray-100 rounded-xl p-4">
-            <p className="text-sm text-gray-700">
+          <div className={`${isDark ? "bg-slate-700" : "bg-gray-100"} rounded-xl p-4`}>
+            <p className={`text-sm ${isDark ? "text-gray-200" : "text-gray-700"}`}>
               <strong>Version History:</strong><br />
               v2.2 (June 15, 2025) - Updated AI processing disclosures<br />
               v2.1 (March 1, 2025) - Added international transfer section<br />
@@ -466,21 +469,21 @@ const Privacy: React.FC = () => {
         <div className="space-y-4 text-gray-600 leading-relaxed">
           <p>For privacy-related questions or to exercise your rights:</p>
 
-          <div className="bg-gray-50 rounded-xl p-6 space-y-4">
+          <div className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-6 space-y-4`}>
             <div>
-              <h4 className="font-semibold text-gray-900 mb-1">General Privacy Inquiries</h4>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>General Privacy Inquiries</h4>
               <p className="text-sm">privacy@exmora.ai</p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900 mb-1">Data Protection Officer</h4>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Data Protection Officer</h4>
               <p className="text-sm">dpo@exmora.ai</p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900 mb-1">Legal Department</h4>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Legal Department</h4>
               <p className="text-sm">legal@exmora.ai</p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900 mb-1">Mailing Address</h4>
+              <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Mailing Address</h4>
               <p className="text-sm">
                 EXMORA Privacy Team<br />
                 Hanoi, Vietnam
@@ -503,21 +506,21 @@ const Privacy: React.FC = () => {
     : sections;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-blue-50 to-indigo-50">
+    <div className={`min-h-screen flex flex-col ${isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : "bg-gradient-to-br from-white via-blue-50 to-indigo-50"}`}>
       <Header />
 
       <main className="flex-1 py-12">
         <div className="max-w-7xl mx-auto px-6">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <div className={`inline-flex items-center gap-2 ${isDark ? "bg-green-500/20 text-green-300" : "bg-green-100 text-green-700"} px-4 py-2 rounded-full text-sm font-medium mb-6`}>
               <Shield size={16} />
               Your Data, Your Rights
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className={`text-4xl md:text-5xl font-bold ${isDark ? "text-white" : "text-gray-900"} mb-4`}>
               Privacy Policy
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className={`text-lg ${isDark ? "text-gray-400" : "text-gray-600"} max-w-2xl mx-auto`}>
               We are committed to protecting your privacy. Learn how we collect, use, and safeguard your personal information.
             </p>
           </div>
@@ -535,14 +538,14 @@ const Privacy: React.FC = () => {
                       placeholder="Search privacy policy..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className={`w-full pl-10 pr-4 py-2.5 ${isDark ? "bg-slate-700 border-white/10 text-gray-200 placeholder-gray-500" : "bg-white border-gray-200"} border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
                     />
                   </div>
                 </div>
 
                 {/* Quick Links */}
-                <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <div className={`${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-200"} rounded-xl border p-4 mb-6`}>
+                  <h3 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-3 flex items-center gap-2`}>
                     <Bell className="w-4 h-4 text-green-600" />
                     Quick Links
                   </h3>
@@ -566,8 +569,8 @@ const Privacy: React.FC = () => {
                 </div>
 
                 {/* Table of Contents */}
-                <div className="bg-white rounded-xl border border-gray-200 p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Contents</h3>
+                <div className={`${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-200"} rounded-xl border p-4`}>
+                  <h3 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-3`}>Contents</h3>
                   <nav className="space-y-1">
                     {filteredSections.map((section) => (
                       <button
@@ -578,8 +581,12 @@ const Privacy: React.FC = () => {
                         }}
                         className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${
                           activeSection === section.id
-                            ? "bg-green-50 text-green-700 font-semibold border-l-4 border-green-600"
-                            : "text-gray-600 hover:bg-gray-50"
+                            ? isDark
+                              ? "bg-green-500/20 text-green-300 font-semibold border-l-4 border-green-400"
+                              : "bg-green-50 text-green-700 font-semibold border-l-4 border-green-600"
+                            : isDark
+                              ? "text-gray-400 hover:bg-slate-700"
+                              : "text-gray-600 hover:bg-gray-50"
                         }`}
                       >
                         {section.title}
@@ -596,15 +603,15 @@ const Privacy: React.FC = () => {
                 <section
                   key={section.id}
                   id={section.id}
-                  className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm scroll-mt-24"
+                  className={`${isDark ? "bg-slate-800 border-white/10 shadow-slate-950" : "bg-white border-gray-200 shadow-sm"} rounded-2xl border p-6 md:p-8 scroll-mt-24`}
                 >
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
+                    <div className={`w-10 h-10 ${isDark ? "bg-green-500/20 text-green-400" : "bg-green-100 text-green-600"} rounded-xl flex items-center justify-center`}>
                       {section.icon}
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
+                    <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{section.title}</h2>
                   </div>
-                  <div className="prose max-w-none text-gray-600">
+                  <div className={`prose max-w-none ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                     {section.content}
                   </div>
                 </section>
@@ -618,7 +625,7 @@ const Privacy: React.FC = () => {
                 </p>
                 <a
                   href="mailto:privacy@exmora.ai"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-green-600 rounded-xl font-semibold hover:bg-green-50 transition-colors"
+                  className={`inline-flex items-center gap-2 px-6 py-3 ${isDark ? "bg-slate-800 text-green-300 hover:bg-slate-700" : "bg-white text-green-600 hover:bg-green-50"} rounded-xl font-semibold transition-colors`}
                 >
                   <Mail className="w-4 h-4" />
                   Email Privacy Team

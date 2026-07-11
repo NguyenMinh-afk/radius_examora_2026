@@ -7,8 +7,11 @@ import { CourseCard, CourseFilters } from "../../../components/teacher/courses";
 import CourseModal from "../../../components/teacher/courses/CourseModal";
 import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
 import { PageHeader, Card } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherCoursesPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,24 +91,22 @@ const TeacherCoursesPage: React.FC = () => {
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchCourses} />
+          <ErrorState message={error} onRetry={fetchCourses} isDark={isDark} />
         ) : (
           <>
-            <CourseFilters search={search} onSearchChange={setSearch} />
+            <CourseFilters search={search} onSearchChange={setSearch} isDark={isDark} />
 
-            {/* Loading */}
-            {loading && <LoadingState size="lg" text="Đang tải khóa học..." />}
+            {loading && <LoadingState size="lg" text="Đang tải khóa học..." isDark={isDark} />}
 
-            {/* Empty */}
             {!loading && displayCourses.length === 0 && (
               <EmptyState
-                icon={<BookOpen size={36} className="text-slate-300" />}
+                icon={<BookOpen size={36} className={isDark ? "text-slate-600" : "text-slate-300"} />}
                 title="Không tìm thấy khóa học nào"
                 description={search ? "Thử thay đổi từ khóa tìm kiếm." : "Bạn chưa có khóa học nào."}
+                isDark={isDark}
               />
             )}
 
-            {/* Grid */}
             {!loading && displayCourses.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {displayCourses.map((course) => (
@@ -113,6 +114,7 @@ const TeacherCoursesPage: React.FC = () => {
                     key={course.courseId}
                     course={course}
                     onEdit={handleOpenEdit}
+                    isDark={isDark}
                   />
                 ))}
               </div>
@@ -121,7 +123,6 @@ const TeacherCoursesPage: React.FC = () => {
         )}
       </Card>
 
-      {/* Modal */}
       <CourseModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

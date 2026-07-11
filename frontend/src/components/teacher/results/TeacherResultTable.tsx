@@ -6,14 +6,18 @@ import { EmptyState } from "../shared";
 interface TeacherResultTableProps {
   results: Result[];
   isLoading?: boolean;
+  isDark?: boolean;
 }
 
-const TeacherResultTable: React.FC<TeacherResultTableProps> = ({ results, isLoading }) => {
+const TeacherResultTable: React.FC<TeacherResultTableProps> = ({ results, isLoading, isDark }) => {
   if (isLoading) {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-20 bg-slate-100 rounded-xl animate-pulse" />
+          <div
+            key={i}
+            className={`h-20 rounded-xl animate-pulse ${isDark ? "bg-slate-800" : "bg-slate-100"}`}
+          />
         ))}
       </div>
     );
@@ -24,6 +28,7 @@ const TeacherResultTable: React.FC<TeacherResultTableProps> = ({ results, isLoad
       <EmptyState
         title="Chưa có kết quả nào"
         description="Kết quả bài thi sẽ hiển thị tại đây khi sinh viên nộp bài."
+        isDark={isDark}
       />
     );
   }
@@ -31,7 +36,7 @@ const TeacherResultTable: React.FC<TeacherResultTableProps> = ({ results, isLoad
   return (
     <div className="space-y-3">
       {results.map((result, index) => (
-        <TeacherResultCard key={result.attemptId || `result-${index}`} result={result} />
+        <TeacherResultCard key={result.attemptId || `result-${index}`} result={result} isDark={isDark} />
       ))}
     </div>
   );

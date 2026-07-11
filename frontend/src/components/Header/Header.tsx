@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { getDashboardPath } from "../../utils/auth";
-import { User } from "lucide-react";
+import { User, Sun, Moon } from "lucide-react";
+import { useTheme } from "../../contexts/useTheme";
 
 /**
  * =============================================
@@ -34,6 +35,8 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   // Event listener để detect scroll
   useEffect(() => {
@@ -57,8 +60,12 @@ const Header: React.FC = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-[9999] flex justify-between items-center px-6 lg:px-10 py-3 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/95 backdrop-blur-lg shadow-md border-b border-gray-100"
-          : "bg-white/80 backdrop-blur-md border-b border-transparent"
+          ? isDark
+            ? "bg-slate-900/95 backdrop-blur-lg shadow-md border-b border-white/10"
+            : "bg-white/95 backdrop-blur-lg shadow-md border-b border-gray-100"
+          : isDark
+            ? "bg-slate-900/80 backdrop-blur-md border-b border-transparent"
+            : "bg-white/80 backdrop-blur-md border-b border-transparent"
       }`}
     >
       {/* Logo */}
@@ -78,22 +85,41 @@ const Header: React.FC = () => {
             }}
           />
         </motion.div>
-        <span className="text-xl font-bold text-gray-900 hover:text-blue-600 transition">
+        <span className={`text-xl font-bold hover:text-blue-600 transition ${
+          isDark ? "text-white" : "text-gray-900"
+        }`}>
           EXMORA
         </span>
       </Link>
 
       {/* Navigation */}
-      <nav className="hidden md:flex gap-6 lg:gap-8 text-sm text-gray-600 font-medium">
+      <nav className={`hidden md:flex gap-6 lg:gap-8 text-sm font-medium ${
+        isDark ? "text-gray-400" : "text-gray-600"
+      }`}>
         {navItems.map((item) => (
-          <a key={item.label} href={item.href} className="hover:text-blue-600 transition-colors">
+          <a key={item.label} href={item.href} className={`hover:text-blue-600 transition-colors ${
+            isDark ? "hover:text-indigo-400" : ""
+          }`}>
             {item.label}
           </a>
         ))}
       </nav>
 
       {/* Actions */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
+            isDark
+              ? "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
+          }`}
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {isAuthenticated && user ? (
           <div className="relative">
             <button
@@ -115,14 +141,18 @@ const Header: React.FC = () => {
             </button>
 
             {isUserMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
-                <div className="px-3 py-2 border-b border-slate-100 mb-1">
-                  <p className="text-sm font-medium text-gray-900 truncate">{user.full_name || user.email}</p>
-                  {user.email && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
+              <div className={`absolute right-0 top-full mt-2 w-48 rounded-xl shadow-lg py-2 z-50 ${
+                isDark ? "bg-slate-800 border border-white/10" : "bg-white border-slate-200"
+              }`}>
+                <div className={`px-3 py-2 border-b mb-1 ${isDark ? "border-white/10" : "border-slate-100"}`}>
+                  <p className={`text-sm font-medium truncate ${isDark ? "text-white" : "text-gray-900"}`}>{user.full_name || user.email}</p>
+                  {user.email && <p className={`text-xs truncate ${isDark ? "text-gray-500" : "text-gray-500"}`}>{user.email}</p>}
                 </div>
                 <Link
                   to={getDashboardPath(user.role)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 ${
+                    isDark ? "text-gray-300 hover:bg-white/5" : "text-gray-700"
+                  }`}
                   onClick={() => setIsUserMenuOpen(false)}
                 >
                   <User size={16} />
@@ -133,7 +163,9 @@ const Header: React.FC = () => {
                     logout();
                     setIsUserMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 w-full"
+                  className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-red-50 w-full ${
+                    isDark ? "text-red-400 hover:bg-red-500/10" : "text-red-600"
+                  }`}
                 >
                   Đăng xuất
                 </button>
@@ -144,13 +176,19 @@ const Header: React.FC = () => {
           <>
             <Link
               to="/login"
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+              className={`px-3 py-2 text-sm font-medium transition-colors ${
+                isDark ? "text-gray-400 hover:text-indigo-400" : "text-gray-600 hover:text-blue-600"
+              }`}
             >
               Login
             </Link>
             <Link
               to="/register"
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                isDark
+                  ? "bg-indigo-600 text-white hover:bg-indigo-500"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
               SignUp
             </Link>
@@ -159,7 +197,7 @@ const Header: React.FC = () => {
       </div>
 
       {/* Mobile Menu Button */}
-      <button className="md:hidden p-2 text-gray-600">
+      <button className={`md:hidden p-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { ClipboardList, Plus } from "lucide-react";
-import { getAssignments, getClasses } from "../../../api/teacherApi";
+import { getAssignments, getClasses, updateAssignment, deleteAssignment } from "../../../api/teacherApi";
 import { TeacherAssignmentCard } from "../../../components/teacher/assignments";
 import AssignmentModal from "../../../components/teacher/assignments/AssignmentModal";
 import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
 import type { Assignment, AssignmentsResponse, ClassData } from "../../../api/teacherApi";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherAssignmentsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [data, setData] = useState<AssignmentsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,14 +71,7 @@ const TeacherAssignmentsPage: React.FC = () => {
   const handleClose = async (id: string) => {
     if (!confirm("Bạn có chắc muốn đóng bài thi này?")) return;
     try {
-      await fetch(`${import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3001/api/teacher"}/assignments/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({ status: "closed" }),
-      });
+      await updateAssignment(id, { status: "closed" });
       fetchData();
     } catch (err) {
       console.error("Failed to close assignment:", err);
@@ -84,14 +80,7 @@ const TeacherAssignmentsPage: React.FC = () => {
 
   const handleReopen = async (id: string) => {
     try {
-      await fetch(`${import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3001/api/teacher"}/assignments/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({ status: "open" }),
-      });
+      await updateAssignment(id, { status: "open" });
       fetchData();
     } catch (err) {
       console.error("Failed to reopen assignment:", err);
@@ -101,12 +90,7 @@ const TeacherAssignmentsPage: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!confirm("Bạn có chắc muốn xóa bài thi đã giao này?")) return;
     try {
-      await fetch(`${import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3001/api/teacher"}/assignments/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      await deleteAssignment(id);
       fetchData();
     } catch (err) {
       console.error("Failed to delete assignment:", err);
@@ -118,8 +102,8 @@ const TeacherAssignmentsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Bài thi đã giao</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Bài thi đã giao</h1>
+          <p className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-slate-500"}`}>
             Quản lý bài thi đã giao cho các lớp
           </p>
         </div>
@@ -149,12 +133,18 @@ const TeacherAssignmentsPage: React.FC = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
                   ${activeFilter === tab.key
                     ? "bg-blue-600 text-white"
-                    : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                    : isDark
+                      ? "bg-slate-800 text-gray-300 border border-white/10 hover:bg-slate-700"
+                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
                   }`}
               >
                 {tab.label}
                 <span className={`px-1.5 py-0.5 rounded-full text-xs
-                  ${activeFilter === tab.key ? "bg-blue-500" : "bg-slate-100"}`}>
+                  ${activeFilter === tab.key
+                    ? "bg-blue-500"
+                    : isDark
+                      ? "bg-slate-700 text-gray-300"
+                      : "bg-slate-100"}`}>
                   {tab.count}
                 </span>
               </button>
@@ -170,7 +160,11 @@ const TeacherAssignmentsPage: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && fetchData()}
-                className="w-full pl-4 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                className={`w-full pl-4 pr-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none ${
+                  isDark
+                    ? "bg-slate-800 border-white/10 text-white placeholder:text-gray-500"
+                    : "bg-white border-slate-200"
+                }`}
               />
             </div>
             <select
@@ -179,7 +173,11 @@ const TeacherAssignmentsPage: React.FC = () => {
                 setSelectedClassId(e.target.value);
                 fetchData();
               }}
-              className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white min-w-[180px]"
+              className={`px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none min-w-[180px] ${
+                isDark
+                  ? "bg-slate-800 border-white/10 text-white"
+                  : "bg-white border-slate-200"
+              }`}
             >
               <option value="">Tất cả lớp</option>
               {classes.map((cls) => (
@@ -199,21 +197,22 @@ const TeacherAssignmentsPage: React.FC = () => {
       )}
 
       {/* Loading */}
-      {loading && <LoadingState size="lg" text="Đang tải bài thi..." />}
+      {loading && <LoadingState size="lg" text="Đang tải bài thi..." isDark={isDark} />}
 
       {/* Error */}
       {error && !loading && (
         <div className="mb-6">
-          <ErrorState message={error} onRetry={fetchData} />
+          <ErrorState message={error} onRetry={fetchData} isDark={isDark} />
         </div>
       )}
 
       {/* Empty */}
       {!loading && !error && displayItems.length === 0 && (
         <EmptyState
-          icon={<ClipboardList size={36} className="text-slate-300" />}
+          icon={<ClipboardList size={36} className={isDark ? "text-slate-600" : "text-slate-300"} />}
           title="Không tìm thấy bài thi nào"
           description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+          isDark={isDark}
         />
       )}
 
@@ -227,6 +226,7 @@ const TeacherAssignmentsPage: React.FC = () => {
               onClose={handleClose}
               onReopen={handleReopen}
               onDelete={handleDelete}
+              isDark={isDark}
             />
           ))}
         </div>

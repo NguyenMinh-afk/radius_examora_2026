@@ -1,18 +1,5 @@
 import React from "react";
-
-interface AssignmentFiltersProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-  summary: {
-    total: number;
-    open: number;
-    upcoming: number;
-    submitted: number;
-    expired: number;
-  };
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-}
+import { useTheme } from "../../../contexts/useTheme";
 
 interface AssignmentFiltersProps {
   activeTab: string;
@@ -35,6 +22,9 @@ const AssignmentFilters: React.FC<AssignmentFiltersProps> = ({
   searchTerm,
   onSearchChange,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const tabs = [
     { key: "all", label: "Tất cả", count: summary.total },
     { key: "open", label: "Đang mở", count: summary.open },
@@ -51,16 +41,23 @@ const AssignmentFilters: React.FC<AssignmentFiltersProps> = ({
           <button
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition
-              ${activeTab === tab.key
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeTab === tab.key
                 ? "bg-blue-600 text-white"
+                : isDark
+                ? "bg-slate-800 text-gray-300 border border-white/10 hover:bg-white/5"
                 : "bg-white text-gray-600 border border-slate-200 hover:bg-slate-50"
-              }`}
+            }`}
           >
             {tab.label}
             {tab.count !== undefined && (
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs
-                ${activeTab === tab.key ? "bg-blue-500" : "bg-slate-100"}`}>
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                activeTab === tab.key
+                  ? "bg-blue-500"
+                  : isDark
+                  ? "bg-white/5"
+                  : "bg-slate-100"
+              }`}>
                 {tab.count}
               </span>
             )}
@@ -75,7 +72,11 @@ const AssignmentFilters: React.FC<AssignmentFiltersProps> = ({
           placeholder="Tìm kiếm bài thi..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className={`w-full pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none border ${
+            isDark
+              ? "bg-slate-800 border-white/10 text-white placeholder:text-gray-500"
+              : "bg-white border-slate-200 text-gray-900"
+          }`}
         />
       </div>
     </div>

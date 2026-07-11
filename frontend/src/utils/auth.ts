@@ -5,6 +5,7 @@ export interface AuthUser {
   role?: string;
   approval_status?: string;
   avatar_url?: string;
+  avatarUrl?: string; // API response might use this
 }
 
 export interface AuthResponse {
@@ -56,7 +57,13 @@ export const saveAuthData = (data: AuthResponse) => {
   }
 
   if (data.user) {
-    localStorage.setItem("user", JSON.stringify(data.user));
+    // Normalize avatarUrl from API response to avatar_url for AuthUser
+    const rawUser = data.user as unknown as Record<string, unknown>;
+    const normalizedUser = {
+      ...data.user,
+      avatar_url: data.user.avatar_url || rawUser.avatarUrl,
+    };
+    localStorage.setItem("user", JSON.stringify(normalizedUser));
   }
 
   return data.user?.role || getRoleFromToken(accessToken);
@@ -95,4 +102,17 @@ export const isAuthenticated = (): boolean => {
 export const isStudent = (): boolean => {
   const user = getCurrentUser();
   return user?.role === "student";
+};
+
+export const updateCurrentUser = (updates: Partial<AuthUser>) => {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return null;
+
+  const updatedUser = { ...currentUser, ...updates };
+  localStorage.setItem("user", JSON.stringify(updatedUser));
+
+  // Dispatch event to notify components that user data changed
+  window.dispatchEvent(new Event("user-data-updated"));
+
+  return updatedUser;
 };

@@ -8,12 +8,14 @@ interface NotificationListProps {
   notifications: Notification[];
   onMarkRead?: (id: string) => void;
   onMarkAllRead?: () => void;
+  isDark?: boolean;
 }
 
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
   onMarkRead,
   onMarkAllRead,
+  isDark,
 }) => {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -22,7 +24,9 @@ const NotificationList: React.FC<NotificationListProps> = ({
       {unreadCount > 0 && (
         <button
           onClick={onMarkAllRead}
-          className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition"
+          className={`flex items-center gap-2 text-sm font-medium transition ${
+            isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"
+          }`}
         >
           <CheckCheck size={16} />
           Đánh dấu đã đọc tất cả ({unreadCount})
@@ -31,13 +35,14 @@ const NotificationList: React.FC<NotificationListProps> = ({
 
       {notifications.length === 0 ? (
         <EmptyState
-          icon={<Bell size={36} className="text-slate-300" />}
+          icon={<Bell size={36} className={isDark ? "text-slate-600" : "text-slate-300"} />}
           title="Không có thông báo nào"
           description="Các thông báo quan trọng sẽ hiển thị tại đây."
+          isDark={isDark}
         />
       ) : (
         notifications.map((n) => (
-          <NotificationItem key={n.id} notification={n} onMarkRead={onMarkRead} />
+          <NotificationItem key={n.id} notification={n} onMarkRead={onMarkRead} isDark={isDark} />
         ))
       )}
     </div>

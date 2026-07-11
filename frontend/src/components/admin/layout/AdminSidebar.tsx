@@ -9,10 +9,14 @@ import {
   MessageSquare,
   ScrollText,
   ServerCog,
-  HelpCircle,
   LogOut,
+  Settings,
+  User,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { clearAuthData } from "../../../utils/auth";
+import { useTheme } from "../../../contexts/useTheme";
 
 const menu = [
   { label: "Dashboard", icon: <LayoutDashboard size={18} />, path: "/admin" },
@@ -26,12 +30,15 @@ const menu = [
 ];
 
 const bottomMenu = [
-  { label: "Help Center", icon: <HelpCircle size={18} />, path: "/admin/help" },
+  { label: "Profile", icon: <User size={18} />, path: "/admin/profile" },
+  { label: "Settings", icon: <Settings size={18} />, path: "/admin/settings" },
 ];
 
 const AdminSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,13 +47,35 @@ const AdminSidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 h-screen sticky top-0 bg-white border-r border-slate-200 flex flex-col px-6 py-8">
-      <div className="mb-10">
-        <h2 className="text-2xl font-extrabold text-blue-700 tracking-tight">EXMORA</h2>
-        <span className="text-xs text-gray-400 font-medium">Admin Panel</span>
+    <aside className={`w-64 h-screen sticky top-0 flex flex-col ${
+      isDark ? "bg-slate-900 border-r border-white/10" : "bg-white border-r border-slate-200"
+    }`}>
+      {/* Logo + Theme Toggle */}
+      <div className={`px-6 py-5 border-b ${isDark ? "border-white/10" : "border-slate-100"}`}>
+        <div className="flex items-center justify-between">
+          <Link to="/admin" className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 via-indigo-500 to-teal-400 flex items-center justify-center shadow-md">
+              <div
+                className="w-4 h-4 bg-white"
+                style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+              />
+            </div>
+            <span className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>EXMORA</span>
+          </Link>
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-lg transition ${
+              isDark ? "hover:bg-slate-800 text-gray-400" : "hover:bg-slate-100 text-slate-600"
+            }`}
+            title={isDark ? "Light mode" : "Dark mode"}
+          >
+            {isDark ? <Sun size={16} className="text-yellow-400" /> : <Moon size={16} />}
+          </button>
+        </div>
+        <span className={`text-xs font-medium ml-11 ${isDark ? "text-gray-500" : "text-gray-400"}`}>Admin Panel</span>
       </div>
 
-      <nav className="flex-1 flex flex-col gap-1 overflow-y-auto">
+      <nav className="flex-1 flex flex-col gap-1 overflow-y-auto px-3 py-4">
         {menu.map((item) => (
           <button
             key={item.label}
@@ -54,8 +83,8 @@ const AdminSidebar: React.FC = () => {
             onClick={() => navigate(item.path)}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm transition ${
               location.pathname === item.path
-                ? "bg-blue-50 text-blue-700"
-                : "text-gray-600 hover:bg-slate-50 hover:text-blue-700"
+                ? isDark ? "bg-blue-600/20 text-blue-400" : "bg-blue-50 text-blue-700"
+                : isDark ? "text-gray-400 hover:bg-white/5 hover:text-white" : "text-gray-600 hover:bg-slate-50 hover:text-blue-700"
             } text-left`}
           >
             {item.icon}
@@ -64,53 +93,33 @@ const AdminSidebar: React.FC = () => {
         ))}
       </nav>
 
-      <div className="mt-8">
-        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <h3 className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">System Status</h3>
-          <div className="space-y-2 text-xs font-medium text-slate-600">
-            <div className="flex items-center justify-between gap-3">
-              <span>RabbitMQ</span>
-              <span className="inline-flex items-center gap-1.5 text-emerald-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Connected
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span>AI Service</span>
-              <span className="inline-flex items-center gap-1.5 text-emerald-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Running
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span>Database</span>
-              <span className="inline-flex items-center gap-1.5 text-emerald-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Online
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
+      <div className={`px-3 py-4 border-t ${isDark ? "border-white/10" : "border-slate-100"}`}>
+        <div className="space-y-1">
           {bottomMenu.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-slate-50 hover:text-blue-700 transition"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+                location.pathname === item.path
+                  ? isDark ? "bg-blue-600/20 text-blue-400" : "bg-blue-50 text-blue-700"
+                  : isDark ? "text-gray-400 hover:bg-white/5 hover:text-white" : "text-gray-600 hover:bg-slate-50 hover:text-blue-700"
+              }`}
             >
               {item.icon}
               {item.label}
             </Link>
           ))}
-          <a
-            href="#"
+          <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-slate-50 hover:text-blue-700 transition"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+              isDark
+                ? "text-gray-400 hover:bg-red-500/20 hover:text-red-400"
+                : "text-gray-600 hover:bg-red-50 hover:text-red-600"
+            }`}
           >
             <LogOut size={18} />
             Logout
-          </a>
+          </button>
         </div>
       </div>
     </aside>

@@ -4,8 +4,11 @@ import { getResults } from "../../../api/teacherApi";
 import { TeacherResultTable } from "../../../components/teacher/results";
 import { SearchInput, LoadingState, ErrorState } from "../../../components/teacher/shared";
 import type { Result } from "../../../api/teacherApi";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherResultsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,8 +49,8 @@ const TeacherResultsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kết quả</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Kết quả</h1>
+          <p className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-slate-500"}`}>
             {results.length > 0 ? `${results.length} kết quả` : "Xem kết quả bài thi của sinh viên"}
           </p>
         </div>
@@ -59,18 +62,19 @@ const TeacherResultsPage: React.FC = () => {
           value={search}
           onChange={setSearch}
           placeholder="Tìm kiếm theo tên, lớp, đề thi..."
+          isDark={isDark}
         />
       </div>
 
       {/* Loading */}
-      {loading && <LoadingState size="lg" text="Đang tải kết quả..." />}
+      {loading && <LoadingState size="lg" text="Đang tải kết quả..." isDark={isDark} />}
 
       {/* Error */}
-      {error && !loading && <ErrorState message={error} onRetry={fetchData} />}
+      {error && !loading && <ErrorState message={error} onRetry={fetchData} isDark={isDark} />}
 
       {/* Table */}
       {!loading && !error && (
-        <TeacherResultTable results={displayResults} />
+        <TeacherResultTable results={displayResults} isDark={isDark} />
       )}
     </div>
   );

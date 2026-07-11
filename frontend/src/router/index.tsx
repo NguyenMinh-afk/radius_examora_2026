@@ -18,6 +18,8 @@ import AdminNotificationsPage from "../pages/Dashboard/Admin/AdminNotificationsP
 import AdminAuditLogsPage from "../pages/Dashboard/Admin/AdminAuditLogsPage";
 import AdminSystemLogsPage from "../pages/Dashboard/Admin/AdminSystemLogsPage";
 import AdminQuestionsPage from "../pages/Dashboard/Admin/AdminQuestionsPage";
+import AdminProfilePage from "../pages/Dashboard/Admin/AdminProfilePage";
+import AdminSettingsPage from "../pages/Dashboard/Admin/AdminSettingsPage";
 
 // Teacher Layout & Pages
 import TeacherLayout from "../layouts/TeacherLayout";
@@ -83,6 +85,8 @@ const AppRouter = () => {
         <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
         <Route path="/admin/audit-logs" element={<AdminAuditLogsPage />} />
         <Route path="/admin/system-logs" element={<AdminSystemLogsPage />} />
+        <Route path="/admin/profile" element={<AdminProfilePage />} />
+        <Route path="/admin/settings" element={<AdminSettingsPage />} />
 
         {/* Teacher Module - với Layout có Sidebar */}
         <Route element={<TeacherLayout />}>

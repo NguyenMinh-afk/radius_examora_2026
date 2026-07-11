@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTheme } from "../../../contexts/useTheme";
 import { Check, X, Sparkles, Zap, Building, Users, ArrowRight, HelpCircle } from "lucide-react";
 
 interface Plan {
@@ -134,43 +135,72 @@ const faqItems = [
   },
 ];
 
-const colorMap: Record<string, { bg: string; text: string; border: string; badge: string }> = {
-  emerald: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", badge: "bg-emerald-100 text-emerald-700" },
-  blue: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", badge: "bg-blue-100 text-blue-700" },
-  violet: { bg: "bg-violet-50", text: "text-violet-600", border: "border-violet-200", badge: "bg-violet-100 text-violet-700" },
-  slate: { bg: "bg-slate-100", text: "text-slate-600", border: "border-slate-200", badge: "bg-slate-200 text-slate-700" },
+const colorMap: Record<string, { 
+  light: { bg: string; text: string; border: string; badge: string };
+  dark: { bg: string; text: string; border: string; badge: string };
+}> = {
+  emerald: { 
+    light: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", badge: "bg-emerald-100 text-emerald-700" },
+    dark: { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/20", badge: "bg-emerald-500/20 text-emerald-300" },
+  },
+  blue: { 
+    light: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", badge: "bg-blue-100 text-blue-700" },
+    dark: { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20", badge: "bg-blue-500/20 text-blue-300" },
+  },
+  violet: { 
+    light: { bg: "bg-violet-50", text: "text-violet-600", border: "border-violet-200", badge: "bg-violet-100 text-violet-700" },
+    dark: { bg: "bg-violet-500/10", text: "text-violet-400", border: "border-violet-500/20", badge: "bg-violet-500/20 text-violet-300" },
+  },
+  slate: { 
+    light: { bg: "bg-slate-100", text: "text-slate-600", border: "border-slate-200", badge: "bg-slate-200 text-slate-700" },
+    dark: { bg: "bg-slate-500/10", text: "text-slate-400", border: "border-slate-500/20", badge: "bg-slate-500/20 text-slate-300" },
+  },
 };
 
 const PricingSection: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   return (
-    <section id="pricing" className="px-6 py-24 bg-[#F8FAFC]">
+    <section id="pricing" className={`px-6 py-24 ${isDark ? "" : "bg-[#F8FAFC]"}`}>
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-blue-600 tracking-wider uppercase">
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${
+            isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-blue-50 border-blue-100"
+          }`}>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+              isDark ? "bg-indigo-400" : "bg-blue-500"
+            }`} />
+            <span className={`text-xs font-semibold tracking-wider uppercase ${
+              isDark ? "text-indigo-400" : "text-blue-600"
+            }`}>
               Pricing
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             Simple, transparent pricing
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto mb-8">
+          <p className={`max-w-xl mx-auto mb-8 ${
+            isDark ? "text-gray-400" : "text-gray-500"
+          }`}>
             Choose the plan that fits your needs. All plans include our core AI examination features.
           </p>
 
           {/* Billing Toggle */}
-          <div className="inline-flex items-center gap-3 bg-white border border-gray-200 rounded-full p-1 shadow-sm">
+          <div className={`inline-flex items-center gap-3 rounded-full p-1 shadow-sm ${
+            isDark ? "bg-slate-800 border border-white/10" : "bg-white border border-gray-200"
+          }`}>
             <button
               onClick={() => setBillingCycle("monthly")}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 billingCycle === "monthly"
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? isDark ? "bg-indigo-600 text-white shadow-md" : "bg-blue-600 text-white shadow-md"
+                  : isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Monthly
@@ -179,12 +209,14 @@ const PricingSection: React.FC = () => {
               onClick={() => setBillingCycle("yearly")}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                 billingCycle === "yearly"
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? isDark ? "bg-indigo-600 text-white shadow-md" : "bg-blue-600 text-white shadow-md"
+                  : isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Yearly
-              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-700"
+              }`}>
                 -20%
               </span>
             </button>
@@ -194,7 +226,7 @@ const PricingSection: React.FC = () => {
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {plans.map((plan) => {
-            const colors = colorMap[plan.color];
+            const colors = colorMap[plan.color][isDark ? "dark" : "light"];
             const price = billingCycle === "yearly" && plan.price !== "Custom"
               ? `$${Math.round(parseInt(plan.price.replace("$", "")) * 0.8)}`
               : plan.price;
@@ -202,27 +234,35 @@ const PricingSection: React.FC = () => {
             return (
               <div
                 key={plan.name}
-                className={`relative bg-white rounded-2xl border-2 ${
-                  plan.popular ? "border-blue-300 shadow-xl shadow-blue-100" : "border-gray-200 shadow-sm"
-                } overflow-hidden transition-all duration-300 hover:shadow-lg ${plan.popular ? "" : "hover:border-gray-300"}`}
+                className={`relative rounded-2xl border-2 overflow-hidden transition-all duration-300 hover:shadow-lg ${
+                  plan.popular 
+                    ? isDark 
+                      ? "border-indigo-500/50 shadow-xl shadow-indigo-500/10" 
+                      : "border-blue-300 shadow-xl shadow-blue-100"
+                    : isDark
+                      ? "border-white/10 shadow-sm hover:border-indigo-500/30"
+                      : "border-gray-200 shadow-sm hover:border-gray-300"
+                }`}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
                   <div className="absolute top-0 left-0 right-0">
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center text-xs font-bold py-1.5 tracking-wide">
+                    <div className={`bg-gradient-to-r text-white text-center text-xs font-bold py-1.5 tracking-wide ${
+                      isDark ? "from-indigo-600 to-violet-600" : "from-blue-600 to-indigo-600"
+                    }`}>
                       {plan.badge}
                     </div>
                   </div>
                 )}
 
-                <div className={`p-6 ${plan.popular ? "pt-10" : ""}`}>
+                <div className={`p-6 ${plan.popular ? (isDark ? "pt-10" : "pt-10") : ""}`}>
                   {/* Plan Header */}
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`w-10 h-10 ${colors.bg} ${colors.text} rounded-xl flex items-center justify-center`}>
                       {plan.icon}
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">{plan.name}</h3>
+                      <h3 className={`font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{plan.name}</h3>
                       {plan.badge && !plan.popular && (
                         <span className={`text-xs ${colors.badge} px-2 py-0.5 rounded-full`}>
                           {plan.badge}
@@ -233,19 +273,23 @@ const PricingSection: React.FC = () => {
 
                   {/* Price */}
                   <div className="mb-4">
-                    <span className="text-3xl font-bold text-gray-900">{price}</span>
-                    {plan.period && <span className="text-gray-500">{plan.period}</span>}
+                    <span className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{price}</span>
+                    {plan.period && <span className={isDark ? "text-gray-500" : "text-gray-500"}>{plan.period}</span>}
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-6">{plan.description}</p>
+                  <p className={`text-sm mb-6 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{plan.description}</p>
 
                   {/* CTA Button */}
                   <a
                     href={plan.name === "Enterprise" ? "/contact" : "/register"}
                     className={`w-full block text-center py-3 rounded-xl font-semibold transition-all duration-200 mb-6 ${
                       plan.popular
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        ? isDark
+                          ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:-translate-y-0.5"
+                          : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5"
+                        : isDark
+                          ? "bg-slate-700 text-gray-200 hover:bg-slate-600"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     {plan.cta}
@@ -256,13 +300,13 @@ const PricingSection: React.FC = () => {
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2.5 text-sm">
                         <Check className={`w-4 h-4 ${colors.text} flex-shrink-0 mt-0.5`} />
-                        <span className="text-gray-600">{feature}</span>
+                        <span className={isDark ? "text-gray-400" : "text-gray-600"}>{feature}</span>
                       </li>
                     ))}
                     {plan.notIncluded.map((feature) => (
                       <li key={feature} className="flex items-start gap-2.5 text-sm opacity-50">
-                        <X className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-500">{feature}</span>
+                        <X className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
+                        <span className={isDark ? "text-gray-500" : "text-gray-500"}>{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -275,26 +319,34 @@ const PricingSection: React.FC = () => {
         {/* FAQ Section */}
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h3>
-            <p className="text-gray-500">Still have questions? We're here to help.</p>
+            <h3 className={`text-2xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>Frequently Asked Questions</h3>
+            <p className={isDark ? "text-gray-500" : "text-gray-500"}>Still have questions? We're here to help.</p>
           </div>
 
           <div className="space-y-3">
             {faqItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+                className={`rounded-xl border overflow-hidden ${
+                  isDark ? "bg-slate-800/50 border-white/10" : "bg-white border-gray-200"
+                }`}
               >
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
+                  className={`w-full flex items-center justify-between p-5 text-left transition-colors ${
+                    isDark ? "hover:bg-white/5" : "hover:bg-gray-50"
+                  }`}
                 >
-                  <span className="font-medium text-gray-800 pr-4 flex items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                  <span className={`font-medium pr-4 flex items-center gap-3 ${
+                    isDark ? "text-gray-200" : "text-gray-800"
+                  }`}>
+                    <HelpCircle className={`w-5 h-5 flex-shrink-0 ${isDark ? "text-indigo-400" : "text-blue-500"}`} />
                     {item.q}
                   </span>
                   <svg
-                    className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-200 ${expandedFaq === index ? "rotate-180" : ""}`}
+                    className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${expandedFaq === index ? "rotate-180" : ""} ${
+                      isDark ? "text-gray-500" : "text-gray-500"
+                    }`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -304,7 +356,7 @@ const PricingSection: React.FC = () => {
                 </button>
                 {expandedFaq === index && (
                   <div className="px-5 pb-5">
-                    <p className="text-gray-600 leading-relaxed pl-8">
+                    <p className={`leading-relaxed pl-8 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                       {item.a}
                     </p>
                   </div>
@@ -315,8 +367,10 @@ const PricingSection: React.FC = () => {
 
           {/* Contact CTA */}
           <div className="text-center mt-10">
-            <p className="text-gray-600 mb-4">Can't find the answer you're looking for?</p>
-            <a href="/contact" className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700">
+            <p className={`mb-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}>Can't find the answer you're looking for?</p>
+            <a href="/contact" className={`inline-flex items-center gap-2 font-semibold hover:gap-3 transition-all ${
+              isDark ? "text-indigo-400 hover:text-indigo-300" : "text-blue-600 hover:text-blue-700"
+            }`}>
               Contact our support team
               <ArrowRight className="w-4 h-4" />
             </a>

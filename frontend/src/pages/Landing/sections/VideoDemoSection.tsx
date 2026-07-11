@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTheme } from "../../../contexts/useTheme";
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipForward, Info } from "lucide-react";
 
 const VideoDemoSection: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -78,20 +81,30 @@ const VideoDemoSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="px-6 py-24 bg-gradient-to-b from-[#F8FAFC] to-white">
+    <section className={`px-6 py-24 ${isDark ? "" : "bg-gradient-to-b from-[#F8FAFC] to-white"}`}>
       <div className="max-w-5xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-blue-600 tracking-wider uppercase">
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${
+            isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-blue-50 border-blue-100"
+          }`}>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+              isDark ? "bg-indigo-400" : "bg-blue-500"
+            }`} />
+            <span className={`text-xs font-semibold tracking-wider uppercase ${
+              isDark ? "text-indigo-400" : "text-blue-600"
+            }`}>
               See It In Action
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             Watch how EXMORA works
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">
+          <p className={`max-w-xl mx-auto ${
+            isDark ? "text-gray-400" : "text-gray-500"
+          }`}>
             Get a comprehensive overview of our AI-powered examination platform in this 3-minute demo.
           </p>
         </div>
@@ -99,16 +112,18 @@ const VideoDemoSection: React.FC = () => {
         {/* Video Player */}
         <div
           ref={containerRef}
-          className="relative bg-gray-900 rounded-2xl overflow-hidden shadow-2xl aspect-video group"
+          className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video group"
           onMouseMove={handleMouseMove}
           onMouseLeave={() => isPlaying && setShowControls(false)}
         >
           {/* Placeholder Video Area */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <div className={`absolute inset-0 flex items-center justify-center ${
+            isDark ? "bg-gradient-to-br from-slate-800 to-slate-900" : "bg-gradient-to-br from-gray-800 to-gray-900"
+          }`}>
             {/* Decorative elements */}
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl" />
+              <div className={`absolute top-1/4 left-1/4 w-64 h-64 ${isDark ? "bg-indigo-600/10" : "bg-blue-600/10"} rounded-full blur-3xl`} />
+              <div className={`absolute bottom-1/4 right-1/4 w-48 h-48 ${isDark ? "bg-violet-600/10" : "bg-indigo-600/10"} rounded-full blur-3xl`} />
             </div>
 
             {/* Play/Pause Overlay */}
@@ -232,28 +247,36 @@ const VideoDemoSection: React.FC = () => {
 
         {/* Video Features */}
         <div className="grid grid-cols-3 gap-6 mt-10">
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-gray-900 mb-1">3 min</div>
-            <div className="text-sm text-gray-500">Quick overview</div>
+          <div className={`text-center p-4 ${isDark ? "" : ""}`}>
+            <div className={`text-3xl font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}>3 min</div>
+            <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-500"}`}>Quick overview</div>
           </div>
           <div className="text-center p-4">
-            <div className="text-3xl font-bold text-gray-900 mb-1">720p</div>
-            <div className="text-sm text-gray-500">HD quality</div>
+            <div className={`text-3xl font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}>720p</div>
+            <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-500"}`}>HD quality</div>
           </div>
           <div className="text-center p-4">
-            <div className="text-3xl font-bold text-gray-900 mb-1">CC</div>
-            <div className="text-sm text-gray-500">Subtitles available</div>
+            <div className={`text-3xl font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}>CC</div>
+            <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-500"}`}>Subtitles available</div>
           </div>
         </div>
 
         {/* Schedule Demo CTA */}
-        <div className="text-center mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-          <p className="text-gray-700 mb-4">
+        <div className={`text-center mt-12 p-6 rounded-2xl border ${
+          isDark ? "bg-indigo-500/5 border-indigo-500/20" : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100"
+        }`}>
+          <p className={`mb-4 ${
+            isDark ? "text-gray-300" : "text-gray-700"
+          }`}>
             Prefer a personalized walkthrough with our team?
           </p>
           <a
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+            className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-colors ${
+              isDark 
+                ? "bg-indigo-600 text-white hover:bg-indigo-500" 
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
             Schedule a Live Demo
           </a>

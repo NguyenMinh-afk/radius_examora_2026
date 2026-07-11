@@ -9,8 +9,11 @@ import {
 import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { NotificationFilterBar, NotificationList } from "../../../components/student/notifications";
 import { PageHeader, Card, FilterBar } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const StudentNotificationsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -82,7 +85,7 @@ const StudentNotificationsPage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải thông báo..." />
+        <LoadingState size="lg" text="Đang tải thông báo..." isDark={isDark} />
       </div>
     );
   }
@@ -111,7 +114,7 @@ const StudentNotificationsPage: React.FC = () => {
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchNotifications} />
+          <ErrorState message={error} onRetry={fetchNotifications} isDark={isDark} />
         ) : (
           <>
             <NotificationFilterBar

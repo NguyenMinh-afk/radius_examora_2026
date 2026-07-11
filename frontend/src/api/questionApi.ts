@@ -53,6 +53,7 @@ export interface QuestionItem {
   content: string;
   questionType: string;
   difficulty: string;
+  points?: number;
   chapterId: number | null;
   tags: { id: string; name: string }[];
   answers: { id: string; content: string; isCorrect: boolean }[];
@@ -68,6 +69,7 @@ export interface CreateQuestionPayload {
   content: string;
   questionType: string;
   difficulty: string;
+  points?: number;
   chapterId?: number;
   answers: { id?: string; content: string; isCorrect: boolean }[];
   tagIds?: string[];
@@ -82,6 +84,7 @@ export const getQuestions = async (filters?: {
   const params = new URLSearchParams();
   if (filters?.search) params.append("search", filters.search);
   if (filters?.chapterId) params.append("chapterId", String(filters.chapterId));
+  if (filters?.difficulty) params.append("difficulty", filters.difficulty);
   if (filters?.limit) params.append("limit", String(filters.limit));
 
   const response = await questionApi.get<QuestionsResponse>(`/?${params.toString()}`);

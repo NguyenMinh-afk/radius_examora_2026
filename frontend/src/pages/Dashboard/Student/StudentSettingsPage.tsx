@@ -4,9 +4,11 @@ import {
   AccountSettingsCard,
   NotificationSettingsCard,
   SecuritySettingsCard,
-  DangerZoneCard
+  AppearanceSettingsCard,
+  LanguageSettingsCard,
+  DangerZoneCard,
 } from "../../../components/student/settings";
-import { PageHeader, Card } from "../../../components/shared";
+import { PageHeader } from "../../../components/shared";
 
 const StudentSettingsPage: React.FC = () => {
   return (
@@ -18,18 +20,12 @@ const StudentSettingsPage: React.FC = () => {
       />
 
       <div className="space-y-6">
-        <Card>
-          <AccountSettingsCard />
-        </Card>
-        <Card>
-          <NotificationSettingsCard />
-        </Card>
-        <Card>
-          <SecuritySettingsCard />
-        </Card>
-        <Card>
-          <DangerZoneCard />
-        </Card>
+        <AccountSettingsCard />
+        <NotificationSettingsCard />
+        <SecuritySettingsCard />
+        <AppearanceSettingsCard />
+        <LanguageSettingsCard />
+        <DangerZoneCard />
       </div>
     </div>
   );

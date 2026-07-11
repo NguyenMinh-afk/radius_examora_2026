@@ -5,8 +5,11 @@ import { getStudentAssignments, type AssignmentsResponse } from "../../../api/st
 import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { AssignmentList } from "../../../components/student/assignments";
 import { PageHeader, Card, FilterBar, TabFilter } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const StudentAssignmentsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<AssignmentsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +58,7 @@ const StudentAssignmentsPage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải danh sách bài thi..." />
+        <LoadingState size="lg" text="Đang tải danh sách bài thi..." isDark={isDark} />
       </div>
     );
   }
@@ -70,7 +73,7 @@ const StudentAssignmentsPage: React.FC = () => {
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchData} />
+          <ErrorState message={error} onRetry={fetchData} isDark={isDark} />
         ) : (
           <>
             <TabFilter

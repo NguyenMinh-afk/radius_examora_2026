@@ -52,7 +52,11 @@ const targetFromNotification = (notification: AdminNotification) => {
   return targetLabels[target] || notification.type;
 };
 
-const NotificationsPanel: React.FC = () => {
+interface NotificationsPanelProps {
+  isDark?: boolean;
+}
+
+const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isDark }) => {
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [pagination, setPagination] = useState<Pagination>(DEFAULT_PAGINATION);
   const [title, setTitle] = useState("");
@@ -140,6 +144,15 @@ const NotificationsPanel: React.FC = () => {
     void loadNotifications(1);
   };
 
+  const cardBg = isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200";
+  const cardInnerBg = isDark ? "bg-slate-800/60" : "bg-slate-50";
+  const mutedText = isDark ? "text-gray-400" : "text-slate-500";
+  const boldText = isDark ? "text-white" : "text-slate-950";
+  const bodyText = isDark ? "text-gray-300" : "text-slate-700";
+  const inputBase = isDark
+    ? "border-white/10 bg-slate-900 text-white placeholder:text-gray-500"
+    : "border-slate-200 bg-white text-slate-700";
+
   return (
     <div className="space-y-5">
       <ConfirmDialog
@@ -153,11 +166,11 @@ const NotificationsPanel: React.FC = () => {
       />
       {selectedNotification && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6">
-          <div className="max-h-[86vh] w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl">
-            <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4">
+          <div className={`max-h-[86vh] w-full max-w-2xl overflow-hidden rounded-lg shadow-xl ${isDark ? "bg-slate-900" : "bg-white"}`}>
+            <div className={`flex items-start justify-between border-b px-5 py-4 ${isDark ? "border-white/10" : "border-slate-200"}`}>
               <div>
-                <h3 className="text-lg font-bold text-slate-950">Notification Detail</h3>
-                <p className="mt-1 text-sm text-slate-500">
+                <h3 className={`text-lg font-bold ${boldText}`}>Notification Detail</h3>
+                <p className={`mt-1 text-sm ${mutedText}`}>
                   Broadcast record and recipient delivery state.
                 </p>
               </div>
@@ -165,7 +178,11 @@ const NotificationsPanel: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedNotification(null)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-md border transition ${
+                  isDark
+                    ? "border-white/10 text-gray-400 hover:bg-slate-800 hover:text-white"
+                    : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                }`}
                 aria-label="Close notification detail"
               >
                 <X size={17} />
@@ -173,52 +190,56 @@ const NotificationsPanel: React.FC = () => {
             </div>
 
             <div className="max-h-[calc(86vh-73px)] overflow-y-auto p-5">
-              <div className="mb-5 rounded-lg border border-slate-200 bg-white p-4">
-                <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+              <div className={`mb-5 rounded-lg border p-4 ${cardBg}`}>
+                <div className={`mb-2 text-xs font-bold uppercase tracking-wide ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                   Title
                 </div>
-                <div className="text-base font-bold text-slate-950">
+                <div className={`text-base font-bold ${boldText}`}>
                   {selectedNotification.title}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="rounded-lg bg-slate-50 p-4">
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <div className={`rounded-lg p-4 ${cardInnerBg}`}>
+                  <div className={`text-xs font-bold uppercase tracking-wide ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                     Target
                   </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-700">
+                  <div className={`mt-2 text-sm font-semibold ${bodyText}`}>
                     {targetFromNotification(selectedNotification)}
                   </div>
                 </div>
-                <div className="rounded-lg bg-slate-50 p-4">
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <div className={`rounded-lg p-4 ${cardInnerBg}`}>
+                  <div className={`text-xs font-bold uppercase tracking-wide ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                     Created
                   </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-700">
+                  <div className={`mt-2 text-sm font-semibold ${bodyText}`}>
                     {formatDateTime(selectedNotification.created_at)}
                   </div>
                 </div>
-                <div className="rounded-lg bg-slate-50 p-4">
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <div className={`rounded-lg p-4 ${cardInnerBg}`}>
+                  <div className={`text-xs font-bold uppercase tracking-wide ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                     Recipient
                   </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-700">
+                  <div className={`mt-2 text-sm font-semibold ${bodyText}`}>
                     {selectedNotification.recipient_name || "Unknown user"}
                   </div>
-                  <div className="mt-1 break-all text-xs text-slate-500">
+                  <div className={`mt-1 break-all text-xs ${mutedText}`}>
                     {selectedNotification.recipient_email || selectedNotification.user_id}
                   </div>
                 </div>
-                <div className="rounded-lg bg-slate-50 p-4">
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <div className={`rounded-lg p-4 ${cardInnerBg}`}>
+                  <div className={`text-xs font-bold uppercase tracking-wide ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                     Status
                   </div>
                   <div className="mt-2">
                     <span
                       className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
                         selectedNotification.is_read
-                          ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                          ? isDark
+                            ? "bg-emerald-500/20 text-emerald-400 ring-emerald-500/30"
+                            : "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                          : isDark
+                          ? "bg-amber-500/20 text-amber-400 ring-amber-500/30"
                           : "bg-amber-50 text-amber-700 ring-amber-200"
                       }`}
                     >
@@ -228,11 +249,11 @@ const NotificationsPanel: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4">
-                <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+              <div className={`mt-4 rounded-lg border p-4 ${cardBg}`}>
+                <div className={`mb-2 text-xs font-bold uppercase tracking-wide ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                   Message
                 </div>
-                <p className="whitespace-pre-wrap text-sm leading-6 text-slate-600">
+                <p className={`whitespace-pre-wrap text-sm leading-6 ${isDark ? "text-gray-300" : "text-slate-600"}`}>
                   {selectedNotification.content}
                 </p>
               </div>
@@ -242,42 +263,52 @@ const NotificationsPanel: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <section className={`rounded-lg border p-5 shadow-sm ${cardBg}`}>
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-950">Broadcast Notification</h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <h2 className={`text-lg font-bold ${boldText}`}>Broadcast Notification</h2>
+              <p className={`mt-1 text-sm ${mutedText}`}>
                 Send a platform announcement to all users, teachers, or students.
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+              isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-50 text-blue-700"
+            }`}>
               <Send size={20} />
             </div>
           </div>
 
           {error && (
-            <div className="mb-4 flex items-center gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <div className={`mb-4 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium ${
+              isDark
+                ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                : "border-rose-200 bg-rose-50 text-rose-700"
+            }`}>
               <AlertTriangle size={18} />
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mb-4 flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+            <div className={`mb-4 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium ${
+              isDark
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                : "border-emerald-200 bg-emerald-50 text-emerald-700"
+            }`}>
               <CheckCircle2 size={18} />
               {success}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <label className={`block text-xs font-semibold uppercase tracking-wide ${mutedText}`}>
               Target audience
               <select
                 value={targetRole}
                 onChange={(event) =>
                   setTargetRole(event.target.value as CreateNotificationPayload["target_role"])
                 }
-                className="mt-1.5 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium normal-case tracking-normal text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className={`mt-1.5 h-11 w-full rounded-lg border px-3 text-sm font-medium normal-case tracking-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${inputBase}`}
               >
                 <option value="all">All users</option>
                 <option value="teacher">Teachers</option>
@@ -285,18 +316,18 @@ const NotificationsPanel: React.FC = () => {
               </select>
             </label>
 
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <label className={`block text-xs font-semibold uppercase tracking-wide ${mutedText}`}>
               Title
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 maxLength={160}
                 placeholder="System maintenance notice"
-                className="mt-1.5 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium normal-case tracking-normal text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className={`mt-1.5 h-11 w-full rounded-lg border px-3 text-sm font-medium normal-case tracking-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${inputBase}`}
               />
             </label>
 
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <label className={`block text-xs font-semibold uppercase tracking-wide ${mutedText}`}>
               Message
               <textarea
                 value={content}
@@ -304,12 +335,12 @@ const NotificationsPanel: React.FC = () => {
                 maxLength={2000}
                 rows={5}
                 placeholder="Write a short, clear announcement for platform users."
-                className="mt-1.5 w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-medium normal-case leading-6 tracking-normal text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className={`mt-1.5 w-full resize-none rounded-lg border px-3 py-3 text-sm font-medium normal-case leading-6 tracking-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${inputBase}`}
               />
             </label>
 
-            <div className="flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-xs text-slate-500">
+            <div className={`flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between ${isDark ? "border-white/10" : "border-slate-100"}`}>
+              <div className={`text-xs ${mutedText}`}>
                 This action is recorded in audit logs.
               </div>
               <button
@@ -325,34 +356,34 @@ const NotificationsPanel: React.FC = () => {
         </section>
 
         <aside className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className={`rounded-lg border p-5 shadow-sm ${cardBg}`}>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-950">Delivery Summary</h3>
-              <BellRing size={18} className="text-blue-600" />
+              <h3 className={`text-base font-bold ${boldText}`}>Delivery Summary</h3>
+              <BellRing size={18} className={isDark ? "text-blue-400" : "text-blue-600"} />
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                <span className="text-slate-600">Sent records</span>
-                <span className="font-bold text-slate-950">{summary.sentCount}</span>
+              <div className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${cardInnerBg}`}>
+                <span className={mutedText}>Sent records</span>
+                <span className={`font-bold ${boldText}`}>{summary.sentCount}</span>
               </div>
-              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                <span className="text-slate-600">Unread in page</span>
-                <span className="font-bold text-slate-950">{summary.unreadCount}</span>
+              <div className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${cardInnerBg}`}>
+                <span className={mutedText}>Unread in page</span>
+                <span className={`font-bold ${boldText}`}>{summary.unreadCount}</span>
               </div>
-              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                <span className="text-slate-600">Target groups</span>
-                <span className="font-bold text-slate-950">{summary.targetCount}</span>
+              <div className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${cardInnerBg}`}>
+                <span className={mutedText}>Target groups</span>
+                <span className={`font-bold ${boldText}`}>{summary.targetCount}</span>
               </div>
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-950">
-              <Users size={17} className="text-slate-500" />
+          <div className={`rounded-lg border p-5 shadow-sm ${cardBg}`}>
+            <div className={`mb-3 flex items-center gap-2 text-sm font-bold ${boldText}`}>
+              <Users size={17} className={isDark ? "text-gray-400" : "text-slate-500"} />
               Recipient Rules
             </div>
-            <p className="text-sm leading-6 text-slate-500">
+            <p className={`text-sm leading-6 ${mutedText}`}>
               Broadcasts are saved as personal notifications for active recipients, so each user
               can view and mark their own messages as read.
             </p>
@@ -360,11 +391,13 @@ const NotificationsPanel: React.FC = () => {
         </aside>
       </div>
 
-      <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
+      <section className={`overflow-hidden rounded-lg border shadow-sm ${cardBg}`}>
+        <div className={`flex flex-col gap-4 border-b px-5 py-4 xl:flex-row xl:items-center xl:justify-between ${
+          isDark ? "border-white/10" : "border-slate-200"
+        }`}>
           <div>
-            <h2 className="text-base font-bold text-slate-950">Notification History</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className={`text-base font-bold ${boldText}`}>Notification History</h2>
+            <p className={`mt-1 text-sm ${mutedText}`}>
               Review recent broadcast records and recipient delivery state.
             </p>
           </div>
@@ -372,7 +405,11 @@ const NotificationsPanel: React.FC = () => {
           <button
             type="button"
             onClick={() => void loadNotifications(pagination.page)}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+            className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-4 text-sm font-semibold transition ${
+              isDark
+                ? "border-blue-500/30 bg-slate-900 text-blue-400 hover:bg-blue-500/10"
+                : "border-blue-200 bg-white text-blue-700 hover:bg-blue-50"
+            }`}
           >
             <RefreshCw size={16} />
             Refresh
@@ -381,30 +418,32 @@ const NotificationsPanel: React.FC = () => {
 
         <form
           onSubmit={handleFilterSubmit}
-          className="grid grid-cols-1 gap-4 border-b border-slate-100 bg-slate-50/70 p-5 md:grid-cols-[minmax(220px,1fr)_180px_auto]"
+          className={`grid grid-cols-1 gap-4 border-b p-5 md:grid-cols-[minmax(220px,1fr)_180px_auto] ${
+            isDark ? "border-white/10 bg-slate-900/50" : "border-slate-100 bg-slate-50/70"
+          }`}
         >
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-600">
+          <label className={`flex flex-col gap-1.5 text-xs font-semibold ${mutedText}`}>
             Search
             <div className="relative">
               <Search
                 size={15}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-slate-400"}`}
               />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search title or content"
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className={`h-10 w-full rounded-lg border pl-9 pr-3 text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${inputBase}`}
               />
             </div>
           </label>
 
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-600">
+          <label className={`flex flex-col gap-1.5 text-xs font-semibold ${mutedText}`}>
             Target
             <select
               value={targetFilter}
               onChange={(event) => setTargetFilter(event.target.value)}
-              className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className={`h-10 rounded-lg border px-3 text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${inputBase}`}
             >
               <option value="">All targets</option>
               <option value="all">All users</option>
@@ -424,8 +463,8 @@ const NotificationsPanel: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1040px] text-left text-sm">
-            <thead className="bg-white text-xs font-semibold text-slate-500">
-              <tr className="border-b border-slate-100">
+            <thead className={`text-xs font-semibold ${isDark ? "bg-slate-900 text-gray-400" : "bg-white text-slate-500"}`}>
+              <tr className={`border-b ${isDark ? "border-white/10" : "border-slate-100"}`}>
                 <th className="px-5 py-4">Created</th>
                 <th className="px-5 py-4">Target</th>
                 <th className="px-5 py-4">Title</th>
@@ -435,41 +474,45 @@ const NotificationsPanel: React.FC = () => {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className={`divide-y ${isDark ? "divide-white/5" : "divide-slate-100"}`}>
               {loading ? (
                 <tr>
-                  <td className="px-5 py-12 text-center text-slate-500" colSpan={6}>
+                  <td className={`px-5 py-12 text-center ${mutedText}`} colSpan={6}>
                     Loading notifications...
                   </td>
                 </tr>
               ) : notifications.length === 0 ? (
                 <tr>
-                  <td className="px-5 py-12 text-center text-slate-500" colSpan={6}>
+                  <td className={`px-5 py-12 text-center ${mutedText}`} colSpan={6}>
                     No notifications match the current filters.
                   </td>
                 </tr>
               ) : (
                 notifications.map((notification) => (
-                  <tr key={notification.id} className="bg-white transition hover:bg-slate-50/70">
-                    <td className="px-5 py-4 text-slate-500">
+                  <tr key={notification.id} className={`transition ${isDark ? "bg-slate-900 hover:bg-slate-800/60" : "bg-white hover:bg-slate-50/70"}`}>
+                    <td className={`px-5 py-4 ${mutedText}`}>
                       {formatDateTime(notification.created_at)}
                     </td>
                     <td className="px-5 py-4">
-                      <span className="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-200">
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
+                        isDark
+                          ? "bg-blue-500/20 text-blue-400 ring-blue-500/30"
+                          : "bg-blue-50 text-blue-700 ring-blue-200"
+                      }`}>
                         {targetFromNotification(notification)}
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <div className="font-semibold text-slate-900">{notification.title}</div>
-                      <div className="mt-1 max-w-[420px] truncate text-xs text-slate-500">
+                      <div className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{notification.title}</div>
+                      <div className={`mt-1 max-w-[420px] truncate text-xs ${mutedText}`}>
                         {notification.content}
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <div className="font-medium text-slate-700">
+                      <div className={`font-medium ${bodyText}`}>
                         {notification.recipient_name || "Unknown user"}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className={`text-xs ${mutedText}`}>
                         {notification.recipient_email || notification.user_id}
                       </div>
                     </td>
@@ -477,7 +520,11 @@ const NotificationsPanel: React.FC = () => {
                       <span
                         className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
                           notification.is_read
-                            ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                            ? isDark
+                              ? "bg-emerald-500/20 text-emerald-400 ring-emerald-500/30"
+                              : "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                            : isDark
+                            ? "bg-amber-500/20 text-amber-400 ring-amber-500/30"
                             : "bg-amber-50 text-amber-700 ring-amber-200"
                         }`}
                       >
@@ -488,7 +535,11 @@ const NotificationsPanel: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSelectedNotification(notification)}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border transition ${
+                          isDark
+                            ? "border-white/10 text-gray-400 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-400"
+                            : "border-slate-200 text-slate-500 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                        }`}
                         title="View notification detail"
                         aria-label="View notification detail"
                       >
@@ -502,11 +553,13 @@ const NotificationsPanel: React.FC = () => {
           </table>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-sm text-slate-500">
-            Showing page <span className="font-semibold text-slate-700">{pagination.page}</span>{" "}
-            of <span className="font-semibold text-slate-700">{pagination.totalPages || 1}</span>,{" "}
-            <span className="font-semibold text-slate-700">{pagination.total}</span> total records
+        <div className={`flex flex-col gap-3 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${
+          isDark ? "border-white/10" : "border-slate-100"
+        }`}>
+          <div className={`text-sm ${mutedText}`}>
+            Showing page <span className={`font-semibold ${boldText}`}>{pagination.page}</span>{" "}
+            of <span className={`font-semibold ${boldText}`}>{pagination.totalPages || 1}</span>,{" "}
+            <span className={`font-semibold ${boldText}`}>{pagination.total}</span> total records
           </div>
 
           <div className="flex items-center gap-2">
@@ -514,7 +567,11 @@ const NotificationsPanel: React.FC = () => {
               type="button"
               disabled={pagination.page <= 1 || loading}
               onClick={() => void loadNotifications(pagination.page - 1)}
-              className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                isDark
+                  ? "border-white/10 text-gray-300 hover:bg-slate-800"
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
+              }`}
             >
               <ChevronLeft size={15} />
               Previous
@@ -524,7 +581,11 @@ const NotificationsPanel: React.FC = () => {
               type="button"
               disabled={pagination.page >= pagination.totalPages || loading || pagination.totalPages === 0}
               onClick={() => void loadNotifications(pagination.page + 1)}
-              className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                isDark
+                  ? "border-white/10 text-gray-300 hover:bg-slate-800"
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
+              }`}
             >
               Next
               <ChevronRight size={15} />

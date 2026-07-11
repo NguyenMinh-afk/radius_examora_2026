@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTheme } from "../../../contexts/useTheme";
 import { Star, Quote, ChevronLeft, ChevronRight, Building2, GraduationCap, Award } from "lucide-react";
 
 const testimonials = [
@@ -58,6 +59,8 @@ const avatarColors = [
 ];
 
 const TestimonialsSection: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -89,20 +92,30 @@ const TestimonialsSection: React.FC = () => {
   const current = testimonials[currentIndex];
 
   return (
-    <section className="px-6 py-24 bg-gradient-to-b from-white to-blue-50/30">
+    <section className={`px-6 py-24 ${isDark ? "" : "bg-gradient-to-b from-white to-blue-50/30"}`}>
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-4">
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold text-blue-600 tracking-wider uppercase">
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 border rounded-full mb-4 ${
+            isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-blue-50 border-blue-100"
+          }`}>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+              isDark ? "bg-indigo-400" : "bg-blue-500"
+            }`} />
+            <span className={`text-xs font-semibold tracking-wider uppercase ${
+              isDark ? "text-indigo-400" : "text-blue-600"
+            }`}>
               Testimonials
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             Trusted by educators worldwide
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">
+          <p className={`max-w-xl mx-auto ${
+            isDark ? "text-gray-400" : "text-gray-500"
+          }`}>
             See what universities and institutions say about transforming their examination process with EXMORA.
           </p>
         </div>
@@ -114,17 +127,25 @@ const TestimonialsSection: React.FC = () => {
           onMouseLeave={handleMouseLeave}
         >
           {/* Main Card */}
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12 relative overflow-hidden">
+          <div className={`rounded-3xl shadow-xl border p-8 md:p-12 relative overflow-hidden ${
+            isDark ? "bg-slate-800/80 border-white/10" : "bg-white border-gray-100"
+          }`}>
             {/* Quote Icon */}
-            <div className="absolute top-6 right-8 opacity-5">
-              <Quote className="w-32 h-32 text-blue-600" />
+            <div className={`absolute top-6 right-8 opacity-5 ${
+              isDark ? "text-indigo-400" : "text-blue-600"
+            }`}>
+              <Quote className="w-32 h-32" />
             </div>
 
             {/* Grid Pattern Background */}
             <div
-              className="absolute inset-0 opacity-[0.02] pointer-events-none
-              bg-[linear-gradient(#000_1px,transparent_1px),linear-gradient(90deg,#000_1px,transparent_1px)]
-              bg-[size:40px_40px]"
+              className="absolute inset-0 opacity-[0.02] pointer-events-none"
+              style={{
+                backgroundImage: isDark 
+                  ? `linear-gradient(rgba(99, 102, 241, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.5) 1px, transparent 1px)` 
+                  : "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+                backgroundSize: "40px 40px"
+              }}
             />
 
             <div className="relative z-10">
@@ -136,7 +157,9 @@ const TestimonialsSection: React.FC = () => {
               </div>
 
               {/* Quote */}
-              <blockquote className="text-xl md:text-2xl text-gray-800 leading-relaxed mb-8 font-medium">
+              <blockquote className={`text-xl md:text-2xl leading-relaxed mb-8 font-medium ${
+                isDark ? "text-gray-200" : "text-gray-800"
+              }`}>
                 "{current.quote}"
               </blockquote>
 
@@ -146,9 +169,11 @@ const TestimonialsSection: React.FC = () => {
                   {current.avatar}
                 </div>
                 <div>
-                  <div className="font-bold text-gray-900">{current.name}</div>
-                  <div className="text-sm text-gray-500">{current.role}</div>
-                  <div className="flex items-center gap-1.5 text-sm text-blue-600 mt-0.5">
+                  <div className={`font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{current.name}</div>
+                  <div className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>{current.role}</div>
+                  <div className={`flex items-center gap-1.5 text-sm mt-0.5 ${
+                    isDark ? "text-indigo-400" : "text-blue-600"
+                  }`}>
                     {current.icon}
                     {current.institution}
                   </div>
@@ -160,13 +185,21 @@ const TestimonialsSection: React.FC = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white shadow-lg border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 transition-all duration-200"
+            className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg border ${
+              isDark 
+                ? "bg-slate-800 border-white/10 text-gray-300 hover:text-indigo-400 hover:border-indigo-500/30" 
+                : "bg-white border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-300"
+            }`}
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white shadow-lg border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 transition-all duration-200"
+            className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg border ${
+              isDark 
+                ? "bg-slate-800 border-white/10 text-gray-300 hover:text-indigo-400 hover:border-indigo-500/30" 
+                : "bg-white border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-300"
+            }`}
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -179,8 +212,8 @@ const TestimonialsSection: React.FC = () => {
                 onClick={() => goToSlide(index)}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? "bg-blue-600 w-8"
-                    : "bg-gray-300 hover:bg-gray-400"
+                    ? isDark ? "bg-indigo-500 w-8" : "bg-blue-600 w-8"
+                    : isDark ? "bg-gray-600 hover:bg-gray-500" : "bg-gray-300 hover:bg-gray-400"
                 }`}
               />
             ))}
@@ -189,10 +222,12 @@ const TestimonialsSection: React.FC = () => {
 
         {/* Trust Logos */}
         <div className="mt-16 text-center">
-          <p className="text-sm text-gray-500 mb-6">Trusted by institutions including</p>
+          <p className={`text-sm mb-6 ${isDark ? "text-gray-500" : "text-gray-500"}`}>Trusted by institutions including</p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
             {["Stanford", "MIT", "Oxford", "Harvard", "Berkeley", "Duke"].map((uni) => (
-              <div key={uni} className="text-lg font-bold text-gray-400 tracking-tight">
+              <div key={uni} className={`text-lg font-bold tracking-tight ${
+                isDark ? "text-gray-500" : "text-gray-400"
+              }`}>
                 {uni}
               </div>
             ))}

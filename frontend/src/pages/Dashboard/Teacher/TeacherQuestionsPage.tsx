@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { Link } from "react-router-dom";
-import { HelpCircle, Plus, RefreshCw } from "lucide-react";
+import { HelpCircle, Plus, RefreshCw, FileStack } from "lucide-react";
 import { getQuestions } from "../../../api/questionApi";
 import { QuestionCard, QuestionFilters } from "../../../components/teacher/questions";
+import BulkCreateQuestionsModal from "../../../components/teacher/questions/BulkCreateQuestionsModal";
 import { LoadingState, ErrorState, EmptyState } from "../../../components/teacher/shared";
 import type { QuestionItem } from "../../../api/questionApi";
 import { PageHeader, Card, StatCard, StatGrid } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const TeacherQuestionsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -16,6 +20,7 @@ const TeacherQuestionsPage: React.FC = () => {
   const [search, setSearch] = useState("");
   const [displayQuestions, setDisplayQuestions] = useState<QuestionItem[]>([]);
   const [difficulty, setDifficulty] = useState("");
+  const [showBulkModal, setShowBulkModal] = useState(false);
 
   const fetchQuestions = async () => {
     try {
@@ -51,13 +56,17 @@ const TeacherQuestionsPage: React.FC = () => {
     await fetchQuestions();
   };
 
+  const handleBulkSuccess = () => {
+    fetchQuestions();
+  };
+
   const total = questions.length;
   const activeCount = total;
 
   return (
     <div>
       <PageHeader
-        title="Question Bank"
+        title="Ngân hàng câu hỏi"
         icon={HelpCircle}
         description="Quản lý ngân hàng câu hỏi và bộ đáp án cho bài thi"
         actions={
@@ -65,53 +74,48 @@ const TeacherQuestionsPage: React.FC = () => {
             <button
               onClick={handleRefresh}
               disabled={refreshing || loading}
-              className="inline-flex items-center gap-2 h-11 px-4 border border-slate-200 bg-white rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-60"
+              className={`inline-flex items-center gap-2 h-11 px-4 border rounded-lg text-sm font-semibold transition disabled:opacity-60 ${
+                isDark
+                  ? "border-white/10 bg-slate-800 text-gray-200 hover:bg-slate-700"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
             >
               <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-              Refresh
+              Làm mới
+            </button>
+            <button
+              onClick={() => setShowBulkModal(true)}
+              className="inline-flex items-center gap-2 h-11 px-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:opacity-90 transition"
+            >
+              <FileStack size={18} />
+              Tạo nhiều câu hỏi
             </button>
             <Link
               to="/teacher/questions/create"
               className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
             >
               <Plus size={18} />
-              Create Question
+              Tạo câu hỏi
             </Link>
             <button className="inline-flex items-center gap-2 h-11 px-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:opacity-90 transition">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
-              AI Generate
+              AI Tạo câu hỏi
             </button>
           </div>
         }
       />
 
-      {/* Stats */}
       <StatGrid className="mt-6" columns={3}>
-        <StatCard
-          label="Total Questions"
-          value={total}
-          icon={HelpCircle}
-          variant="blue"
-        />
-        <StatCard
-          label="Visible"
-          value={activeCount}
-          icon={HelpCircle}
-          variant="green"
-        />
-        <StatCard
-          label="AI Generated"
-          value={0}
-          icon={HelpCircle}
-          variant="purple"
-        />
+        <StatCard label="Tổng câu hỏi" value={total} icon={HelpCircle} variant="blue" />
+        <StatCard label="Đang hoạt động" value={activeCount} icon={HelpCircle} variant="green" />
+        <StatCard label="AI đã tạo" value={0} icon={HelpCircle} variant="purple" />
       </StatGrid>
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchQuestions} />
+          <ErrorState message={error} onRetry={fetchQuestions} isDark={isDark} />
         ) : (
           <>
             <QuestionFilters
@@ -120,15 +124,17 @@ const TeacherQuestionsPage: React.FC = () => {
               onSearch={fetchQuestions}
               difficulty={difficulty}
               onDifficultyChange={setDifficulty}
+              isDark={isDark}
             />
 
-            {loading && <LoadingState size="lg" text="Loading questions..." />}
+            {loading && <LoadingState size="lg" text="Đang tải câu hỏi..." isDark={isDark} />}
 
             {!loading && displayQuestions.length === 0 && (
               <EmptyState
-                icon={<HelpCircle size={36} className="text-slate-300" />}
-                title="No questions found"
-                description={search || difficulty ? "Try changing filters." : "Start by creating questions for your bank."}
+                icon={<HelpCircle size={36} className={isDark ? "text-slate-600" : "text-slate-300"} />}
+                title="Chưa có câu hỏi nào"
+                description={search || difficulty ? "Thử thay đổi bộ lọc." : "Bắt đầu tạo câu hỏi cho ngân hàng câu hỏi."}
+                isDark={isDark}
               />
             )}
 
@@ -138,6 +144,7 @@ const TeacherQuestionsPage: React.FC = () => {
                   <QuestionCard
                     key={q.id}
                     question={q}
+                    isDark={isDark}
                     onDeleted={(deletedId) => {
                       setQuestions((prev) => prev.filter((item) => item.id !== deletedId));
                       setDisplayQuestions((prev) => prev.filter((item) => item.id !== deletedId));
@@ -149,6 +156,12 @@ const TeacherQuestionsPage: React.FC = () => {
           </>
         )}
       </Card>
+
+      <BulkCreateQuestionsModal
+        isOpen={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        onSuccess={handleBulkSuccess}
+      />
     </div>
   );
 };

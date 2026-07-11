@@ -4,8 +4,11 @@ import { getStudentResults, type Result } from "../../../api/studentApi";
 import { LoadingState, ErrorState } from "../../../components/student/shared";
 import { ResultSummaryCards, ResultTable } from "../../../components/student/results";
 import { PageHeader, Card, FilterBar } from "../../../components/shared";
+import { useTheme } from "../../../contexts/useTheme";
 
 const StudentResultsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +57,7 @@ const StudentResultsPage: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <LoadingState size="lg" text="Đang tải kết quả bài thi..." />
+        <LoadingState size="lg" text="Đang tải kết quả bài thi..." isDark={isDark} />
       </div>
     );
   }
@@ -69,7 +72,7 @@ const StudentResultsPage: React.FC = () => {
 
       <Card className="mt-6">
         {error ? (
-          <ErrorState message={error} onRetry={fetchData} />
+          <ErrorState message={error} onRetry={fetchData} isDark={isDark} />
         ) : (
           <>
             <ResultSummaryCards
@@ -86,7 +89,11 @@ const StudentResultsPage: React.FC = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as "newest" | "score")}
-                  className="h-11 px-4 border border-slate-200 rounded-lg bg-white text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  className={`h-11 px-4 border rounded-lg text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${
+                    isDark
+                      ? "bg-slate-800 border-white/10 text-white"
+                      : "bg-white border-slate-200 text-slate-700"
+                  }`}
                 >
                   <option value="newest">Mới nhất</option>
                   <option value="score">Điểm cao nhất</option>

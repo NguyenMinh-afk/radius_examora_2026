@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
 import SettingsSection from "./SettingsSection";
 import { getNotificationSettings, updateNotificationSettings, type NotificationSettings } from "../../../api/studentApi";
+import { useTheme } from "../../../contexts/useTheme";
 
 const NotificationSettingsCard: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
@@ -66,17 +69,21 @@ const NotificationSettingsCard: React.FC = () => {
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="flex justify-between">
               <div className="space-y-2">
-                <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                <div className="h-3 w-48 bg-gray-200 rounded"></div>
+                <div className={`h-4 w-32 rounded ${isDark ? "bg-slate-700" : "bg-gray-200"}`} />
+                <div className={`h-3 w-48 rounded ${isDark ? "bg-slate-700" : "bg-gray-200"}`} />
               </div>
-              <div className="w-12 h-6 bg-gray-200 rounded-full"></div>
+              <div className={`w-12 h-6 rounded-full ${isDark ? "bg-slate-700" : "bg-gray-200"}`} />
             </div>
           ))}
         </div>
       ) : (
         <div className="space-y-4">
           {success && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
+            <div className={`p-3 border rounded-lg text-sm ${
+              isDark
+                ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
+                : "bg-green-50 border-green-200 text-green-600"
+            }`}>
               Đã lưu cài đặt!
             </div>
           )}
@@ -84,14 +91,18 @@ const NotificationSettingsCard: React.FC = () => {
           {notificationItems.map((item) => (
             <div key={item.key} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                <p className="text-xs text-gray-500">{item.desc}</p>
+                <p className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}>{item.label}</p>
+                <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>{item.desc}</p>
               </div>
               <button
                 onClick={() => toggleSetting(item.key as keyof NotificationSettings)}
                 disabled={saving}
                 className={`relative w-12 h-6 rounded-full transition-colors disabled:opacity-50 ${
-                  settings[item.key as keyof NotificationSettings] ? "bg-blue-600" : "bg-gray-300"
+                  settings[item.key as keyof NotificationSettings]
+                    ? "bg-blue-600"
+                    : isDark
+                    ? "bg-slate-600"
+                    : "bg-gray-300"
                 }`}
               >
                 <span

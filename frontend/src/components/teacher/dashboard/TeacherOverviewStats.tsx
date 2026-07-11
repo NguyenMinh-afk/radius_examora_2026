@@ -9,6 +9,7 @@ interface TeacherOverviewStatsProps {
     openAssignments: number;
     pendingGrades: number;
   };
+  isDark?: boolean;
 }
 
 const StatCard: React.FC<{
@@ -17,20 +18,23 @@ const StatCard: React.FC<{
   subtitle?: string;
   icon: React.ReactNode;
   color: string;
-}> = ({ title, value, subtitle, icon, color }) => (
-  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-start gap-4">
+  isDark?: boolean;
+}> = ({ title, value, subtitle, icon, color, isDark }) => (
+  <div className={`rounded-2xl border shadow-sm p-5 flex items-start gap-4 ${
+    isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
+  }`}>
     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
       {icon}
     </div>
     <div>
-      <p className="text-sm font-medium text-slate-500">{title}</p>
-      <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
-      {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+      <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-slate-500"}`}>{title}</p>
+      <p className={`text-2xl font-bold mt-1 ${isDark ? "text-white" : "text-slate-900"}`}>{value}</p>
+      {subtitle && <p className={`text-xs mt-0.5 ${isDark ? "text-gray-500" : "text-slate-400"}`}>{subtitle}</p>}
     </div>
   </div>
 );
 
-const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview }) => {
+const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview, isDark }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6">
       <StatCard
@@ -42,6 +46,7 @@ const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview })
           </svg>
         }
         color="bg-blue-50"
+        isDark={isDark}
       />
       <StatCard
         title="Sinh viên"
@@ -52,6 +57,7 @@ const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview })
           </svg>
         }
         color="bg-indigo-50"
+        isDark={isDark}
       />
       <StatCard
         title="Đề thi"
@@ -62,6 +68,7 @@ const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview })
           </svg>
         }
         color="bg-purple-50"
+        isDark={isDark}
       />
       <StatCard
         title="Bài đã giao"
@@ -72,6 +79,7 @@ const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview })
           </svg>
         }
         color="bg-teal-50"
+        isDark={isDark}
       />
       <StatCard
         title="Đang mở"
@@ -83,6 +91,7 @@ const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview })
           </svg>
         }
         color="bg-green-50"
+        isDark={isDark}
       />
       <StatCard
         title="Chưa chấm"
@@ -94,6 +103,7 @@ const TeacherOverviewStats: React.FC<TeacherOverviewStatsProps> = ({ overview })
           </svg>
         }
         color="bg-amber-50"
+        isDark={isDark}
       />
     </div>
   );
