@@ -315,6 +315,8 @@ CREATE TABLE generated_questions (
     explanation TEXT,
     status VARCHAR(50) DEFAULT 'pending_review'
         CHECK (status IN ('pending_review', 'approved', 'rejected', 'edited')),
+    display_order INTEGER,
+    generation_source VARCHAR(20) DEFAULT 'gemini',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

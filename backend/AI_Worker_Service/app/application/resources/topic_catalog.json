@@ -1,0 +1,338 @@
+{
+  "topics": [
+    {
+      "canonical": "Kiến trúc máy tính",
+      "aliases": [
+        "kiến trúc máy tính",
+        "kien truc may tinh",
+        "computer architecture",
+        "computer organization",
+        "tổ chức máy tính",
+        "to chuc may tinh"
+      ],
+      "strong_keywords": [
+        "cpu",
+        "alu",
+        "control unit",
+        "main memory",
+        "memory",
+        "bus",
+        "instruction set",
+        "isa",
+        "input output",
+        "i/o",
+        "hardware",
+        "software",
+        "eniac",
+        "transistor",
+        "integrated circuit",
+        "vlsi",
+        "ulsi",
+        "bộ xử lý",
+        "bo xu ly",
+        "bộ nhớ",
+        "bo nho",
+        "thiết bị vào ra",
+        "thiet bi vao ra",
+        "kiến trúc tập lệnh",
+        "kien truc tap lenh"
+      ],
+      "weak_keywords": ["computer", "system", "data"],
+      "negative_keywords": ["router", "tcp/ip", "osi", "ip address", "database", "sql"]
+    },
+    {
+      "canonical": "Mạng máy tính",
+      "aliases": [
+        "mạng máy tính",
+        "mang may tinh",
+        "computer networks",
+        "computer networking",
+        "networking"
+      ],
+      "strong_keywords": [
+        "tcp",
+        "udp",
+        "tcp/ip",
+        "ip address",
+        "router",
+        "switch",
+        "osi",
+        "dns",
+        "http",
+        "https",
+        "smtp",
+        "pop3",
+        "imap",
+        "ftp",
+        "socket",
+        "port",
+        "proxy",
+        "cache",
+        "lan",
+        "wan"
+      ],
+      "weak_keywords": ["server", "client", "network", "internet"],
+      "negative_keywords": ["instruction set", "alu", "primary key", "normalization"]
+    },
+    {
+      "canonical": "Cơ sở dữ liệu",
+      "aliases": [
+        "cơ sở dữ liệu",
+        "co so du lieu",
+        "database",
+        "database systems",
+        "hệ quản trị cơ sở dữ liệu",
+        "he quan tri co so du lieu"
+      ],
+      "strong_keywords": [
+        "sql",
+        "table",
+        "query",
+        "schema",
+        "normalization",
+        "transaction",
+        "index",
+        "primary key",
+        "foreign key",
+        "entity",
+        "relationship",
+        "erd"
+      ],
+      "weak_keywords": ["data", "model", "system"],
+      "negative_keywords": ["tcp", "router", "alu", "neural network"]
+    },
+    {
+      "canonical": "Hệ điều hành",
+      "aliases": [
+        "hệ điều hành",
+        "he dieu hanh",
+        "operating system",
+        "operating systems"
+      ],
+      "strong_keywords": [
+        "process",
+        "thread",
+        "scheduling",
+        "deadlock",
+        "memory management",
+        "virtual memory",
+        "file system",
+        "kernel",
+        "semaphore",
+        "paging"
+      ],
+      "weak_keywords": ["system", "memory", "process"],
+      "negative_keywords": ["router", "sql", "class"]
+    },
+    {
+      "canonical": "Lập trình Java",
+      "aliases": ["lập trình java", "lap trinh java", "java programming", "java"],
+      "strong_keywords": [
+        "class",
+        "object",
+        "inheritance",
+        "polymorphism",
+        "interface",
+        "exception",
+        "jvm",
+        "collection",
+        "thread"
+      ],
+      "weak_keywords": ["code", "function", "program"],
+      "negative_keywords": ["requirement", "router", "transaction"]
+    },
+    {
+      "canonical": "Công nghệ phần mềm",
+      "aliases": [
+        "công nghệ phần mềm",
+        "cong nghe phan mem",
+        "software engineering",
+        "software development"
+      ],
+      "strong_keywords": [
+        "requirement",
+        "use case",
+        "software architecture",
+        "design pattern",
+        "testing",
+        "agile",
+        "scrum",
+        "uml",
+        "srs"
+      ],
+      "weak_keywords": ["system", "design", "project"],
+      "negative_keywords": ["tcp", "sql", "alu"]
+    },
+    {
+      "canonical": "Trí tuệ nhân tạo",
+      "aliases": ["trí tuệ nhân tạo", "tri tue nhan tao", "artificial intelligence", "ai"],
+      "strong_keywords": [
+        "machine learning",
+        "deep learning",
+        "neural network",
+        "model training",
+        "dataset",
+        "classification",
+        "regression",
+        "embedding"
+      ],
+      "weak_keywords": ["model", "data"],
+      "negative_keywords": ["primary key", "router", "kernel"]
+    },
+    {
+      "canonical": "Lịch sử Đảng",
+      "aliases": [
+        "lịch sử đảng",
+        "lich su dang",
+        "lịch sử đảng cộng sản việt nam",
+        "lich su dang cong san viet nam",
+        "đảng cộng sản việt nam",
+        "dang cong san viet nam"
+      ],
+      "strong_keywords": [
+        "đại hội đảng",
+        "dai hoi dang",
+        "đại hội vi",
+        "dai hoi vi",
+        "đại hội vii",
+        "dai hoi vii",
+        "đại hội viii",
+        "dai hoi viii",
+        "đại hội ix",
+        "dai hoi ix",
+        "cương lĩnh",
+        "cuong linh",
+        "nghị quyết trung ương",
+        "nghi quyet trung uong",
+        "cnxh",
+        "xhcn",
+        "đổi mới",
+        "doi moi",
+        "thời kỳ quá độ",
+        "thoi ky qua do",
+        "nguyễn ái quốc",
+        "nguyen ai quoc",
+        "trường chinh",
+        "truong chinh",
+        "cách mạng việt nam",
+        "cach mang viet nam"
+      ],
+      "weak_keywords": ["đảng", "dang", "cách mạng", "cach mang", "việt nam", "viet nam"],
+      "negative_keywords": ["tcp", "sql", "cpu", "class"]
+    },
+    {
+      "canonical": "Pháp luật đại cương",
+      "aliases": ["pháp luật đại cương", "phap luat dai cuong", "general law"],
+      "strong_keywords": [
+        "pháp luật",
+        "phap luat",
+        "nhà nước",
+        "nha nuoc",
+        "quy phạm pháp luật",
+        "quy pham phap luat",
+        "hiến pháp",
+        "hien phap"
+      ],
+      "weak_keywords": ["luật", "luat", "quyền", "quyen", "nghĩa vụ", "nghia vu"],
+      "negative_keywords": ["tcp", "sql", "cpu"]
+    },
+    {
+      "canonical": "Kinh tế vi mô",
+      "aliases": ["kinh tế vi mô", "kinh te vi mo", "microeconomics"],
+      "strong_keywords": [
+        "cung cầu",
+        "cung cau",
+        "độ co giãn",
+        "do co gian",
+        "consumer surplus",
+        "producer surplus",
+        "marginal cost",
+        "utility"
+      ],
+      "weak_keywords": ["thị trường", "thi truong", "giá", "gia", "doanh nghiệp", "doanh nghiep"],
+      "negative_keywords": ["tcp", "sql", "kernel"]
+    },
+    {
+      "canonical": "Kinh tế vĩ mô",
+      "aliases": ["kinh tế vĩ mô", "kinh te vi mo", "macroeconomics"],
+      "strong_keywords": [
+        "gdp",
+        "lạm phát",
+        "lam phat",
+        "thất nghiệp",
+        "that nghiep",
+        "chính sách tiền tệ",
+        "chinh sach tien te",
+        "tổng cầu",
+        "tong cau"
+      ],
+      "weak_keywords": ["kinh tế", "kinh te", "ngân hàng", "ngan hang"],
+      "negative_keywords": ["tcp", "sql", "class"]
+    },
+    {
+      "canonical": "Xác suất thống kê",
+      "aliases": ["xác suất thống kê", "xac suat thong ke", "probability and statistics", "statistics"],
+      "strong_keywords": [
+        "xác suất",
+        "xac suat",
+        "biến ngẫu nhiên",
+        "bien ngau nhien",
+        "phân phối",
+        "phan phoi",
+        "kỳ vọng",
+        "ky vong",
+        "phương sai",
+        "phuong sai",
+        "kiểm định",
+        "kiem dinh"
+      ],
+      "weak_keywords": ["mẫu", "mau", "thống kê", "thong ke"],
+      "negative_keywords": ["tcp", "router", "class"]
+    },
+    {
+      "canonical": "Toán rời rạc",
+      "aliases": ["toán rời rạc", "toan roi rac", "discrete mathematics", "discrete math"],
+      "strong_keywords": [
+        "logic mệnh đề",
+        "logic menh de",
+        "tập hợp",
+        "tap hop",
+        "quan hệ",
+        "quan he",
+        "đồ thị",
+        "do thi",
+        "cây",
+        "cay",
+        "tổ hợp",
+        "to hop"
+      ],
+      "weak_keywords": ["logic", "toán", "toan"],
+      "negative_keywords": ["tcp", "sql", "process"]
+    },
+    {
+      "canonical": "Cấu trúc dữ liệu và giải thuật",
+      "aliases": [
+        "cấu trúc dữ liệu và giải thuật",
+        "cau truc du lieu va giai thuat",
+        "data structures and algorithms",
+        "data structure and algorithm",
+        "dsa"
+      ],
+      "strong_keywords": [
+        "array",
+        "linked list",
+        "stack",
+        "queue",
+        "tree",
+        "graph",
+        "sorting",
+        "searching",
+        "hash table",
+        "algorithm complexity",
+        "big o"
+      ],
+      "weak_keywords": ["data", "algorithm", "structure"],
+      "negative_keywords": ["sql", "router", "neural network"]
+    }
+  ]
+}

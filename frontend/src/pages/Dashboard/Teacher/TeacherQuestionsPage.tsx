@@ -108,9 +108,9 @@ const TeacherQuestionsPage: React.FC = () => {
       />
 
       <StatGrid className="mt-6" columns={3}>
-        <StatCard label="Tổng câu hỏi" value={total} icon={HelpCircle} variant="blue" />
-        <StatCard label="Đang hoạt động" value={activeCount} icon={HelpCircle} variant="green" />
-        <StatCard label="AI đã tạo" value={0} icon={HelpCircle} variant="purple" />
+        <StatCard label="Tổng câu hỏi" value={total} icon={HelpCircle} variant="blue" isDark={isDark} />
+        <StatCard label="Đang hoạt động" value={activeCount} icon={HelpCircle} variant="green" isDark={isDark} />
+        <StatCard label="AI đã tạo" value={0} icon={HelpCircle} variant="purple" isDark={isDark} />
       </StatGrid>
 
       <Card className="mt-6">
