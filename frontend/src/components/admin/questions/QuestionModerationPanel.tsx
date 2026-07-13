@@ -42,15 +42,55 @@ const formatDate = (value?: string | null) => {
 const shortText = (value: string, max = 120) =>
   value.length > max ? `${value.slice(0, max).trim()}...` : value;
 
+const normalizeAnswer = (value: unknown): string => {
+  if (typeof value === "string") return value;
+
+  if (Array.isArray(value)) return value.map(normalizeAnswer).join(", ");
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+
+    if ("text" in record && typeof record.text === "string") return record.text;
+    if ("content" in record && typeof record.content === "string") return record.content;
+    if ("label" in record && typeof record.label === "string") return record.label;
+    if ("value" in record && typeof record.value === "string") return record.value;
+    if ("answer" in record && typeof record.answer === "string") return record.answer;
+
+    return JSON.stringify(record);
+  }
+
+  return String(value ?? "");
+};
+
 const renderOptions = (options: unknown, isDark?: boolean) => {
   const optClass = `rounded-lg px-3 py-2 text-sm ${isDark ? "bg-slate-800 text-gray-200" : "bg-slate-50 text-slate-700"}`;
   const keyClass = `font-semibold ${isDark ? "text-white" : "text-slate-900"}`;
   const emptyClass = `text-sm ${isDark ? "text-gray-400" : "text-slate-500"}`;
 
+  const normalizeValue = (value: unknown): string => {
+    if (typeof value === "string") return value;
+
+    if (Array.isArray(value)) return value.map(normalizeValue).join(", ");
+
+    if (value && typeof value === "object") {
+      const record = value as Record<string, unknown>;
+
+      if ("text" in record && typeof record.text === "string") return record.text;
+      if ("content" in record && typeof record.content === "string") return record.content;
+      if ("label" in record && typeof record.label === "string") return record.label;
+      if ("value" in record && typeof record.value === "string") return record.value;
+      if ("answer" in record && typeof record.answer === "string") return record.answer;
+
+      return JSON.stringify(record);
+    }
+
+    return String(value ?? "");
+  };
+
   if (Array.isArray(options)) {
     return options.map((option, index) => (
       <div key={`${index}-${String(option)}`} className={optClass}>
-        {String(option)}
+        {normalizeValue(option)}
       </div>
     ));
   }
@@ -58,7 +98,7 @@ const renderOptions = (options: unknown, isDark?: boolean) => {
   if (options && typeof options === "object") {
     return Object.entries(options as Record<string, unknown>).map(([key, value]) => (
       <div key={key} className={optClass}>
-        <span className={keyClass}>{key}.</span> {String(value)}
+        <span className={keyClass}>{key}.</span> {normalizeValue(value)}
       </div>
     ));
   }
@@ -173,7 +213,6 @@ const QuestionModerationPanel: React.FC<QuestionModerationPanelProps> = ({ isDar
   };
 
   const cardBg = isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200";
-  const innerPanelBg = isDark ? "bg-slate-900/50" : "bg-slate-50/70";
   const mutedText = isDark ? "text-gray-400" : "text-slate-500";
   const boldText = isDark ? "text-white" : "text-slate-950";
   const bodyText = isDark ? "text-gray-300" : "text-slate-700";
@@ -565,7 +604,7 @@ const QuestionModerationPanel: React.FC<QuestionModerationPanelProps> = ({ isDar
                     <div className={`rounded-lg p-4 text-sm font-semibold ${
                       isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-50 text-emerald-800"
                     }`}>
-                      {selectedQuestion.correct_answer}
+                      {normalizeAnswer(selectedQuestion.correct_answer)}
                     </div>
                   </div>
                   <div>
