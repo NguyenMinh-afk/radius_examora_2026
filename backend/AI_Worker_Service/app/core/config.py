@@ -9,6 +9,19 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def _running_in_docker() -> bool:
+    import os
+
+    if os.path.exists("/.dockerenv"):
+        return True
+    try:
+        if "docker" in open("/proc/1/cgroup", "r").read():
+            return True
+    except Exception:
+        pass
+    return False
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -114,6 +127,20 @@ class Settings(BaseSettings):
         if upper not in allowed:
             raise ValueError(f"log_level must be one of {allowed}")
         return upper
+
+    def __init__(self, **kwargs):
+        import os
+
+        env_file = os.environ.get("ENV_FILE")
+        if not env_file:
+            base_dir = os.path.dirname(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            )
+            if os.path.exists(os.path.join(base_dir, ".env.docker")) and _running_in_docker():
+                env_file = os.path.join(base_dir, ".env.docker")
+            else:
+                env_file = os.path.join(base_dir, ".env")
+        super().__init__(_env_file=env_file, **kwargs)
 
     @field_validator("ocr_provider")
     @classmethod
