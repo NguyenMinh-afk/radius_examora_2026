@@ -10,6 +10,7 @@ import HelpCenter from "../pages/HelpCenter/HelpCenter";
 import Register from "../pages/Register/Register";
 import Login from "../pages/Login/Login";
 import Forgot from "../pages/Forgot/Forgot";
+import ResetPassword from "../pages/ResetPassword/ResetPassword";
 
 // Admin Pages
 import AdminDashboardPage from "../pages/Dashboard/Admin/AdminDashboardPage";
@@ -75,6 +76,7 @@ const AppRouter = () => {
 
         {/* Forgot Password */}
         <Route path="/forgot-password" element={<RedirectIfAuthenticated><Forgot /></RedirectIfAuthenticated>} />
+        <Route path="/reset-password" element={<RedirectIfAuthenticated><ResetPassword /></RedirectIfAuthenticated>} />
 
         {/* Admin Module */}
         <Route path="/admin" element={<AdminDashboardPage />} />

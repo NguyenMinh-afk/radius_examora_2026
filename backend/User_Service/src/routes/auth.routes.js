@@ -9,6 +9,9 @@ import {
   me,
   refresh,
   register,
+  forgotPassword,
+  verifyToken,
+  doResetPassword,
 } from "../controllers/auth/index.js";
 import { updateMyProfile, getMyProfile } from "../controllers/profile.controller.js";
 
@@ -25,5 +28,9 @@ router.post("/profile", updateMyProfile);
 router.get("/google", googleLogin);
 router.get("/google/callback", googleCallback);
 router.get("/google/result", googleResult);
+
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-reset-token", verifyToken);
+router.post("/reset-password", doResetPassword);
 
 export default router;

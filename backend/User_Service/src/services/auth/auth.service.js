@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { Op } from "sequelize";
 
 import {
@@ -9,6 +10,8 @@ import {
 } from "../../config/jwt.js";
 import User from "../../models/User.js";
 import UserSession from "../../models/UserSession.js";
+import PasswordResetToken from "../../models/user/PasswordResetToken.js";
+import OAuthProvider from "../../models/user/OAuthProvider.js";
 import {
   getRoleByName,
   getApprovalStatusForRole,
@@ -17,6 +20,38 @@ import {
 } from "./shared.service.js";
 
 export { getBearerToken };
+
+const PASSWORD_RESET_EXPIRES_MS = Number(process.env.PASSWORD_RESET_EXPIRES_MS) || 15 * 60 * 1000;
+const PASSWORD_RESET_TOKEN_BYTES = 32;
+
+const hashToken = (rawToken) => crypto.createHash("sha256").update(rawToken).digest("hex");
+
+const generateRawResetToken = () => crypto.randomBytes(PASSWORD_RESET_TOKEN_BYTES).toString("hex");
+
+const normalizeOAuthProviderValue = (provider) => (provider || "").toString().trim().toLowerCase();
+
+const getUserOAuthProviders = async (user) => {
+  const userOAuthProviders = await user.getOAuthProviders?.();
+  if (Array.isArray(userOAuthProviders) && userOAuthProviders.length) {
+    return userOAuthProviders.map((oauthProvider) => normalizeOAuthProviderValue(oauthProvider.provider));
+  }
+
+  const providers = await OAuthProvider.findAll({
+    where: { user_id: user.id },
+    attributes: ["provider"],
+  });
+  return providers.map((oauthProvider) => normalizeOAuthProviderValue(oauthProvider.provider));
+};
+
+const hasOAuthLoginOnly = async (user) => {
+  const providers = await getUserOAuthProviders(user);
+  if (!providers.length) {
+    return false;
+  }
+
+  const hasPassword = typeof user.password_hash === "string" && user.password_hash.length > 0;
+  return !hasPassword;
+};
 
 export const register = async (body) => {
   const {
@@ -194,4 +229,142 @@ export const getMe = async (req) => {
   return {
     user: toPublicUser(user, role),
   };
+};
+
+export const requestPasswordReset = async ({ email }) => {
+  const normalizedEmail = email?.trim().toLowerCase();
+  if (!normalizedEmail) {
+    const error = new Error("email is required");
+    error.status = 400;
+    throw error;
+  }
+
+  const user = await User.findOne({ where: { email: normalizedEmail } });
+  if (!user) {
+    return { requested: true };
+  }
+
+  if (await hasOAuthLoginOnly(user)) {
+    const error = new Error("oauth_only_reset");
+    error.status = 400;
+    error.userId = user.id;
+    error.email = user.email;
+    throw error;
+  }
+
+  const rawToken = generateRawResetToken();
+  const tokenHash = hashToken(rawToken);
+  const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRES_MS);
+
+  const [tokenRecord] = await PasswordResetToken.findOrCreate({
+    where: { user_id: user.id },
+    defaults: {
+      user_id: user.id,
+      token_hash: tokenHash,
+      expires_at: expiresAt,
+    },
+  });
+
+  if (!tokenRecord.isNewRecord) {
+    await tokenRecord.update({
+      token_hash: tokenHash,
+      expires_at: expiresAt,
+      used_at: null,
+    });
+  }
+
+  return {
+    requested: true,
+    resetTokenRaw: rawToken,
+    expiresAt,
+    user,
+  };
+};
+
+export const verifyResetToken = async ({ token }) => {
+  if (!token || typeof token !== "string") {
+    const error = new Error("token is required");
+    error.status = 400;
+    throw error;
+  }
+
+  const tokenHash = hashToken(token);
+  const resetRecord = await PasswordResetToken.findOne({
+    where: { token_hash: tokenHash },
+    include: [{ model: User, as: "user", attributes: ["id", "email", "full_name"] }],
+  });
+
+  if (!resetRecord) {
+    const error = new Error("invalid_or_expired_token");
+    error.status = 400;
+    throw error;
+  }
+
+  if (resetRecord.used_at) {
+    const error = new Error("token_already_used");
+    error.status = 400;
+    throw error;
+  }
+
+  if (new Date(resetRecord.expires_at).getTime() < Date.now()) {
+    const error = new Error("token_expired");
+    error.status = 400;
+    throw error;
+  }
+
+  return {
+    valid: true,
+    user: resetRecord.user,
+    expiresAt: resetRecord.expires_at,
+  };
+};
+
+export const resetPassword = async ({ token, password }) => {
+  if (!token || typeof token !== "string") {
+    const error = new Error("token is required");
+    error.status = 400;
+    throw error;
+  }
+
+  if (!password || typeof password !== "string" || password.length < 8) {
+    const error = new Error("password must be at least 8 characters");
+    error.status = 400;
+    throw error;
+  }
+
+  const tokenHash = hashToken(token);
+  const resetRecord = await PasswordResetToken.findOne({
+    where: { token_hash: tokenHash },
+    include: [{ model: User, as: "user" }],
+  });
+
+  if (!resetRecord) {
+    const error = new Error("invalid_or_expired_token");
+    error.status = 400;
+    throw error;
+  }
+
+  if (resetRecord.used_at) {
+    const error = new Error("token_already_used");
+    error.status = 400;
+    throw error;
+  }
+
+  if (new Date(resetRecord.expires_at).getTime() < Date.now()) {
+    const error = new Error("token_expired");
+    error.status = 400;
+    throw error;
+  }
+
+  const passwordHash = await bcrypt.hash(password, Number(process.env.BCRYPT_ROUNDS) || 10);
+
+  await resetRecord.user.update({ password_hash: passwordHash });
+  await resetRecord.update({ used_at: new Date() });
+
+  await UserSession.update(
+    { is_active: false, last_activity: new Date() },
+    { where: { user_id: resetRecord.user_id, is_active: true } }
+  );
+
+  return { success: true };
 };

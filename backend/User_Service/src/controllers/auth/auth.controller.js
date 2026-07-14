@@ -10,6 +10,9 @@ import {
   issueAuthResponse,
   getApprovalStatusForRole,
   toPublicUser,
+  requestPasswordReset,
+  verifyResetToken,
+  resetPassword,
 } from "../../services/auth/index.js";
 
 export const register = async (req, res) => {
@@ -102,6 +105,73 @@ export const me = async (req, res) => {
     return res.status(err.status || 401).json({
       message: "Authentication failed",
       error: err.message,
+      code: err.code,
+    });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const result = await requestPasswordReset(req.body);
+
+    const response = {
+      message: "If an account exists, a password reset link has been sent.",
+      requested: result.requested,
+    };
+
+    if (result.resetTokenRaw && process.env.NODE_ENV !== "production") {
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      response.resetUrl = `${frontendUrl}/reset-password?token=${result.resetTokenRaw}`;
+    }
+
+    return res.json(response);
+  } catch (err) {
+    if (err.code === "oauth_only_reset") {
+      return res.status(400).json({
+        message: "oauth_only_reset",
+        code: "OAUTH_ONLY_RESET",
+        userId: err.userId,
+        email: err.email,
+      });
+    }
+
+    return res.status(err.status || 500).json({
+      message: "Failed to request password reset",
+      error: err.message,
+      code: err.code,
+    });
+  }
+};
+
+export const verifyToken = async (req, res) => {
+  try {
+    const result = await verifyResetToken(req.body);
+
+    return res.json({
+      valid: result.valid,
+      user: result.user,
+      expiresAt: result.expiresAt,
+    });
+  } catch (err) {
+    return res.status(err.status || 400).json({
+      valid: false,
+      message: err.message || "Invalid or expired reset token",
+      code: err.code,
+    });
+  }
+};
+
+export const doResetPassword = async (req, res) => {
+  try {
+    const result = await resetPassword(req.body);
+
+    return res.json({
+      message: "Password has been reset successfully",
+      success: result.success,
+    });
+  } catch (err) {
+    return res.status(err.status || 400).json({
+      message: err.message || "Failed to reset password",
       code: err.code,
     });
   }

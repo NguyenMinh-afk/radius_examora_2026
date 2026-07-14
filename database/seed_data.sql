@@ -318,11 +318,11 @@ INSERT INTO notifications (
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO email_templates (
-    id, template_key, template_name, subject, html_body, text_body, variables, language, is_active, created_by
+    template_key, template_name, subject, html_body, text_body, variables, language, is_active, created_by
 ) VALUES
-    (1, 'exam_assigned', 'Exam Assigned', 'New exam assigned',
+    ('exam_assigned', 'Exam Assigned', 'New exam assigned',
      '<p>You have a new exam.</p>', 'You have a new exam.', '{"vars":["examTitle"]}', 'en', true, '10000000-0000-0000-0000-000000000001')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (template_key) DO NOTHING;
 
 INSERT INTO email_logs (
     id, to_email, to_user_id, template_key, subject, body, status, sent_at, provider, message_id
