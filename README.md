@@ -1,87 +1,68 @@
-# Project_EXAMORA - Setup & Run Guide
+# Project_EXAMORA
 
-This project uses a microservice architecture with multiple backend services and a separate frontend. Follow the instructions below to set up and run the project locally.
+EXMORA is a microservice-based exam management system with separate backend services and a React frontend. This README gives you the big picture and links to the detailed docs for each part of the system.
 
----
+## Documentation
 
-## 1. Prerequisites
-- **Node.js** (v16 or higher recommended)
-- **npm** (comes with Node.js)
-- **PostgreSQL** or your chosen database (see `database/README.md`)
-- **RabbitMQ** (if using message queues)
-- **(Optional) Docker & Docker Compose** for easier multi-service management
+- `README.md` — project overview and quick start
+- `backend/Backend.md` — backend setup, run commands, ports, and debugging tips
+- `frontend/Fronend.md` — frontend setup, env vars, Docker, and API clients
+- `database/Data.md` — database schema, seed data, and reset procedures
 
----
+## Tech Stack
 
-## 2. Clone the Repository
-```bash
-git clone <your-repo-url>
-cd Project_Exmora
-```
+- Frontend: React 19, TypeScript, Vite 8, React Router v7, Tailwind CSS
+- Backend: Node.js microservices with axios-based API clients
+- Database: PostgreSQL with service-scoped schemas
+- Messaging: RabbitMQ with outbox/dead-letter queue support
+- Observability: Prometheus, Grafana
+- AI pipeline: document upload, async job processing, question generation
 
----
+## Prerequisites
 
-## 3. Database Setup
-- See `database/README.md` for schema and seeding instructions.
-- Create databases for each service if you want full microservice isolation.
-- Update each service's `.env` file with the correct DB connection info.
+- Node.js and npm
+- PostgreSQL
+- RabbitMQ
+- Docker and Docker Compose
 
----
+## Quick Start
 
-## 4. Backend Services
-Each service is located in `backend/<Service_Name>/` (e.g., `User_Service`, `Exam_Service`, ...).
+1. Clone the repository and open it in your editor.
+2. Start infrastructure services: Postgres, RabbitMQ, Prometheus, Grafana.
+3. Apply database schema and seed data.
+4. Start backend services.
+5. Start the frontend.
 
-### To run a service:
-```bash
-cd backend/<Service_Name>
-npm install
-cp .env.example .env   # Edit .env as needed
-npm run dev
-```
-- Repeat for each service you want to run.
+For exact commands, port mappings, and environment variables, see:
+- `database/Data.md`
+- `backend/Backend.md`
+- `frontend/Fronend.md`
 
----
+## Project Structure
 
-## 5. Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-- The frontend will typically run at [http://localhost:5173](http://localhost:5173) (or as shown in the terminal).
+- `backend/` — Node.js microservices
+- `frontend/` — React frontend app
+- `database/` — SQL schema and seed data
+- `infra/` — monitoring and observability configs
 
----
+## Environment Variables
 
-## 6. Using Docker Compose (Recommended for local dev)
-- Create a `docker-compose.yml` at the project root to orchestrate all services, database, and RabbitMQ.
-- Example services to include: all backend services, frontend, database, RabbitMQ.
+Each service uses its own `.env` file. Common variables include database connection strings, RabbitMQ URLs, and JWT secrets. Docker Compose uses `.env.docker` for some services; check `backend/Backend.md` and `frontend/Fronend.md` for details.
 
----
+## Useful Scripts
 
-## 7. Environment Variables
-- Each service has its own `.env` file. Copy from `.env.example` and update values as needed.
-- Common variables: DB connection, JWT secret, RabbitMQ URL, etc.
+- Install frontend dependencies: `cd frontend && npm install`
+- Run frontend dev server: `npm run dev`
+- Build backend services and frontend before deploying
+- Manually apply database schema or seed data with `psql`
 
----
+## Troubleshooting
 
-## 8. Useful Scripts
-- Database migration/seeding: see `database/` folder.
-- Queue setup: see each service's `queue/` folder if available.
+- If Docker containers do not pick up `.env` changes, recreate them.
+- If the frontend cannot reach backend APIs in Docker, update API base URLs.
+- For login issues, verify OAuth callback URLs and auth service URLs.
 
----
+## Contribution
 
-## 9. Troubleshooting
-- Ensure all services are running and can connect to their databases.
-- Check `.env` files for correct configuration.
-- Use logs in each service for debugging.
-
----
-
-## 10. Contribution
-- Fork, branch, and submit pull requests as usual.
-- Please document any new service or major change in this README.
-
----
-
-## 11. Contact
-For questions or support, please contact the project maintainer.
+- Fork, branch, and submit pull requests.
+- Update docs in `README.md`, `backend/Backend.md`, `frontend/Fronend.md`, and `database/Data.md` when adding services or changing ports/env vars.
