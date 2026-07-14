@@ -133,6 +133,20 @@ CREATE INDEX idx_user_sessions_user ON user_sessions(user_id);
 CREATE INDEX idx_user_sessions_expires ON user_sessions(expires_at);
 CREATE INDEX idx_oauth_providers_user ON oauth_providers(user_id);
 
+CREATE TABLE password_reset_tokens (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL
+        REFERENCES user_db.users(id)
+        ON DELETE CASCADE,
+    token_hash VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_password_reset_user ON password_reset_tokens(user_id);
+CREATE INDEX idx_password_reset_token ON password_reset_tokens(token_hash);
+
 -- =====================================================
 -- 2. COURSE SERVICE (course_db)
 -- =====================================================
@@ -530,6 +544,19 @@ CREATE INDEX idx_email_logs_user ON email_logs(to_user_id);
 CREATE INDEX idx_email_logs_status ON email_logs(status);
 CREATE INDEX idx_email_logs_created ON email_logs(created_at);
 CREATE INDEX idx_email_logs_template ON email_logs(template_key);
+
+INSERT INTO notification_db.email_templates (template_key, template_name, subject, html_body, text_body, variables, language, is_active)
+VALUES (
+  'PASSWORD_RESET',
+  'Password Reset',
+  'Đặt lại mật khẩu EXMORA',
+  '<p>Xin chào {{name}},</p><p>Nhấn vào liên kết sau để đặt lại mật khẩu: <a href="{{reset_url}}">{{reset_url}}</a></p><p>Liên kết có hiệu lực trong {{expires_in}}.</p>',
+  'Xin chào {{name}}, dùng liên kết sau để đặt lại mật khẩu: {{reset_url}}. Có hiệu lực trong {{expires_in}}.',
+  '{"name": "", "reset_url": "", "expires_in": "15 phút"}',
+  'vi',
+  true
+)
+ON CONFLICT (template_key) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION set_notification_read_at()
 RETURNS TRIGGER AS $$
