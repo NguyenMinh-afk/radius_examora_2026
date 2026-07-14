@@ -1,4 +1,4 @@
-# Project_EXAMORA
+# Project_EXMORA
 
 EXMORA is a microservice-based exam management system with separate backend services and a React frontend. This README gives you the big picture and links to the detailed docs for each part of the system.
 
