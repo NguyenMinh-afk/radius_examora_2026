@@ -9,6 +9,7 @@ EXMORA is a microservice-based exam management system with separate backend serv
 - `backend/Backend.md` — backend setup, run commands, ports, and debugging tips
 - `frontend/Fronend.md` — frontend setup, env vars, Docker, and API clients
 - `database/Data.md` — database schema, seed data, and reset procedures
+- `database/Command.md` — PostgreSQL command reference: psql, SQL queries, backup/restore, docker exec
 
 ## Tech Stack
 
@@ -76,7 +77,7 @@ Each service uses its own `.env` or `.env.docker` file. Common variables include
 - Install frontend dependencies: `cd frontend && npm install`
 - Run frontend dev server: `npm run dev`
 - Build backend services and frontend before deploying
-- Manually apply database schema or seed data with `psql`
+- Manually apply database schema or seed data with `psql` — see `database/Command.md` for full SQL reference
 
 ## Troubleshooting
 
@@ -84,8 +85,9 @@ Each service uses its own `.env` or `.env.docker` file. Common variables include
 - If the frontend cannot reach backend APIs in Docker, update API base URLs.
 - For login issues, verify OAuth callback URLs and auth service URLs.
 - For Docker-specific issues, see `Docker.md`.
+- For database queries, backups, and schema operations, see `database/Command.md`.
 
 ## Contribution
 
 - Fork, branch, and submit pull requests.
-- Update docs in `README.md`, `Docker.md`, `backend/Backend.md`, `frontend/Fronend.md`, and `database/Data.md` when adding services or changing ports/env vars.
+- Update docs in `README.md`, `Docker.md`, `backend/Backend.md`, `frontend/Fronend.md`, `database/Data.md`, and `database/Command.md` when adding services or changing ports/env vars.
