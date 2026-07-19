@@ -18,6 +18,7 @@ import {
   assertUserCanLogin,
   getBearerToken,
 } from "./shared.service.js";
+import { sendPasswordResetEmail, sendPasswordChangedEmail } from "../email.service.js";
 
 export { getBearerToken };
 
@@ -241,7 +242,8 @@ export const requestPasswordReset = async ({ email }) => {
 
   const user = await User.findOne({ where: { email: normalizedEmail } });
   if (!user) {
-    return { requested: true };
+    // Return success even if user not found (security best practice)
+    return { requested: true, message: "If an account exists, a reset link has been sent" };
   }
 
   if (await hasOAuthLoginOnly(user)) {
@@ -273,11 +275,26 @@ export const requestPasswordReset = async ({ email }) => {
     });
   }
 
+  // Generate reset URL
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}`;
+
+  // Send password reset email
+  try {
+    await sendPasswordResetEmail({
+      to: user.email,
+      resetUrl,
+      userName: user.full_name || user.email,
+      expiresInMinutes: Math.round(PASSWORD_RESET_EXPIRES_MS / 60000),
+    });
+  } catch (emailError) {
+    // Log error but don't fail the request - token is still valid
+    console.error("[AuthService] Failed to send reset email:", emailError.message);
+  }
+
   return {
     requested: true,
-    resetTokenRaw: rawToken,
     expiresAt,
-    user,
   };
 };
 
@@ -356,15 +373,27 @@ export const resetPassword = async ({ token, password }) => {
     throw error;
   }
 
+  const user = resetRecord.user;
   const passwordHash = await bcrypt.hash(password, Number(process.env.BCRYPT_ROUNDS) || 10);
 
-  await resetRecord.user.update({ password_hash: passwordHash });
+  await user.update({ password_hash: passwordHash });
   await resetRecord.update({ used_at: new Date() });
 
+  // Invalidate all user sessions (security)
   await UserSession.update(
     { is_active: false, last_activity: new Date() },
-    { where: { user_id: resetRecord.user_id, is_active: true } }
+    { where: { user_id: user.id, is_active: true } }
   );
+
+  // Send password changed notification email
+  try {
+    await sendPasswordChangedEmail({
+      to: user.email,
+      userName: user.full_name || user.email,
+    });
+  } catch (emailError) {
+    console.error("[AuthService] Failed to send password changed notification:", emailError.message);
+  }
 
   return { success: true };
 };

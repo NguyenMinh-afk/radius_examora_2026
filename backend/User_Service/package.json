@@ -28,6 +28,7 @@
     "google-auth-library": "^10.6.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.3",
+    "amqplib": "^0.10.5",
     "pg": "^8.20.0",
     "pg-hstore": "^2.3.4",
     "pino": "^9.6.0",
