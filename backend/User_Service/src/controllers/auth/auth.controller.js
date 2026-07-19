@@ -114,17 +114,10 @@ export const forgotPassword = async (req, res) => {
   try {
     const result = await requestPasswordReset(req.body);
 
-    const response = {
-      message: "If an account exists, a password reset link has been sent.",
-      requested: result.requested,
-    };
-
-    if (result.resetTokenRaw && process.env.NODE_ENV !== "production") {
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-      response.resetUrl = `${frontendUrl}/reset-password?token=${result.resetTokenRaw}`;
-    }
-
-    return res.json(response);
+    return res.json({
+      message: "If an account exists, a password reset link has been sent to your email.",
+      success: true,
+    });
   } catch (err) {
     if (err.code === "oauth_only_reset") {
       return res.status(400).json({
