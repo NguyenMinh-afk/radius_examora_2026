@@ -39,6 +39,7 @@ import TeacherResultsPage from "../pages/Dashboard/Teacher/TeacherResultsPage";
 import TeacherNotificationsPage from "../pages/Dashboard/Teacher/TeacherNotificationsPage";
 import TeacherProfilePage from "../pages/Dashboard/Teacher/TeacherProfilePage";
 import TeacherSettingsPage from "../pages/Dashboard/Teacher/TeacherSettingsPage";
+import TeacherAIGenerationPage from "../pages/Dashboard/Teacher/TeacherAIGenerationPage";
 
 // Student Layout & Pages
 import StudentLayout from "../layouts/StudentLayout";
@@ -107,6 +108,9 @@ const AppRouter = () => {
           <Route path="/teacher/questions" element={<TeacherQuestionsPage />} />
           <Route path="/teacher/questions/create" element={<TeacherQuestionFormPage />} />
           <Route path="/teacher/questions/:id" element={<TeacherQuestionFormPage />} />
+
+          {/* AI Generation */}
+          <Route path="/teacher/ai-generation" element={<TeacherAIGenerationPage />} />
 
           {/* Exams */}
           <Route path="/teacher/exams" element={<TeacherExamsPage />} />

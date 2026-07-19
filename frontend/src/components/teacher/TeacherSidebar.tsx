@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Sun,
   Moon,
+  Sparkles,
 } from "lucide-react";
 import { useTheme } from "../../contexts/useTheme";
 
@@ -25,6 +26,7 @@ const menu = [
   { label: "Courses", icon: <BookOpen size={18} />, path: "/teacher/courses" },
   { label: "Classes", icon: <GraduationCap size={18} />, path: "/teacher/classes" },
   { label: "Questions", icon: <HelpCircle size={18} />, path: "/teacher/questions" },
+  { label: "AI Generation", icon: <Sparkles size={18} />, path: "/teacher/ai-generation" },
   { label: "Exams", icon: <FileText size={18} />, path: "/teacher/exams" },
   { label: "Assignments", icon: <ClipboardList size={18} />, path: "/teacher/assignments" },
   { label: "Schedule", icon: <CalendarClock size={18} />, path: "/teacher/schedule" },
