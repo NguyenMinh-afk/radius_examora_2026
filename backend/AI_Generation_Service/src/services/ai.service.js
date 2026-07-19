@@ -13,7 +13,7 @@ import { publishAIGeneration } from "../config/rabbitmq.js";
 class AIService {
 
   /**
-   * Tạo yêu cầu generation - gửi vào queue để xử lý async
+   * Tạo yêu cầu generation - tạo request, task, và gửi vào queue để xử lý async
    */
   async createGenerationRequest(userId, data) {
     const {
@@ -28,6 +28,7 @@ class AIService {
 
     const traceId = uuidv4();
 
+    // Create main request
     const request = await AIGenerationRequest.create({
       user_id: userId,
       course_id: courseId || null,
@@ -42,9 +43,24 @@ class AIService {
       trace_id: traceId,
     });
 
+    // Create task for the request
+    const task = await AIGenerationTask.create({
+      request_id: request.id,
+      subject_id: courseId || 1, // Default subject
+      topic: null,
+      input_type: "text",
+      input_reference: context ? context.substring(0, 500) : null,
+      number_of_questions: quantity || 10,
+      difficulty: difficulty || "medium",
+      created_by: userId,
+      status: "pending",
+    });
+
+    // Publish to RabbitMQ for AI Worker to process
     try {
       await publishAIGeneration({
         requestId: request.id,
+        taskId: task.id,
         userId,
         courseId,
         chapterId,
@@ -55,13 +71,16 @@ class AIService {
         context,
         traceId,
       });
+      console.log("[AIService] Published message to RabbitMQ for request:", request.id);
     } catch (error) {
       console.error("[AIService] Failed to publish to queue:", error.message);
+      // Don't fail the request if queue publish fails - the task can be picked up later
     }
 
     return {
       requestId: request.id,
-      status: request.status,
+      taskId: task.id,
+      status: "pending",
       message: "AI generation request queued for processing",
       traceId,
     };

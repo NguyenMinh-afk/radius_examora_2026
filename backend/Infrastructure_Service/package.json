@@ -5,8 +5,8 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "cross-env SERVICE_NAME=infrastructure-service nodemon src/server.js",
+    "start": "cross-env SERVICE_NAME=infrastructure-service node src/server.js",
     "workers": "node src/workers/index.js"
   },
   "keywords": [
@@ -20,15 +20,20 @@
   "dependencies": {
     "amqplib": "^0.10.5",
     "axios": "^1.7.0",
+    "compression": "^1.7.5",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^4.21.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
     "nodemailer": "^6.10.0",
     "pg": "^8.20.0",
+    "pino": "^9.6.0",
     "sequelize": "^6.37.8",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "nodemon": "^3.1.14"
   }
 }

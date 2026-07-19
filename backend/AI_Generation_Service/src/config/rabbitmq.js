@@ -1,22 +1,22 @@
 /**
  * RabbitMQ Publisher - AI Generation Service
- * Gửi message đến queue để xử lý async
+ * Gửi message đến queue để AI Worker xử lý async
  */
 import amqp from "amqplib";
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL || 
   `amqp://${process.env.RABBITMQ_USER || "admin"}:${process.env.RABBITMQ_PASSWORD || "StrongPassword123"}@${process.env.RABBITMQ_HOST || "localhost"}:${process.env.RABBITMQ_PORT || 5672}`;
 
-// Exchange và Queue names (phải khớp với Infrastructure_Service)
-const EXCHANGE = "examora.topic";
-const QUEUE = "ai.generation";
-const ROUTING_KEY = "ai.generate";
+// Queue names (phải khớp với AI_Worker_Service)
+const QUEUE_NAME = process.env.RABBITMQ_QUEUE || "ai.generation";
+const DLQ_NAME = process.env.RABBITMQ_DLQ || "ai.generation.dlq";
+const DLX_NAME = "examora.dlx";
 
 let connection = null;
 let channel = null;
 
 /**
- * Kết nối đến RabbitMQ
+ * Kết nối đến RabbitMQ và thiết lập queues
  */
 async function connect() {
   if (connection && channel) return;
@@ -25,8 +25,21 @@ async function connect() {
     connection = await amqp.connect(RABBITMQ_URL);
     channel = await connection.createChannel();
     
-    // Đảm bảo queue tồn tại (declare)
-    await channel.assertQueue(QUEUE, { durable: true });
+    // Đảm bảo queue tồn tại với DLX configuration
+    await channel.assertExchange(DLX_NAME, "direct", { durable: true });
+    
+    // Declare DLQ
+    await channel.assertQueue(DLQ_NAME, { durable: true });
+    await channel.bindQueue(DLQ_NAME, DLX_NAME, DLQ_NAME);
+    
+    // Declare main queue với DLX
+    await channel.assertQueue(QUEUE_NAME, { 
+      durable: true,
+      arguments: {
+        "x-dead-letter-exchange": DLX_NAME,
+        "x-dead-letter-routing-key": DLQ_NAME,
+      }
+    });
     
     connection.on("error", (err) => {
       console.error("[AI Publisher] Connection error:", err.message);
@@ -40,7 +53,7 @@ async function connect() {
       channel = null;
     });
     
-    console.log("[AI Publisher] Connected to RabbitMQ");
+    console.log("[AI Publisher] Connected to RabbitMQ, queue:", QUEUE_NAME);
   } catch (error) {
     console.error("[AI Publisher] Failed to connect:", error.message);
     throw error;
@@ -48,26 +61,28 @@ async function connect() {
 }
 
 /**
- * Publish AI generation request vào queue
+ * Publish AI generation request vào queue (gửi đến AI Worker)
  */
 export async function publishAIGeneration(data) {
   await connect();
   
   const message = {
-    requestId: data.requestId,
-    userId: data.userId,
-    subjectId: data.subjectId,
-    chapterId: data.chapterId,
-    questionCount: data.questionCount || 10,
-    difficulty: data.difficulty || "medium",
-    prompt: data.prompt,
-    traceId: data.traceId,
+    request_id: data.requestId,
+    task_id: data.taskId,
+    user_id: data.userId,
+    course_id: data.courseId,
+    chapter_id: data.chapterId,
+    knowledge_unit_id: data.knowledgeUnitId,
+    question_type: data.questionType,
+    difficulty: data.difficulty,
+    quantity: data.quantity || 10,
+    context: data.context,
+    trace_id: data.traceId,
     timestamp: new Date().toISOString(),
   };
   
-  const success = channel.publish(
-    EXCHANGE,
-    ROUTING_KEY,
+  const success = channel.sendToQueue(
+    QUEUE_NAME,
     Buffer.from(JSON.stringify(message)),
     {
       persistent: true,
@@ -80,7 +95,7 @@ export async function publishAIGeneration(data) {
   );
   
   if (success) {
-    console.log(`[AI Publisher] Published AI generation request: ${data.requestId}`);
+    console.log(`[AI Publisher] Published AI generation request: ${data.requestId}, task: ${data.taskId}`);
   } else {
     console.error("[AI Publisher] Failed to publish message");
   }
