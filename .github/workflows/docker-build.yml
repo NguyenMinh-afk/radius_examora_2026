@@ -23,13 +23,13 @@ jobs:
     strategy:
       matrix:
         service:
-          - user-service
-          - exam-service
-          - question-service
-          - ai-generation-service
-          - notification-service
-          - infrastructure-service
-          - api-gateway
+          - User_Service
+          - Exam_Service
+          - Question_Service
+          - AI_Generation_Service
+          - Notification_Service
+          - Infrastructure_Service
+          - API_Gateway_Service
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -116,7 +116,7 @@ jobs:
     strategy:
       matrix:
         service:
-          - ai-worker-service
+          - AI_Worker_Service
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
