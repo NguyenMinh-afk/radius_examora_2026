@@ -70,10 +70,10 @@ jobs:
           - 5672:5672
           - 15672:15672
         options: >-
-          --health-cmd rabbitmq-diagnostics -q ping
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="rabbitmq-diagnostics -q ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
