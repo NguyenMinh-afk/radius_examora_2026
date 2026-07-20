@@ -354,7 +354,7 @@ class ProcessAITaskUseCase:
                         trace_id=trace_id,
                     )
                 )
-                generation_source = f"gemini"
+                generation_source = "gemini"
                 final_task_status = TaskStatus.COMPLETED.value
                 final_req_status = RequestStatus.COMPLETED.value
                 log_status = LogStatus.SUCCESS.value
