@@ -47,66 +47,67 @@ jobs:
       - name: Run MyPy type check
         run: mypy backend/AI_Worker_Service/ --ignore-missing-imports
 
-  # Test Python code
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-          - 5672:5672
-          - 15672:15672
-        options: >-
-          --health-cmd="rabbitmq-diagnostics -q ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-          cache-dependency-path: backend/AI_Worker_Service/requirements.txt
-
-      - name: Install dependencies
-        run: |
-          pip install -r backend/AI_Worker_Service/requirements.txt
-          pip install pytest pytest-asyncio pytest-cov httpx aio-pika
-
-      - name: Run tests with pytest
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test_db
-          RABBITMQ_HOST: localhost
-        run: |
-          pytest backend/AI_Worker_Service/tests/ -v --cov=. --cov-report=xml --cov-report=html
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: success()
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          name: ai-worker-service
+  # Test Python code (disabled - no tests exist yet)
+  # TODO: Enable after writing unit tests
+  # test:
+  #   runs-on: ubuntu-latest
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_USER: test
+  #         POSTGRES_PASSWORD: test
+  #         POSTGRES_DB: test_db
+  #       ports:
+  #         - 5432:5432
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     rabbitmq:
+  #       image: rabbitmq:3-management
+  #       ports:
+  #         - 5672:5672
+  #         - 15672:15672
+  #       options: >-
+  #         --health-cmd="rabbitmq-diagnostics -q ping"
+  #         --health-interval=10s
+  #         --health-timeout=5s
+  #         --health-retries=5
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Set up Python ${{ env.PYTHON_VERSION }}
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: ${{ env.PYTHON_VERSION }}
+  #         cache: 'pip'
+  #         cache-dependency-path: backend/AI_Worker_Service/requirements.txt
+  #
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r backend/AI_Worker_Service/requirements.txt
+  #         pip install pytest pytest-asyncio pytest-cov httpx aio-pika
+  #
+  #     - name: Run tests with pytest
+  #       env:
+  #         POSTGRES_HOST: localhost
+  #         POSTGRES_USER: test
+  #         POSTGRES_PASSWORD: test
+  #         POSTGRES_DB: test_db
+  #         RABBITMQ_HOST: localhost
+  #       run: |
+  #         pytest backend/AI_Worker_Service/tests/ -v --cov=. --cov-report=xml --cov-report=html
+  #
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v4
+  #       if: success()
+  #       with:
+  #         files: ./coverage.xml
+  #         flags: unittests
+  #         name: ai-worker-service
 
   # Security audit
   security:
