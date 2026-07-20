@@ -26,7 +26,9 @@ services:
     restart: unless-stopped
 
   user-service:
-    image: node:20-alpine
+    build:
+      context: ./backend/User_Service
+      dockerfile: Dockerfile
     container_name: exmora-user-service
     working_dir: /app
     volumes:
@@ -43,7 +45,9 @@ services:
       - rabbitmq
 
   exam-service:
-    image: node:20-alpine
+    build:
+      context: ./backend/Exam_Service
+      dockerfile: Dockerfile
     container_name: exmora-exam-service
     working_dir: /app
     volumes:
@@ -60,7 +64,9 @@ services:
       - rabbitmq
 
   question-service:
-    image: node:20-alpine
+    build:
+      context: ./backend/Question_Service
+      dockerfile: Dockerfile
     container_name: exmora-question-service
     working_dir: /app
     volumes:
@@ -77,7 +83,9 @@ services:
       - rabbitmq
 
   ai-generation-service:
-    image: node:20-alpine
+    build:
+      context: ./backend/AI_Generation_Service
+      dockerfile: Dockerfile
     container_name: exmora-ai-generation-service
     working_dir: /app
     volumes:
@@ -130,7 +138,9 @@ services:
     restart: unless-stopped
 
   notification-service:
-    image: node:20-alpine
+    build:
+      context: ./backend/Notification_Service
+      dockerfile: Dockerfile
     container_name: exmora-notification-service
     working_dir: /app
     volumes:
@@ -147,7 +157,9 @@ services:
       - rabbitmq
 
   infrastructure-service:
-    image: node:20-alpine
+    build:
+      context: ./backend/Infrastructure_Service
+      dockerfile: Dockerfile
     container_name: exmora-infrastructure-service
     working_dir: /app
     volumes:
@@ -164,7 +176,9 @@ services:
       - rabbitmq
 
   api-gateway:
-    image: node:20-alpine
+    build:
+      context: ./backend/API_Gateway_Service
+      dockerfile: Dockerfile
     container_name: exmora-api-gateway
     working_dir: /app
     volumes:
@@ -187,7 +201,9 @@ services:
       - rabbitmq
 
   frontend:
-    image: node:20-alpine
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: exmora-frontend
     working_dir: /app
     volumes:

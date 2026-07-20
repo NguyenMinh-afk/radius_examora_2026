@@ -1,0 +1,208 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - main
+      - Developer
+    paths:
+      - 'backend/AI_Worker_Service/**'
+      - '.github/workflows/python-ci.yml'
+  pull_request:
+    branches:
+      - main
+      - Developer
+    paths:
+      - 'backend/AI_Worker_Service/**'
+
+env:
+  PYTHON_VERSION: '3.11'
+  POETRY_VERSION: '1.7.1'
+
+jobs:
+  # Lint Python code
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install ruff flake8 black mypy
+
+      - name: Run Ruff linter
+        run: ruff check backend/AI_Worker_Service/
+
+      - name: Run Black formatter check
+        run: black --check backend/AI_Worker_Service/
+
+      - name: Run MyPy type check
+        run: mypy backend/AI_Worker_Service/ --ignore-missing-imports
+
+  # Test Python code
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+        options: >-
+          --health-cmd rabbitmq-diagnostics -q ping
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: backend/AI_Worker_Service/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/AI_Worker_Service/requirements.txt
+          pip install pytest pytest-asyncio pytest-cov httpx aio-pika
+
+      - name: Run tests with pytest
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+          RABBITMQ_HOST: localhost
+        run: |
+          pytest backend/AI_Worker_Service/tests/ -v --cov=. --cov-report=xml --cov-report=html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: success()
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: ai-worker-service
+
+  # Security audit
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/AI_Worker_Service/requirements.txt
+
+      - name: Run Bandit security check
+        run: |
+          pip install bandit
+          bandit -r backend/AI_Worker_Service/ -f json -o bandit-report.json || true
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-report
+          path: bandit-report.json
+          retention-days: 30
+
+      - name: Run Safety security check
+        run: |
+          pip install safety
+          safety check --json --output safety-report.json || true
+        continue-on-error: true
+
+      - name: Upload Safety report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: safety-report
+          path: safety-report.json
+          retention-days: 30
+
+  # Type checking
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/AI_Worker_Service/requirements.txt
+          pip install mypy types-requests types-Pillow types-python-dateutil
+
+      - name: Run MyPy type checking
+        run: |
+          mypy backend/AI_Worker_Service/app/ --ignore-missing-imports --strict --html-report mypy-report || true
+
+      - name: Upload MyPy report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mypy-report
+          path: mypy-report
+          retention-days: 7
+
+  # Check dependencies
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Check for outdated packages
+        run: |
+          pip install pip-review
+          pip-review --local --interactive || pip-review --local || true
+        continue-on-error: true
+
+      - name: Check requirements.txt is up to date
+        run: |
+          pip install pip-tools
+          pip-compile --dry-run --generate-hashes backend/AI_Worker_Service/requirements.in || true
+        continue-on-error: true
