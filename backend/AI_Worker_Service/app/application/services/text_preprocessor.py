@@ -88,7 +88,7 @@ class TextPreprocessor:
         lines = text.split("\n")
         # Count occurrences of stripped non-empty lines
         from collections import Counter
-        stripped_lines = [l.strip() for l in lines]
+        stripped_lines = [line.strip() for line in lines]
         counts = Counter(s for s in stripped_lines if len(s) > 3)
 
         # Only remove lines that appear many times AND are short (likely headers)
