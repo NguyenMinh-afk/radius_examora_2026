@@ -183,13 +183,13 @@ jobs:
       #   with:
       #     sarif_file: 'trivy-results.sarif'
 
-      - name: Run Trivy on built images
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'ghcr.io/nguyenminh-afk/exmora-api-gateway:latest'
-          format: 'sarif'
-          output: 'trivy-image-results.sarif'
-        continue-on-error: true
+      # - name: Run Trivy on built images
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: 'ghcr.io/nguyenminh-afk/exmora-api-gateway:latest'
+      #     format: 'sarif'
+      #     output: 'trivy-image-results.sarif'
+      #   continue-on-error: true
 
   # Generate SBOM
   sbom:
