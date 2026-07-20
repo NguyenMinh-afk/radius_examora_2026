@@ -111,7 +111,7 @@ class ExamService {
     }
 
     // Find or create StudentAssignment for this student
-    let [studentAssignment] = await StudentAssignment.findOrCreate({
+    const [studentAssignment] = await StudentAssignment.findOrCreate({
       where: { student_id: studentId, assignment_id: assignmentId },
       defaults: {
         status: 'assigned',
