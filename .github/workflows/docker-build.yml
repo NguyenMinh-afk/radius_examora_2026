@@ -5,12 +5,14 @@ on:
     branches:
       - main
       - Developer
-    tags:
-      - 'v*'
   pull_request:
     branches:
       - main
       - Developer
+
+permissions:
+  contents: read
+  packages: write
 
 env:
   REGISTRY: ghcr.io
