@@ -556,7 +556,7 @@ class LocalQuestionGenerator:
         # Score and rank sentences
         scored = sorted(sentences, key=_score_sentence, reverse=True)
 
-        questions: List[dict] = []
+        questions = []
         used_sources = set()
 
         for source in scored:

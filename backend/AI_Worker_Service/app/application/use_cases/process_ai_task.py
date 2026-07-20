@@ -664,7 +664,7 @@ class ProcessAITaskUseCase:
         """
         max_ctx = self.settings.max_single_call_context_chars
         requested_quantity = int(request.quantity)
-        topic_for_generation = resolved_topic or getattr(task, "topic", UNKNOWN_TOPIC)
+        topic_for_generation: str = resolved_topic or getattr(task, "topic", UNKNOWN_TOPIC) or ""
 
         # â”€â”€ Prepare single-call context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if len(cleaned) <= max_ctx:
