@@ -120,36 +120,32 @@ export const register = async (body) => {
 };
 
 export const login = async (body) => {
-  try {
-    const { email, phone, identifier, password } = body;
-    const rawLoginId = email || phone || identifier;
-    const loginId = rawLoginId?.trim().toLowerCase();
+  const { email, phone, identifier, password } = body;
+  const rawLoginId = email || phone || identifier;
+  const loginId = rawLoginId?.trim().toLowerCase();
 
-    if (!loginId || !password) {
-      const error = new Error("email or phone and password are required");
-      error.status = 400;
-      throw error;
-    }
-
-    const user = await User.findOne({
-      where: {
-        [Op.or]: [{ email: loginId }, { phone: loginId }],
-      },
-    });
-
-    assertUserCanLogin(user);
-
-    const validPassword = await bcrypt.compare(password, user.password_hash);
-    if (!validPassword) {
-      const error = new Error("Invalid email or password");
-      error.status = 401;
-      throw error;
-    }
-
-    return { user };
-  } catch (err) {
-    throw err;
+  if (!loginId || !password) {
+    const error = new Error("email or phone and password are required");
+    error.status = 400;
+    throw error;
   }
+
+  const user = await User.findOne({
+    where: {
+      [Op.or]: [{ email: loginId }, { phone: loginId }],
+    },
+  });
+
+  assertUserCanLogin(user);
+
+  const validPassword = await bcrypt.compare(password, user.password_hash);
+  if (!validPassword) {
+    const error = new Error("Invalid email or password");
+    error.status = 401;
+    throw error;
+  }
+
+  return { user };
 };
 
 export const refreshTokens = async (refreshToken) => {

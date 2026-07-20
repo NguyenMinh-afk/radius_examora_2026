@@ -28,7 +28,7 @@ export const getAdminAIJobs = async (req, res) => {
   } catch (error) {
     return res.json({
       ai_jobs: [],
-      pagination: paginationResponse({ page, limit: 10, total: 0 }),
+      pagination: paginationResponse({ page: 1, limit: 10, total: 0 }),
     });
   }
 };

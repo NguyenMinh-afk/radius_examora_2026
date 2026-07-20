@@ -6,7 +6,12 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "cross-env SERVICE_NAME=user-service nodemon src/server.js",
-    "start": "cross-env SERVICE_NAME=user-service node src/server.js"
+    "start": "cross-env SERVICE_NAME=user-service node src/server.js",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write ."
   },
   "keywords": [
     "examora",
@@ -17,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.5",
     "axios": "^1.14.0",
     "bcrypt": "^6.0.0",
     "compression": "^1.7.5",
@@ -28,14 +34,21 @@
     "google-auth-library": "^10.6.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.3",
-    "amqplib": "^0.10.5",
     "pg": "^8.20.0",
     "pg-hstore": "^2.3.4",
     "pino": "^9.6.0",
     "sequelize": "^6.37.8"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@vitest/coverage-v8": "^2.0.0",
     "cross-env": "^10.1.0",
-    "nodemon": "^3.1.14"
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.0.0",
+    "supertest": "^7.0.0",
+    "vitest": "^2.0.0"
   }
 }

@@ -32,7 +32,7 @@ export const getAdminQueueJobs = async (req, res) => {
   } catch (error) {
     return res.json({
       queue_jobs: [],
-      pagination: paginationResponse({ page, limit: 10, total: 0 }),
+      pagination: paginationResponse({ page: 1, limit: 10, total: 0 }),
     });
   }
 };
