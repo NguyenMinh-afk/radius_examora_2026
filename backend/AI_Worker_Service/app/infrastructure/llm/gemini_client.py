@@ -10,6 +10,7 @@ Error mapping:
   HTTP 5xx -> GeminiError               (retry)
   Timeout  -> GeminiTimeoutError        (retry)
 """
+
 import asyncio
 import json
 import re
@@ -225,7 +226,7 @@ class GeminiClient:
                     request_id,
                 )
                 if attempt < self.max_retries:
-                    await asyncio.sleep(2 ** attempt)
+                    await asyncio.sleep(2**attempt)
 
             except GeminiError as e:
                 # Other GeminiErrors (5xx etc.) — retry
@@ -238,7 +239,7 @@ class GeminiClient:
                     request_id,
                 )
                 if attempt < self.max_retries:
-                    await asyncio.sleep(2 ** attempt)
+                    await asyncio.sleep(2**attempt)
 
             except Exception as e:
                 # Classify unknown SDK errors
@@ -247,7 +248,11 @@ class GeminiClient:
                     raise classified
                 last_error = classified
                 if attempt < self.max_retries:
-                    wait = 10 * (2 ** (attempt - 1)) if isinstance(classified, GeminiRateLimitError) else 2 ** attempt
+                    wait = (
+                        10 * (2 ** (attempt - 1))
+                        if isinstance(classified, GeminiRateLimitError)
+                        else 2**attempt
+                    )
                     await asyncio.sleep(wait)
 
         raise GeminiError(
@@ -261,7 +266,9 @@ class GeminiClient:
         loop = asyncio.get_running_loop()
         try:
             response = await asyncio.wait_for(
-                loop.run_in_executor(None, self._sync_generate, prompt, effective_model),
+                loop.run_in_executor(
+                    None, self._sync_generate, prompt, effective_model
+                ),
                 timeout=self.timeout,
             )
             return response

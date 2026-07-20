@@ -4,6 +4,7 @@ Normalize generated question text before validation and persistence.
 This service removes boilerplate opening phrases that make MCQs feel like they
 refer to an external prompt instead of asking directly about the subject.
 """
+
 import re
 
 _QUESTION_PREFIXES = (
@@ -21,7 +22,9 @@ _QUESTION_PREFIXES = (
 )
 
 _PREFIX_RE = re.compile(
-    r"^\s*(?:" + "|".join(re.escape(prefix) for prefix in _QUESTION_PREFIXES) + r")\s*[,:\-–—]?\s*",
+    r"^\s*(?:"
+    + "|".join(re.escape(prefix) for prefix in _QUESTION_PREFIXES)
+    + r")\s*[,:\-–—]?\s*",
     re.IGNORECASE,
 )
 
@@ -92,7 +95,9 @@ def _rewrite_dau_la_question(source: str, body: str, *, verb: str) -> str:
     rest = match.group("rest").strip()
     rest = _DUOC_DE_RA_TRAIL_RE.sub(r"\1", rest).strip()
     if re.match(r"^mục\s+tiêu\b", rest, flags=re.IGNORECASE):
-        rest = re.sub(r"^mục\s+tiêu\b", "mục tiêu nào", rest, count=1, flags=re.IGNORECASE)
+        rest = re.sub(
+            r"^mục\s+tiêu\b", "mục tiêu nào", rest, count=1, flags=re.IGNORECASE
+        )
     elif not re.search(r"\b(nào|gì|vì sao|như thế nào)\b", rest, flags=re.IGNORECASE):
         rest = f"nội dung nào về {rest}"
     return f"{source} {verb} {rest}"
@@ -125,7 +130,11 @@ def _normalize_soft_source_prefix(text: str) -> str:
             rewritten = _rewrite_dau_la_question(source, body, verb="xác định")
             return rewritten or f"{source} xác định {body}"
 
-        verb = "đã đề ra" if ("đề ra" in body_lower or "đại hội" in source_lower) else "nêu"
+        verb = (
+            "đã đề ra"
+            if ("đề ra" in body_lower or "đại hội" in source_lower)
+            else "nêu"
+        )
         rewritten = _rewrite_dau_la_question(source, body, verb=verb)
         return rewritten or f"{source} {body}"
 

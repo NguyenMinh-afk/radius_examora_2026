@@ -2,6 +2,7 @@
 Custom exception classes and FastAPI exception handlers.
 All errors return structured JSON, no stack traces exposed to clients.
 """
+
 from typing import Any, Optional
 
 from fastapi import FastAPI, Request, status
@@ -139,7 +140,9 @@ class GeminiInvalidArgumentError(GeminiError):
 
 
 class GeminiInvalidResponseError(GeminiError):
-    def __init__(self, message: str = "Gemini returned invalid or unparseable JSON.") -> None:
+    def __init__(
+        self, message: str = "Gemini returned invalid or unparseable JSON."
+    ) -> None:
         super().__init__(message, error_code="GEMINI_INVALID_RESPONSE")
 
 
@@ -173,7 +176,9 @@ class InvalidStateTransitionError(AIServiceError):
     """E.g., approving an already-rejected question."""
 
     def __init__(self, message: str) -> None:
-        super().__init__(message, error_code="INVALID_STATE_TRANSITION", status_code=409)
+        super().__init__(
+            message, error_code="INVALID_STATE_TRANSITION", status_code=409
+        )
 
 
 class InsufficientContextError(AIServiceError):

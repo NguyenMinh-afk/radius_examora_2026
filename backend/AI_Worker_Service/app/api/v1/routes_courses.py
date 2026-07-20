@@ -4,6 +4,7 @@ API routes for Course and Subject lookup.
 GET /api/v1/courses            — List all courses
 GET /api/v1/subjects           — List all subjects (optionally filtered by course_id)
 """
+
 from typing import Any, List, Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -67,7 +68,9 @@ async def list_courses(
     summary="List all subjects",
 )
 async def list_subjects(
-    course_id: Optional[int] = Query(default=None, description="Filter subjects by course ID"),
+    course_id: Optional[int] = Query(
+        default=None, description="Filter subjects by course ID"
+    ),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """

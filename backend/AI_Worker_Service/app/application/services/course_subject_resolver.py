@@ -1,4 +1,5 @@
 """Course/Subject resolver for auto-resolving IDs from topic or names."""
+
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
@@ -39,10 +40,20 @@ class CourseSubjectResolver:
         topic_value = (topic or "").strip()
         if not self.settings.auto_resolve_course_subject_from_topic:
             if course_id is None or subject_id is None:
-                raise ValidationError("course_id and subject_id are required when auto-resolve is disabled")
+                raise ValidationError(
+                    "course_id and subject_id are required when auto-resolve is disabled"
+                )
 
-        if not topic_value and not course_id and not subject_id and not course_name and not subject_name:
-            raise ValidationError("topic is required when course/subject are not provided")
+        if (
+            not topic_value
+            and not course_id
+            and not subject_id
+            and not course_name
+            and not subject_name
+        ):
+            raise ValidationError(
+                "topic is required when course/subject are not provided"
+            )
 
         resolved_course_id, resolved_course_name = await self._resolve_course(
             topic_value, course_id, course_name
@@ -75,11 +86,15 @@ class CourseSubjectResolver:
                 resolved_name = self.settings.default_course_name
 
         if not resolved_name:
-            raise ValidationError("course_name is required when course_id is not provided")
+            raise ValidationError(
+                "course_name is required when course_id is not provided"
+            )
 
         existing = await self.course_repo.get_by_name(resolved_name)
         if existing:
-            logger.info("Resolved course: existing name=%s id=%d", resolved_name, existing.id)
+            logger.info(
+                "Resolved course: existing name=%s id=%d", resolved_name, existing.id
+            )
             return existing.id, resolved_name
 
         created = await self.course_repo.create(resolved_name)
@@ -104,7 +119,9 @@ class CourseSubjectResolver:
                 resolved_name = self.settings.default_subject_name or ""
 
         if not resolved_name:
-            raise ValidationError("subject_name is required when subject_id is not provided")
+            raise ValidationError(
+                "subject_name is required when subject_id is not provided"
+            )
 
         existing = await self.subject_repo.get_by_name(resolved_name, course_id)
         if existing:

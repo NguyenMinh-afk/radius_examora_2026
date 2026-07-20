@@ -4,6 +4,7 @@ Use case trung tâm của worker.
 Luồng chính: lấy nội dung đầu vào, tiền xử lý, dựng context, gọi Gemini một lần,
 validate + loại trùng, rồi lưu câu hỏi hợp lệ vào DB.
 """
+
 import json
 import uuid
 from dataclasses import dataclass
@@ -117,13 +118,16 @@ def _select_and_merge_chunks(
                 truncated_text = chunk.text[:budget]
                 # Create a lightweight copy for the merged context
                 from app.application.services.text_chunker import TextChunk
-                selected.append(TextChunk(
-                    index=chunk.index,
-                    text=truncated_text,
-                    char_start=chunk.char_start,
-                    char_end=chunk.char_start + budget,
-                    is_heading_based=chunk.is_heading_based,
-                ))
+
+                selected.append(
+                    TextChunk(
+                        index=chunk.index,
+                        text=truncated_text,
+                        char_start=chunk.char_start,
+                        char_end=chunk.char_start + budget,
+                        is_heading_based=chunk.is_heading_based,
+                    )
+                )
             break
 
     if not selected:
@@ -144,22 +148,24 @@ def _build_question_records(
     records = []
     for index, q in enumerate(questions, start=1):
         opts = q.get("options", {})
-        records.append({
-            "id": uuid.uuid4(),
-            "task_id": task_id,
-            "question_content": normalize_question_content(q["question_content"]),
-            "option_a": opts.get("A", ""),
-            "option_b": opts.get("B", ""),
-            "option_c": opts.get("C", ""),
-            "option_d": opts.get("D", ""),
-            "correct_answer": q["correct_answer"],
-            "difficulty": q["difficulty"],
-            "topic": topic,
-            "explanation": q.get("explanation", ""),
-            "status": QuestionStatus.PENDING_REVIEW.value,
-            "display_order": index,
-            "generation_source": generation_source,
-        })
+        records.append(
+            {
+                "id": uuid.uuid4(),
+                "task_id": task_id,
+                "question_content": normalize_question_content(q["question_content"]),
+                "option_a": opts.get("A", ""),
+                "option_b": opts.get("B", ""),
+                "option_c": opts.get("C", ""),
+                "option_d": opts.get("D", ""),
+                "correct_answer": q["correct_answer"],
+                "difficulty": q["difficulty"],
+                "topic": topic,
+                "explanation": q.get("explanation", ""),
+                "status": QuestionStatus.PENDING_REVIEW.value,
+                "display_order": index,
+                "generation_source": generation_source,
+            }
+        )
     return records
 
 
@@ -386,9 +392,7 @@ class ProcessAITaskUseCase:
                     final_req_status = RequestStatus.COMPLETED_WITH_LOCAL_FALLBACK.value
                     log_status = LogStatus.PARTIAL.value
                     prompt_text = "[LOCAL_FALLBACK â€” no Gemini call]"
-                    response_text = (
-                        f"Generated {len(questions_to_insert)} local fallback questions."
-                    )
+                    response_text = f"Generated {len(questions_to_insert)} local fallback questions."
                     model_used = "local_fallback"
 
                 elif self.settings.queue_when_quota_exceeded:
@@ -435,19 +439,21 @@ class ProcessAITaskUseCase:
             await self.q_repo.bulk_create(questions_to_insert)
 
             # â”€â”€ 6. Write log (record which model was actually used) â”€â”€â”€â”€â”€â”€â”€â”€
-            await self.log_repo.create({
-                "id": uuid.uuid4(),
-                "request_id": request_id,
-                "ai_model": model_used,
-                "prompt": prompt_text[:5000],
-                "response": (
-                    response_text[:5000]
-                    if isinstance(response_text, str)
-                    else str(response_text)[:5000]
-                ),
-                "status": log_status,
-                "trace_id": trace_id,
-            })
+            await self.log_repo.create(
+                {
+                    "id": uuid.uuid4(),
+                    "request_id": request_id,
+                    "ai_model": model_used,
+                    "prompt": prompt_text[:5000],
+                    "response": (
+                        response_text[:5000]
+                        if isinstance(response_text, str)
+                        else str(response_text)[:5000]
+                    ),
+                    "status": log_status,
+                    "trace_id": trace_id,
+                }
+            )
 
             # â”€â”€ 7. Mark completed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             completed_at = datetime.now(timezone.utc)
@@ -506,7 +512,9 @@ class ProcessAITaskUseCase:
                 reason="AUTO_DETECT_TOPIC=false; skipped content-based detection.",
             )
 
-        resolver = getattr(self, "topic_resolver", None) or getattr(self, "topic_detector")
+        resolver = getattr(self, "topic_resolver", None) or getattr(
+            self, "topic_detector"
+        )
         if hasattr(resolver, "resolve"):
             result = resolver.resolve(
                 cleaned,
@@ -520,7 +528,9 @@ class ProcessAITaskUseCase:
                 filename=filename,
             )
 
-        if result.reason.startswith("User topic may not match") or result.reason.startswith("Topic overridden"):
+        if result.reason.startswith(
+            "User topic may not match"
+        ) or result.reason.startswith("Topic overridden"):
             logger.warning("%s | task=%s", result.reason, task_id)
 
         if result.topic != original_topic:
@@ -562,7 +572,10 @@ class ProcessAITaskUseCase:
         if names:
             return ", ".join(names[:3])
 
-        for payload in (message_payload, self._parse_input_reference(task.input_reference)):
+        for payload in (
+            message_payload,
+            self._parse_input_reference(task.input_reference),
+        ):
             filename = self._filename_from_mapping(payload)
             if filename:
                 return filename
@@ -577,7 +590,9 @@ class ProcessAITaskUseCase:
             return None
         return parsed if isinstance(parsed, dict) else None
 
-    def _filename_from_mapping(self, payload: Optional[Dict[str, Any]]) -> Optional[str]:
+    def _filename_from_mapping(
+        self, payload: Optional[Dict[str, Any]]
+    ) -> Optional[str]:
         if not isinstance(payload, dict):
             return None
 
@@ -588,7 +603,10 @@ class ProcessAITaskUseCase:
         document = payload.get("document")
         if isinstance(document, dict):
             refs.append(document)
-        if any(key in payload for key in ("original_filename", "filename", "storage_path", "file_path")):
+        if any(
+            key in payload
+            for key in ("original_filename", "filename", "storage_path", "file_path")
+        ):
             refs.append(payload)
 
         for ref in refs:
@@ -694,7 +712,9 @@ class ProcessAITaskUseCase:
 
         # â”€â”€ Call Gemini via model router (1 call, with fallback) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         router = GeminiModelRouter(db=self.db, request_id=str(request_id))
-        raw_response, model_used = await router.generate_with_fallback(prompt=prompt_text)
+        raw_response, model_used = await router.generate_with_fallback(
+            prompt=prompt_text
+        )
         response_text = str(raw_response)
 
         # â”€â”€ Validate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -705,12 +725,14 @@ class ProcessAITaskUseCase:
         # â”€â”€ Warn if fewer questions than requested â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         warning = _build_short_warning(len(valid_questions), requested_quantity)
         if warning:
-            logger.warning(
-                "%s | task=%s | model=%s", warning, task_id, model_used
-            )
+            logger.warning("%s | task=%s | model=%s", warning, task_id, model_used)
 
-        limited = _limit_questions_to_requested(valid_questions, requested_quantity, task_id)
-        records = _build_question_records(limited, task_id, topic_for_generation, "gemini")
+        limited = _limit_questions_to_requested(
+            valid_questions, requested_quantity, task_id
+        )
+        records = _build_question_records(
+            limited, task_id, topic_for_generation, "gemini"
+        )
         return records, prompt_text, response_text, model_used
 
     def _run_local_fallback(
@@ -768,16 +790,18 @@ class ProcessAITaskUseCase:
         logger.error("Task FAILED | task=%s | error=%s", task_id, error_msg)
 
         try:
-            await self.log_repo.create({
-                "id": uuid.uuid4(),
-                "request_id": request_id,
-                "ai_model": model_used,
-                "prompt": prompt_text[:5000] if prompt_text else "N/A",
-                "response": response_text[:5000] if response_text else "N/A",
-                "status": LogStatus.FAILED.value,
-                "error_message": error_msg,
-                "trace_id": trace_id,
-            })
+            await self.log_repo.create(
+                {
+                    "id": uuid.uuid4(),
+                    "request_id": request_id,
+                    "ai_model": model_used,
+                    "prompt": prompt_text[:5000] if prompt_text else "N/A",
+                    "response": response_text[:5000] if response_text else "N/A",
+                    "status": LogStatus.FAILED.value,
+                    "error_message": error_msg,
+                    "trace_id": trace_id,
+                }
+            )
         except Exception as log_err:
             logger.error("Failed to write error log: %s", log_err)
 
@@ -795,6 +819,3 @@ class ProcessAITaskUseCase:
             completed_at=completed_at,
         )
         await self.db.commit()
-
-
-

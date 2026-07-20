@@ -1,6 +1,7 @@
 ﻿"""
 Shared OCR provider abstractions.
 """
+
 from dataclasses import dataclass
 from pathlib import Path
 

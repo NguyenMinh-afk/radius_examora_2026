@@ -2,6 +2,7 @@
 Shared background task helpers used by multiple route modules.
 Kept separate to avoid circular imports between route files.
 """
+
 import uuid
 from typing import Any
 
@@ -56,7 +57,9 @@ async def process_task_in_background(
 
     logger.info(
         "BackgroundTask started | request=%s task=%s trace=%s",
-        request_id, task_id, trace_id,
+        request_id,
+        task_id,
+        trace_id,
     )
     try:
         async with get_db_session() as session:
@@ -70,5 +73,7 @@ async def process_task_in_background(
     except Exception as e:
         logger.error(
             "BackgroundTask failed | request=%s task=%s error=%s",
-            request_id, task_id, str(e),
+            request_id,
+            task_id,
+            str(e),
         )

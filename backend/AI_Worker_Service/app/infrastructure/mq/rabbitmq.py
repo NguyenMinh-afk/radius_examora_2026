@@ -3,6 +3,7 @@ RabbitMQ connection manager and message publisher.
 Uses aio-pika for async AMQP communication.
 Supports dead-letter queue (DLQ) for failed messages.
 """
+
 import asyncio
 import json
 import uuid
@@ -131,9 +132,7 @@ async def publish_task_message(
             await ensure_queues_setup(channel)
         except Exception as e:
             if "PRECONDITION" in str(e).upper():
-                logger.warning(
-                    "Queue config mismatch, refreshing channel: %s", e
-                )
+                logger.warning("Queue config mismatch, refreshing channel: %s", e)
                 # Channel is dead after PRECONDITION_FAILED, get a new one
                 _channel = None
                 channel = await get_rabbitmq_channel()
@@ -160,9 +159,7 @@ async def publish_task_message(
             message,
             routing_key=settings.rabbitmq_queue,
         )
-        logger.info(
-            "Published task message | request=%s task=%s", request_id, task_id
-        )
+        logger.info("Published task message | request=%s task=%s", request_id, task_id)
     except MessageQueueError:
         raise
     except Exception as e:

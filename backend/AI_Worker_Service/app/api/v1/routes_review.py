@@ -9,6 +9,7 @@ Endpoints:
   GET    /ai/questions/pending-review               — List questions awaiting review
   GET    /question-bank                             — List approved questions in question bank
 """
+
 import uuid
 from typing import Any, Optional
 
@@ -181,7 +182,9 @@ async def regenerate_question(
 )
 async def list_pending_review(
     task_id: Optional[uuid.UUID] = Query(default=None, description="Filter by task ID"),
-    difficulty: Optional[str] = Query(default=None, description="Filter by difficulty: easy|medium|hard|very_hard"),
+    difficulty: Optional[str] = Query(
+        default=None, description="Filter by difficulty: easy|medium|hard|very_hard"
+    ),
     topic: Optional[str] = Query(default=None, description="Partial match on topic"),
     page: int = Query(default=1, ge=1, description="Page number"),
     page_size: int = Query(default=20, ge=1, le=100, description="Items per page"),
@@ -223,9 +226,15 @@ async def list_question_bank(
     course_id: Optional[int] = Query(default=None, description="Filter by course ID"),
     subject_id: Optional[int] = Query(default=None, description="Filter by subject ID"),
     chapter_id: Optional[int] = Query(default=None, description="Filter by chapter ID"),
-    knowledge_unit_id: Optional[int] = Query(default=None, description="Filter by knowledge unit ID"),
-    difficulty: Optional[str] = Query(default=None, description="Filter by difficulty: easy|medium|hard|very_hard"),
-    topic: Optional[str] = Query(default=None, description="Partial match search on question content"),
+    knowledge_unit_id: Optional[int] = Query(
+        default=None, description="Filter by knowledge unit ID"
+    ),
+    difficulty: Optional[str] = Query(
+        default=None, description="Filter by difficulty: easy|medium|hard|very_hard"
+    ),
+    topic: Optional[str] = Query(
+        default=None, description="Partial match search on question content"
+    ),
     page: int = Query(default=1, ge=1, description="Page number"),
     page_size: int = Query(default=20, ge=1, le=100, description="Items per page"),
     db: AsyncSession = Depends(get_db),

@@ -4,6 +4,7 @@ Trích xuất text từ file đã lưu trên shared volume.
 TXT/DOCX/PDF có text layer sẽ đọc trực tiếp; PDF scan và ảnh mới đi qua nhánh
 OCR theo cấu hình hiện tại.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -44,11 +45,17 @@ class DocumentTextExtractor:
         ocr_space_service: OCRSpaceService | None = None,
     ) -> None:
         self.settings = settings or get_settings()
-        self.enable_ocr = self.settings.enable_ocr if enable_ocr is None else bool(enable_ocr)
+        self.enable_ocr = (
+            self.settings.enable_ocr if enable_ocr is None else bool(enable_ocr)
+        )
         self.ocr_service = ocr_service or OCRService(settings=self.settings)
-        self.ocr_space_service = ocr_space_service or OCRSpaceService(settings=self.settings)
+        self.ocr_space_service = ocr_space_service or OCRSpaceService(
+            settings=self.settings
+        )
         self.ocr_min_text_chars = int(self.settings.ocr_min_text_length)
-        self.ocr_provider_mode = (self.settings.ocr_provider or "auto").strip().lower() or "auto"
+        self.ocr_provider_mode = (
+            self.settings.ocr_provider or "auto"
+        ).strip().lower() or "auto"
         self.runtime_ocr_space_status: dict[str, Any] | None = None
         self.last_ocr_decision: dict[str, Any] | None = None
         self.last_ocr_result: OCRProviderResult | None = None
@@ -123,11 +130,15 @@ class DocumentTextExtractor:
             text = pdf_loader.load_pdf(file_bytes, filename)
         except DocumentError as exc:
             if self._looks_like_scanned_pdf_error(str(exc)):
-                return self._extract_scanned_pdf(path, filename, reason="PDF has no extractable text layer")
+                return self._extract_scanned_pdf(
+                    path, filename, reason="PDF has no extractable text layer"
+                )
             raise
 
         if len(text.strip()) < self.ocr_min_text_chars:
-            return self._extract_scanned_pdf(path, filename, reason="PDF text layer is too short")
+            return self._extract_scanned_pdf(
+                path, filename, reason="PDF text layer is too short"
+            )
 
         self._log_decision(
             filename=filename,
@@ -148,7 +159,9 @@ class DocumentTextExtractor:
                 selected_provider="local",
                 reason="Local-only mode uses local OCR",
             )
-            return self._accept_ocr_result(self.ocr_service.extract_text_from_pdf(path), filename)
+            return self._accept_ocr_result(
+                self.ocr_service.extract_text_from_pdf(path), filename
+            )
 
         if mode == "ocr_space":
             self._ensure_ocr_space_configured(filename=filename, source_kind="pdf_scan")
@@ -180,7 +193,9 @@ class DocumentTextExtractor:
                     selected_provider="local",
                     reason="OCR.Space API key missing, using local OCR",
                 )
-                return self._accept_ocr_result(self.ocr_service.extract_text_from_pdf(path), filename)
+                return self._accept_ocr_result(
+                    self.ocr_service.extract_text_from_pdf(path), filename
+                )
 
             if not self._ocr_space_quota_available():
                 self._log_decision(
@@ -190,7 +205,9 @@ class DocumentTextExtractor:
                     selected_provider="local",
                     reason="OCR.Space quota reached, fallback to local OCR",
                 )
-                return self._accept_ocr_result(self.ocr_service.extract_text_from_pdf(path), filename)
+                return self._accept_ocr_result(
+                    self.ocr_service.extract_text_from_pdf(path), filename
+                )
 
             allowed, _ = self.ocr_space_service.assess_pdf_input(path)
             if not allowed:
@@ -201,7 +218,9 @@ class DocumentTextExtractor:
                     selected_provider="local",
                     reason="Large scanned PDF uses local OCR",
                 )
-                return self._accept_ocr_result(self.ocr_service.extract_text_from_pdf(path), filename)
+                return self._accept_ocr_result(
+                    self.ocr_service.extract_text_from_pdf(path), filename
+                )
 
             self._log_decision(
                 filename=filename,
@@ -218,7 +237,9 @@ class DocumentTextExtractor:
                     to_provider="local",
                     reason="OCR.Space failed or returned insufficient text",
                 )
-                return self._accept_ocr_result(self.ocr_service.extract_text_from_pdf(path), filename)
+                return self._accept_ocr_result(
+                    self.ocr_service.extract_text_from_pdf(path), filename
+                )
 
         raise DocumentError(f"Unsupported OCR_PROVIDER: {mode}")
 
@@ -238,7 +259,9 @@ class DocumentTextExtractor:
                 reason="Local-only mode uses local OCR",
             )
             return self._accept_ocr_result(
-                self.ocr_service.extract_text_from_image_file(path, content_type=content_type),
+                self.ocr_service.extract_text_from_image_file(
+                    path, content_type=content_type
+                ),
                 filename,
             )
 
@@ -276,7 +299,9 @@ class DocumentTextExtractor:
                     reason="OCR.Space API key missing, using local OCR",
                 )
                 return self._accept_ocr_result(
-                    self.ocr_service.extract_text_from_image_file(path, content_type=content_type),
+                    self.ocr_service.extract_text_from_image_file(
+                        path, content_type=content_type
+                    ),
                     filename,
                 )
 
@@ -289,7 +314,9 @@ class DocumentTextExtractor:
                     reason="OCR.Space quota reached, fallback to local OCR",
                 )
                 return self._accept_ocr_result(
-                    self.ocr_service.extract_text_from_image_file(path, content_type=content_type),
+                    self.ocr_service.extract_text_from_image_file(
+                        path, content_type=content_type
+                    ),
                     filename,
                 )
 
@@ -303,7 +330,9 @@ class DocumentTextExtractor:
                     reason="Large image uses local OCR",
                 )
                 return self._accept_ocr_result(
-                    self.ocr_service.extract_text_from_image_file(path, content_type=content_type),
+                    self.ocr_service.extract_text_from_image_file(
+                        path, content_type=content_type
+                    ),
                     filename,
                 )
 
@@ -326,7 +355,9 @@ class DocumentTextExtractor:
                     reason="OCR.Space failed or returned insufficient text",
                 )
                 return self._accept_ocr_result(
-                    self.ocr_service.extract_text_from_image_file(path, content_type=content_type),
+                    self.ocr_service.extract_text_from_image_file(
+                        path, content_type=content_type
+                    ),
                     filename,
                 )
 
@@ -349,7 +380,9 @@ class DocumentTextExtractor:
         try:
             return self.ocr_space_service.extract_text_from_pdf(path)
         finally:
-            self.last_ocr_space_response_received = bool(self.ocr_space_service.last_response_received)
+            self.last_ocr_space_response_received = bool(
+                self.ocr_space_service.last_response_received
+            )
 
     def _run_ocr_space_image(
         self,
@@ -358,9 +391,13 @@ class DocumentTextExtractor:
         content_type: str | None,
     ) -> OCRProviderResult:
         try:
-            return self.ocr_space_service.extract_text_from_image_file(path, content_type=content_type)
+            return self.ocr_space_service.extract_text_from_image_file(
+                path, content_type=content_type
+            )
         finally:
-            self.last_ocr_space_response_received = bool(self.ocr_space_service.last_response_received)
+            self.last_ocr_space_response_received = bool(
+                self.ocr_space_service.last_response_received
+            )
 
     def _ensure_ocr_space_configured(self, *, filename: str, source_kind: str) -> None:
         if not self._has_ocr_space_key():
@@ -371,7 +408,9 @@ class DocumentTextExtractor:
                 selected_provider="ocr_space",
                 reason="Cloud-only mode requires OCR.Space API key",
             )
-            raise DocumentError("OCR.Space API key is missing. Set OCR_SPACE_API_KEY or switch OCR_PROVIDER to local.")
+            raise DocumentError(
+                "OCR.Space API key is missing. Set OCR_SPACE_API_KEY or switch OCR_PROVIDER to local."
+            )
         if not self._ocr_space_quota_available():
             self._log_decision(
                 filename=filename,
@@ -429,7 +468,9 @@ class DocumentTextExtractor:
             daily_limit,
         )
 
-    def _log_fallback(self, *, from_provider: str, to_provider: str, reason: str) -> None:
+    def _log_fallback(
+        self, *, from_provider: str, to_provider: str, reason: str
+    ) -> None:
         logger.warning(
             "OCR fallback | from=%s | to=%s | reason=%s",
             from_provider,
@@ -441,7 +482,9 @@ class DocumentTextExtractor:
         status = self.runtime_ocr_space_status or {}
         used_today = status.get("used_today")
         daily_limit = status.get("daily_limit")
-        return str(used_today) if used_today is not None else "n/a", str(daily_limit) if daily_limit is not None else "n/a"
+        return str(used_today) if used_today is not None else "n/a", (
+            str(daily_limit) if daily_limit is not None else "n/a"
+        )
 
     def _looks_like_scanned_pdf_error(self, message: str) -> bool:
         lowered = message.lower()

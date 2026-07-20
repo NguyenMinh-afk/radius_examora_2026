@@ -2,6 +2,7 @@
 Domain entities (pure Python dataclasses, no DB dependencies).
 These represent the core business objects.
 """
+
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime

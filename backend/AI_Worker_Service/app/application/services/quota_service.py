@@ -4,6 +4,7 @@ Theo dõi quota cho Gemini và OCR.Space.
 Service này đọc/ghi usage theo ngày để worker biết còn được gọi provider nào và
 API có thể trả về trạng thái quota hiện tại.
 """
+
 from datetime import date
 from typing import Optional
 
@@ -43,7 +44,9 @@ class ApiQuotaService:
     def _ocr_space_limit(self) -> int:
         return self.settings.ocr_space_daily_request_limit
 
-    async def can_call_provider(self, provider: str, model_name: str, daily_limit: int) -> bool:
+    async def can_call_provider(
+        self, provider: str, model_name: str, daily_limit: int
+    ) -> bool:
         """Return True if the provider/model still has daily quota today."""
         status = await self.get_provider_status(provider, model_name, daily_limit)
         logger.info(
@@ -75,7 +78,9 @@ class ApiQuotaService:
         """Record one provider call after a real upstream request was made."""
         return await self.repo.increment_usage(provider, model_name, token_estimate)
 
-    async def get_provider_status(self, provider: str, model_name: str, daily_limit: int) -> dict:
+    async def get_provider_status(
+        self, provider: str, model_name: str, daily_limit: int
+    ) -> dict:
         """Return current daily status for any provider/model pair."""
         usage = await self.repo.get_today_usage(provider, model_name)
         used_today = usage.request_count if usage else 0
@@ -91,12 +96,16 @@ class ApiQuotaService:
         }
 
     async def can_call_model(self, model_name: str) -> bool:
-        return await self.can_call_provider(_GEMINI_PROVIDER, model_name, self._gemini_limit)
+        return await self.can_call_provider(
+            _GEMINI_PROVIDER, model_name, self._gemini_limit
+        )
 
     async def record_call_model(
         self, model_name: str, token_estimate: Optional[int] = None
     ) -> int:
-        return await self.record_call_provider(_GEMINI_PROVIDER, model_name, token_estimate)
+        return await self.record_call_provider(
+            _GEMINI_PROVIDER, model_name, token_estimate
+        )
 
     async def can_call(self) -> bool:
         return await self.can_call_model(self._gemini_model)

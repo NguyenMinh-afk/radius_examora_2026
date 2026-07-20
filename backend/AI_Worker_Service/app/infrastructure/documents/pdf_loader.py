@@ -1,6 +1,7 @@
 """
 PDF document loader using pypdf.
 """
+
 import io
 
 from app.core.exceptions import DocumentError
@@ -40,7 +41,12 @@ def load_pdf(file_bytes: bytes, filename: str = "file.pdf") -> str:
                 text = page.extract_text() or ""
                 pages_text.append(text)
             except Exception as e:
-                logger.warning("Could not extract text from page %d of '%s': %s", i + 1, filename, e)
+                logger.warning(
+                    "Could not extract text from page %d of '%s': %s",
+                    i + 1,
+                    filename,
+                    e,
+                )
                 continue
 
         full_text = "\n".join(pages_text).strip()
@@ -52,7 +58,10 @@ def load_pdf(file_bytes: bytes, filename: str = "file.pdf") -> str:
             )
 
         logger.info(
-            "Loaded PDF '%s': %d pages, %d characters", filename, len(reader.pages), len(full_text)
+            "Loaded PDF '%s': %d pages, %d characters",
+            filename,
+            len(reader.pages),
+            len(full_text),
         )
         return full_text
 

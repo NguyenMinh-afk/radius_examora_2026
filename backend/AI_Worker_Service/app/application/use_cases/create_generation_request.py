@@ -1,6 +1,7 @@
 """
 Use Case: Create a new generation request + task and publish to queue.
 """
+
 import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -71,9 +72,7 @@ class CreateGenerationRequestUseCase:
         # Quantity limits (do not split into multiple Gemini calls)
         max_allowed = self.settings.max_questions_per_task
         if quantity < 1 or quantity > max_allowed:
-            raise ValidationError(
-                f"quantity must be between 1 and {max_allowed}"
-            )
+            raise ValidationError(f"quantity must be between 1 and {max_allowed}")
 
         # Resolve course_id and subject_id if missing
         resolved = await self.resolver.resolve(

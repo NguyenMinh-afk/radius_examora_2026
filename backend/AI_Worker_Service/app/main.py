@@ -1,6 +1,7 @@
 """
 Main FastAPI application entry point.
 """
+
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -32,18 +33,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Lifespan events (startup/shutdown)."""
     settings = get_settings()
     logger.info("Starting AI Service | env=%s", settings.app_env)
-    
+
     # Pre-flight checks
     try:
         settings.validate_gemini_key()
     except ValueError as e:
         logger.warning("Configuration Warning: %s", e)
-        
+
     # Initialize DB engine
     get_engine()
-    
+
     yield
-    
+
     logger.info("Shutting down AI Service...")
     await close_engine()
     if settings.use_rabbitmq:
@@ -54,7 +55,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 def create_app() -> FastAPI:
     """Application factory."""
     settings = get_settings()
-    
+
     app = FastAPI(
         title="AI Generation Service",
         description="Service for generating multiple-choice questions using Gemini and RabbitMQ",
@@ -94,10 +95,9 @@ def create_app() -> FastAPI:
         """Patch examples that FastAPI drops null fields from during generation."""
         schema = original_openapi()
         try:
-            examples = (
-                schema["paths"]["/api/v1/ai/tasks/{task_id}/results"]["get"]
-                ["responses"]["200"]["content"]["application/json"]["examples"]
-            )
+            examples = schema["paths"]["/api/v1/ai/tasks/{task_id}/results"]["get"][
+                "responses"
+            ]["200"]["content"]["application/json"]["examples"]
             examples["completed"]["value"]["warning"] = None
             examples["completed"]["value"]["error_message"] = None
             examples["failed"]["value"]["warning"] = None
@@ -115,7 +115,7 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     settings = get_settings()
     uvicorn.run(
         "app.main:app",

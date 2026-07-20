@@ -7,6 +7,7 @@ Business rules:
 - edit:    only allowed when status = pending_review
 - regenerate: call Gemini to produce a replacement question (new record, pending_review)
 """
+
 import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -190,7 +191,9 @@ class ReviewGeneratedQuestionUseCase:
                 if isinstance(val, str):
                     val = val.strip()
                     if not val:
-                        raise ValidationError(f"Field '{schema_field}' cannot be empty.")
+                        raise ValidationError(
+                            f"Field '{schema_field}' cannot be empty."
+                        )
                 fields_to_update[model_field] = val
 
         if not fields_to_update:

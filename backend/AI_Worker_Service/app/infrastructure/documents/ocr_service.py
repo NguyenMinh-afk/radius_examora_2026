@@ -4,6 +4,7 @@ OCR local bằng Tesseract cho PDF scan và ảnh.
 File này chỉ xử lý nhánh OCR nội bộ; các dependency OCR được nạp muộn để không
 làm ảnh hưởng luồng đọc TXT/DOCX/PDF text-layer thông thường.
 """
+
 from io import BytesIO
 from pathlib import Path
 import re
@@ -13,14 +14,15 @@ from typing import Any, Callable
 from app.core.config import Settings, get_settings
 from app.core.exceptions import DocumentError
 from app.core.logging import get_logger
-from app.infrastructure.documents.ocr_provider_base import BaseOCRProvider, OCRProviderResult
+from app.infrastructure.documents.ocr_provider_base import (
+    BaseOCRProvider,
+    OCRProviderResult,
+)
 
 logger = get_logger(__name__)
 
 _PDF_SCAN_ERROR = "PDF scan/image-only, OCR is required but not enabled."
-_IMAGE_OCR_DISABLED_ERROR = (
-    "Image OCR requires local OCR. Set ENABLE_OCR=true or switch OCR_PROVIDER to ocr_space/auto."
-)
+_IMAGE_OCR_DISABLED_ERROR = "Image OCR requires local OCR. Set ENABLE_OCR=true or switch OCR_PROVIDER to ocr_space/auto."
 _OCR_TOO_SHORT_ERROR = "OCR completed but extracted text is too short."
 _MISSING_PYTESSERACT_ERROR = (
     "OCR Python dependency 'pytesseract' is missing. "
@@ -61,7 +63,9 @@ class OCRService(BaseOCRProvider):
         if not path.exists() or not path.is_file():
             raise DocumentError(f"OCR input PDF not found: {path}")
 
-        convert_from_path, pdfinfo_from_path, poppler_error_type = self._load_pdf2image()
+        convert_from_path, pdfinfo_from_path, poppler_error_type = (
+            self._load_pdf2image()
+        )
         pytesseract, tesseract_error_type = self._load_pytesseract()
         self._configure_tesseract(pytesseract)
 
@@ -206,7 +210,9 @@ class OCRService(BaseOCRProvider):
         except DocumentError:
             raise
         except Exception as exc:
-            raise DocumentError(f"OCR failed while opening image '{filename}': {exc}") from exc
+            raise DocumentError(
+                f"OCR failed while opening image '{filename}': {exc}"
+            ) from exc
 
         text = self._normalize_text(page_text)
         elapsed_ms = int((time.perf_counter() - started) * 1000)
@@ -227,7 +233,9 @@ class OCRService(BaseOCRProvider):
 
     def _load_pdf2image(
         self,
-    ) -> tuple[Callable[..., list[Any]], Callable[..., dict[str, Any]], type[Exception]]:
+    ) -> tuple[
+        Callable[..., list[Any]], Callable[..., dict[str, Any]], type[Exception]
+    ]:
         try:
             from pdf2image import convert_from_path, pdfinfo_from_path
             from pdf2image.exceptions import PDFInfoNotInstalledError
@@ -303,7 +311,11 @@ class OCRService(BaseOCRProvider):
         try:
             return int(info.get("Pages") or 0) or None
         except (TypeError, ValueError):
-            logger.warning("Invalid PDF page count from Poppler | path=%s | info=%s", pdf_path, info)
+            logger.warning(
+                "Invalid PDF page count from Poppler | path=%s | info=%s",
+                pdf_path,
+                info,
+            )
             return None
 
     def _convert_pdf_pages(
@@ -333,7 +345,9 @@ class OCRService(BaseOCRProvider):
         except Exception as exc:
             if self._looks_like_poppler_error(exc):
                 raise DocumentError(_MISSING_POPPLER_ERROR) from exc
-            raise DocumentError(f"OCR failed while converting PDF to images: {exc}") from exc
+            raise DocumentError(
+                f"OCR failed while converting PDF to images: {exc}"
+            ) from exc
 
     def _close_image(self, image: Any) -> None:
         close = getattr(image, "close", None)
