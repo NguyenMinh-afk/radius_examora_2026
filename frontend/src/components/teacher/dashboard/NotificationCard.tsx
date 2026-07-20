@@ -32,9 +32,6 @@ const formatTimeAgo = (dateString: string) => {
 };
 
 const getTypeIcon = (type: string, isDark?: boolean) => {
-  const darkClasses = isDark
-    ? { bg: "bg-blue-500/20", text: "text-blue-400" }
-    : { bg: "bg-blue-100", text: "text-blue-600" };
   switch (type) {
     case "assignment":
       return (

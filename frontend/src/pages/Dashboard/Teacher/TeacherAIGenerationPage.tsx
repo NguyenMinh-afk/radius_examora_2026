@@ -5,14 +5,11 @@ import {
   Upload,
   FileText,
   X,
-  ChevronRight,
   Loader2,
   CheckCircle2,
   AlertCircle,
   Clock,
-  RefreshCw,
   Eye,
-  Trash2,
   Zap,
   Settings,
   History,
@@ -49,7 +46,7 @@ const TeacherAIGenerationPage: React.FC = () => {
   const isDark = theme === "dark";
 
   const [activeTab, setActiveTab] = useState<Tab>("create");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -68,8 +65,8 @@ const TeacherAIGenerationPage: React.FC = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [currentRequestId, setCurrentRequestId] = useState<string | null>(null);
   const [currentStatus, setCurrentStatus] = useState<string | null>(null);
-  const [currentProgress, setCurrentProgress] = useState(0);
-  const [statusError, setStatusError] = useState<string | null>(null);
+  const [, setCurrentProgress] = useState(0);
+  const [, setStatusError] = useState<string | null>(null);
 
   // Load courses
   useEffect(() => {
