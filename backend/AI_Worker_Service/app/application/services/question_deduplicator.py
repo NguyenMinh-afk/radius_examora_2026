@@ -2,6 +2,7 @@
 Question deduplication service.
 Removes duplicate questions within the same task using exact and near-exact matching.
 """
+
 import re
 from typing import Dict, List
 
@@ -69,7 +70,9 @@ class QuestionDeduplicator:
             unique.append(q)
 
         if removed:
-            logger.info("Deduplication: removed %d duplicates, kept %d", removed, len(unique))
+            logger.info(
+                "Deduplication: removed %d duplicates, kept %d", removed, len(unique)
+            )
 
         return unique
 

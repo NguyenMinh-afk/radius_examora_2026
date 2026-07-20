@@ -1,13 +1,13 @@
 ﻿"""
 Pydantic v2 schemas for question review, question bank, and results endpoints.
 """
+
 import uuid
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
 from app.domain.enums import DifficultyLevel
-
 
 # ---------------------------------------------------------------------------
 # Shared sub-schemas
@@ -237,7 +237,9 @@ class PendingReviewItem(BaseModel):
             id=q.id,
             task_id=q.task_id,
             question_content=q.question_content,
-            options=QuestionOptions(A=q.option_a, B=q.option_b, C=q.option_c, D=q.option_d),
+            options=QuestionOptions(
+                A=q.option_a, B=q.option_b, C=q.option_c, D=q.option_d
+            ),
             correct_answer=q.correct_answer,
             difficulty=q.difficulty,
             topic=q.topic,
@@ -288,4 +290,3 @@ class QuestionBankListResponse(BaseModel):
     total: int
     page: int
     page_size: int
-

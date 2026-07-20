@@ -2,6 +2,7 @@
 Text preprocessing service.
 Normalizes unicode, removes noise while preserving academic content.
 """
+
 import re
 import unicodedata
 
@@ -88,6 +89,7 @@ class TextPreprocessor:
         lines = text.split("\n")
         # Count occurrences of stripped non-empty lines
         from collections import Counter
+
         stripped_lines = [line.strip() for line in lines]
         counts = Counter(s for s in stripped_lines if len(s) > 3)
 

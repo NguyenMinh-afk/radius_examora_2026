@@ -1,6 +1,7 @@
 """
 Pydantic v2 schemas for document upload endpoint.
 """
+
 import uuid
 from typing import Optional
 

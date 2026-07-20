@@ -2,6 +2,7 @@
 Structured logging configuration with trace_id support.
 Uses Python standard logging with JSON-like formatting.
 """
+
 import logging
 import sys
 import uuid

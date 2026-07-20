@@ -5,6 +5,7 @@ RabbitMQ consumer for processing AI generation tasks.
 - Sends to DLQ after max retries
 - ACKs on success, NACKs (requeue=False → DLQ) on permanent failure
 """
+
 import asyncio
 import json
 import uuid
@@ -33,7 +34,9 @@ async def _process_message(message_body: Dict[str, Any]) -> None:
 
     logger.info(
         "Processing message | request=%s task=%s trace=%s",
-        request_id, task_id, trace_id,
+        request_id,
+        task_id,
+        trace_id,
     )
 
     async with get_db_session() as db:
@@ -58,7 +61,9 @@ async def _on_message(message: AbstractIncomingMessage) -> None:
     x_death = message.headers.get("x-death", [])
     retry_count = 0
     if x_death:
-        retry_count = int(x_death[0].get("count", 0)) if isinstance(x_death, list) else 0
+        retry_count = (
+            int(x_death[0].get("count", 0)) if isinstance(x_death, list) else 0
+        )
 
     try:
         body = json.loads(message.body.decode())
@@ -69,7 +74,9 @@ async def _on_message(message: AbstractIncomingMessage) -> None:
     except Exception as e:
         logger.error(
             "Message processing failed (attempt %d/%d): %s",
-            retry_count + 1, max_retries, str(e),
+            retry_count + 1,
+            max_retries,
+            str(e),
         )
 
         if retry_count >= max_retries - 1:
@@ -82,7 +89,9 @@ async def _on_message(message: AbstractIncomingMessage) -> None:
         else:
             # Temporary failure → requeue for retry
             wait = 2 ** (retry_count + 1)
-            logger.info("Requeueing after %ds | message_id=%s", wait, message.message_id)
+            logger.info(
+                "Requeueing after %ds | message_id=%s", wait, message.message_id
+            )
             await asyncio.sleep(wait)
             await message.nack(requeue=True)
 
@@ -90,9 +99,7 @@ async def _on_message(message: AbstractIncomingMessage) -> None:
 async def start_consumer() -> None:
     """Start the RabbitMQ consumer loop."""
     settings = get_settings()
-    logger.info(
-        "Starting RabbitMQ consumer | queue=%s", settings.rabbitmq_queue
-    )
+    logger.info("Starting RabbitMQ consumer | queue=%s", settings.rabbitmq_queue)
 
     connection = await get_rabbitmq_connection()
     channel = await connection.channel()

@@ -1,6 +1,7 @@
 """
 Plain text document loader with encoding detection.
 """
+
 from app.core.exceptions import DocumentError
 from app.core.logging import get_logger
 

@@ -4,6 +4,7 @@ Dựng prompt gửi sang Gemini.
 File này gom context, topic, số lượng câu hỏi và các ràng buộc chất lượng để
 Gemini trả về đúng cấu trúc trắc nghiệm mà pipeline đang cần.
 """
+
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -228,8 +229,7 @@ class PromptBuilder:
             difficulty=difficulty,
             question_type=question_type,
             quality_rules=(
-                _QUALITY_RULES.format(quantity=quantity)
-                + _QUESTION_CONTENT_STYLE_RULES
+                _QUALITY_RULES.format(quantity=quantity) + _QUESTION_CONTENT_STYLE_RULES
             ),
             output_schema=_OUTPUT_SCHEMA.replace("{topic}", topic),
             context=context.strip(),
@@ -265,12 +265,13 @@ class PromptBuilder:
             Regeneration prompt string.
         """
         prompt = (
-            _REGENERATE_TEMPLATE
-            .replace("{reason}", reason)
+            _REGENERATE_TEMPLATE.replace("{reason}", reason)
             .replace("{old_question}", old_question_content)
             .replace("{topic}", topic)
             .replace("{difficulty}", difficulty)
             .replace("{context}", context.strip()[:4000])
         )
-        logger.debug("Built regeneration prompt: %d chars | topic=%s", len(prompt), topic)
+        logger.debug(
+            "Built regeneration prompt: %d chars | topic=%s", len(prompt), topic
+        )
         return prompt

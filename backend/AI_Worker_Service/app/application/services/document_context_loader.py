@@ -4,6 +4,7 @@ Nạp nội dung tài liệu cho worker.
 Service này đọc metadata từ task/message, xác định file nguồn và gọi bộ trích
 text phù hợp để trả về context thô cho pipeline sinh câu hỏi.
 """
+
 import json
 import uuid
 from dataclasses import dataclass
@@ -61,7 +62,9 @@ class DocumentContextLoader:
 
         if not refs:
             if input_type in _DOCUMENT_INPUT_TYPES:
-                raise DocumentError("Document-backed task is missing document reference.")
+                raise DocumentError(
+                    "Document-backed task is missing document reference."
+                )
             return None
 
         loaded_parts: list[str] = []
@@ -172,7 +175,9 @@ class DocumentContextLoader:
             try:
                 document_id = uuid.UUID(str(document_id_value))
             except ValueError as exc:
-                raise DocumentError(f"Invalid document_id: {document_id_value}") from exc
+                raise DocumentError(
+                    f"Invalid document_id: {document_id_value}"
+                ) from exc
 
             document = await self.document_repo.get_by_id(document_id)
             if document is None:
@@ -191,6 +196,8 @@ class DocumentContextLoader:
 
         return DocumentSource(
             storage_path=str(storage_path),
-            original_filename=str(ref.get("original_filename") or ref.get("filename") or storage_path),
+            original_filename=str(
+                ref.get("original_filename") or ref.get("filename") or storage_path
+            ),
             content_type=ref.get("mime_type") or ref.get("content_type"),
         )

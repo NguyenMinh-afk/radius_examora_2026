@@ -1,6 +1,7 @@
 """
 Health check endpoint.
 """
+
 from fastapi import APIRouter
 
 router = APIRouter(tags=["health"])
@@ -11,7 +12,4 @@ async def health_check() -> dict:
     """
     Simple health check to verify service is running.
     """
-    return {
-        "status": "ok",
-        "service": "ai-service"
-    }
+    return {"status": "ok", "service": "ai-service"}

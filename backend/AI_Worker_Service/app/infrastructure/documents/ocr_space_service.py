@@ -4,6 +4,7 @@ Tích hợp OCR.Space cho ảnh nhỏ và PDF scan ngắn.
 Provider này phù hợp nhánh OCR nhanh khi còn key/quota; nếu không ổn, hệ thống
 sẽ để tầng gọi phía trên fallback về OCR local.
 """
+
 from pathlib import Path
 import re
 import time
@@ -12,15 +13,18 @@ from typing import Any
 from app.core.config import Settings, get_settings
 from app.core.exceptions import DocumentError
 from app.core.logging import get_logger
-from app.infrastructure.documents.ocr_provider_base import BaseOCRProvider, OCRProviderResult
+from app.infrastructure.documents.ocr_provider_base import (
+    BaseOCRProvider,
+    OCRProviderResult,
+)
 
 logger = get_logger(__name__)
 
 _OCR_TOO_SHORT_ERROR = "OCR completed but extracted text is too short."
-_OCR_SPACE_MISSING_KEY_ERROR = (
-    "OCR.Space API key is missing. Set OCR_SPACE_API_KEY or switch OCR_PROVIDER to local."
+_OCR_SPACE_MISSING_KEY_ERROR = "OCR.Space API key is missing. Set OCR_SPACE_API_KEY or switch OCR_PROVIDER to local."
+_OCR_SPACE_INVALID_KEY_ERROR = (
+    "OCR.Space API key is invalid or rejected by the service."
 )
-_OCR_SPACE_INVALID_KEY_ERROR = "OCR.Space API key is invalid or rejected by the service."
 _OCR_SPACE_TIMEOUT_ERROR = "OCR.Space request timed out."
 _OCR_SPACE_QUOTA_LIMIT_ERROR = (
     "OCR.Space quota limit reached. Use OCR_PROVIDER=local or wait until quota resets."
@@ -96,7 +100,9 @@ class OCRSpaceService(BaseOCRProvider):
                 "OCR.Space dependency 'httpx' is missing. Please rebuild the Docker image."
             ) from exc
 
-        endpoint = (self.settings.ocr_space_endpoint or "").strip() or "https://api.ocr.space/parse/image"
+        endpoint = (
+            self.settings.ocr_space_endpoint or ""
+        ).strip() or "https://api.ocr.space/parse/image"
         filetype = self._infer_filetype(filename=filename, content_type=content_type)
         started = time.perf_counter()
         logger.info(
@@ -109,7 +115,9 @@ class OCRSpaceService(BaseOCRProvider):
         data = {
             "language": (self.settings.ocr_space_language or "eng").strip() or "eng",
             "OCREngine": str(self.settings.ocr_space_engine),
-            "detectOrientation": self._bool_to_string(self.settings.ocr_space_detect_orientation),
+            "detectOrientation": self._bool_to_string(
+                self.settings.ocr_space_detect_orientation
+            ),
             "scale": self._bool_to_string(self.settings.ocr_space_scale),
             "isTable": self._bool_to_string(self.settings.ocr_space_is_table),
         }
@@ -128,7 +136,9 @@ class OCRSpaceService(BaseOCRProvider):
         timeout_seconds = float(self.settings.ocr_space_timeout_seconds)
         try:
             with httpx.Client(timeout=timeout_seconds, follow_redirects=True) as client:
-                response = client.post(endpoint, data=data, files=files, headers=headers)
+                response = client.post(
+                    endpoint, data=data, files=files, headers=headers
+                )
                 self.last_response_received = True
                 response.raise_for_status()
         except httpx.TimeoutException as exc:
@@ -139,7 +149,9 @@ class OCRSpaceService(BaseOCRProvider):
                 raise DocumentError(_OCR_SPACE_INVALID_KEY_ERROR) from exc
             if status_code == 429:
                 raise DocumentError(_OCR_SPACE_QUOTA_LIMIT_ERROR) from exc
-            raise DocumentError(f"OCR.Space HTTP {status_code}: {str(exc)[:200]}") from exc
+            raise DocumentError(
+                f"OCR.Space HTTP {status_code}: {str(exc)[:200]}"
+            ) from exc
         except httpx.HTTPError as exc:
             raise DocumentError(f"OCR.Space request failed: {str(exc)[:200]}") from exc
 
@@ -170,7 +182,9 @@ class OCRSpaceService(BaseOCRProvider):
         file_size_bytes = pdf_path.stat().st_size
         if file_size_bytes > self._max_file_bytes:
             return False, "Large scanned PDF exceeds OCR.Space file-size guard"
-        if page_count is not None and page_count > int(self.settings.ocr_space_max_pdf_pages):
+        if page_count is not None and page_count > int(
+            self.settings.ocr_space_max_pdf_pages
+        ):
             return False, "Large scanned PDF exceeds OCR.Space page-count guard"
         return True, "OCR.Space PDF input is within free-tier guard"
 
@@ -301,7 +315,11 @@ class OCRSpaceService(BaseOCRProvider):
             return _OCR_SPACE_FREE_GUARD_ERROR
         if "page limit" in lowered or "maximum pages" in lowered:
             return _OCR_SPACE_FREE_GUARD_ERROR
-        if "quota" in lowered or "rate limit" in lowered or "too many requests" in lowered:
+        if (
+            "quota" in lowered
+            or "rate limit" in lowered
+            or "too many requests" in lowered
+        ):
             return _OCR_SPACE_QUOTA_LIMIT_ERROR
         if "api key" in lowered or ("key" in lowered and "invalid" in lowered):
             return _OCR_SPACE_INVALID_KEY_ERROR

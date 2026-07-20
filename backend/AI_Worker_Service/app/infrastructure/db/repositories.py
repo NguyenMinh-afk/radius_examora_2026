@@ -2,6 +2,7 @@
 Repository layer â€” all database operations isolated here.
 No business logic, only CRUD and queries.
 """
+
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -37,9 +38,7 @@ class CourseRepository:
 
     async def get_by_name(self, name: str) -> Optional[Course]:
         try:
-            result = await self.db.execute(
-                select(Course).where(Course.name == name)
-            )
+            result = await self.db.execute(select(Course).where(Course.name == name))
             return result.scalar_one_or_none()
         except Exception as e:
             raise DatabaseError(f"Failed to fetch course: {e}") from e
@@ -56,9 +55,7 @@ class CourseRepository:
 
     async def list_all(self) -> List[Course]:
         try:
-            result = await self.db.execute(
-                select(Course).order_by(Course.name.asc())
-            )
+            result = await self.db.execute(select(Course).order_by(Course.name.asc()))
             return list(result.scalars().all())
         except Exception as e:
             raise DatabaseError(f"Failed to list courses: {e}") from e
@@ -73,7 +70,9 @@ class SubjectRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_by_name(self, name: str, course_id: Optional[int]) -> Optional[Subject]:
+    async def get_by_name(
+        self, name: str, course_id: Optional[int]
+    ) -> Optional[Subject]:
         try:
             stmt = select(Subject).where(Subject.name == name)
             if course_id is None:
@@ -97,9 +96,7 @@ class SubjectRepository:
 
     async def list_all(self) -> List[Subject]:
         try:
-            result = await self.db.execute(
-                select(Subject).order_by(Subject.name.asc())
-            )
+            result = await self.db.execute(select(Subject).order_by(Subject.name.asc()))
             return list(result.scalars().all())
         except Exception as e:
             raise DatabaseError(f"Failed to list subjects: {e}") from e
@@ -354,6 +351,7 @@ class GeneratedQuestionRepository:
         """List questions with status=pending_review, with optional filters and pagination."""
         try:
             from sqlalchemy import func as sa_func
+
             conditions = [GeneratedQuestion.status == "pending_review"]
             if task_id:
                 conditions.append(GeneratedQuestion.task_id == task_id)
@@ -446,9 +444,19 @@ class QuestionBankRepository:
                 "D": generated.option_d,
             }
             # Sanitize: treat 0 same as None (not a valid FK)
-            safe_chapter_id = request.chapter_id if (request.chapter_id and request.chapter_id > 0) else None
-            safe_ku_id = request.knowledge_unit_id if (request.knowledge_unit_id and request.knowledge_unit_id > 0) else None
-            safe_subject_id = task.subject_id if (task.subject_id and task.subject_id > 0) else None
+            safe_chapter_id = (
+                request.chapter_id
+                if (request.chapter_id and request.chapter_id > 0)
+                else None
+            )
+            safe_ku_id = (
+                request.knowledge_unit_id
+                if (request.knowledge_unit_id and request.knowledge_unit_id > 0)
+                else None
+            )
+            safe_subject_id = (
+                task.subject_id if (task.subject_id and task.subject_id > 0) else None
+            )
 
             obj = Question(
                 id=uuid.uuid4(),
@@ -493,6 +501,7 @@ class QuestionBankRepository:
         """List approved questions from the question bank with filters and pagination."""
         try:
             from sqlalchemy import func as sa_func
+
             conditions = [Question.is_active == True]  # noqa: E712
             if course_id is not None:
                 conditions.append(Question.course_id == course_id)
@@ -545,4 +554,3 @@ class GenerationLogRepository:
             return obj
         except Exception as e:
             raise DatabaseError(f"Failed to create generation log: {e}") from e
-

@@ -4,6 +4,7 @@ Backward-compatible facade for the catalog-backed TopicResolver.
 New code should import TopicResolver from topic_resolver.py. This module keeps
 legacy imports/tests working while preserving the no-LLM detection guarantee.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -4,6 +4,7 @@ Khởi tạo schema và bảng cho môi trường Docker/local.
 Script này tạo các schema cần thiết, dựng bảng từ SQLAlchemy metadata và bổ sung
 những cột nhỏ đang được project dùng nhưng cần đảm bảo tồn tại khi khởi động mới.
 """
+
 import asyncio
 import sys
 from pathlib import Path
@@ -21,12 +22,9 @@ from app.infrastructure.db.models import Base
 async def init_db() -> None:
     settings = get_settings()
     print(f"Connecting to database: {settings.database_url.split('@')[-1]}")
-    
+
     # Cần AUTOCOMMIT để chạy CREATE SCHEMA an toàn.
-    engine = create_async_engine(
-        settings.database_url,
-        isolation_level="AUTOCOMMIT"
-    )
+    engine = create_async_engine(settings.database_url, isolation_level="AUTOCOMMIT")
 
     try:
         async with engine.connect() as conn:
@@ -48,7 +46,7 @@ async def init_db() -> None:
                 )
             )
             print("Tables created successfully.")
-            
+
     except Exception as e:
         print(f"Failed to initialize database: {e}")
         raise
@@ -61,4 +59,3 @@ if __name__ == "__main__":
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(init_db())
-

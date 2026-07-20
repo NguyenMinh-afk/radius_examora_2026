@@ -2,6 +2,7 @@
 Repository for daily API quota tracking.
 Stores and retrieves usage counts in ai_db.ai_api_usage.
 """
+
 import uuid
 from datetime import date
 from typing import Optional
@@ -54,27 +55,35 @@ class QuotaRepository:
         try:
             today = _today()
             # PostgreSQL UPSERT: insert or update on conflict
-            stmt = pg_insert(AIApiUsage).values(
-                id=uuid.uuid4(),
-                provider=provider,
-                model=model,
-                usage_date=today,
-                request_count=1,
-                token_estimate=token_estimate,
-            ).on_conflict_do_update(
-                index_elements=["provider", "model", "usage_date"],
-                set_={
-                    "request_count": AIApiUsage.request_count + 1,
-                    "token_estimate": token_estimate,
-                },
-            ).returning(AIApiUsage.request_count)
+            stmt = (
+                pg_insert(AIApiUsage)
+                .values(
+                    id=uuid.uuid4(),
+                    provider=provider,
+                    model=model,
+                    usage_date=today,
+                    request_count=1,
+                    token_estimate=token_estimate,
+                )
+                .on_conflict_do_update(
+                    index_elements=["provider", "model", "usage_date"],
+                    set_={
+                        "request_count": AIApiUsage.request_count + 1,
+                        "token_estimate": token_estimate,
+                    },
+                )
+                .returning(AIApiUsage.request_count)
+            )
 
             result = await self.db.execute(stmt)
             await self.db.commit()
             new_count = result.scalar_one()
             logger.info(
                 "Quota incremented | provider=%s | model=%s | date=%s | count=%d",
-                provider, model, today, new_count,
+                provider,
+                model,
+                today,
+                new_count,
             )
             return new_count
         except Exception as e:
@@ -104,21 +113,28 @@ class QuotaRepository:
         """Set today's count to a specific value. DEV USE ONLY."""
         try:
             today = _today()
-            stmt = pg_insert(AIApiUsage).values(
-                id=uuid.uuid4(),
-                provider=provider,
-                model=model,
-                usage_date=today,
-                request_count=count,
-            ).on_conflict_do_update(
-                index_elements=["provider", "model", "usage_date"],
-                set_={"request_count": count},
+            stmt = (
+                pg_insert(AIApiUsage)
+                .values(
+                    id=uuid.uuid4(),
+                    provider=provider,
+                    model=model,
+                    usage_date=today,
+                    request_count=count,
+                )
+                .on_conflict_do_update(
+                    index_elements=["provider", "model", "usage_date"],
+                    set_={"request_count": count},
+                )
             )
             await self.db.execute(stmt)
             await self.db.commit()
             logger.info(
                 "Quota set | provider=%s | model=%s | date=%s | count=%d",
-                provider, model, today, count,
+                provider,
+                model,
+                today,
+                count,
             )
         except Exception as e:
             raise DatabaseError(f"Failed to set quota: {e}") from e

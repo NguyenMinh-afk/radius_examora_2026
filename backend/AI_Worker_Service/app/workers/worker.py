@@ -2,6 +2,7 @@
 Worker process — runs the RabbitMQ consumer loop.
 Also handles graceful shutdown on SIGINT/SIGTERM.
 """
+
 import asyncio
 import signal
 

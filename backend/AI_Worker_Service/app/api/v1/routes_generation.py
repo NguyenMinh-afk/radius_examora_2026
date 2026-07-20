@@ -4,6 +4,7 @@ API sinh câu hỏi từ text và đọc trạng thái/kết quả task.
 Nhóm route này phục vụ cả tạo task từ context text lẫn truy vấn tiến độ, retry
 và lấy danh sách câu hỏi đã được worker lưu.
 """
+
 import uuid
 from typing import Any
 
@@ -70,11 +71,11 @@ async def generate_questions(
         context=req.context,
         input_type=InputType.TEXT,
     )
-    
+
     request_id = result["request_id"]
     task_id = result["task_id"]
     msg_payload = result["mq_message"]
-    
+
     settings = get_settings()
     await dispatch_generation_task(
         use_rabbitmq=settings.use_rabbitmq,
@@ -177,7 +178,7 @@ async def get_task_results(
     """
     use_case = GetTaskResultsUseCase(db)
     result = await use_case.execute(task_id)
-    
+
     return TaskResultsResponse(
         task_id=result["task_id"],
         status=result["status"],
@@ -215,16 +216,16 @@ async def retry_task(
     This will reset its status to `pending` and re-queue it for processing.
     """
     from fastapi import HTTPException, status
-    
+
     use_case = RetryGenerationTaskUseCase(db)
     try:
         result = await use_case.execute(task_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
-    
+
     request_id = result["request_id"]
     trace_id = result["trace_id"]
-    
+
     settings = get_settings()
     await dispatch_generation_task(
         use_rabbitmq=settings.use_rabbitmq,

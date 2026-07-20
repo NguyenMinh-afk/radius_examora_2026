@@ -3,6 +3,7 @@ SQLAlchemy ORM models matching the required schema exactly.
 - Schema ai_db: ai_generation_requests, ai_generation_tasks, generated_questions, ai_generation_logs
 - Schema question_db: questions
 """
+
 import uuid
 from decimal import Decimal
 
@@ -89,8 +90,30 @@ class AIGenerationRequest(Base):
     course_id = Column(Integer, nullable=False)
     chapter_id = Column(Integer, nullable=True)
     knowledge_unit_id = Column(Integer, nullable=True)
-    difficulty = Column(ENUM('easy', 'medium', 'hard', 'very_hard', name='difficulty_level', schema='public', create_type=False), nullable=False)
-    question_type = Column(ENUM('multiple_choice', 'true_false', 'matching', 'fill_blank', name='question_type', schema='public', create_type=False), nullable=False)
+    difficulty = Column(
+        ENUM(
+            "easy",
+            "medium",
+            "hard",
+            "very_hard",
+            name="difficulty_level",
+            schema="public",
+            create_type=False,
+        ),
+        nullable=False,
+    )
+    question_type = Column(
+        ENUM(
+            "multiple_choice",
+            "true_false",
+            "matching",
+            "fill_blank",
+            name="question_type",
+            schema="public",
+            create_type=False,
+        ),
+        nullable=False,
+    )
     quantity = Column(Integer, nullable=False)
     context = Column(Text, nullable=True)
     status = Column(String(20), nullable=False, default="pending")
@@ -125,7 +148,18 @@ class AIGenerationTask(Base):
     input_type = Column(String(20), nullable=False, default="text")
     input_reference = Column(Text, nullable=True)
     number_of_questions = Column(Integer, nullable=False)
-    difficulty = Column(ENUM('easy', 'medium', 'hard', 'very_hard', name='difficulty_level', schema='public', create_type=False), nullable=False)
+    difficulty = Column(
+        ENUM(
+            "easy",
+            "medium",
+            "hard",
+            "very_hard",
+            name="difficulty_level",
+            schema="public",
+            create_type=False,
+        ),
+        nullable=False,
+    )
     status = Column(String(20), nullable=False, default="pending")
     created_by = Column(UUID(as_uuid=True), nullable=False)
     created_at = Column(
@@ -159,7 +193,18 @@ class GeneratedQuestion(Base):
     option_c = Column(Text, nullable=False)
     option_d = Column(Text, nullable=False)
     correct_answer = Column(String(1), nullable=False)
-    difficulty = Column(ENUM('easy', 'medium', 'hard', 'very_hard', name='difficulty_level', schema='public', create_type=False), nullable=False)
+    difficulty = Column(
+        ENUM(
+            "easy",
+            "medium",
+            "hard",
+            "very_hard",
+            name="difficulty_level",
+            schema="public",
+            create_type=False,
+        ),
+        nullable=False,
+    )
     topic = Column(Text, nullable=False)
     explanation = Column(Text, nullable=False)
     status = Column(String(20), nullable=False, default="pending_review")
@@ -211,13 +256,15 @@ class AIApiUsage(Base):
 
     __tablename__ = "ai_api_usage"
     __table_args__ = (
-        UniqueConstraint("provider", "model", "usage_date", name="uq_api_usage_provider_model_date"),
+        UniqueConstraint(
+            "provider", "model", "usage_date", name="uq_api_usage_provider_model_date"
+        ),
         {"schema": "ai_db"},
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    provider = Column(String(50), nullable=False)   # e.g. "gemini"
-    model = Column(String(100), nullable=False)      # e.g. "gemini-2.5-flash-lite"
+    provider = Column(String(50), nullable=False)  # e.g. "gemini"
+    model = Column(String(100), nullable=False)  # e.g. "gemini-2.5-flash-lite"
     usage_date = Column(String(10), nullable=False)  # ISO date: "2026-06-03"
     request_count = Column(Integer, nullable=False, default=0)
     token_estimate = Column(Integer, nullable=True)
@@ -225,7 +272,10 @@ class AIApiUsage(Base):
         TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
     updated_at = Column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
 
@@ -233,7 +283,7 @@ class Document(Base):
     """
     Uploaded source file metadata.
     Schema: ai_db.documents
-    
+
     Fields match database schema exactly:
     - document_id (PRIMARY KEY) - UUID
     - course_id (NOT NULL) - INTEGER
@@ -293,7 +343,9 @@ class Question(Base):
 
     __tablename__ = "questions"
     __table_args__ = (
-        UniqueConstraint("source_generated_question_id", name="uq_questions_source_gen_id"),
+        UniqueConstraint(
+            "source_generated_question_id", name="uq_questions_source_gen_id"
+        ),
         {"schema": "question_db"},
     )
 
@@ -305,8 +357,30 @@ class Question(Base):
     chapter_id = Column(Integer, nullable=True)
     knowledge_unit_id = Column(Integer, nullable=True)
     created_by = Column(UUID(as_uuid=True), nullable=False)
-    question_type = Column(ENUM('multiple_choice', 'true_false', 'matching', 'fill_blank', name='question_type', schema='public', create_type=False), nullable=False)
-    difficulty = Column(ENUM('easy', 'medium', 'hard', 'very_hard', name='difficulty_level', schema='public', create_type=False), nullable=False)
+    question_type = Column(
+        ENUM(
+            "multiple_choice",
+            "true_false",
+            "matching",
+            "fill_blank",
+            name="question_type",
+            schema="public",
+            create_type=False,
+        ),
+        nullable=False,
+    )
+    difficulty = Column(
+        ENUM(
+            "easy",
+            "medium",
+            "hard",
+            "very_hard",
+            name="difficulty_level",
+            schema="public",
+            create_type=False,
+        ),
+        nullable=False,
+    )
     content = Column(Text, nullable=False)
     options = Column(JSON, nullable=True)
     correct_answer = Column(Text, nullable=False)
@@ -327,4 +401,3 @@ class Question(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-

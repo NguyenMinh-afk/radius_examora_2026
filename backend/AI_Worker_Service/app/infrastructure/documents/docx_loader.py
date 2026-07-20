@@ -1,6 +1,7 @@
 """
 DOCX document loader using python-docx.
 """
+
 import io
 
 from app.core.exceptions import DocumentError
@@ -26,7 +27,9 @@ def load_docx(file_bytes: bytes, filename: str = "file.docx") -> str:
     try:
         from docx import Document
     except ImportError:
-        raise DocumentError("python-docx is not installed. Run: pip install python-docx")
+        raise DocumentError(
+            "python-docx is not installed. Run: pip install python-docx"
+        )
 
     try:
         doc = Document(io.BytesIO(file_bytes))
@@ -40,14 +43,18 @@ def load_docx(file_bytes: bytes, filename: str = "file.docx") -> str:
         # Also extract text from tables
         for table in doc.tables:
             for row in table.rows:
-                row_texts = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+                row_texts = [
+                    cell.text.strip() for cell in row.cells if cell.text.strip()
+                ]
                 if row_texts:
                     paragraphs.append(" | ".join(row_texts))
 
         full_text = "\n".join(paragraphs).strip()
 
         if not full_text:
-            raise DocumentError(f"DOCX '{filename}' is empty or contains no readable text.")
+            raise DocumentError(
+                f"DOCX '{filename}' is empty or contains no readable text."
+            )
 
         logger.info(
             "Loaded DOCX '%s': %d paragraphs, %d characters",

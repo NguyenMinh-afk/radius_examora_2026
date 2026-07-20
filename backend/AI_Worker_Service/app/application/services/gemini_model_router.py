@@ -19,6 +19,7 @@ Design decisions:
 - Always logs: "Trying model", "Skipped model (quota)", "Rate-limited, next model",
   "Succeeded with model".
 """
+
 from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,7 +41,11 @@ logger = get_logger(__name__)
 
 # Errors that mean the API key or model config is broken — skip the model but
 # do NOT treat it as quota exhaustion. We still want fallback behaviour.
-_SKIP_ERRORS = (GeminiModelNotFoundError, GeminiPermissionError, GeminiInvalidArgumentError)
+_SKIP_ERRORS = (
+    GeminiModelNotFoundError,
+    GeminiPermissionError,
+    GeminiInvalidArgumentError,
+)
 
 # Errors that mean the model's rate/quota is temporarily exhausted.
 _QUOTA_ERRORS = (GeminiRateLimitError,)

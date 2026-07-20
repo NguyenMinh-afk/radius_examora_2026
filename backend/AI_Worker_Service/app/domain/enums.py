@@ -1,6 +1,7 @@
 ﻿"""
 Domain enums shared across layers.
 """
+
 from enum import Enum
 
 

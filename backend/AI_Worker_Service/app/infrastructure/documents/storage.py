@@ -5,6 +5,7 @@ Files are written to local disk under data/raw using safe, readable names:
 {short_document_id}-{safe_slug_original_filename}.{ext}
 The original filename is stored only as metadata.
 """
+
 from pathlib import Path
 from typing import BinaryIO
 import re

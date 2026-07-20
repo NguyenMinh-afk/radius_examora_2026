@@ -22,6 +22,7 @@ Algorithm:
        - option B/C/D: other sentences from the doc (distractors)
     5. explanation = source sentence
 """
+
 import hashlib
 import random
 import re
@@ -126,7 +127,9 @@ def _is_quality_option(s: str) -> bool:
     return True
 
 
-def _shuffle_options(correct: str, distractors: List[str]) -> tuple[dict[str, str], str]:
+def _shuffle_options(
+    correct: str, distractors: List[str]
+) -> tuple[dict[str, str], str]:
     """Place the correct answer in a varied deterministic position."""
     items = [(correct, True)] + [(d, False) for d in distractors[:3]]
     digest = hashlib.sha1(correct.encode("utf-8")).hexdigest()
@@ -171,7 +174,10 @@ def _strip_exam_tokens_preserve_newlines(s: str) -> str:
     s = _TAG_TOKEN_RE.sub(_replace_tag, s)
     s = _OPTION_MARKER_RE.sub(" ", s)
     # Normalize spaces within each line only
-    lines = [_clean_candidate_text(re.sub(r"[ \t]{2,}", " ", ln).strip()) for ln in s.split("\n")]
+    lines = [
+        _clean_candidate_text(re.sub(r"[ \t]{2,}", " ", ln).strip())
+        for ln in s.split("\n")
+    ]
     return "\n".join(lines)
 
 
@@ -201,7 +207,9 @@ def _parse_existing_mcq(text: str, max_items: int) -> tuple[List[_ParsedMcq], in
     """Parse existing MCQ blocks in the specific format using [<$>] markers."""
     if not text:
         return [], 0, 0
-    lines = [ln.strip() for ln in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")]
+    lines = [
+        ln.strip() for ln in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    ]
     lines = [ln for ln in lines if ln]
 
     parsed: List[_ParsedMcq] = []
@@ -234,7 +242,9 @@ def _parse_existing_mcq(text: str, max_items: int) -> tuple[List[_ParsedMcq], in
 
         # Require at least 4 options
         if len(options) >= 4:
-            parsed.append(_ParsedMcq(question_content=question_part, options=options[:4]))
+            parsed.append(
+                _ParsedMcq(question_content=question_part, options=options[:4])
+            )
             if len(parsed) >= max_items:
                 break
         else:
@@ -274,6 +284,7 @@ def _clean_and_split_with_stats(text: str) -> tuple[List[str], int, int]:
 
     return sentences, raw_count, skipped
 
+
 # Keyword patterns that suggest educational sentences (Vietnamese)
 _EDUCATIONAL_KEYWORDS = [
     r"\blà\b",
@@ -312,13 +323,23 @@ def _score_sentence(sentence: str) -> int:
 
 _ANCHOR_PATTERNS = [
     re.compile(r"\b(Đại hội\s+[IVXLC]+(?:\s+của\s+Đảng)?)", re.IGNORECASE),
-    re.compile(r"\b(Nghị quyết\s+(?:TW|Trung ương)?\s*\d+[A-Z/a-zÀ-ỹ\s-]{0,60})", re.IGNORECASE),
+    re.compile(
+        r"\b(Nghị quyết\s+(?:TW|Trung ương)?\s*\d+[A-Z/a-zÀ-ỹ\s-]{0,60})", re.IGNORECASE
+    ),
 ]
 _CATEGORY_PATTERNS = {
-    "resolution": re.compile(r"\b(Đại hội|Nghị quyết|Hội nghị|Hiệp định)\b", re.IGNORECASE),
-    "goal": re.compile(r"\b(mục tiêu|nhiệm vụ|chủ trương|đường lối|quan điểm)\b", re.IGNORECASE),
-    "concept": re.compile(r"\b(khái niệm|định nghĩa|là|được gọi là|bao gồm|gồm)\b", re.IGNORECASE),
-    "impact": re.compile(r"\b(ý nghĩa|kết quả|tác động|vai trò|nguyên nhân)\b", re.IGNORECASE),
+    "resolution": re.compile(
+        r"\b(Đại hội|Nghị quyết|Hội nghị|Hiệp định)\b", re.IGNORECASE
+    ),
+    "goal": re.compile(
+        r"\b(mục tiêu|nhiệm vụ|chủ trương|đường lối|quan điểm)\b", re.IGNORECASE
+    ),
+    "concept": re.compile(
+        r"\b(khái niệm|định nghĩa|là|được gọi là|bao gồm|gồm)\b", re.IGNORECASE
+    ),
+    "impact": re.compile(
+        r"\b(ý nghĩa|kết quả|tác động|vai trò|nguyên nhân)\b", re.IGNORECASE
+    ),
 }
 
 
@@ -474,13 +495,19 @@ class LocalQuestionGenerator:
             questions: List[dict] = []
             for item in parsed_mcq[:effective_quantity]:
                 clean_question = _clean_candidate_text(item.question_content)
-                clean_options = [_clean_candidate_text(option) for option in item.options]
-                clean_options = [option for option in clean_options if _is_quality_option(option)]
+                clean_options = [
+                    _clean_candidate_text(option) for option in item.options
+                ]
+                clean_options = [
+                    option for option in clean_options if _is_quality_option(option)
+                ]
                 if not clean_question or len(clean_options) < 4:
                     skipped_mcq += 1
                     continue
 
-                options, correct_answer = _shuffle_options(clean_options[0], clean_options[1:4])
+                options, correct_answer = _shuffle_options(
+                    clean_options[0], clean_options[1:4]
+                )
                 questions.append(
                     {
                         "question_content": clean_question,

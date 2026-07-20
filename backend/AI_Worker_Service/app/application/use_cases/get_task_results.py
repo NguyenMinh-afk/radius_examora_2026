@@ -2,6 +2,7 @@
 Use Case: Get task results (list of generated questions for a task).
 Returns generation_source per question and warning when relevant.
 """
+
 import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,24 +48,26 @@ class GetTaskResultsUseCase:
         questions_out = []
         for index, q in enumerate(questions, start=1):
             display_order = getattr(q, "display_order", None) or index
-            questions_out.append({
-                "id": q.id,
-                "question_number": display_order,
-                "question_label": f"Câu {display_order}",
-                "question_content": q.question_content,
-                "options": {
-                    "A": q.option_a,
-                    "B": q.option_b,
-                    "C": q.option_c,
-                    "D": q.option_d,
-                },
-                "correct_answer": q.correct_answer,
-                "difficulty": q.difficulty,
-                "topic": q.topic,
-                "explanation": q.explanation,
-                "status": q.status,
-                "generation_source": getattr(q, "generation_source", "gemini"),
-            })
+            questions_out.append(
+                {
+                    "id": q.id,
+                    "question_number": display_order,
+                    "question_label": f"Câu {display_order}",
+                    "question_content": q.question_content,
+                    "options": {
+                        "A": q.option_a,
+                        "B": q.option_b,
+                        "C": q.option_c,
+                        "D": q.option_d,
+                    },
+                    "correct_answer": q.correct_answer,
+                    "difficulty": q.difficulty,
+                    "topic": q.topic,
+                    "explanation": q.explanation,
+                    "status": q.status,
+                    "generation_source": getattr(q, "generation_source", "gemini"),
+                }
+            )
 
         # Determine warning
         warning = None
@@ -99,7 +102,10 @@ class GetTaskResultsUseCase:
 
         logger.info(
             "Fetched %d/%d questions for task=%s status=%s",
-            actual_qty, requested_qty, task_id, task.status,
+            actual_qty,
+            requested_qty,
+            task_id,
+            task.status,
         )
         return {
             "task_id": task_id,
@@ -108,4 +114,3 @@ class GetTaskResultsUseCase:
             "error_message": error_message,
             "questions": questions_out,
         }
-

@@ -2,6 +2,7 @@
 Application configuration using Pydantic v2 Settings.
 Loads from .env file automatically.
 """
+
 from functools import lru_cache
 from typing import List, Optional
 
@@ -80,7 +81,9 @@ class Settings(BaseSettings):
 
     # --- Topic Detection ---
     auto_detect_topic: bool = Field(default=True)
-    topic_catalog_path: str = Field(default="app/application/resources/topic_catalog.json")
+    topic_catalog_path: str = Field(
+        default="app/application/resources/topic_catalog.json"
+    )
     topic_mismatch_override: bool = Field(default=True)
     min_topic_confidence: float = Field(default=0.75)
     topic_detection_max_chars: int = Field(default=8000)
@@ -136,7 +139,10 @@ class Settings(BaseSettings):
             base_dir = os.path.dirname(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             )
-            if os.path.exists(os.path.join(base_dir, ".env.docker")) and _running_in_docker():
+            if (
+                os.path.exists(os.path.join(base_dir, ".env.docker"))
+                and _running_in_docker()
+            ):
                 env_file = os.path.join(base_dir, ".env.docker")
             else:
                 env_file = os.path.join(base_dir, ".env")
@@ -210,7 +216,10 @@ class Settings(BaseSettings):
 
     def validate_gemini_key(self) -> None:
         """Raise ValueError if Gemini API key is missing."""
-        if not self.gemini_api_key or self.gemini_api_key == "PASTE_YOUR_GEMINI_API_KEY_HERE":
+        if (
+            not self.gemini_api_key
+            or self.gemini_api_key == "PASTE_YOUR_GEMINI_API_KEY_HERE"
+        ):
             raise ValueError(
                 "GEMINI_API_KEY is not configured. "
                 "Please set it in your .env file. "
@@ -222,4 +231,3 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Cached settings singleton."""
     return Settings()
-

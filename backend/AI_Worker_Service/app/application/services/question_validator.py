@@ -4,6 +4,7 @@ Kiểm tra đầu ra câu hỏi từ Gemini.
 Chỉ các câu hợp lệ theo schema và quy tắc nội bộ mới được giữ lại; câu lỗi sẽ
 bị ghi log và loại khỏi kết quả lưu DB.
 """
+
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
@@ -99,12 +100,18 @@ class QuestionValidator:
             else:
                 invalid_count += 1
                 errors.append(f"Question #{i + 1}: {reason}")
-                logger.warning("Invalid question #%d: %s | content_preview='%s'",
-                               i + 1, reason, str(q.get("question_content", ""))[:50])
+                logger.warning(
+                    "Invalid question #%d: %s | content_preview='%s'",
+                    i + 1,
+                    reason,
+                    str(q.get("question_content", ""))[:50],
+                )
 
         logger.info(
             "Validation complete: %d valid, %d invalid out of %d",
-            len(valid), invalid_count, len(questions_raw),
+            len(valid),
+            invalid_count,
+            len(questions_raw),
         )
         return ValidationResult(
             valid_questions=valid,
@@ -120,7 +127,10 @@ class QuestionValidator:
         # question_content
         content = q.get("question_content", "")
         if not isinstance(content, str) or len(content.strip()) < MIN_CONTENT_LENGTH:
-            return False, f"'question_content' is empty or too short (min {MIN_CONTENT_LENGTH} chars)."
+            return (
+                False,
+                f"'question_content' is empty or too short (min {MIN_CONTENT_LENGTH} chars).",
+            )
 
         # options
         options = q.get("options")
@@ -137,14 +147,23 @@ class QuestionValidator:
         # correct_answer
         answer = q.get("correct_answer", "")
         if not isinstance(answer, str) or answer.strip().upper() not in VALID_ANSWERS:
-            return False, f"'correct_answer' must be one of {VALID_ANSWERS}, got '{answer}'."
+            return (
+                False,
+                f"'correct_answer' must be one of {VALID_ANSWERS}, got '{answer}'.",
+            )
         # Normalize to uppercase
         q["correct_answer"] = answer.strip().upper()
 
         # difficulty
         difficulty = q.get("difficulty", "")
-        if not isinstance(difficulty, str) or difficulty.strip().lower() not in VALID_DIFFICULTIES:
-            return False, f"'difficulty' must be one of {VALID_DIFFICULTIES}, got '{difficulty}'."
+        if (
+            not isinstance(difficulty, str)
+            or difficulty.strip().lower() not in VALID_DIFFICULTIES
+        ):
+            return (
+                False,
+                f"'difficulty' must be one of {VALID_DIFFICULTIES}, got '{difficulty}'.",
+            )
         q["difficulty"] = difficulty.strip().lower()
 
         # topic
@@ -154,7 +173,13 @@ class QuestionValidator:
 
         # explanation
         explanation = q.get("explanation", "")
-        if not isinstance(explanation, str) or len(explanation.strip()) < MIN_EXPLANATION_LENGTH:
-            return False, f"'explanation' is too short (min {MIN_EXPLANATION_LENGTH} chars)."
+        if (
+            not isinstance(explanation, str)
+            or len(explanation.strip()) < MIN_EXPLANATION_LENGTH
+        ):
+            return (
+                False,
+                f"'explanation' is too short (min {MIN_EXPLANATION_LENGTH} chars).",
+            )
 
         return True, ""

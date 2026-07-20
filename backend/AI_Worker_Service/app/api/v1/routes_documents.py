@@ -4,6 +4,7 @@ API upload tài liệu đầu vào.
 Route này chỉ nhận file, lưu vào thư mục data/raw, tạo document/task và đẩy việc
 xử lý nặng sang worker để pipeline OCR/Gemini chạy nền.
 """
+
 import json
 import uuid
 from typing import Any, List, Optional
@@ -54,7 +55,9 @@ def _detect_input_type(filename: str) -> InputType:
     raise UnsupportedFileTypeError(filename)
 
 
-async def _store_document(file: UploadFile, db: AsyncSession, course_id: int, uploaded_by: uuid.UUID) -> dict[str, Any]:
+async def _store_document(
+    file: UploadFile, db: AsyncSession, course_id: int, uploaded_by: uuid.UUID
+) -> dict[str, Any]:
     """
     Validate extension, save the uploaded file under data/raw, and persist metadata.
 
@@ -105,7 +108,8 @@ def _document_reference(document_info: dict[str, Any]) -> dict[str, Any]:
         "document_id": str(document_info["document_id"]),
         "storage_path": document_info["storage_path"],
         "original_filename": document_info["filename"],
-        "mime_type": document_info.get("mime_type") or document_info.get("content_type"),
+        "mime_type": document_info.get("mime_type")
+        or document_info.get("content_type"),
         "file_size": document_info["file_size"],
         "status": document_info["status"],
     }
@@ -120,16 +124,38 @@ def _document_reference(document_info: dict[str, Any]) -> dict[str, Any]:
 async def upload_document(
     file: UploadFile = File(..., description=_SINGLE_FILE_DESCRIPTION),
     user_id: uuid.UUID = Form(..., description="User UUID"),
-    topic: Optional[str] = Form(default=None, description="Topic / subject of the questions. Leave blank for worker-side auto-detect."),
-    quantity: int = Form(..., description="Number of questions to generate (1 to MAX_QUESTIONS_PER_TASK; default cap 50)"),
-    difficulty: DifficultyLevel = Form(DifficultyLevel.MEDIUM, description="easy|medium|hard|very_hard"),
-    question_type: QuestionType = Form(QuestionType.MULTIPLE_CHOICE, description="Type of questions"),
-    course_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    course_name: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    subject_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    subject_name: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    chapter_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    knowledge_unit_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
+    topic: Optional[str] = Form(
+        default=None,
+        description="Topic / subject of the questions. Leave blank for worker-side auto-detect.",
+    ),
+    quantity: int = Form(
+        ...,
+        description="Number of questions to generate (1 to MAX_QUESTIONS_PER_TASK; default cap 50)",
+    ),
+    difficulty: DifficultyLevel = Form(
+        DifficultyLevel.MEDIUM, description="easy|medium|hard|very_hard"
+    ),
+    question_type: QuestionType = Form(
+        QuestionType.MULTIPLE_CHOICE, description="Type of questions"
+    ),
+    course_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    course_name: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    subject_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    subject_name: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    chapter_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    knowledge_unit_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
     db: AsyncSession = Depends(get_db),
     background_tasks: BackgroundTasks = BackgroundTasks(),
 ) -> Any:
@@ -140,7 +166,7 @@ async def upload_document(
     Worker-side file loading/extraction happens after the task is dispatched.
     """
     settings = get_settings()
-    
+
     # Sanitize course_id first to get actual value
     clean = sanitize_upload_fields(
         topic=topic,
@@ -151,11 +177,15 @@ async def upload_document(
         chapter_id=chapter_id,
         knowledge_unit_id=knowledge_unit_id,
     )
-    
+
     # Use sanitized course_id or default to 1
-    actual_course_id = clean["course_id"] if clean["course_id"] and clean["course_id"] > 0 else 1
-    
-    document_info = await _store_document(file, db, course_id=actual_course_id, uploaded_by=user_id)
+    actual_course_id = (
+        clean["course_id"] if clean["course_id"] and clean["course_id"] > 0 else 1
+    )
+
+    document_info = await _store_document(
+        file, db, course_id=actual_course_id, uploaded_by=user_id
+    )
     document_ref = _document_reference(document_info)
 
     result = await CreateGenerationRequestUseCase(db).execute(
@@ -228,14 +258,47 @@ async def upload_document(
                                 "description": "Number of questions to generate (1 to MAX_QUESTIONS_PER_TASK; default cap 50)",
                             },
                             "difficulty": {"type": "string", "default": "medium"},
-                            "question_type": {"type": "string", "default": "multiple_choice"},
+                            "question_type": {
+                                "type": "string",
+                                "default": "multiple_choice",
+                            },
                             "batch_mode": {"type": "string", "default": "merge"},
-                            "course_id": {"type": "string", "nullable": True, "description": _OPTIONAL_FORM_DESCRIPTION, "example": ""},
-                            "course_name": {"type": "string", "nullable": True, "description": _OPTIONAL_FORM_DESCRIPTION, "example": ""},
-                            "subject_id": {"type": "string", "nullable": True, "description": _OPTIONAL_FORM_DESCRIPTION, "example": ""},
-                            "subject_name": {"type": "string", "nullable": True, "description": _OPTIONAL_FORM_DESCRIPTION, "example": ""},
-                            "chapter_id": {"type": "string", "nullable": True, "description": _OPTIONAL_FORM_DESCRIPTION, "example": ""},
-                            "knowledge_unit_id": {"type": "string", "nullable": True, "description": _OPTIONAL_FORM_DESCRIPTION, "example": ""},
+                            "course_id": {
+                                "type": "string",
+                                "nullable": True,
+                                "description": _OPTIONAL_FORM_DESCRIPTION,
+                                "example": "",
+                            },
+                            "course_name": {
+                                "type": "string",
+                                "nullable": True,
+                                "description": _OPTIONAL_FORM_DESCRIPTION,
+                                "example": "",
+                            },
+                            "subject_id": {
+                                "type": "string",
+                                "nullable": True,
+                                "description": _OPTIONAL_FORM_DESCRIPTION,
+                                "example": "",
+                            },
+                            "subject_name": {
+                                "type": "string",
+                                "nullable": True,
+                                "description": _OPTIONAL_FORM_DESCRIPTION,
+                                "example": "",
+                            },
+                            "chapter_id": {
+                                "type": "string",
+                                "nullable": True,
+                                "description": _OPTIONAL_FORM_DESCRIPTION,
+                                "example": "",
+                            },
+                            "knowledge_unit_id": {
+                                "type": "string",
+                                "nullable": True,
+                                "description": _OPTIONAL_FORM_DESCRIPTION,
+                                "example": "",
+                            },
                         },
                     }
                 }
@@ -247,17 +310,41 @@ async def upload_document(
 async def upload_document_batch(
     files: List[UploadFile] = File(..., description=_BATCH_FILE_DESCRIPTION),
     user_id: uuid.UUID = Form(..., description="User UUID"),
-    topic: Optional[str] = Form(default=None, description="Topic / subject of the questions. Leave blank for worker-side auto-detect."),
-    quantity: int = Form(..., description="Number of questions to generate (1 to MAX_QUESTIONS_PER_TASK; default cap 50)"),
-    difficulty: DifficultyLevel = Form(DifficultyLevel.MEDIUM, description="easy|medium|hard|very_hard"),
-    question_type: QuestionType = Form(QuestionType.MULTIPLE_CHOICE, description="Type of questions"),
-    batch_mode: str = Form("merge", description="Batch mode: only 'merge' is supported"),
-    course_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    course_name: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    subject_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    subject_name: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    chapter_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
-    knowledge_unit_id: Optional[str] = Form(default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]),
+    topic: Optional[str] = Form(
+        default=None,
+        description="Topic / subject of the questions. Leave blank for worker-side auto-detect.",
+    ),
+    quantity: int = Form(
+        ...,
+        description="Number of questions to generate (1 to MAX_QUESTIONS_PER_TASK; default cap 50)",
+    ),
+    difficulty: DifficultyLevel = Form(
+        DifficultyLevel.MEDIUM, description="easy|medium|hard|very_hard"
+    ),
+    question_type: QuestionType = Form(
+        QuestionType.MULTIPLE_CHOICE, description="Type of questions"
+    ),
+    batch_mode: str = Form(
+        "merge", description="Batch mode: only 'merge' is supported"
+    ),
+    course_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    course_name: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    subject_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    subject_name: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    chapter_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
+    knowledge_unit_id: Optional[str] = Form(
+        default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
+    ),
     db: AsyncSession = Depends(get_db),
     background_tasks: BackgroundTasks = BackgroundTasks(),
 ) -> Any:
@@ -273,7 +360,7 @@ async def upload_document_batch(
         raise DocumentError("At least one file is required.")
 
     settings = get_settings()
-    
+
     # Sanitize fields first
     clean = sanitize_upload_fields(
         topic=topic,
@@ -284,15 +371,19 @@ async def upload_document_batch(
         chapter_id=chapter_id,
         knowledge_unit_id=knowledge_unit_id,
     )
-    
+
     # Use sanitized course_id or default to 1
-    actual_course_id = clean["course_id"] if clean["course_id"] and clean["course_id"] > 0 else 1
-    
+    actual_course_id = (
+        clean["course_id"] if clean["course_id"] and clean["course_id"] > 0 else 1
+    )
+
     file_results = []
     document_refs: list[dict[str, Any]] = []
 
     for file in files:
-        document_info = await _store_document(file, db, course_id=actual_course_id, uploaded_by=user_id)
+        document_info = await _store_document(
+            file, db, course_id=actual_course_id, uploaded_by=user_id
+        )
         document_ref = _document_reference(document_info)
         document_refs.append(document_ref)
         file_results.append(

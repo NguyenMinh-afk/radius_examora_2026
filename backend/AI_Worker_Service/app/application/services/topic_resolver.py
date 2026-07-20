@@ -4,6 +4,7 @@ Nhận diện môn học/chủ đề theo rule local.
 TopicResolver không gọi Gemini; nó ghép tín hiệu từ input người dùng, tên file,
 tiêu đề tài liệu và catalog cục bộ để suy ra topic ổn định, dễ kiểm soát.
 """
+
 from __future__ import annotations
 
 import json
@@ -195,7 +196,9 @@ def _contains_phrase(normalized_text: str, normalized_phrase: str) -> bool:
     escaped = re.escape(normalized_phrase)
     if re.fullmatch(r"[a-z0-9]+", normalized_phrase):
         return bool(re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", normalized_text))
-    if len(normalized_phrase) <= 4 and re.fullmatch(r"[a-z0-9/+#.-]+", normalized_phrase):
+    if len(normalized_phrase) <= 4 and re.fullmatch(
+        r"[a-z0-9/+#.-]+", normalized_phrase
+    ):
         return bool(re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", normalized_text))
     return normalized_phrase in normalized_text
 
@@ -206,7 +209,11 @@ def _contains_original_phrase(text: str, phrase: str) -> bool:
     if not clean_text or not clean_phrase:
         return False
     if re.fullmatch(r"[a-z0-9]+", clean_phrase):
-        return bool(re.search(rf"(?<![a-z0-9]){re.escape(clean_phrase)}(?![a-z0-9])", clean_text))
+        return bool(
+            re.search(
+                rf"(?<![a-z0-9]){re.escape(clean_phrase)}(?![a-z0-9])", clean_text
+            )
+        )
     return clean_phrase in clean_text
 
 
@@ -223,7 +230,12 @@ def _is_mostly_upper(text: str) -> bool:
 
 def _format_topic_title(text: str) -> str:
     clean = _compact_original(text)
-    clean = re.sub(r"^(môn học|tên môn học|bài giảng|giáo trình)\s*[:\-]?\s*", "", clean, flags=re.IGNORECASE)
+    clean = re.sub(
+        r"^(môn học|tên môn học|bài giảng|giáo trình)\s*[:\-]?\s*",
+        "",
+        clean,
+        flags=re.IGNORECASE,
+    )
     clean = clean.strip(" -:")
     if not clean:
         return clean
@@ -231,7 +243,9 @@ def _format_topic_title(text: str) -> str:
     lowered = clean.lower()
     topic = lowered[:1].upper() + lowered[1:]
     for acronym in ("AI", "I/O", "TCP/IP", "SQL", "CPU"):
-        topic = re.sub(rf"\b{re.escape(acronym.lower())}\b", acronym, topic, flags=re.IGNORECASE)
+        topic = re.sub(
+            rf"\b{re.escape(acronym.lower())}\b", acronym, topic, flags=re.IGNORECASE
+        )
     return topic
 
 
@@ -304,7 +318,12 @@ def _is_clear_topic_title(text: str) -> bool:
         return False
     if normalized.startswith(_COVER_PAGE_NOISE):
         return False
-    if re.search(r"\b(là|la|được|duoc|gồm|gom|nhằm|nham|because|where|when)\b", normalized) and words > 5:
+    if (
+        re.search(
+            r"\b(là|la|được|duoc|gồm|gom|nhằm|nham|because|where|when)\b", normalized
+        )
+        and words > 5
+    ):
         return False
     return True
 
@@ -339,7 +358,9 @@ def _is_generic_filename(filename: str) -> bool:
         return True
     if len(tokens) <= 2 and any(token.isdigit() for token in tokens):
         return True
-    meaningful = [token for token in tokens if token not in generic_tokens and not token.isdigit()]
+    meaningful = [
+        token for token in tokens if token not in generic_tokens and not token.isdigit()
+    ]
     return len(meaningful) < 2
 
 
@@ -382,12 +403,16 @@ class TopicCatalogLoader:
         try:
             raw = json.loads(path.read_text(encoding="utf-8"))
         except Exception as exc:
-            logger.warning("Topic catalog load failed | path=%s | error=%s", path, str(exc)[:200])
+            logger.warning(
+                "Topic catalog load failed | path=%s | error=%s", path, str(exc)[:200]
+            )
             return []
 
         items = raw.get("topics", raw) if isinstance(raw, dict) else raw
         if not isinstance(items, list):
-            logger.warning("Topic catalog must be a list or {'topics': [...]} | path=%s", path)
+            logger.warning(
+                "Topic catalog must be a list or {'topics': [...]} | path=%s", path
+            )
             return []
 
         entries: list[TopicCatalogEntry] = []
@@ -397,10 +422,26 @@ class TopicCatalogLoader:
             entries.append(
                 TopicCatalogEntry(
                     canonical=str(item["canonical"]).strip(),
-                    aliases=[str(v).strip() for v in item.get("aliases", []) if str(v).strip()],
-                    strong_keywords=[str(v).strip() for v in item.get("strong_keywords", []) if str(v).strip()],
-                    weak_keywords=[str(v).strip() for v in item.get("weak_keywords", []) if str(v).strip()],
-                    negative_keywords=[str(v).strip() for v in item.get("negative_keywords", []) if str(v).strip()],
+                    aliases=[
+                        str(v).strip()
+                        for v in item.get("aliases", [])
+                        if str(v).strip()
+                    ],
+                    strong_keywords=[
+                        str(v).strip()
+                        for v in item.get("strong_keywords", [])
+                        if str(v).strip()
+                    ],
+                    weak_keywords=[
+                        str(v).strip()
+                        for v in item.get("weak_keywords", [])
+                        if str(v).strip()
+                    ],
+                    negative_keywords=[
+                        str(v).strip()
+                        for v in item.get("negative_keywords", [])
+                        if str(v).strip()
+                    ],
                 )
             )
         return entries
@@ -477,7 +518,10 @@ class TopicResolver:
             if normalized_topic == normalize_text(entry.canonical):
                 return entry.canonical
             aliases = [entry.canonical, *entry.aliases]
-            if any(_contains_phrase(normalized_topic, normalize_text(alias)) for alias in aliases):
+            if any(
+                _contains_phrase(normalized_topic, normalize_text(alias))
+                for alias in aliases
+            ):
                 return entry.canonical
         return None
 
@@ -494,7 +538,10 @@ class TopicResolver:
         user_topic: str,
         auto_result: TopicResolveResult,
     ) -> TopicResolveResult:
-        if auto_result.source == "fallback" or auto_result.confidence < self.min_confidence:
+        if (
+            auto_result.source == "fallback"
+            or auto_result.confidence < self.min_confidence
+        ):
             return TopicResolveResult(
                 topic=user_topic,
                 source="user",
@@ -506,7 +553,9 @@ class TopicResolver:
             )
 
         user_family = self.classify_topic(user_topic) or normalize_text(user_topic)
-        auto_family = self.classify_topic(auto_result.topic) or normalize_text(auto_result.topic)
+        auto_family = self.classify_topic(auto_result.topic) or normalize_text(
+            auto_result.topic
+        )
         if user_family == auto_family:
             return TopicResolveResult(
                 topic=user_topic,
@@ -562,7 +611,9 @@ class TopicResolver:
         title_matches = self._match_catalog_aliases_in_titles(title_candidates)
         candidates.extend(title_matches)
 
-        extracted_candidates = self._extract_generic_topic_candidates(title_candidates, text)
+        extracted_candidates = self._extract_generic_topic_candidates(
+            title_candidates, text
+        )
         candidates.extend(extracted_candidates)
 
         keyword_candidates, catalog_scores = self._score_catalog_keywords(text)
@@ -625,11 +676,15 @@ class TopicResolver:
         for title in title_candidates:
             pattern_candidates = self._pattern_extract_from_line(title.text)
             source_texts = pattern_candidates[:]
-            if _has_title_shape(title.text) or (title.source == "filename" and not _is_generic_filename(title.text)):
+            if _has_title_shape(title.text) or (
+                title.source == "filename" and not _is_generic_filename(title.text)
+            ):
                 source_texts.extend([title.text, _strip_chapter_prefix(title.text)])
             for candidate in source_texts:
                 if _is_clear_topic_title(candidate):
-                    raw_candidates.append((candidate, title, "clear title-like candidate"))
+                    raw_candidates.append(
+                        (candidate, title, "clear title-like candidate")
+                    )
 
         excerpt = (text or "")[: self.max_chars]
         for line_no, line in enumerate(excerpt.splitlines()[:80]):
@@ -705,15 +760,24 @@ class TopicResolver:
         scores: dict[str, dict[str, Any]] = {}
 
         for entry in self.catalog_entries:
-            strong_matches = self._matched_terms(normalized_excerpt, entry.strong_keywords)
+            strong_matches = self._matched_terms(
+                normalized_excerpt, entry.strong_keywords
+            )
             weak_matches = self._matched_terms(normalized_excerpt, entry.weak_keywords)
-            negative_matches = self._matched_terms(normalized_excerpt, entry.negative_keywords)
+            negative_matches = self._matched_terms(
+                normalized_excerpt, entry.negative_keywords
+            )
             alias_matches = self._matched_alias_terms(excerpt, entry)
 
             strong_count = len(strong_matches)
             weak_count = len(weak_matches)
             negative_count = len(negative_matches)
-            raw_score = strong_count * 3.0 + weak_count * 0.5 + len(alias_matches) * 4.0 - negative_count * 2.0
+            raw_score = (
+                strong_count * 3.0
+                + weak_count * 0.5
+                + len(alias_matches) * 4.0
+                - negative_count * 2.0
+            )
             scores[entry.canonical] = {
                 "strong": strong_matches[:8],
                 "weak": weak_matches[:8],
@@ -722,7 +786,9 @@ class TopicResolver:
                 "score": round(raw_score, 3),
             }
 
-            alias_has_subject_shape = any(_word_count(alias) >= 2 for alias in alias_matches)
+            alias_has_subject_shape = any(
+                _word_count(alias) >= 2 for alias in alias_matches
+            )
             if alias_matches and (alias_has_subject_shape or strong_count >= 2):
                 confidence = 0.79 + min(0.1, strong_count * 0.02)
                 candidates.append(
@@ -740,7 +806,9 @@ class TopicResolver:
             if strong_count < 3:
                 continue
 
-            confidence = 0.72 + min(0.18, strong_count * 0.03) + min(0.04, weak_count * 0.01)
+            confidence = (
+                0.72 + min(0.18, strong_count * 0.03) + min(0.04, weak_count * 0.01)
+            )
             confidence -= min(0.12, negative_count * 0.04)
             confidence = max(0.0, min(0.88, confidence))
             if confidence < 0.45:
@@ -779,7 +847,9 @@ class TopicResolver:
             normalized_alias = normalize_text(alias)
             if len(normalized_alias) <= 3:
                 continue
-            if _contains_original_phrase(text, alias) or _contains_phrase(normalized_text, normalized_alias):
+            if _contains_original_phrase(text, alias) or _contains_phrase(
+                normalized_text, normalized_alias
+            ):
                 matches.append(alias)
         return matches
 
@@ -868,7 +938,9 @@ class TopicResolver:
                 "confidence": candidate.confidence,
                 "evidence": candidate.evidence[:2],
             }
-            for candidate in sorted(candidates, key=lambda c: c.confidence, reverse=True)[:5]
+            for candidate in sorted(
+                candidates, key=lambda c: c.confidence, reverse=True
+            )[:5]
         ]
         top_scores = dict(
             sorted(
@@ -935,12 +1007,18 @@ def extract_title_candidates(
             score -= 0.20
         if _is_mostly_upper(line):
             score += 0.18
-        if any(hint in normalized for hint in [normalize_text(h) for h in _TITLE_HINTS]):
+        if any(
+            hint in normalized for hint in [normalize_text(h) for h in _TITLE_HINTS]
+        ):
             score += 0.10
         if _is_generic_heading(line):
             score -= 0.25
 
-        source = "heading" if any(h in normalized for h in ("chuong", "chapter", "bai ", "lecture")) else "document_title"
+        source = (
+            "heading"
+            if any(h in normalized for h in ("chuong", "chapter", "bai ", "lecture"))
+            else "document_title"
+        )
         candidates.append(
             TitleCandidate(
                 text=line,

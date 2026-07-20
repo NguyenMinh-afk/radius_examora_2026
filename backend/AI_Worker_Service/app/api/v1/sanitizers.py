@@ -11,6 +11,7 @@ Rules:
   - sanitize_optional_text: None/""/whitespace/"string"/"null" → None
   - sanitize_topic: None/""/default Swagger values → raise ValidationError(422)
 """
+
 from typing import Optional, Union
 
 from app.core.exceptions import ValidationError
@@ -75,13 +76,13 @@ def sanitize_optional_int(
     if value == 0:
         return None
     if value < 0:
-        raise ValidationError(
-            f"'{field_name}' cannot be negative. Got: {value}"
-        )
+        raise ValidationError(f"'{field_name}' cannot be negative. Got: {value}")
     return value
 
 
-def sanitize_optional_text(value: Optional[str], field_name: str = "field") -> Optional[str]:
+def sanitize_optional_text(
+    value: Optional[str], field_name: str = "field"
+) -> Optional[str]:
     """
     Convert placeholder / empty text values to None.
 
@@ -169,5 +170,7 @@ def sanitize_upload_fields(
         "subject_id": sanitize_optional_int(subject_id, "subject_id"),
         "subject_name": sanitize_optional_text(subject_name, "subject_name"),
         "chapter_id": sanitize_optional_int(chapter_id, "chapter_id"),
-        "knowledge_unit_id": sanitize_optional_int(knowledge_unit_id, "knowledge_unit_id"),
+        "knowledge_unit_id": sanitize_optional_int(
+            knowledge_unit_id, "knowledge_unit_id"
+        ),
     }

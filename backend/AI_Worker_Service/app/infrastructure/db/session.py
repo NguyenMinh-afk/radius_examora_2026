@@ -1,6 +1,7 @@
 """
 Async SQLAlchemy session factory and dependency injection helpers.
 """
+
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 

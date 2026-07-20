@@ -1,6 +1,7 @@
 """
 Use Case: Retry a failed or queued generation task.
 """
+
 import uuid
 from typing import Any, Dict
 
@@ -31,7 +32,10 @@ class RetryGenerationTaskUseCase:
         if not task:
             raise NotFoundError("Task", str(task_id))
 
-        if task.status not in (TaskStatus.FAILED.value, TaskStatus.QUEUED_UNTIL_TOMORROW.value):
+        if task.status not in (
+            TaskStatus.FAILED.value,
+            TaskStatus.QUEUED_UNTIL_TOMORROW.value,
+        ):
             raise ValueError(
                 f"Cannot retry task in status '{task.status}'. "
                 f"Only '{TaskStatus.FAILED.value}' or '{TaskStatus.QUEUED_UNTIL_TOMORROW.value}' are allowed."
@@ -44,16 +48,25 @@ class RetryGenerationTaskUseCase:
             await self.db.execute(
                 update(AIGenerationTask)
                 .where(AIGenerationTask.id == task_id)
-                .values(status=TaskStatus.PENDING.value, error_message=None, completed_at=None)
+                .values(
+                    status=TaskStatus.PENDING.value,
+                    error_message=None,
+                    completed_at=None,
+                )
             )
-            
+
             # Reset request
             await self.db.execute(
                 update(AIGenerationRequest)
                 .where(AIGenerationRequest.id == request_id)
-                .values(status=RequestStatus.PENDING.value, progress=0, error_message=None, completed_at=None)
+                .values(
+                    status=RequestStatus.PENDING.value,
+                    progress=0,
+                    error_message=None,
+                    completed_at=None,
+                )
             )
-            
+
             await self.db.commit()
         except Exception as e:
             await self.db.rollback()

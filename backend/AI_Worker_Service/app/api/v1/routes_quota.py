@@ -4,6 +4,7 @@ API theo dõi quota Gemini và OCR.Space.
 Mục tiêu chính là cho vận hành/dev nhìn nhanh trạng thái usage hiện tại của các
 provider mà không phải đọc trực tiếp từ DB.
 """
+
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -42,7 +43,9 @@ class QuotaOverviewResponse(ProviderQuotaStatus):
 class SetDevRequest(BaseModel):
     """POST /ai/quota/set-dev - Set used_today to a specific value."""
 
-    used_today: int = Field(..., ge=0, description="Number of requests to simulate as already used today.")
+    used_today: int = Field(
+        ..., ge=0, description="Number of requests to simulate as already used today."
+    )
 
 
 @router.get(
@@ -77,7 +80,10 @@ async def reset_quota_dev(
         )
     quota_svc = ApiQuotaService(db)
     await quota_svc.reset_dev()
-    return {"message": "Quota reset to 0.", "usage_date": (await quota_svc.get_status())["usage_date"]}
+    return {
+        "message": "Quota reset to 0.",
+        "usage_date": (await quota_svc.get_status())["usage_date"],
+    }
 
 
 @router.post(

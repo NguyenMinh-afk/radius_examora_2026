@@ -1,6 +1,7 @@
 """
 Pydantic v2 schemas for question generation API endpoints.
 """
+
 import uuid
 from typing import Optional
 

@@ -3,6 +3,7 @@ Text chunking service.
 Splits preprocessed text into overlapping chunks suitable for Gemini input.
 Prefers heading-based splits, falls back to sentence-aware length splitting.
 """
+
 import re
 from dataclasses import dataclass
 from typing import List
@@ -15,8 +16,8 @@ logger = get_logger(__name__)
 _HEADING_PATTERN = re.compile(
     r"^(?:"
     r"\d+[\.\d]*\s+[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĂĐƠƯẠẶẦẨẪẬẮẰẲẴẶ]"  # "1. Title" or "1.2 Title"
-    r"|#{1,3}\s+"                                              # Markdown ## heading
-    r"|[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĂĐƠƯẠẶẦẨẪẬẮẰẲẴẶ\s]{8,}$"        # ALL-CAPS line
+    r"|#{1,3}\s+"  # Markdown ## heading
+    r"|[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĂĐƠƯẠẶẦẨẪẬẮẰẲẴẶ\s]{8,}$"  # ALL-CAPS line
     r")",
     re.MULTILINE,
 )
@@ -103,7 +104,9 @@ class TextChunker:
                 char_cursor = char_end
             else:
                 # Section too large — sub-split
-                sub_chunks = self._split_by_size(section, base_index=len(chunks), char_offset=char_cursor)
+                sub_chunks = self._split_by_size(
+                    section, base_index=len(chunks), char_offset=char_cursor
+                )
                 chunks.extend(sub_chunks)
                 char_cursor += len(section)
 
