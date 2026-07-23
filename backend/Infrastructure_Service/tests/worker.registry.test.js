@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   startEmailConsumer: vi.fn().mockResolvedValue(undefined),
   startExamResultsConsumer: vi.fn().mockResolvedValue(undefined),
   startNotificationConsumer: vi.fn().mockResolvedValue(undefined),
+  startOutboxWorker: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../src/workers/domain-event.consumer.js', () => ({
@@ -23,6 +24,10 @@ vi.mock('../src/workers/notification.consumer.js', () => ({
   startNotificationConsumer: mocks.startNotificationConsumer,
 }));
 
+vi.mock('../src/workers/outbox.worker.js', () => ({
+  startOutboxWorker: mocks.startOutboxWorker,
+}));
+
 import { INFRASTRUCTURE_CONSUMERS, startInfrastructureConsumers } from '../src/workers/registry.js';
 
 describe('Infrastructure consumer registry', () => {
@@ -34,10 +39,12 @@ describe('Infrastructure consumer registry', () => {
       'notification.send',
       'domain.events',
       'exam.results',
+      'outbox.publisher',
     ]);
     expect(mocks.startDomainEventConsumer).toHaveBeenCalledOnce();
     expect(mocks.startEmailConsumer).toHaveBeenCalledOnce();
     expect(mocks.startExamResultsConsumer).toHaveBeenCalledOnce();
     expect(mocks.startNotificationConsumer).toHaveBeenCalledOnce();
+    expect(mocks.startOutboxWorker).toHaveBeenCalledOnce();
   });
 });

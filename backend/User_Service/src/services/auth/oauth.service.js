@@ -1,18 +1,23 @@
-import { randomUUID } from "crypto";
-import bcrypt from "bcrypt";
-import { OAuth2Client } from "google-auth-library";
+import { randomUUID } from 'crypto';
+import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
 
-import { setOAuthResult, getOAuthResult, deleteOAuthResult } from "../../services/oauthTempStore.js";
+import {
+  setOAuthResult,
+  getOAuthResult,
+  deleteOAuthResult,
+} from '../../services/oauthTempStore.js';
 import {
   getRoleByName,
   toPublicUser,
   assertUserCanLogin,
   issueAuthResponse,
-} from "./shared.service.js";
-import { publishUserCreated } from "../../config/rabbitmq.js";
+} from './shared.service.js';
+import sequelize from '../../config/sequelize.js';
+import { enqueueUserCreated } from '../../config/outbox.js';
 
-const GOOGLE_PROVIDER = "google";
-const DEFAULT_FRONTEND_URL = "http://localhost:5173";
+const GOOGLE_PROVIDER = 'google';
+const DEFAULT_FRONTEND_URL = 'http://localhost:5173';
 
 export const getFrontendUrl = () => process.env.FRONTEND_URL || DEFAULT_FRONTEND_URL;
 
@@ -35,7 +40,7 @@ export const getGoogleUserFromCode = async (code, redirectUri) => {
   );
 
   if (!tokens.id_token) {
-    const error = new Error("Google did not return an id_token");
+    const error = new Error('Google did not return an id_token');
     error.status = 401;
     throw error;
   }
@@ -47,13 +52,13 @@ export const getGoogleUserFromCode = async (code, redirectUri) => {
 
   const payload = ticket.getPayload();
   if (!payload?.email || !payload?.sub) {
-    const error = new Error("Google account payload is missing email or subject");
+    const error = new Error('Google account payload is missing email or subject');
     error.status = 401;
     throw error;
   }
 
   if (payload.email_verified === false) {
-    const error = new Error("Google email is not verified");
+    const error = new Error('Google email is not verified');
     error.status = 403;
     throw error;
   }
@@ -78,13 +83,13 @@ export const getGoogleUserFromCredential = async (credential) => {
 
   const payload = ticket.getPayload();
   if (!payload?.email || !payload?.sub) {
-    const error = new Error("Google account payload is missing email or subject");
+    const error = new Error('Google account payload is missing email or subject');
     error.status = 401;
     throw error;
   }
 
   if (payload.email_verified === false) {
-    const error = new Error("Google email is not verified");
+    const error = new Error('Google email is not verified');
     error.status = 403;
     throw error;
   }
@@ -100,106 +105,128 @@ export const getGoogleUserFromCredential = async (credential) => {
   };
 };
 
-export const findOrCreateGoogleUser = async (googleUser) => {
-  const OAuthProvider = (await import("../../models/user/OAuthProvider.js")).default;
-  const User = (await import("../../models/User.js")).default;
+export const findOrCreateGoogleUser = async (googleUser, eventContext = {}) => {
+  const OAuthProvider = (await import('../../models/user/OAuthProvider.js')).default;
+  const User = (await import('../../models/User.js')).default;
 
-  let provider = await OAuthProvider.findOne({
-    where: {
-      provider: GOOGLE_PROVIDER,
-      provider_user_id: googleUser.providerUserId,
-    },
-  });
+  return sequelize.transaction(async (transaction) => {
+    const provider = await OAuthProvider.findOne({
+      where: {
+        provider: GOOGLE_PROVIDER,
+        provider_user_id: googleUser.providerUserId,
+      },
+      transaction,
+    });
 
-  if (provider) {
-    const existingUser = await User.findByPk(provider.user_id);
-    if (!existingUser) {
-      const error = new Error("Linked Google account has no user");
-      error.status = 500;
-      throw error;
+    if (provider) {
+      const existingUser = await User.findByPk(provider.user_id, { transaction });
+      if (!existingUser) {
+        const error = new Error('Linked Google account has no user');
+        error.status = 500;
+        throw error;
+      }
+
+      await provider.update(
+        {
+          access_token: googleUser.accessToken,
+          refresh_token: googleUser.refreshToken || provider.refresh_token,
+          token_expires_at: googleUser.tokenExpiresAt,
+        },
+        { transaction }
+      );
+
+      return existingUser;
     }
 
-    await provider.update({
-      access_token: googleUser.accessToken,
-      refresh_token: googleUser.refreshToken || provider.refresh_token,
-      token_expires_at: googleUser.tokenExpiresAt,
+    let user = await User.findOne({
+      where: { email: googleUser.email },
+      transaction,
     });
+    let userCreated = false;
 
-    return existingUser;
-  }
+    if (!user) {
+      const studentRole = await getRoleByName('student', { transaction });
 
-  let user = await User.findOne({ where: { email: googleUser.email } });
-  let userCreated = false;
+      user = await User.create(
+        {
+          email: googleUser.email,
+          password_hash: await bcrypt.hash(randomUUID(), 10),
+          full_name: googleUser.fullName,
+          avatar_url: googleUser.avatarUrl,
+          role_id: studentRole.id,
+          is_active: true,
+          email_verified: true,
+          approval_status: 'approved',
+          approved_at: new Date(),
+        },
+        { transaction }
+      );
+      userCreated = true;
+    }
 
-  if (!user) {
-    const studentRole = await getRoleByName("student");
+    await OAuthProvider.create(
+      {
+        user_id: user.id,
+        provider: GOOGLE_PROVIDER,
+        provider_user_id: googleUser.providerUserId,
+        access_token: googleUser.accessToken,
+        refresh_token: googleUser.refreshToken,
+        token_expires_at: googleUser.tokenExpiresAt,
+      },
+      { transaction }
+    );
 
-    user = await User.create({
-      email: googleUser.email,
-      password_hash: await bcrypt.hash(randomUUID(), 10),
-      full_name: googleUser.fullName,
-      avatar_url: googleUser.avatarUrl,
-      role_id: studentRole.id,
-      is_active: true,
-      email_verified: true,
-      approval_status: "approved",
-      approved_at: new Date(),
-    });
-    userCreated = true;
-  }
+    if (userCreated) {
+      await enqueueUserCreated(
+        {
+          id: user.id,
+          role: 'student',
+          approvalStatus: user.approval_status,
+          emailVerified: user.email_verified,
+          registrationMethod: GOOGLE_PROVIDER,
+        },
+        eventContext,
+        transaction
+      );
+    }
 
-  provider = await OAuthProvider.create({
-    user_id: user.id,
-    provider: GOOGLE_PROVIDER,
-    provider_user_id: googleUser.providerUserId,
-    access_token: googleUser.accessToken,
-    refresh_token: googleUser.refreshToken,
-    token_expires_at: googleUser.tokenExpiresAt,
+    return user;
   });
-
-  if (userCreated) {
-    await publishUserCreated({
-      id: user.id,
-      role: "student",
-      approvalStatus: user.approval_status,
-      emailVerified: user.email_verified,
-      registrationMethod: GOOGLE_PROVIDER,
-    });
-  }
-
-  return user;
 };
 
 export const generateGoogleAuthUrl = () => {
   if (!validateGoogleConfig() || !process.env.GOOGLE_CALLBACK_URL) {
-    const error = new Error("Missing Google OAuth configuration");
+    const error = new Error('Missing Google OAuth configuration');
     error.status = 500;
     throw error;
   }
 
   const client = getGoogleClient();
   return client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "select_account",
-    scope: ["openid", "email", "profile"],
+    access_type: 'offline',
+    prompt: 'select_account',
+    scope: ['openid', 'email', 'profile'],
   });
 };
 
 export const loginWithCredential = async (req, credential) => {
   if (!credential) {
-    const error = new Error("Google credential is required");
+    const error = new Error('Google credential is required');
     error.status = 400;
     throw error;
   }
 
   if (!validateGoogleConfig()) {
-    const error = new Error("Missing Google OAuth configuration");
+    const error = new Error('Missing Google OAuth configuration');
     error.status = 500;
     throw error;
   }
 
   const googleUser = await getGoogleUserFromCredential(credential);
-  const user = await findOrCreateGoogleUser(googleUser);
+  const user = await findOrCreateGoogleUser(googleUser, {
+    traceId: req.correlationId,
+    requestId: req.requestId,
+  });
   assertUserCanLogin(user);
 
   return issueAuthResponse(req, user);
@@ -214,37 +241,41 @@ export const handleCallback = async (req, code, queryError, queryErrorDescriptio
   }
 
   if (!code) {
-    const error = new Error("Google did not return an authorization code");
+    const error = new Error('Google did not return an authorization code');
     error.status = 400;
     error.redirect = `${getFrontendUrl()}/oauth/google/callback?error=missing_code&message=Google+did+not+return+an+authorization+code`;
     throw error;
   }
 
   if (!validateGoogleConfig()) {
-    const error = new Error("Missing Google OAuth configuration");
+    const error = new Error('Missing Google OAuth configuration');
     error.status = 500;
     error.redirect = `${getFrontendUrl()}/oauth/google/callback?error=missing_google_config&message=Missing+Google+OAuth+configuration`;
     throw error;
   }
 
-  const redirectUri = typeof req.query.redirectUri === "string"
-    ? req.query.redirectUri
-    : process.env.GOOGLE_CALLBACK_URL;
+  const redirectUri =
+    typeof req.query.redirectUri === 'string'
+      ? req.query.redirectUri
+      : process.env.GOOGLE_CALLBACK_URL;
 
   if (!redirectUri) {
-    const error = new Error("Missing Google OAuth redirect URI");
+    const error = new Error('Missing Google OAuth redirect URI');
     error.status = 500;
     error.redirect = `${getFrontendUrl()}/oauth/google/callback?error=missing_redirect_uri&message=Missing+Google+OAuth+redirect+URI`;
     throw error;
   }
 
   const googleUser = await getGoogleUserFromCode(code, redirectUri);
-  const user = await findOrCreateGoogleUser(googleUser);
+  const user = await findOrCreateGoogleUser(googleUser, {
+    traceId: req.correlationId,
+    requestId: req.requestId,
+  });
 
   try {
     assertUserCanLogin(user);
   } catch (err) {
-    if (err.code === "ACCOUNT_PENDING_APPROVAL") {
+    if (err.code === 'ACCOUNT_PENDING_APPROVAL') {
       err.redirect = `${getFrontendUrl()}/oauth/google/callback?error=pending_approval&message=Account+is+pending+admin+approval`;
     }
     throw err;
@@ -265,8 +296,8 @@ export const handleCallback = async (req, code, queryError, queryErrorDescriptio
 };
 
 export const getOAuthResultByState = (state) => {
-  if (!state || typeof state !== "string") {
-    const error = new Error("Missing OAuth state");
+  if (!state || typeof state !== 'string') {
+    const error = new Error('Missing OAuth state');
     error.status = 400;
     throw error;
   }
@@ -274,7 +305,7 @@ export const getOAuthResultByState = (state) => {
   const authResult = getOAuthResult(state);
 
   if (!authResult) {
-    const error = new Error("OAuth result expired or not found. Please try logging in again.");
+    const error = new Error('OAuth result expired or not found. Please try logging in again.');
     error.status = 404;
     throw error;
   }

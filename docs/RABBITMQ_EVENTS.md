@@ -58,15 +58,37 @@ Invalid contracts go directly to the queue DLQ. Temporary database failures are
 retried up to three times through a retry queue with a five-second delay. When
 the retry limit is reached, the message is dead-lettered.
 
-## Current delivery behavior
+## Transactional outbox
 
-Producers wait for broker confirmation. A broker failure is logged and returned
-internally as `published: false`, but it does not roll back an already completed
-business operation. A transactional outbox is still required to guarantee later
-delivery when RabbitMQ is unavailable.
+User, Exam, and Question services do not publish domain events directly. Each
+business mutation and its event are committed in the same database transaction:
+
+1. The producer writes the standard envelope to
+   `infra_eventing.outbox_events` with status `PENDING`.
+2. Infrastructure Service locks ready rows with
+   `FOR UPDATE SKIP LOCKED`.
+3. The Outbox Worker publishes to `examora.topic` and waits for a RabbitMQ
+   publisher confirm.
+4. A confirmed event becomes `PUBLISHED`. A temporary failure stays `PENDING`
+   and is retried with exponential backoff.
+5. After `OUTBOX_MAX_RETRIES` (default: 5), the event becomes `FAILED` and a
+   diagnostic copy is stored in `infra_eventing.dead_letter_messages`.
+
+The worker polls every `OUTBOX_POLL_INTERVAL_MS` (default: 1000 ms) and processes
+up to `OUTBOX_BATCH_SIZE` events per cycle (default: 10).
+
+Existing databases must apply the retry metadata migration before deploying the
+new worker:
+
+```bash
+psql -U postgres -d Exam_Bank \
+  -f database/Upgrade/20260723_outbox_retry.sql
+```
 
 Consumers must use `event_id`/AMQP `messageId` for idempotency because RabbitMQ
-delivery is at least once.
+delivery is at least once. If RabbitMQ confirms a publish but the database update
+fails, the Outbox Worker may publish the event again; Step 8 consumer
+idempotency makes that safe.
 
 ## Data rules
 

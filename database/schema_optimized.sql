@@ -435,6 +435,8 @@ CREATE TABLE outbox_events (
         CHECK (status IN ('PENDING', 'PUBLISHED', 'FAILED')),
     retry_count INTEGER DEFAULT 0,
     trace_id VARCHAR(100),
+    next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_error TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     published_at TIMESTAMP
 );
@@ -459,7 +461,8 @@ CREATE TABLE dead_letter_messages (
     failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_outbox_events_status ON outbox_events(status, created_at);
+CREATE INDEX idx_outbox_events_status
+    ON outbox_events(status, next_attempt_at, created_at);
 CREATE INDEX idx_dlq_routing_key ON dead_letter_messages(routing_key);
 CREATE INDEX idx_dlq_failed_at ON dead_letter_messages(failed_at);
 

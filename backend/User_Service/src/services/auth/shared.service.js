@@ -1,15 +1,12 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
 
-import {
-  generateTokens,
-  getRefreshTokenExpiresAt,
-} from "../../config/jwt.js";
-import Role from "../../models/Role.js";
-import User from "../../models/User.js";
-import UserSession from "../../models/UserSession.js";
+import { generateTokens, getRefreshTokenExpiresAt } from '../../config/jwt.js';
+import Role from '../../models/Role.js';
+import User from '../../models/User.js';
+import UserSession from '../../models/UserSession.js';
 
-export const getRoleByName = async (name) => {
-  const role = await Role.findOne({ where: { name } });
+export const getRoleByName = async (name, options = {}) => {
+  const role = await Role.findOne({ where: { name }, ...options });
   if (!role) {
     const error = new Error(`Role not found: ${name}`);
     error.status = 500;
@@ -24,7 +21,7 @@ export const getUserRole = async (user) => {
 };
 
 export const getApprovalStatusForRole = (roleName) =>
-  roleName === "teacher" ? "pending" : "approved";
+  roleName === 'teacher' ? 'pending' : 'approved';
 
 export const toPublicUser = (user, role) => ({
   id: user.id,
@@ -41,29 +38,29 @@ export const toPublicUser = (user, role) => ({
 
 export const assertUserCanLogin = (user) => {
   if (!user) {
-    const error = new Error("Invalid email or password");
+    const error = new Error('Invalid email or password');
     error.status = 401;
     throw error;
   }
 
   if (!user.is_active) {
-    const error = new Error("Account is disabled");
+    const error = new Error('Account is disabled');
     error.status = 403;
     throw error;
   }
 
-  if (user.approval_status !== "approved") {
-    const error = new Error("Account is pending admin approval");
+  if (user.approval_status !== 'approved') {
+    const error = new Error('Account is pending admin approval');
     error.status = 403;
-    error.code = "ACCOUNT_PENDING_APPROVAL";
+    error.code = 'ACCOUNT_PENDING_APPROVAL';
     throw error;
   }
 };
 
 export const getBearerToken = (req) => {
-  const header = req.headers.authorization || "";
-  const [scheme, token] = header.split(" ");
-  if (scheme?.toLowerCase() !== "bearer" || !token) {
+  const header = req.headers.authorization || '';
+  const [scheme, token] = header.split(' ');
+  if (scheme?.toLowerCase() !== 'bearer' || !token) {
     return null;
   }
   return token;
@@ -74,9 +71,9 @@ const createUserSession = async (req, user, refreshToken) =>
     user_id: user.id,
     session_token: randomUUID(),
     refresh_token: refreshToken,
-    device_type: "web",
+    device_type: 'web',
     ip_address: req.ip,
-    user_agent: req.headers["user-agent"] || null,
+    user_agent: req.headers['user-agent'] || null,
     expires_at: getRefreshTokenExpiresAt(),
   });
 

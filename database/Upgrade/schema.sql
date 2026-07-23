@@ -505,6 +505,9 @@ CREATE TABLE outbox_events (
     payload JSONB NOT NULL,
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'PUBLISHED', 'FAILED')),
     retry_count INTEGER DEFAULT 0,
+    trace_id VARCHAR(100),
+    next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_error TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     published_at TIMESTAMP
 );
@@ -520,7 +523,8 @@ CREATE TABLE processed_messages (
 
 CREATE INDEX idx_documents_course_status ON documents(course_id, status);
 CREATE INDEX idx_ai_jobs_status ON ai_jobs(status, created_at);
-CREATE INDEX idx_outbox_events_status ON outbox_events(status, created_at);
+CREATE INDEX idx_outbox_events_status
+    ON outbox_events(status, next_attempt_at, created_at);
 CREATE UNIQUE INDEX uq_ai_jobs_active_per_document ON ai_jobs(document_id) WHERE status IN ('PENDING', 'RUNNING');
 
 -- AI generation requests
@@ -1116,7 +1120,10 @@ ALTER TABLE student_assignments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DE
 ALTER TABLE outbox_events
     ADD COLUMN IF NOT EXISTS exchange_name VARCHAR(100),
     ADD COLUMN IF NOT EXISTS routing_key VARCHAR(100),
-    ADD COLUMN IF NOT EXISTS headers JSONB;
+    ADD COLUMN IF NOT EXISTS headers JSONB,
+    ADD COLUMN IF NOT EXISTS trace_id VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS next_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN IF NOT EXISTS last_error TEXT;
 
 CREATE TABLE IF NOT EXISTS dead_letter_messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
