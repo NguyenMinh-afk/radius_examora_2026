@@ -250,7 +250,8 @@ docker logs exmora-ai-worker-service
 Hệ thống có cơ chế:
 - Model fallback: Thử các model khác
 - Local fallback: Sinh câu hỏi cơ bản khi quota hết
-- Queue: Đợi đến ngày mai nếu quota exceeded
+- Lỗi tạm thời: Retry/backoff tối đa 3 lần; quá số lần xử lý sẽ cập nhật `failed` và chuyển DLQ
+- Hệ thống không sử dụng cơ chế đợi đến ngày hôm sau
 
 ### 4. Database connection failed
 
