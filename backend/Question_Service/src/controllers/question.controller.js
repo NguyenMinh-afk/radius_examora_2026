@@ -2,6 +2,16 @@
  * Question Controller
  */
 import questionService from "../services/question.service.js";
+import {
+  publishQuestionCreated,
+  publishQuestionDeleted,
+  publishQuestionUpdated,
+} from "../config/rabbitmq.js";
+
+const getEventContext = (req) => ({
+  traceId: req.correlationId,
+  requestId: req.requestId,
+});
 
 export const getQuestions = async (req, res) => {
   try {
@@ -37,6 +47,7 @@ export const getQuestionById = async (req, res) => {
 export const createQuestion = async (req, res) => {
   try {
     const data = await questionService.createQuestion(req.user.id, req.body);
+    await publishQuestionCreated(data, req.user.id, getEventContext(req));
     return res.status(201).json(data);
   } catch (error) {
     console.error("[Question] createQuestion error:", error);
@@ -48,6 +59,12 @@ export const updateQuestion = async (req, res) => {
   try {
     const { id } = req.params;
     const data = await questionService.updateQuestion(id, req.user.id, req.body);
+    await publishQuestionUpdated(
+      data,
+      req.user.id,
+      Object.keys(req.body || {}),
+      getEventContext(req),
+    );
     return res.json(data);
   } catch (error) {
     const status = error.message?.includes("not found") ? 404 : 500;
@@ -59,6 +76,7 @@ export const deleteQuestion = async (req, res) => {
   try {
     const { id } = req.params;
     await questionService.deleteQuestion(id, req.user.id);
+    await publishQuestionDeleted(id, req.user.id, getEventContext(req));
     return res.json({ success: true });
   } catch (error) {
     const status = error.message?.includes("not found") ? 404 : 500;

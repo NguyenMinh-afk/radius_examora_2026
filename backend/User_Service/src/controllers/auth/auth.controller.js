@@ -14,10 +14,24 @@ import {
   verifyResetToken,
   resetPassword,
 } from "../../services/auth/index.js";
+import { publishUserCreated } from "../../config/rabbitmq.js";
 
 export const register = async (req, res) => {
   try {
     const result = await registerUser(req.body);
+    await publishUserCreated(
+      {
+        id: result.user.id,
+        role: result.userRole.name,
+        approvalStatus: result.approvalStatus,
+        emailVerified: result.user.email_verified,
+        registrationMethod: "password",
+      },
+      {
+        traceId: req.correlationId,
+        requestId: req.requestId,
+      },
+    );
 
     if (result.approvalStatus !== "approved") {
       return res.status(201).json({

@@ -3,6 +3,7 @@
  */
 import examService from "../../services/student/exam.service.js";
 import assignmentService from "../../services/student/assignment.service.js";
+import { publishExamCompleted } from "../../config/rabbitmq.js";
 
 export const getAssignments = async (req, res) => {
   try {
@@ -59,6 +60,24 @@ export const submitAssignment = async (req, res) => {
     const { answers } = req.body || {};
 
     const result = await examService.submitAttempt(studentId, assignmentId, answers || []);
+    if (!result.wasAlreadySubmitted) {
+      await publishExamCompleted(
+        {
+          attemptId: result.attempt.id,
+          assignmentId,
+          studentId,
+          score: result.summary.score,
+          percentage: result.summary.percentage,
+          correctAnswers: result.summary.correctAnswers,
+          wrongAnswers: result.summary.wrongAnswers,
+          submittedAt: result.attempt.submitted_at,
+        },
+        {
+          traceId: req.correlationId,
+          requestId: req.requestId,
+        },
+      );
+    }
     return res.json({
       attempt: {
         attemptId: result.attempt.id,

@@ -9,6 +9,7 @@ import {
   assertUserCanLogin,
   issueAuthResponse,
 } from "./shared.service.js";
+import { publishUserCreated } from "../../config/rabbitmq.js";
 
 const GOOGLE_PROVIDER = "google";
 const DEFAULT_FRONTEND_URL = "http://localhost:5173";
@@ -128,6 +129,7 @@ export const findOrCreateGoogleUser = async (googleUser) => {
   }
 
   let user = await User.findOne({ where: { email: googleUser.email } });
+  let userCreated = false;
 
   if (!user) {
     const studentRole = await getRoleByName("student");
@@ -143,6 +145,7 @@ export const findOrCreateGoogleUser = async (googleUser) => {
       approval_status: "approved",
       approved_at: new Date(),
     });
+    userCreated = true;
   }
 
   provider = await OAuthProvider.create({
@@ -153,6 +156,16 @@ export const findOrCreateGoogleUser = async (googleUser) => {
     refresh_token: googleUser.refreshToken,
     token_expires_at: googleUser.tokenExpiresAt,
   });
+
+  if (userCreated) {
+    await publishUserCreated({
+      id: user.id,
+      role: "student",
+      approvalStatus: user.approval_status,
+      emailVerified: user.email_verified,
+      registrationMethod: GOOGLE_PROVIDER,
+    });
+  }
 
   return user;
 };
