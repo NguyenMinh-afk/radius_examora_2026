@@ -202,6 +202,7 @@ class ExamService {
       return {
         attempt: resolved.attempt,
         answers: [],
+        wasAlreadySubmitted: true,
         summary: {
           score: resolved.attempt.score != null ? Number(resolved.attempt.score) : 0,
           percentage: resolved.attempt.percentage != null ? Number(resolved.attempt.percentage) : 0,
@@ -288,6 +289,7 @@ class ExamService {
     return {
       attempt: resolved.attempt,
       answers: attemptAnswers,
+      wasAlreadySubmitted: false,
       summary: {
         score,
         percentage,

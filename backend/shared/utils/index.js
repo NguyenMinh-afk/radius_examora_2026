@@ -17,3 +17,4 @@ export {
   QUEUES,
   ROUTING_KEYS,
 } from "./rabbitmq.js";
+export { createDomainEventPublisher } from "./domainEventPublisher.js";
