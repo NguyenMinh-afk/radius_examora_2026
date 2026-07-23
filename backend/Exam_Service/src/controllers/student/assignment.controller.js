@@ -1,9 +1,8 @@
 /**
  * Student Assignment Controller
  */
-import examService from "../../services/student/exam.service.js";
-import assignmentService from "../../services/student/assignment.service.js";
-import { publishExamCompleted } from "../../config/rabbitmq.js";
+import examService from '../../services/student/exam.service.js';
+import assignmentService from '../../services/student/assignment.service.js';
 
 export const getAssignments = async (req, res) => {
   try {
@@ -16,9 +15,9 @@ export const getAssignments = async (req, res) => {
     });
     return res.json(data);
   } catch (error) {
-    console.error("[Student] getAssignments error:", error);
+    console.error('[Student] getAssignments error:', error);
     return res.status(500).json({
-      error: error.message || "Internal server error",
+      error: error.message || 'Internal server error',
     });
   }
 };
@@ -31,9 +30,9 @@ export const startAssignment = async (req, res) => {
     const result = await examService.startAttempt(studentId, assignmentId);
     return res.json(result);
   } catch (error) {
-    console.error("[Student] startAssignment error:", error);
+    console.error('[Student] startAssignment error:', error);
     return res.status(400).json({
-      error: error.message || "Unable to start assignment",
+      error: error.message || 'Unable to start assignment',
     });
   }
 };
@@ -46,9 +45,9 @@ export const getAssignmentQuestions = async (req, res) => {
     const result = await examService.getAssignmentQuestions(studentId, assignmentId);
     return res.json(result);
   } catch (error) {
-    console.error("[Student] getAssignmentQuestions error:", error);
+    console.error('[Student] getAssignmentQuestions error:', error);
     return res.status(400).json({
-      error: error.message || "Unable to load questions",
+      error: error.message || 'Unable to load questions',
     });
   }
 };
@@ -59,25 +58,10 @@ export const submitAssignment = async (req, res) => {
     const { assignmentId } = req.params;
     const { answers } = req.body || {};
 
-    const result = await examService.submitAttempt(studentId, assignmentId, answers || []);
-    if (!result.wasAlreadySubmitted) {
-      await publishExamCompleted(
-        {
-          attemptId: result.attempt.id,
-          assignmentId,
-          studentId,
-          score: result.summary.score,
-          percentage: result.summary.percentage,
-          correctAnswers: result.summary.correctAnswers,
-          wrongAnswers: result.summary.wrongAnswers,
-          submittedAt: result.attempt.submitted_at,
-        },
-        {
-          traceId: req.correlationId,
-          requestId: req.requestId,
-        },
-      );
-    }
+    const result = await examService.submitAttempt(studentId, assignmentId, answers || [], {
+      traceId: req.correlationId,
+      requestId: req.requestId,
+    });
     return res.json({
       attempt: {
         attemptId: result.attempt.id,
@@ -90,9 +74,9 @@ export const submitAssignment = async (req, res) => {
       summary: result.summary,
     });
   } catch (error) {
-    console.error("[Student] submitAssignment error:", error);
+    console.error('[Student] submitAssignment error:', error);
     return res.status(400).json({
-      error: error.message || "Unable to submit assignment",
+      error: error.message || 'Unable to submit assignment',
     });
   }
 };

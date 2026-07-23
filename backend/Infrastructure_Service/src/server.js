@@ -2,25 +2,25 @@
  * Infrastructure_Service
  * CHỦ YẾU chứa hạ tầng: queue consumers, email workers, cleanup jobs
  */
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import compression from "compression";
-import dotenv from "dotenv";
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import dotenv from 'dotenv';
 
 // Shared modules
-import { validateServiceEnv } from "../../shared/utils/env.validator.js";
-import { requestIdMiddleware, correlationIdMiddleware } from "../../shared/middleware/requestId.js";
-import { generalLimiter } from "../../shared/middleware/rateLimiter.js";
-import { default as logger, log } from "../../shared/utils/logger.js";
+import { validateServiceEnv } from '../../shared/utils/env.validator.js';
+import { requestIdMiddleware, correlationIdMiddleware } from '../../shared/middleware/requestId.js';
+import { generalLimiter } from '../../shared/middleware/rateLimiter.js';
+import { default as logger, log } from '../../shared/utils/logger.js';
 
 dotenv.config();
 
 // Validate environment variables
-validateServiceEnv("infrastructureService");
+validateServiceEnv('infrastructureService');
 
 const app = express();
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 5005;
 let rabbitMQConnected = false;
 let consumersStarted = false;
@@ -33,7 +33,7 @@ app.use(correlationIdMiddleware);
 // Security headers (production only)
 if (isProduction) {
   app.use(helmet());
-  app.set("trust proxy", 1);
+  app.set('trust proxy', 1);
 }
 
 // Compression (production only)
@@ -42,7 +42,7 @@ if (isProduction) {
 }
 
 // Disable x-powered-by header
-app.disable("x-powered-by");
+app.disable('x-powered-by');
 
 // Middleware
 app.use(cors());
@@ -52,37 +52,38 @@ app.use(express.json());
 app.use(generalLimiter);
 
 // Health check endpoints
-app.get("/", (req, res) => res.send("Examora Infrastructure_Service is running..."));
+app.get('/', (req, res) => res.send('Examora Infrastructure_Service is running...'));
 
-app.get("/health", (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
-    status: "ok",
-    service: "Infrastructure_Service",
+    status: 'ok',
+    service: 'Infrastructure_Service',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    rabbitmq: rabbitMQConnected ? "connected" : "disconnected",
-    consumers: consumersStarted ? "running" : "stopped",
+    rabbitmq: rabbitMQConnected ? 'connected' : 'disconnected',
+    consumers: consumersStarted ? 'running' : 'stopped',
   });
 });
 
-app.get("/ready", (req, res) => {
+app.get('/ready', (req, res) => {
   res.json({
-    status: consumersStarted ? "ready" : "not_ready",
-    service: "Infrastructure_Service",
+    status: consumersStarted ? 'ready' : 'not_ready',
+    service: 'Infrastructure_Service',
     rabbitmq: rabbitMQConnected,
     consumers: consumersStarted,
   });
 });
 
 // Liveness probe
-app.get("/live", (req, res) => {
-  res.json({ status: "alive", timestamp: new Date().toISOString() });
+app.get('/live', (req, res) => {
+  res.json({ status: 'alive', timestamp: new Date().toISOString() });
 });
 
 // Import RabbitMQ utilities từ shared
-import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from "./config/rabbitmq.js";
-import { closeDatabase } from "./config/db.js";
-import { startInfrastructureConsumers } from "./workers/registry.js";
+import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from './config/rabbitmq.js';
+import { closeDatabase } from './config/db.js';
+import { startInfrastructureConsumers } from './workers/registry.js';
+import { stopOutboxWorker } from './workers/outbox.worker.js';
 
 /**
  * Connect RabbitMQ với retry
@@ -96,7 +97,7 @@ async function connectWithRetry(maxRetries = 5, intervalMs = 5000) {
       log.service.rabbitmqConnected();
       return true;
     } catch (error) {
-      log.error("RabbitMQ connection failed", { error: error.message });
+      log.error('RabbitMQ connection failed', { error: error.message });
       if (i < maxRetries - 1) {
         await new Promise((resolve) => setTimeout(resolve, intervalMs));
       }
@@ -109,7 +110,7 @@ async function connectWithRetry(maxRetries = 5, intervalMs = 5000) {
  * Start Infrastructure Service
  */
 async function startInfrastructure() {
-  log.info("Starting Infrastructure Service...");
+  log.info('Starting Infrastructure Service...');
 
   // Start HTTP server
   server = app.listen(PORT, () => {
@@ -122,15 +123,15 @@ async function startInfrastructure() {
 
   if (connected) {
     try {
-      log.info("Starting queue consumers...");
+      log.info('Starting queue consumers...');
       await startInfrastructureConsumers();
       consumersStarted = true;
-      log.info("All consumers started successfully!");
+      log.info('All consumers started successfully!');
     } catch (error) {
-      log.error("Failed to start consumers", { error: error.message });
+      log.error('Failed to start consumers', { error: error.message });
     }
   } else {
-    log.warn("Running WITHOUT RabbitMQ connection - Workers disabled");
+    log.warn('Running WITHOUT RabbitMQ connection - Workers disabled');
   }
 }
 
@@ -143,38 +144,40 @@ async function gracefulShutdown(signal) {
   // Stop accepting new connections
   if (server) {
     server.close(() => {
-      log.info("HTTP server closed");
+      log.info('HTTP server closed');
     });
   }
 
   try {
+    await stopOutboxWorker();
+
     // Close RabbitMQ
     await closeRabbitMQ();
-    log.info("RabbitMQ connection closed");
+    log.info('RabbitMQ connection closed');
 
     await closeDatabase();
-    log.info("Database pool closed");
+    log.info('Database pool closed');
 
     log.service.shutdown();
     process.exit(0);
   } catch (error) {
-    log.error("Error during shutdown", { error: error.message });
+    log.error('Error during shutdown', { error: error.message });
     process.exit(1);
   }
 }
 
 // Signal handlers
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 // Uncaught exception handler
-process.on("uncaughtException", (err) => {
-  log.error("Uncaught Exception", { error: err.message, stack: err.stack });
-  gracefulShutdown("uncaughtException");
+process.on('uncaughtException', (err) => {
+  log.error('Uncaught Exception', { error: err.message, stack: err.stack });
+  gracefulShutdown('uncaughtException');
 });
 
-process.on("unhandledRejection", (reason) => {
-  log.error("Unhandled Rejection", { reason: String(reason) });
+process.on('unhandledRejection', (reason) => {
+  log.error('Unhandled Rejection', { reason: String(reason) });
 });
 
 // Start

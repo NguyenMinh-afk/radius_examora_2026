@@ -1,10 +1,18 @@
 /**
  * Shared Utilities Exports
  */
-export { EnvValidator, validateServiceEnv, serviceEnvConfig } from "./env.validator.js";
+export {
+  EnvValidator,
+  validateServiceEnv,
+  serviceEnvConfig,
+} from "./env.validator.js";
 export { default as logger, log } from "./logger.js";
 export { setupGracefulShutdown } from "./gracefulShutdown.js";
-export { livenessCheck, readinessCheck, fullHealthCheck } from "./healthCheck.js";
+export {
+  livenessCheck,
+  readinessCheck,
+  fullHealthCheck,
+} from "./healthCheck.js";
 export {
   connectRabbitMQ,
   createChannel,
@@ -17,4 +25,4 @@ export {
   QUEUES,
   ROUTING_KEYS,
 } from "./rabbitmq.js";
-export { createDomainEventPublisher } from "./domainEventPublisher.js";
+export { createOutboxWriter } from "./outbox.js";

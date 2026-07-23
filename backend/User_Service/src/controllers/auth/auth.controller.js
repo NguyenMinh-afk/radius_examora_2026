@@ -13,29 +13,17 @@ import {
   requestPasswordReset,
   verifyResetToken,
   resetPassword,
-} from "../../services/auth/index.js";
-import { publishUserCreated } from "../../config/rabbitmq.js";
-
+} from '../../services/auth/index.js';
 export const register = async (req, res) => {
   try {
-    const result = await registerUser(req.body);
-    await publishUserCreated(
-      {
-        id: result.user.id,
-        role: result.userRole.name,
-        approvalStatus: result.approvalStatus,
-        emailVerified: result.user.email_verified,
-        registrationMethod: "password",
-      },
-      {
-        traceId: req.correlationId,
-        requestId: req.requestId,
-      },
-    );
+    const result = await registerUser(req.body, {
+      traceId: req.correlationId,
+      requestId: req.requestId,
+    });
 
-    if (result.approvalStatus !== "approved") {
+    if (result.approvalStatus !== 'approved') {
       return res.status(201).json({
-        message: "Account registered and pending admin approval",
+        message: 'Account registered and pending admin approval',
         user: toPublicUser(result.user, result.userRole),
       });
     }
@@ -43,12 +31,12 @@ export const register = async (req, res) => {
     const authResponse = await issueAuthResponse(req, result.user);
 
     return res.status(201).json({
-      message: "User registered successfully",
+      message: 'User registered successfully',
       ...authResponse,
     });
   } catch (err) {
     return res.status(err.status || 500).json({
-      message: "Registration failed",
+      message: 'Registration failed',
       error: err.message,
       code: err.code,
     });
@@ -61,15 +49,15 @@ export const login = async (req, res) => {
     const authResponse = await issueAuthResponse(req, user);
 
     return res.json({
-      message: "Login successful",
+      message: 'Login successful',
       ...authResponse,
     });
   } catch (err) {
     return res.status(err.status || 500).json({
-      message: "Login failed",
+      message: 'Login failed',
       error: err.message,
       code: err.code,
-      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     });
   }
 };
@@ -80,14 +68,14 @@ export const refresh = async (req, res) => {
     const result = await refreshTokens(refreshToken);
 
     return res.json({
-      message: "Token refreshed",
+      message: 'Token refreshed',
       ...result.tokens,
       token: result.tokens.accessToken,
       user: toPublicUser(result.user, result.role),
     });
   } catch (err) {
     return res.status(err.status || 401).json({
-      message: "Refresh token failed",
+      message: 'Refresh token failed',
       error: err.message,
       code: err.code,
     });
@@ -99,10 +87,10 @@ export const logout = async (req, res) => {
     const { refreshToken } = req.body;
     await logoutUser(refreshToken);
 
-    return res.json({ message: "Logged out" });
+    return res.json({ message: 'Logged out' });
   } catch (err) {
     return res.status(500).json({
-      message: "Logout failed",
+      message: 'Logout failed',
       error: err.message,
     });
   }
@@ -117,7 +105,7 @@ export const me = async (req, res) => {
     });
   } catch (err) {
     return res.status(err.status || 401).json({
-      message: "Authentication failed",
+      message: 'Authentication failed',
       error: err.message,
       code: err.code,
     });
@@ -129,21 +117,21 @@ export const forgotPassword = async (req, res) => {
     const result = await requestPasswordReset(req.body);
 
     return res.json({
-      message: "If an account exists, a password reset link has been sent to your email.",
+      message: 'If an account exists, a password reset link has been sent to your email.',
       success: true,
     });
   } catch (err) {
-    if (err.code === "oauth_only_reset") {
+    if (err.code === 'oauth_only_reset') {
       return res.status(400).json({
-        message: "oauth_only_reset",
-        code: "OAUTH_ONLY_RESET",
+        message: 'oauth_only_reset',
+        code: 'OAUTH_ONLY_RESET',
         userId: err.userId,
         email: err.email,
       });
     }
 
     return res.status(err.status || 500).json({
-      message: "Failed to request password reset",
+      message: 'Failed to request password reset',
       error: err.message,
       code: err.code,
     });
@@ -162,7 +150,7 @@ export const verifyToken = async (req, res) => {
   } catch (err) {
     return res.status(err.status || 400).json({
       valid: false,
-      message: err.message || "Invalid or expired reset token",
+      message: err.message || 'Invalid or expired reset token',
       code: err.code,
     });
   }
@@ -173,12 +161,12 @@ export const doResetPassword = async (req, res) => {
     const result = await resetPassword(req.body);
 
     return res.json({
-      message: "Password has been reset successfully",
+      message: 'Password has been reset successfully',
       success: result.success,
     });
   } catch (err) {
     return res.status(err.status || 400).json({
-      message: err.message || "Failed to reset password",
+      message: err.message || 'Failed to reset password',
       code: err.code,
     });
   }

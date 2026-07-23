@@ -1,12 +1,7 @@
 /**
  * Question Controller
  */
-import questionService from "../services/question.service.js";
-import {
-  publishQuestionCreated,
-  publishQuestionDeleted,
-  publishQuestionUpdated,
-} from "../config/rabbitmq.js";
+import questionService from '../services/question.service.js';
 
 const getEventContext = (req) => ({
   traceId: req.correlationId,
@@ -15,7 +10,16 @@ const getEventContext = (req) => ({
 
 export const getQuestions = async (req, res) => {
   try {
-    const { search, courseId, chapterId, tagId, difficulty, questionType, limit = 50, offset = 0 } = req.query;
+    const {
+      search,
+      courseId,
+      chapterId,
+      tagId,
+      difficulty,
+      questionType,
+      limit = 50,
+      offset = 0,
+    } = req.query;
     const data = await questionService.getQuestions({
       search,
       courseId,
@@ -28,7 +32,7 @@ export const getQuestions = async (req, res) => {
     });
     return res.json(data);
   } catch (error) {
-    console.error("[Question] getQuestions error:", error);
+    console.error('[Question] getQuestions error:', error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -39,18 +43,17 @@ export const getQuestionById = async (req, res) => {
     const data = await questionService.getQuestionById(id);
     return res.json(data);
   } catch (error) {
-    const status = error.message?.includes("not found") ? 404 : 500;
+    const status = error.message?.includes('not found') ? 404 : 500;
     return res.status(status).json({ error: error.message });
   }
 };
 
 export const createQuestion = async (req, res) => {
   try {
-    const data = await questionService.createQuestion(req.user.id, req.body);
-    await publishQuestionCreated(data, req.user.id, getEventContext(req));
+    const data = await questionService.createQuestion(req.user.id, req.body, getEventContext(req));
     return res.status(201).json(data);
   } catch (error) {
-    console.error("[Question] createQuestion error:", error);
+    console.error('[Question] createQuestion error:', error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -58,16 +61,15 @@ export const createQuestion = async (req, res) => {
 export const updateQuestion = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await questionService.updateQuestion(id, req.user.id, req.body);
-    await publishQuestionUpdated(
-      data,
+    const data = await questionService.updateQuestion(
+      id,
       req.user.id,
-      Object.keys(req.body || {}),
-      getEventContext(req),
+      req.body,
+      getEventContext(req)
     );
     return res.json(data);
   } catch (error) {
-    const status = error.message?.includes("not found") ? 404 : 500;
+    const status = error.message?.includes('not found') ? 404 : 500;
     return res.status(status).json({ error: error.message });
   }
 };
@@ -75,11 +77,10 @@ export const updateQuestion = async (req, res) => {
 export const deleteQuestion = async (req, res) => {
   try {
     const { id } = req.params;
-    await questionService.deleteQuestion(id, req.user.id);
-    await publishQuestionDeleted(id, req.user.id, getEventContext(req));
+    await questionService.deleteQuestion(id, req.user.id, getEventContext(req));
     return res.json({ success: true });
   } catch (error) {
-    const status = error.message?.includes("not found") ? 404 : 500;
+    const status = error.message?.includes('not found') ? 404 : 500;
     return res.status(status).json({ error: error.message });
   }
 };

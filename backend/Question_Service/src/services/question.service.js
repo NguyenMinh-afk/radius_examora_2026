@@ -1,10 +1,14 @@
 /**
  * Question Service - Business logic cho Question Module
  */
-import { Question, QuestionTag, QuestionTagRelation } from "../models/index.js";
+import { sequelize, Question, QuestionTag, QuestionTagRelation } from '../models/index.js';
+import {
+  enqueueQuestionCreated,
+  enqueueQuestionDeleted,
+  enqueueQuestionUpdated,
+} from '../config/outbox.js';
 
 class QuestionService {
-
   // Helper: Parse options JSON to answers array
   parseOptionsToAnswers(options) {
     if (!options || !Array.isArray(options)) return [];
@@ -27,12 +31,21 @@ class QuestionService {
   // Helper: Get correct answer keys from options
   getCorrectAnswerKeys(options) {
     if (!options || !Array.isArray(options)) return 'A';
-    const correctOnes = options.filter(o => o.is_correct === true);
+    const correctOnes = options.filter((o) => o.is_correct === true);
     if (correctOnes.length === 0) return 'A';
-    return correctOnes.map(o => o.key || 'A').join(',');
+    return correctOnes.map((o) => o.key || 'A').join(',');
   }
 
-  async getQuestions({ search, courseId, chapterId, tagId, difficulty, questionType, limit = 50, offset = 0 } = {}) {
+  async getQuestions({
+    search,
+    courseId,
+    chapterId,
+    tagId,
+    difficulty,
+    questionType,
+    limit = 50,
+    offset = 0,
+  } = {}) {
     const where = {};
     if (search) {
       where[Question.sequelize.Sequelize.Op.or] = [
@@ -54,10 +67,8 @@ class QuestionService {
 
     const { rows, count } = await Question.findAndCountAll({
       where,
-      include: [
-        { model: QuestionTag, as: "tags" },
-      ],
-      order: [["created_at", "DESC"]],
+      include: [{ model: QuestionTag, as: 'tags' }],
+      order: [['created_at', 'DESC']],
       limit,
       offset,
     });
@@ -77,14 +88,13 @@ class QuestionService {
     };
   }
 
-  async getQuestionById(id) {
+  async getQuestionById(id, transaction) {
     const question = await Question.findByPk(id, {
-      include: [
-        { model: QuestionTag, as: "tags" },
-      ],
+      include: [{ model: QuestionTag, as: 'tags' }],
+      transaction,
     });
     if (!question) {
-      throw new Error("Question not found");
+      throw new Error('Question not found');
     }
     return {
       id: question.id,
@@ -98,62 +108,85 @@ class QuestionService {
     };
   }
 
-  async createQuestion(userId, data) {
+  async createQuestion(userId, data, eventContext = {}) {
     const { content, questionType, difficulty, chapterId, knowledgeUnitId, answers, tagIds } = data;
 
     const options = this.answersToOptions(answers || []);
     const correctAnswer = this.getCorrectAnswerKeys(options);
 
-    const question = await Question.create({
-      content,
-      question_type: questionType,
-      difficulty: difficulty || "medium",
-      chapter_id: chapterId || null,
-      knowledge_unit_id: knowledgeUnitId || null,
-      created_by: userId,
-      options: options,
-      correct_answer: correctAnswer,
+    return sequelize.transaction(async (transaction) => {
+      const question = await Question.create(
+        {
+          content,
+          question_type: questionType,
+          difficulty: difficulty || 'medium',
+          chapter_id: chapterId || null,
+          knowledge_unit_id: knowledgeUnitId || null,
+          created_by: userId,
+          options: options,
+          correct_answer: correctAnswer,
+        },
+        { transaction }
+      );
+
+      if (tagIds?.length) {
+        const relations = tagIds.map((tagId) => ({
+          question_id: question.id,
+          tag_id: tagId,
+        }));
+        await QuestionTagRelation.bulkCreate(relations, { transaction });
+      }
+
+      const result = await this.getQuestionById(question.id, transaction);
+      await enqueueQuestionCreated(result, userId, eventContext, transaction);
+      return result;
     });
-
-    if (tagIds?.length) {
-      const relations = tagIds.map((tagId) => ({
-        question_id: question.id,
-        tag_id: tagId,
-      }));
-      await QuestionTagRelation.bulkCreate(relations);
-    }
-
-    return this.getQuestionById(question.id);
   }
 
-  async updateQuestion(id, userId, data) {
-    const question = await Question.findByPk(id);
-    if (!question) throw new Error("Question not found");
+  async updateQuestion(id, userId, data, eventContext = {}) {
+    return sequelize.transaction(async (transaction) => {
+      const question = await Question.findByPk(id, { transaction });
+      if (!question) throw new Error('Question not found');
 
-    let options, correctAnswer;
-    if (data.answers) {
-      options = this.answersToOptions(data.answers);
-      correctAnswer = this.getCorrectAnswerKeys(options);
-    } else {
-      options = question.options;
-      correctAnswer = question.correct_answer;
-    }
+      let options, correctAnswer;
+      if (data.answers) {
+        options = this.answersToOptions(data.answers);
+        correctAnswer = this.getCorrectAnswerKeys(options);
+      } else {
+        options = question.options;
+        correctAnswer = question.correct_answer;
+      }
 
-    await question.update({
-      content: data.content || question.content,
-      question_type: data.questionType || question.question_type,
-      difficulty: data.difficulty || question.difficulty,
-      options: options,
-      correct_answer: correctAnswer,
+      await question.update(
+        {
+          content: data.content || question.content,
+          question_type: data.questionType || question.question_type,
+          difficulty: data.difficulty || question.difficulty,
+          options: options,
+          correct_answer: correctAnswer,
+        },
+        { transaction }
+      );
+
+      const result = await this.getQuestionById(id, transaction);
+      await enqueueQuestionUpdated(
+        result,
+        userId,
+        Object.keys(data || {}),
+        eventContext,
+        transaction
+      );
+      return result;
     });
-
-    return this.getQuestionById(id);
   }
 
-  async deleteQuestion(id, userId) {
-    const question = await Question.findByPk(id);
-    if (!question) throw new Error("Question not found");
-    await question.destroy();
+  async deleteQuestion(id, userId, eventContext = {}) {
+    return sequelize.transaction(async (transaction) => {
+      const question = await Question.findByPk(id, { transaction });
+      if (!question) throw new Error('Question not found');
+      await question.destroy({ transaction });
+      await enqueueQuestionDeleted(id, userId, eventContext, transaction);
+    });
   }
 }
 
