@@ -37,6 +37,8 @@ from app.core.exceptions import (
     GeminiAllModelsExhaustedError,
     GeminiError,
     InsufficientContextError,
+    NotFoundError,
+    TaskRequestMismatchError,
 )
 from app.core.logging import get_logger, set_request_id, set_task_id
 from app.domain.enums import (
@@ -276,6 +278,7 @@ class ProcessAITaskUseCase:
         task_id: uuid.UUID,
         trace_id: Optional[str] = None,
         message_payload: Optional[Dict[str, Any]] = None,
+        defer_failure_status: bool = False,
     ) -> None:
         """Run the full AI pipeline. Updates DB in-place."""
         set_request_id(str(request_id))
@@ -289,9 +292,22 @@ class ProcessAITaskUseCase:
         request = await self.req_repo.get_by_id(request_id)
         task = await self.task_repo.get_by_id(task_id)
 
-        if not request or not task:
-            logger.error(
-                "Request or task not found: request=%s task=%s", request_id, task_id
+        if not request:
+            raise NotFoundError("Request", str(request_id))
+        if not task:
+            raise NotFoundError("Task", str(task_id))
+        if task.request_id != request_id:
+            raise TaskRequestMismatchError(str(request_id), str(task_id))
+
+        if task.status in {
+            TaskStatus.COMPLETED.value,
+            "completed_with_local_fallback",  # Legacy rows before normalization
+        }:
+            logger.info(
+                "Skipping duplicate completed task | request=%s task=%s status=%s",
+                request_id,
+                task_id,
+                task.status,
             )
             return
 
@@ -368,11 +384,10 @@ class ProcessAITaskUseCase:
             except GeminiAllModelsExhaustedError:
                 # â”€â”€ 3a. All Gemini models exhausted â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 logger.warning(
-                    "All Gemini models exhausted | task=%s | fallback=%s | queue=%s",
+                    "All Gemini models exhausted | task=%s | fallback=%s",
                     task_id,
                     self.settings.enable_local_fallback
                     and self.settings.local_fallback_when_quota_exceeded,
-                    self.settings.queue_when_quota_exceeded,
                 )
 
                 if (
@@ -388,24 +403,18 @@ class ProcessAITaskUseCase:
                         task_id=task_id,
                     )
                     generation_source = GenerationSource.LOCAL_FALLBACK.value
-                    final_task_status = TaskStatus.COMPLETED_WITH_LOCAL_FALLBACK.value
-                    final_req_status = RequestStatus.COMPLETED_WITH_LOCAL_FALLBACK.value
+                    final_task_status = TaskStatus.COMPLETED.value
+                    final_req_status = RequestStatus.COMPLETED.value
                     log_status = LogStatus.PARTIAL.value
                     prompt_text = "[LOCAL_FALLBACK â€” no Gemini call]"
                     response_text = f"Generated {len(questions_to_insert)} local fallback questions."
                     model_used = "local_fallback"
 
-                elif self.settings.queue_when_quota_exceeded:
-                    # â”€â”€ 3c. Queue until tomorrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                    await self._mark_queued(request_id, task_id)
-                    return
-
                 else:
-                    # â”€â”€ 3d. Hard fail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                    # No scheduler state: let RabbitMQ retry/backoff handle it.
                     raise GeminiError(
                         "All Gemini models exhausted quota/rate limit. "
-                        "Enable ENABLE_LOCAL_FALLBACK or QUEUE_WHEN_QUOTA_EXCEEDED "
-                        "in .env to avoid task failure."
+                        "Enable ENABLE_LOCAL_FALLBACK to use local generation."
                     )
 
             # â”€â”€ 4. Dedup (Gemini path only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -475,6 +484,15 @@ class ProcessAITaskUseCase:
             )
 
         except Exception as e:
+            if defer_failure_status:
+                await self.db.rollback()
+                logger.warning(
+                    "Deferring failed status to RabbitMQ retry handler | "
+                    "task=%s error=%s",
+                    task_id,
+                    str(e),
+                )
+                raise
             await self._handle_failure(
                 request_id=request_id,
                 task_id=task_id,
@@ -763,19 +781,23 @@ class ProcessAITaskUseCase:
             questions, task_id, topic, GenerationSource.LOCAL_FALLBACK.value
         )
 
-    async def _mark_queued(self, request_id: uuid.UUID, task_id: uuid.UUID) -> None:
-        """Mark task + request as queued_until_tomorrow."""
-        msg = "All Gemini models quota exhausted. Task queued until tomorrow."
-        await self.task_repo.update_status(
-            task_id, TaskStatus.QUEUED_UNTIL_TOMORROW.value, error_message=msg
+    async def mark_failed(
+        self,
+        request_id: uuid.UUID,
+        task_id: uuid.UUID,
+        error: Exception,
+        trace_id: Optional[str] = None,
+    ) -> None:
+        """Persist the terminal failure selected by the RabbitMQ consumer."""
+        await self._handle_failure(
+            request_id=request_id,
+            task_id=task_id,
+            error=error,
+            prompt_text="",
+            response_text="",
+            model_used=self.settings.gemini_model,
+            trace_id=trace_id,
         )
-        await self.req_repo.update_status(
-            request_id,
-            RequestStatus.QUEUED_UNTIL_TOMORROW.value,
-            error_message=msg,
-        )
-        await self.db.commit()
-        logger.info("Task queued_until_tomorrow | task=%s", task_id)
 
     async def _handle_failure(
         self,
@@ -791,6 +813,7 @@ class ProcessAITaskUseCase:
         error_msg = str(error)
         logger.error("Task FAILED | task=%s | error=%s", task_id, error_msg)
 
+        await self.db.rollback()
         try:
             await self.log_repo.create(
                 {
@@ -806,6 +829,7 @@ class ProcessAITaskUseCase:
             )
         except Exception as log_err:
             logger.error("Failed to write error log: %s", log_err)
+            await self.db.rollback()
 
         completed_at = datetime.now(timezone.utc)
         await self.task_repo.update_status(

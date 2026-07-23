@@ -68,7 +68,6 @@ class Settings(BaseSettings):
     gemini_daily_request_limit: int = Field(default=18)
     enable_local_fallback: bool = Field(default=True)
     local_fallback_when_quota_exceeded: bool = Field(default=True)
-    queue_when_quota_exceeded: bool = Field(default=False)
     max_questions_per_task: int = Field(default=50)
 
     # --- Gemini Model Fallback ---
