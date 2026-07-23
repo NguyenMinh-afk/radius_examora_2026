@@ -13,11 +13,11 @@ const ROUTING_KEY = process.env.RABBITMQ_ROUTING_KEY || 'ai.generate';
 const QUEUE_NAME = process.env.RABBITMQ_QUEUE || 'ai.generation';
 const DLX_NAME = process.env.RABBITMQ_DLX || 'examora.dlx';
 const DLQ_NAME = process.env.RABBITMQ_DLQ || 'ai.generation.dlq';
-const MESSAGE_TTL_MS = 3_600_000;
 
 let connection = null;
 let channel = null;
 let connectingPromise = null;
+const returnedMessages = new Map();
 
 async function setupTopology(currentChannel) {
   await currentChannel.assertExchange(EXCHANGE_NAME, 'topic', { durable: true });
@@ -31,7 +31,6 @@ async function setupTopology(currentChannel) {
     arguments: {
       'x-dead-letter-exchange': DLX_NAME,
       'x-dead-letter-routing-key': DLQ_NAME,
-      'x-message-ttl': MESSAGE_TTL_MS,
     },
   });
   await currentChannel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, ROUTING_KEY);
@@ -58,6 +57,17 @@ async function createConnection() {
     currentChannel.on('close', () => {
       if (channel === currentChannel) {
         channel = null;
+      }
+    });
+    currentChannel.on('return', (message) => {
+      const messageId = message.properties.messageId;
+      if (messageId) {
+        returnedMessages.set(
+          messageId,
+          new Error(
+            `RabbitMQ returned unroutable message ${messageId}: ${message.fields.replyText || 'NO_ROUTE'}`
+          )
+        );
       }
     });
 
@@ -103,6 +113,7 @@ export async function publishAIGeneration(data) {
 
   currentChannel.publish(EXCHANGE_NAME, ROUTING_KEY, Buffer.from(JSON.stringify(message)), {
     persistent: true,
+    mandatory: true,
     contentType: 'application/json',
     contentEncoding: 'utf-8',
     messageId,
@@ -114,7 +125,16 @@ export async function publishAIGeneration(data) {
       'x-trace-id': data.traceId,
     },
   });
-  await currentChannel.waitForConfirms();
+  try {
+    await currentChannel.waitForConfirms();
+    await new Promise((resolve) => setImmediate(resolve));
+    const returnedError = returnedMessages.get(messageId);
+    if (returnedError) {
+      throw returnedError;
+    }
+  } finally {
+    returnedMessages.delete(messageId);
+  }
 
   console.log(
     `[AI Publisher] Message confirmed: id=${messageId}, request=${data.requestId}, task=${data.taskId}`
@@ -127,6 +147,7 @@ export async function close() {
   const currentConnection = connection;
   channel = null;
   connection = null;
+  returnedMessages.clear();
 
   try {
     if (currentChannel) {

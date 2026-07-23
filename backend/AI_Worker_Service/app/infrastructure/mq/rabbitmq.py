@@ -86,7 +86,6 @@ async def setup_queues(channel: AbstractChannel) -> tuple[AbstractQueue, Abstrac
         arguments={
             "x-dead-letter-exchange": settings.rabbitmq_dlx,
             "x-dead-letter-routing-key": settings.rabbitmq_dlq,
-            "x-message-ttl": 3_600_000,  # 1 hour TTL
         },
     )
     await main_queue.bind(

@@ -1,78 +1,80 @@
-/**
- * Notification Queue Consumer
- * Xử lý việc tạo notification bất đồng bộ qua RabbitMQ
- */
-import axios from "axios";
-import { getChannel, QUEUES } from "../config/rabbitmq.js";
+import axios from 'axios';
+import { getChannel, QUEUES } from '../config/rabbitmq.js';
+import {
+  handleReliableMessage,
+  NonRetryableMessageError,
+} from './reliable-message.consumer.js';
 
-const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || "http://localhost:3004";
+const NOTIFICATION_SERVICE_URL =
+  process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3004';
 
-/**
- * Xử lý message tạo notification
- */
-async function processNotificationMessage(msg) {
-  const content = JSON.parse(msg.content.toString());
+export const NOTIFICATION_CONSUMER_NAME = 'notification-consumer';
 
-  const { userId, type, title, content: notifContent, metadata } = content;
-
-  if (!userId || !title || !notifContent) {
-    console.error("[NotificationConsumer] Missing required fields");
-    return false;
-  }
-
+function parseNotificationMessage(message) {
+  let content;
   try {
-    // Gọi Notification Service để tạo notification
-    const response = await axios.post(
-      `${NOTIFICATION_SERVICE_URL}/api/notifications/internal`,
-      {
-        user_id: userId,
-        type: type || "system",
-        title,
-        content: notifContent,
-        metadata: metadata || {},
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      }
-    );
-
-    console.log(`[NotificationConsumer] Notification created: ${response.data?.id || "success"}`);
-    return true;
-  } catch (error) {
-    console.error("[NotificationConsumer] Failed to create notification:", error.message);
-    return false;
+    content = JSON.parse(message.content.toString());
+  } catch {
+    throw new NonRetryableMessageError('Message content is not valid JSON');
   }
+
+  if (!content.userId || !content.title || !content.content) {
+    throw new NonRetryableMessageError(
+      'Missing required fields: userId, title, content'
+    );
+  }
+  return content;
 }
 
-/**
- * Khởi động Notification Consumer
- */
+async function processNotificationMessage(message, messageId) {
+  const {
+    userId,
+    type,
+    title,
+    content: notificationContent,
+    metadata,
+  } = parseNotificationMessage(message);
+
+  const response = await axios.post(
+    `${NOTIFICATION_SERVICE_URL}/api/notifications/internal`,
+    {
+      user_id: userId,
+      type: type || 'system',
+      title,
+      content: notificationContent,
+      metadata: metadata || {},
+      message_id: messageId,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 10_000,
+    }
+  );
+
+  const result = response.data?.duplicate ? 'duplicate' : response.data?.id || 'success';
+  console.log(`[NotificationConsumer] Notification handled: ${result}`);
+}
+
 export async function startNotificationConsumer() {
   const channel = getChannel();
+  console.log('[NotificationConsumer] Starting notification consumer...');
 
-  console.log("[NotificationConsumer] Starting notification consumer...");
-
-  await channel.consume(QUEUES.NOTIFICATION_SEND, async (msg) => {
-    if (!msg) return;
-
-    try {
-      const success = await processNotificationMessage(msg);
-
-      if (success) {
-        channel.ack(msg);
-      } else {
-        channel.nack(msg, false, false);
-      }
-    } catch (error) {
-      console.error("[NotificationConsumer] Error processing message:", error.message);
-      channel.nack(msg, false, false);
-    }
+  await channel.consume(QUEUES.NOTIFICATION_SEND, async (message) => {
+    await handleReliableMessage({
+      channel,
+      message,
+      retryQueue: QUEUES.NOTIFICATION_SEND_RETRY,
+      consumerName: NOTIFICATION_CONSUMER_NAME,
+      processMessage: processNotificationMessage,
+    });
   });
 
-  console.log("[NotificationConsumer] Notification consumer started on queue:", QUEUES.NOTIFICATION_SEND);
+  console.log(
+    '[NotificationConsumer] Notification consumer started on queue:',
+    QUEUES.NOTIFICATION_SEND
+  );
 }
 
 export default { startNotificationConsumer };

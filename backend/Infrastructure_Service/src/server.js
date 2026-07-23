@@ -22,8 +22,6 @@ validateServiceEnv('infrastructureService');
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 5005;
-let rabbitMQConnected = false;
-let consumersStarted = false;
 let server = null;
 
 // Request ID & Correlation ID
@@ -55,22 +53,27 @@ app.use(generalLimiter);
 app.get('/', (req, res) => res.send('Examora Infrastructure_Service is running...'));
 
 app.get('/health', (req, res) => {
+  const rabbitMQ = getRabbitMQSupervisorStatus();
   res.json({
     status: 'ok',
     service: 'Infrastructure_Service',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    rabbitmq: rabbitMQConnected ? 'connected' : 'disconnected',
-    consumers: consumersStarted ? 'running' : 'stopped',
+    rabbitmq: rabbitMQ.connected ? 'connected' : 'disconnected',
+    consumers: rabbitMQ.consumersReady ? 'running' : 'stopped',
+    reconnecting: rabbitMQ.reconnecting,
   });
 });
 
 app.get('/ready', (req, res) => {
-  res.json({
-    status: consumersStarted ? 'ready' : 'not_ready',
+  const rabbitMQ = getRabbitMQSupervisorStatus();
+  const ready = rabbitMQ.connected && rabbitMQ.consumersReady;
+  res.status(ready ? 200 : 503).json({
+    status: ready ? 'ready' : 'not_ready',
     service: 'Infrastructure_Service',
-    rabbitmq: rabbitMQConnected,
-    consumers: consumersStarted,
+    rabbitmq: rabbitMQ.connected,
+    consumers: rabbitMQ.consumersReady,
+    reconnecting: rabbitMQ.reconnecting,
   });
 });
 
@@ -80,31 +83,12 @@ app.get('/live', (req, res) => {
 });
 
 // Import RabbitMQ utilities từ shared
-import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from './config/rabbitmq.js';
 import { closeDatabase } from './config/db.js';
-import { startInfrastructureConsumers } from './workers/registry.js';
-import { stopOutboxWorker } from './workers/outbox.worker.js';
-
-/**
- * Connect RabbitMQ với retry
- */
-async function connectWithRetry(maxRetries = 5, intervalMs = 5000) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      log.info(`Connecting to RabbitMQ (${i + 1}/${maxRetries})...`);
-      await connectRabbitMQ(process.env.RABBITMQ_URL);
-      await setupExchangesAndQueues();
-      log.service.rabbitmqConnected();
-      return true;
-    } catch (error) {
-      log.error('RabbitMQ connection failed', { error: error.message });
-      if (i < maxRetries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, intervalMs));
-      }
-    }
-  }
-  return false;
-}
+import {
+  getRabbitMQSupervisorStatus,
+  startRabbitMQSupervisor,
+  stopRabbitMQSupervisor,
+} from './workers/rabbitmq.supervisor.js';
 
 /**
  * Start Infrastructure Service
@@ -117,21 +101,12 @@ async function startInfrastructure() {
     log.service.started(PORT);
   });
 
-  // Connect RabbitMQ
-  const connected = await connectWithRetry();
-  rabbitMQConnected = connected;
-
-  if (connected) {
-    try {
-      log.info('Starting queue consumers...');
-      await startInfrastructureConsumers();
-      consumersStarted = true;
-      log.info('All consumers started successfully!');
-    } catch (error) {
-      log.error('Failed to start consumers', { error: error.message });
-    }
+  const rabbitMQ = await startRabbitMQSupervisor();
+  if (rabbitMQ.consumersReady) {
+    log.service.rabbitmqConnected();
+    log.info('All consumers started successfully!');
   } else {
-    log.warn('Running WITHOUT RabbitMQ connection - Workers disabled');
+    log.warn('RabbitMQ is not ready yet; supervisor will keep reconnecting');
   }
 }
 
@@ -149,10 +124,7 @@ async function gracefulShutdown(signal) {
   }
 
   try {
-    await stopOutboxWorker();
-
-    // Close RabbitMQ
-    await closeRabbitMQ();
+    await stopRabbitMQSupervisor();
     log.info('RabbitMQ connection closed');
 
     await closeDatabase();

@@ -2,6 +2,7 @@
  * Email Service - Gửi email qua RabbitMQ → Infrastructure Service gửi
  */
 import amqp from "amqplib";
+import { randomUUID } from "node:crypto";
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL ||
   `amqp://${process.env.RABBITMQ_USER || "admin"}:${process.env.RABBITMQ_PASSWORD || "StrongPassword123"}@${process.env.RABBITMQ_HOST || "localhost"}:${process.env.RABBITMQ_PORT || 5672}`;
@@ -11,6 +12,7 @@ const ROUTING_KEY = "email.send";
 
 let connection = null;
 let channel = null;
+const returnedMessages = new Map();
 
 /**
  * Kết nối RabbitMQ (lazy connection)
@@ -21,6 +23,17 @@ async function getChannel() {
   try {
     connection = await amqp.connect(RABBITMQ_URL);
     channel = await connection.createConfirmChannel();
+    channel.on("return", (message) => {
+      const messageId = message.properties.messageId;
+      if (messageId) {
+        returnedMessages.set(
+          messageId,
+          new Error(
+            `RabbitMQ returned unroutable email ${messageId}: ${message.fields.replyText || "NO_ROUTE"}`,
+          ),
+        );
+      }
+    });
 
     connection.on("error", (err) => {
       console.error("[EmailService] RabbitMQ connection error:", err.message);
@@ -57,20 +70,32 @@ async function publishEmail({ to, subject, html, text, type = "general" }) {
   };
 
   const buffer = Buffer.from(JSON.stringify(message));
+  const messageId = randomUUID();
 
   return new Promise((resolve, reject) => {
     ch.publish(
       EXCHANGE,
       ROUTING_KEY,
       buffer,
-      { persistent: true, contentType: "application/json" },
+      {
+        persistent: true,
+        mandatory: true,
+        contentType: "application/json",
+        messageId,
+        correlationId: messageId,
+        type: ROUTING_KEY,
+      },
       (err) => {
-        if (err) {
-          reject(err);
-        } else {
+        setImmediate(() => {
+          const returnedError = returnedMessages.get(messageId);
+          returnedMessages.delete(messageId);
+          if (err || returnedError) {
+            reject(err || returnedError);
+            return;
+          }
           console.log(`[EmailService] Email queued for ${to}: ${subject}`);
           resolve(true);
-        }
+        });
       }
     );
   });

@@ -14,23 +14,36 @@ const DLX = "examora.dlx";
 const DESTINATIONS = Object.freeze({
   notification: Object.freeze({
     queue: "notification.send",
+    retryQueue: "notification.send.retry",
     dlq: "notification.send.dlq",
     routingKey: "notification.new",
+    retryRoutingKey: "notification.send.retry",
   }),
   email: Object.freeze({
     queue: "email.send",
+    retryQueue: "email.send.retry",
     dlq: "email.send.dlq",
     routingKey: "email.send",
+    retryRoutingKey: "email.send.retry",
   }),
 });
 
 let connection = null;
 let channel = null;
 let connectingPromise = null;
+const returnedMessages = new Map();
 
 async function assertDestination(currentChannel, destination) {
   await currentChannel.assertQueue(destination.dlq, { durable: true });
   await currentChannel.bindQueue(destination.dlq, DLX, destination.dlq);
+  await currentChannel.assertQueue(destination.retryQueue, {
+    durable: true,
+    arguments: {
+      "x-message-ttl": 5_000,
+      "x-dead-letter-exchange": EXCHANGE,
+      "x-dead-letter-routing-key": destination.retryRoutingKey,
+    },
+  });
   await currentChannel.assertQueue(destination.queue, {
     durable: true,
     arguments: {
@@ -42,6 +55,11 @@ async function assertDestination(currentChannel, destination) {
     destination.queue,
     EXCHANGE,
     destination.routingKey,
+  );
+  await currentChannel.bindQueue(
+    destination.queue,
+    EXCHANGE,
+    destination.retryRoutingKey,
   );
 }
 
@@ -66,6 +84,17 @@ async function createConnection() {
     currentChannel.on("close", () => {
       if (channel === currentChannel) {
         channel = null;
+      }
+    });
+    currentChannel.on("return", (message) => {
+      const messageId = message.properties.messageId;
+      if (messageId) {
+        returnedMessages.set(
+          messageId,
+          new Error(
+            `RabbitMQ returned unroutable message ${messageId}: ${message.fields.replyText || "NO_ROUTE"}`,
+          ),
+        );
       }
     });
 
@@ -111,6 +140,7 @@ async function publish(destination, message, traceId) {
     Buffer.from(JSON.stringify(message)),
     {
       persistent: true,
+      mandatory: true,
       contentType: "application/json",
       messageId,
       correlationId: traceId,
@@ -122,7 +152,16 @@ async function publish(destination, message, traceId) {
       },
     },
   );
-  await currentChannel.waitForConfirms();
+  try {
+    await currentChannel.waitForConfirms();
+    await new Promise((resolve) => setImmediate(resolve));
+    const returnedError = returnedMessages.get(messageId);
+    if (returnedError) {
+      throw returnedError;
+    }
+  } finally {
+    returnedMessages.delete(messageId);
+  }
   return { messageId };
 }
 
@@ -170,6 +209,7 @@ export async function close() {
   channel = null;
   connection = null;
   connectingPromise = null;
+  returnedMessages.clear();
 
   try {
     if (currentChannel) {

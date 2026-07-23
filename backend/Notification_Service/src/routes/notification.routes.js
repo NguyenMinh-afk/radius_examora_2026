@@ -6,7 +6,7 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import notificationService from "../services/notification.service.js";
-import { Notification } from "../models/index.js";
+import { Notification, sequelize } from "../models/index.js";
 
 const router = express.Router();
 
@@ -92,10 +92,19 @@ router.patch("/read-all", async (req, res) => {
 // Endpoint nội bộ cho các service khác gọi trực tiếp, KHÔNG yêu cầu auth
 router.post("/internal", async (req, res) => {
   try {
-    const { user_id, type, title, content, metadata = {} } = req.body || {};
+    const {
+      user_id,
+      type,
+      title,
+      content,
+      metadata = {},
+      message_id,
+    } = req.body || {};
 
-    if (!user_id || !title || !content) {
-      return res.status(400).json({ error: "Missing required notification fields" });
+    if (!user_id || !title || !content || !message_id) {
+      return res.status(400).json({
+        error: "Missing required notification fields: user_id, title, content, message_id",
+      });
     }
 
     const allowedTypes = [
@@ -106,29 +115,60 @@ router.post("/internal", async (req, res) => {
       "verification",
       "password_reset",
       "email",
-      "class_post",
-      "exam_submit",
     ];
     const safeType = allowedTypes.includes(type) ? type : "system";
 
-    const notification = await Notification.create({
-      user_id,
-      type: safeType,
-      title,
-      message: content,
-      action_url: metadata.action_url || null,
-      action_data: metadata.action_data || null,
-      is_read: false,
+    const result = await sequelize.transaction(async (transaction) => {
+      const [inserted] = await sequelize.query(
+        `INSERT INTO infra_eventing.processed_messages
+          (consumer_name, message_id)
+         VALUES ('notification-consumer', :messageId)
+         ON CONFLICT (consumer_name, message_id) DO NOTHING
+         RETURNING processed_message_id`,
+        {
+          replacements: {
+            messageId: message_id,
+          },
+          transaction,
+        }
+      );
+
+      if (inserted.length === 0) {
+        return { duplicate: true };
+      }
+
+      const notification = await Notification.create(
+        {
+          user_id,
+          type: safeType,
+          title,
+          message: content,
+          action_url: metadata.action_url || null,
+          action_data: metadata.action_data || null,
+          is_read: false,
+        },
+        { transaction }
+      );
+      return { duplicate: false, notification };
     });
 
+    if (result.duplicate) {
+      return res.status(200).json({
+        duplicate: true,
+        messageId: message_id,
+      });
+    }
+
     res.status(201).json({
-      id: notification.id,
-      userId: notification.user_id,
-      type: notification.type,
-      title: notification.title,
-      message: notification.message,
-      isRead: notification.is_read,
-      createdAt: notification.created_at ? new Date(notification.created_at).toISOString() : new Date().toISOString(),
+      id: result.notification.id,
+      userId: result.notification.user_id,
+      type: result.notification.type,
+      title: result.notification.title,
+      message: result.notification.message,
+      isRead: result.notification.is_read,
+      createdAt: result.notification.created_at
+        ? new Date(result.notification.created_at).toISOString()
+        : new Date().toISOString(),
     });
   } catch (error) {
     console.error("[Notification] create notification error:", error);

@@ -13,8 +13,10 @@ export const QUEUES = Object.freeze({
   AI_GENERATION: "ai.generation",
   AI_GENERATION_DLQ: "ai.generation.dlq",
   EMAIL_SEND: "email.send",
+  EMAIL_SEND_RETRY: "email.send.retry",
   EMAIL_SEND_DLQ: "email.send.dlq",
   NOTIFICATION_SEND: "notification.send",
+  NOTIFICATION_SEND_RETRY: "notification.send.retry",
   NOTIFICATION_SEND_DLQ: "notification.send.dlq",
   DOMAIN_EVENTS: "domain.events",
   DOMAIN_EVENTS_RETRY: "domain.events.retry",
@@ -27,7 +29,9 @@ export const QUEUES = Object.freeze({
 export const ROUTING_KEYS = Object.freeze({
   AI_GENERATE: "ai.generate",
   EMAIL_SEND: "email.send",
+  EMAIL_SEND_RETRY: "email.send.retry",
   NOTIFICATION_NEW: "notification.new",
+  NOTIFICATION_SEND_RETRY: "notification.send.retry",
   EXAM_COMPLETED: "exam.completed",
   USER_CREATED: "user.created",
   USER_UPDATED: "user.updated",
@@ -46,17 +50,25 @@ const QUEUE_CONFIGS = Object.freeze([
     queue: QUEUES.AI_GENERATION,
     dlq: QUEUES.AI_GENERATION_DLQ,
     routingKeys: [ROUTING_KEYS.AI_GENERATE],
-    arguments: { "x-message-ttl": 3_600_000 },
   },
   {
     queue: QUEUES.EMAIL_SEND,
+    retryQueue: QUEUES.EMAIL_SEND_RETRY,
     dlq: QUEUES.EMAIL_SEND_DLQ,
-    routingKeys: [ROUTING_KEYS.EMAIL_SEND],
+    retryRoutingKey: ROUTING_KEYS.EMAIL_SEND_RETRY,
+    retryDelayMs: 5_000,
+    routingKeys: [ROUTING_KEYS.EMAIL_SEND, ROUTING_KEYS.EMAIL_SEND_RETRY],
   },
   {
     queue: QUEUES.NOTIFICATION_SEND,
+    retryQueue: QUEUES.NOTIFICATION_SEND_RETRY,
     dlq: QUEUES.NOTIFICATION_SEND_DLQ,
-    routingKeys: [ROUTING_KEYS.NOTIFICATION_NEW],
+    retryRoutingKey: ROUTING_KEYS.NOTIFICATION_SEND_RETRY,
+    retryDelayMs: 5_000,
+    routingKeys: [
+      ROUTING_KEYS.NOTIFICATION_NEW,
+      ROUTING_KEYS.NOTIFICATION_SEND_RETRY,
+    ],
   },
   {
     queue: QUEUES.DOMAIN_EVENTS,
@@ -192,6 +204,7 @@ export async function publishMessage(
 
   channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {
     persistent: true,
+    mandatory: true,
     contentType: "application/json",
     timestamp: Date.now(),
     ...options,

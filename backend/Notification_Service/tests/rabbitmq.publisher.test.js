@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => {
     channel,
     connection,
     connect: vi.fn(),
+    listeners: new Map(),
   };
 });
 
@@ -43,6 +44,10 @@ describe("Notification Service RabbitMQ publisher", () => {
     mocks.channel.assertExchange.mockResolvedValue(undefined);
     mocks.channel.assertQueue.mockResolvedValue(undefined);
     mocks.channel.bindQueue.mockResolvedValue(undefined);
+    mocks.listeners.clear();
+    mocks.channel.on.mockImplementation((eventName, handler) => {
+      mocks.listeners.set(eventName, handler);
+    });
     mocks.channel.waitForConfirms.mockResolvedValue(undefined);
     mocks.channel.close.mockResolvedValue(undefined);
     mocks.connection.close.mockResolvedValue(undefined);
@@ -73,6 +78,17 @@ describe("Notification Service RabbitMQ publisher", () => {
       { durable: true },
     );
     expect(mocks.channel.assertQueue).toHaveBeenCalledWith(
+      "notification.send.retry",
+      {
+        durable: true,
+        arguments: {
+          "x-message-ttl": 5_000,
+          "x-dead-letter-exchange": "examora.topic",
+          "x-dead-letter-routing-key": "notification.send.retry",
+        },
+      },
+    );
+    expect(mocks.channel.assertQueue).toHaveBeenCalledWith(
       "notification.send",
       {
         durable: true,
@@ -87,12 +103,18 @@ describe("Notification Service RabbitMQ publisher", () => {
       "examora.topic",
       "notification.new",
     );
+    expect(mocks.channel.bindQueue).toHaveBeenCalledWith(
+      "notification.send",
+      "examora.topic",
+      "notification.send.retry",
+    );
     expect(mocks.channel.publish).toHaveBeenCalledWith(
       "examora.topic",
       "notification.new",
       expect.any(Buffer),
       expect.objectContaining({
         persistent: true,
+        mandatory: true,
         contentType: "application/json",
         correlationId: "trace-id",
       }),
@@ -121,9 +143,27 @@ describe("Notification Service RabbitMQ publisher", () => {
       expect.any(Buffer),
       expect.objectContaining({
         persistent: true,
+        mandatory: true,
         contentType: "application/json",
       }),
     );
     expect(mocks.channel.waitForConfirms).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects a publisher confirm when RabbitMQ returns the message as unroutable", async () => {
+    mocks.channel.publish.mockImplementation((_exchange, _routingKey, _body, options) => {
+      mocks.listeners.get("return")?.({
+        fields: { replyText: "NO_ROUTE" },
+        properties: { messageId: options.messageId },
+      });
+    });
+
+    await expect(
+      publishNotification({
+        userId: "user-id",
+        title: "Title",
+        content: "Content",
+      }),
+    ).rejects.toThrow("NO_ROUTE");
   });
 });

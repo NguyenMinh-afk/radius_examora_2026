@@ -53,6 +53,11 @@ Message broker xử lý giao tiếp bất đồng bộ giữa AI_Generation_Serv
 **Queue Configuration:**
 - Main queue: `ai.generation`
 - DLQ: `ai.generation.dlq`
+
+The main queue has no message TTL. A task therefore remains pending while the
+Worker is unavailable instead of expiring into the DLQ without a matching
+database status update. Existing RabbitMQ installations must follow the
+one-time queue migration in `Docker.md`.
 - Exchange: `examora.dlx` (direct)
 
 ## Setup
@@ -193,6 +198,9 @@ RABBITMQ_HOST=localhost
 RABBITMQ_PORT=5672
 RABBITMQ_USER=admin
 RABBITMQ_PASSWORD=StrongPassword123
+RABBITMQ_URL=amqp://admin:StrongPassword123@localhost:5672
+RABBITMQ_EXCHANGE=examora.topic
+RABBITMQ_ROUTING_KEY=ai.generate
 
 # Queue
 RABBITMQ_QUEUE=ai.generation
@@ -207,7 +215,10 @@ DATABASE_URL=postgresql+asyncpg://postgres:123456@localhost:5432/Exam_Bank
 
 # RabbitMQ
 RABBITMQ_URL=amqp://admin:StrongPassword123@localhost:5672/
+RABBITMQ_EXCHANGE=examora.topic
+RABBITMQ_ROUTING_KEY=ai.generate
 RABBITMQ_QUEUE=ai.generation
+RABBITMQ_DLX=examora.dlx
 RABBITMQ_DLQ=ai.generation.dlq
 
 # Gemini API
@@ -227,10 +238,10 @@ LOCAL_FALLBACK_WHEN_QUOTA_EXCEEDED=true
 Kiểm tra:
 ```bash
 # Kiểm tra RabbitMQ
-docker exec -it rabbitmq rabbitmqctl list_queues
+docker exec -it exmora-rabbitmq rabbitmqctl list_queues name messages consumers arguments
 
 # Kiểm tra message trong queue
-docker exec -it rabbitmq rabbitmqctl get ai.generation
+docker exec -it exmora-rabbitmq rabbitmqctl list_queues name messages_ready messages_unacknowledged consumers
 ```
 
 ### 2. Worker không nhận message
