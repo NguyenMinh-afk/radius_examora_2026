@@ -49,7 +49,7 @@ class AIService {
       subject_id: courseId || 1, // Default subject
       topic: null,
       input_type: "text",
-      input_reference: context ? context.substring(0, 500) : null,
+      input_reference: null,
       number_of_questions: quantity || 10,
       difficulty: difficulty || "medium",
       created_by: userId,

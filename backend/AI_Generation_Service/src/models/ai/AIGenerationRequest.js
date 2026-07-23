@@ -72,6 +72,7 @@ const AIGenerationRequest = sequelize.define('AIGenerationRequest', {
   tableName: 'ai_generation_requests',
   schema: 'ai_db',
   timestamps: true,
+  updatedAt: false,
   underscored: true,
 });
 

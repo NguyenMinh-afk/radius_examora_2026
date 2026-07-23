@@ -349,6 +349,19 @@ CREATE TABLE ai_generation_logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE ai_api_usage (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    provider VARCHAR(50) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    usage_date VARCHAR(10) NOT NULL,
+    request_count INTEGER NOT NULL DEFAULT 0,
+    token_estimate INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_api_usage_provider_model_date
+        UNIQUE (provider, model, usage_date)
+);
+
 CREATE INDEX idx_ai_requests_user ON ai_generation_requests(user_id);
 CREATE INDEX idx_ai_requests_status ON ai_generation_requests(status);
 CREATE INDEX idx_ai_requests_created ON ai_generation_requests(created_at);
@@ -359,6 +372,7 @@ CREATE INDEX idx_ai_tasks_subject ON ai_generation_tasks(subject_id);
 CREATE INDEX idx_ai_tasks_status ON ai_generation_tasks(status);
 CREATE INDEX idx_generated_questions_task ON generated_questions(task_id);
 CREATE INDEX idx_generated_questions_status ON generated_questions(status);
+CREATE INDEX idx_ai_api_usage_date ON ai_api_usage(usage_date);
 
 -- =====================================================
 -- 4.1 AI ASYNC PIPELINE (OPTIONAL BUT RECOMMENDED)
