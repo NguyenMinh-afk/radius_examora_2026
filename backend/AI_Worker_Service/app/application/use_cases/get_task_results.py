@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
 from app.core.logging import get_logger
-from app.domain.enums import TaskStatus
+from app.domain.enums import GenerationSource, TaskStatus
 from app.infrastructure.db.repositories import (
     GeneratedQuestionRepository,
     GenerationRequestRepository,
@@ -69,9 +69,12 @@ class GetTaskResultsUseCase:
                 }
             )
 
-        # Determine warning
+        # Determine warning from question provenance while keeping task status standard.
         warning = None
-        if task.status == TaskStatus.COMPLETED_WITH_LOCAL_FALLBACK.value:
+        if any(
+            item["generation_source"] == GenerationSource.LOCAL_FALLBACK.value
+            for item in questions_out
+        ):
             warning = _FALLBACK_WARNING
 
         error_message = None

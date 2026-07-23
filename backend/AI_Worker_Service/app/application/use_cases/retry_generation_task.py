@@ -1,6 +1,4 @@
-"""
-Use Case: Retry a failed or queued generation task.
-"""
+"""Use Case: Retry a failed generation task."""
 
 import uuid
 from typing import Any, Dict
@@ -25,20 +23,16 @@ class RetryGenerationTaskUseCase:
 
     async def execute(self, task_id: uuid.UUID) -> Dict[str, Any]:
         """
-        Retry a task if it is failed or queued_until_tomorrow.
-        Resets its status to pending.
+        Retry a failed task by resetting its status to pending.
         """
         task = await self.task_repo.get_by_id(task_id)
         if not task:
             raise NotFoundError("Task", str(task_id))
 
-        if task.status not in (
-            TaskStatus.FAILED.value,
-            TaskStatus.QUEUED_UNTIL_TOMORROW.value,
-        ):
+        if task.status != TaskStatus.FAILED.value:
             raise ValueError(
                 f"Cannot retry task in status '{task.status}'. "
-                f"Only '{TaskStatus.FAILED.value}' or '{TaskStatus.QUEUED_UNTIL_TOMORROW.value}' are allowed."
+                f"Only '{TaskStatus.FAILED.value}' is allowed."
             )
 
         request_id = task.request_id

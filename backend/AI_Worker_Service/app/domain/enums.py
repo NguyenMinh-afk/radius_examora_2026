@@ -23,8 +23,6 @@ class RequestStatus(str, Enum):
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
-    COMPLETED_WITH_LOCAL_FALLBACK = "completed_with_local_fallback"
-    QUEUED_UNTIL_TOMORROW = "queued_until_tomorrow"
     FAILED = "failed"
 
 
@@ -32,8 +30,6 @@ class TaskStatus(str, Enum):
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
-    COMPLETED_WITH_LOCAL_FALLBACK = "completed_with_local_fallback"
-    QUEUED_UNTIL_TOMORROW = "queued_until_tomorrow"
     FAILED = "failed"
 
 

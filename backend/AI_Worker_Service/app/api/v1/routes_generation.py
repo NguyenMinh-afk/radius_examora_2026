@@ -191,18 +191,14 @@ async def get_task_results(
 @router.post(
     "/tasks/{task_id}/retry",
     response_model=RetryTaskResponse,
-    summary="Retry a failed or queued generation task",
+    summary="Retry a failed generation task",
     description=(
-        "Retry is only allowed for tasks in 'failed' or "
-        "'queued_until_tomorrow' status. Do not use it for pending, "
-        "processing, completed, or completed_with_local_fallback tasks."
+        "Retry is only allowed for tasks in 'failed' status. "
+        "Do not use it for pending, processing, or completed tasks."
     ),
     responses={
         409: {
-            "description": (
-                "Task is not retryable because it is not failed or "
-                "queued_until_tomorrow."
-            )
+            "description": "Task is not retryable because it is not failed."
         }
     },
 )
@@ -212,7 +208,7 @@ async def retry_task(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Retry a task that is in `failed` or `queued_until_tomorrow` status.
+    Retry a task that is in `failed` status.
     This will reset its status to `pending` and re-queue it for processing.
     """
     from fastapi import HTTPException, status

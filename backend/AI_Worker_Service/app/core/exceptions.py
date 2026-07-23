@@ -181,6 +181,17 @@ class InvalidStateTransitionError(AIServiceError):
         )
 
 
+class TaskRequestMismatchError(AIServiceError):
+    """The task exists but does not belong to the request in the message."""
+
+    def __init__(self, request_id: str, task_id: str) -> None:
+        super().__init__(
+            message=f"Task '{task_id}' does not belong to request '{request_id}'.",
+            error_code="TASK_REQUEST_MISMATCH",
+            status_code=422,
+        )
+
+
 class InsufficientContextError(AIServiceError):
     def __init__(self) -> None:
         super().__init__(
