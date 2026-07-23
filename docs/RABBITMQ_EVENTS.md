@@ -109,6 +109,11 @@ with exponential backoff, redeclares topology, and starts every consumer with a
 fresh channel. `/ready` returns HTTP 503 until both the connection and consumers
 are ready.
 
+AI Worker also supports broker cold starts. Its robust connection waits and
+retries when RabbitMQ is unavailable during the first connection, and a
+supervisor restarts the consumer with bounded exponential backoff if the
+consumer task exits unexpectedly.
+
 ## Data rules
 
 - Never publish passwords, password hashes, access tokens, or refresh tokens.
