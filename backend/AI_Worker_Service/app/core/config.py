@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     rabbitmq_dlx: str = Field(default="examora.dlx")
     rabbitmq_dlq: str = Field(default="ai.generation.dlq")
     rabbitmq_max_retries: int = Field(default=3)
+    rabbitmq_reconnect_interval_seconds: float = Field(default=5.0, gt=0)
+    rabbitmq_consumer_restart_base_delay_seconds: float = Field(default=1.0, gt=0)
+    rabbitmq_consumer_restart_max_delay_seconds: float = Field(default=30.0, gt=0)
 
     # --- Text Processing ---
     chunk_size: int = Field(default=6000)

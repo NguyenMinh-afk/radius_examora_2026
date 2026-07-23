@@ -33,7 +33,8 @@ async def get_rabbitmq_connection() -> AbstractConnection:
         try:
             _connection = await aio_pika.connect_robust(
                 settings.rabbitmq_url,
-                reconnect_interval=5,
+                reconnect_interval=settings.rabbitmq_reconnect_interval_seconds,
+                fail_fast=False,
             )
             logger.info("RabbitMQ connected: %s", settings.rabbitmq_url.split("@")[-1])
         except Exception as e:
