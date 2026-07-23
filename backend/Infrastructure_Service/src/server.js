@@ -80,10 +80,8 @@ app.get("/live", (req, res) => {
 });
 
 // Import RabbitMQ utilities từ shared
-import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from "../../shared/utils/rabbitmq.js";
-import { startEmailConsumer } from "./workers/email.consumer.js";
-import { startNotificationConsumer } from "./workers/notification.consumer.js";
-import { startAIConsumer } from "./workers/ai.consumer.js";
+import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from "./config/rabbitmq.js";
+import { startInfrastructureConsumers } from "./workers/registry.js";
 
 /**
  * Connect RabbitMQ với retry
@@ -124,11 +122,7 @@ async function startInfrastructure() {
   if (connected) {
     try {
       log.info("Starting queue consumers...");
-      await Promise.all([
-        startEmailConsumer(),
-        startNotificationConsumer(),
-        startAIConsumer(),
-      ]);
+      await startInfrastructureConsumers();
       consumersStarted = true;
       log.info("All consumers started successfully!");
     } catch (error) {

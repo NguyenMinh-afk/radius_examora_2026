@@ -9,6 +9,7 @@
     "./utils": "./utils/index.js"
   },
   "dependencies": {
+    "amqplib": "^0.10.5",
     "express-rate-limit": "^7.5.0",
     "pino": "^9.6.0"
   },

@@ -23,6 +23,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: StrongPassword123
+    healthcheck:
+      test: ["CMD", "gosu", "rabbitmq", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 10s
+      timeout: 15s
+      retries: 10
+      start_period: 20s
     restart: unless-stopped
 
   user-service:
@@ -30,10 +36,8 @@ services:
       context: ./backend/User_Service
       dockerfile: Dockerfile
     container_name: exmora-user-service
-    working_dir: /app
     volumes:
-      - ./backend/User_Service:/app
-    command: sh -c "npm install && node scripts/resetPassword.mjs && npm run dev"
+      - ./backend/shared:/shared:ro
     env_file:
       - ./backend/User_Service/.env.docker
     environment:
@@ -49,10 +53,8 @@ services:
       context: ./backend/Exam_Service
       dockerfile: Dockerfile
     container_name: exmora-exam-service
-    working_dir: /app
     volumes:
-      - ./backend/Exam_Service:/app
-    command: sh -c "npm install && npm run dev"
+      - ./backend/shared:/shared:ro
     env_file:
       - ./backend/Exam_Service/.env.docker
     environment:
@@ -68,10 +70,8 @@ services:
       context: ./backend/Question_Service
       dockerfile: Dockerfile
     container_name: exmora-question-service
-    working_dir: /app
     volumes:
-      - ./backend/Question_Service:/app
-    command: sh -c "npm install && npm run dev"
+      - ./backend/shared:/shared:ro
     env_file:
       - ./backend/Question_Service/.env.docker
     environment:
@@ -118,8 +118,10 @@ services:
       - ./backend/AI_Worker_Service/.env.docker
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     depends_on:
-      - postgres-db
-      - rabbitmq
+      postgres-db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
   ai-worker-service:
@@ -135,8 +137,10 @@ services:
       - ./backend/AI_Worker_Service/.env.docker
     command: ["python", "run_worker.py"]
     depends_on:
-      - postgres-db
-      - rabbitmq
+      postgres-db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
   notification-service:
@@ -144,10 +148,8 @@ services:
       context: ./backend/Notification_Service
       dockerfile: Dockerfile
     container_name: exmora-notification-service
-    working_dir: /app
     volumes:
-      - ./backend/Notification_Service:/app
-    command: sh -c "npm install && npm run dev"
+      - ./backend/shared:/shared:ro
     env_file:
       - ./backend/Notification_Service/.env.docker
     environment:
@@ -163,10 +165,8 @@ services:
       context: ./backend/Infrastructure_Service
       dockerfile: Dockerfile
     container_name: exmora-infrastructure-service
-    working_dir: /app
     volumes:
-      - ./backend/Infrastructure_Service:/app
-    command: sh -c "npm install && npm run dev"
+      - ./backend/shared:/shared:ro
     env_file:
       - ./backend/Infrastructure_Service/.env.docker
     environment:
@@ -174,18 +174,18 @@ services:
     ports:
       - "5005:5005"
     depends_on:
-      - postgres-db
-      - rabbitmq
+      postgres-db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   api-gateway:
     build:
       context: ./backend/API_Gateway_Service
       dockerfile: Dockerfile
     container_name: exmora-api-gateway
-    working_dir: /app
     volumes:
-      - ./backend/API_Gateway_Service:/app
-    command: sh -c "npm install && npm run dev"
+      - ./backend/shared:/shared:ro
     env_file:
       - ./backend/API_Gateway_Service/.env.docker
     environment:
@@ -207,14 +207,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: exmora-frontend
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     environment:
       VITE_API_BASE_URL: http://localhost:3100
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - api-gateway
 
@@ -224,7 +220,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./backend/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     restart: unless-stopped
 

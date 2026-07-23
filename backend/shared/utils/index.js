@@ -13,4 +13,7 @@ export {
   consumeMessages,
   getRabbitMQStatus,
   closeRabbitMQ,
+  EXCHANGES,
+  QUEUES,
+  ROUTING_KEYS,
 } from "./rabbitmq.js";
