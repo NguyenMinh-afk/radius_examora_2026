@@ -53,39 +53,54 @@ async def get_rabbitmq_channel() -> AbstractChannel:
 
 async def setup_queues(channel: AbstractChannel) -> tuple[AbstractQueue, AbstractQueue]:
     """
-    Declare main queue and DLQ with durability and dead-letter routing.
+    Declare the AI topic exchange, main queue, DLX, DLQ, and bindings.
 
     Returns:
         (main_queue, dlq)
     """
     settings = get_settings()
 
-    # Declare DLQ first (no dead-letter routing on DLQ itself)
+    main_exchange = await channel.declare_exchange(
+        settings.rabbitmq_exchange,
+        ExchangeType.TOPIC,
+        durable=True,
+    )
+    dlx = await channel.declare_exchange(
+        settings.rabbitmq_dlx,
+        ExchangeType.DIRECT,
+        durable=True,
+    )
+
+    # The DLQ has no dead-letter routing of its own.
     dlq = await channel.declare_queue(
         settings.rabbitmq_dlq,
         durable=True,
         arguments={},
     )
-
-    # Declare dead-letter exchange pointing to DLQ
-    dlx_name = f"{settings.rabbitmq_dlq}.exchange"
-    dlx = await channel.declare_exchange(dlx_name, ExchangeType.DIRECT, durable=True)
     await dlq.bind(dlx, routing_key=settings.rabbitmq_dlq)
 
-    # Declare main queue with DLX configuration
+    # Failed messages are routed through the DLX into the DLQ.
     main_queue = await channel.declare_queue(
         settings.rabbitmq_queue,
         durable=True,
         arguments={
-            "x-dead-letter-exchange": dlx_name,
+            "x-dead-letter-exchange": settings.rabbitmq_dlx,
             "x-dead-letter-routing-key": settings.rabbitmq_dlq,
             "x-message-ttl": 3_600_000,  # 1 hour TTL
         },
     )
+    await main_queue.bind(
+        main_exchange,
+        routing_key=settings.rabbitmq_routing_key,
+    )
 
     logger.info(
-        "Queues declared: main=%s dlq=%s",
+        "RabbitMQ topology ready | exchange=%s routing_key=%s queue=%s "
+        "dlx=%s dlq=%s",
+        settings.rabbitmq_exchange,
+        settings.rabbitmq_routing_key,
         settings.rabbitmq_queue,
+        settings.rabbitmq_dlx,
         settings.rabbitmq_dlq,
     )
     return main_queue, dlq
@@ -102,15 +117,7 @@ async def ensure_queues_setup(channel: AbstractChannel) -> None:
     async with _queues_setup_lock:
         if _queues_setup_for_channel_id == channel_id:
             return
-        try:
-            await setup_queues(channel)
-        except Exception as e:
-            if "PRECONDITION" in str(e).upper():
-                logger.warning(
-                    "Queue already exists with different config, skipping setup: %s", e
-                )
-            else:
-                raise
+        await setup_queues(channel)
         _queues_setup_for_channel_id = channel_id
 
 
@@ -124,21 +131,10 @@ async def publish_task_message(
     Publish a generation task message to the main queue.
     Message is persistent (survives broker restart).
     """
-    global _channel, _queues_setup_for_channel_id
     settings = get_settings()
     try:
         channel = await get_rabbitmq_channel()
-        try:
-            await ensure_queues_setup(channel)
-        except Exception as e:
-            if "PRECONDITION" in str(e).upper():
-                logger.warning("Queue config mismatch, refreshing channel: %s", e)
-                # Channel is dead after PRECONDITION_FAILED, get a new one
-                _channel = None
-                channel = await get_rabbitmq_channel()
-                _queues_setup_for_channel_id = id(channel)
-            else:
-                raise
+        await ensure_queues_setup(channel)
 
         payload: Dict[str, Any] = {
             "request_id": request_id,
@@ -155,11 +151,18 @@ async def publish_task_message(
             content_type="application/json",
         )
 
-        await channel.default_exchange.publish(
+        exchange = await channel.get_exchange(settings.rabbitmq_exchange)
+        await exchange.publish(
             message,
-            routing_key=settings.rabbitmq_queue,
+            routing_key=settings.rabbitmq_routing_key,
         )
-        logger.info("Published task message | request=%s task=%s", request_id, task_id)
+        logger.info(
+            "Published task message | exchange=%s routing_key=%s request=%s task=%s",
+            settings.rabbitmq_exchange,
+            settings.rabbitmq_routing_key,
+            request_id,
+            task_id,
+        )
     except MessageQueueError:
         raise
     except Exception as e:
@@ -168,11 +171,12 @@ async def publish_task_message(
 
 async def close_rabbitmq() -> None:
     """Gracefully close RabbitMQ connection."""
-    global _connection, _channel
+    global _connection, _channel, _queues_setup_for_channel_id
     if _channel and not _channel.is_closed:
         await _channel.close()
         _channel = None
     if _connection and not _connection.is_closed:
         await _connection.close()
         _connection = None
+    _queues_setup_for_channel_id = None
     logger.info("RabbitMQ connection closed.")
