@@ -81,6 +81,7 @@ app.get("/live", (req, res) => {
 
 // Import RabbitMQ utilities từ shared
 import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from "./config/rabbitmq.js";
+import { closeDatabase } from "./config/db.js";
 import { startInfrastructureConsumers } from "./workers/registry.js";
 
 /**
@@ -151,8 +152,8 @@ async function gracefulShutdown(signal) {
     await closeRabbitMQ();
     log.info("RabbitMQ connection closed");
 
-    // Close consumers
-    // (thêm logic close consumers nếu cần)
+    await closeDatabase();
+    log.info("Database pool closed");
 
     log.service.shutdown();
     process.exit(0);

@@ -3,6 +3,7 @@
  * Khởi động tất cả queue consumers
  */
 import { connectRabbitMQ, setupExchangesAndQueues, closeRabbitMQ } from "../config/rabbitmq.js";
+import { closeDatabase } from "../config/db.js";
 import { startInfrastructureConsumers } from "./registry.js";
 
 /**
@@ -31,12 +32,14 @@ async function startWorkers() {
     process.on("SIGINT", async () => {
       console.log("[Workers] Shutting down gracefully...");
       await closeRabbitMQ();
+      await closeDatabase();
       process.exit(0);
     });
 
     process.on("SIGTERM", async () => {
       console.log("[Workers] Shutting down gracefully...");
       await closeRabbitMQ();
+      await closeDatabase();
       process.exit(0);
     });
   } catch (error) {

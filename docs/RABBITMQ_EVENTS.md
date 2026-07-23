@@ -40,16 +40,30 @@ AMQP `correlationId`.
 | Question Service | `question.updated` | A question was updated |
 | Question Service | `question.deleted` | A question was deleted |
 
-`exam.completed` is routed to the durable `exam.results` queue. Other domain
-events are available through topic bindings such as `user.*`, `exam.*`, and
-`question.*`; a consumer owns and declares its durable queue and bindings.
+`exam.completed` is routed to the durable `exam.results` queue. User, Exam CRUD,
+and Question events are routed to the durable `domain.events` queue.
+
+## Consumer queues
+
+| Main queue | Retry queue | Dead-letter queue | Consumer |
+| --- | --- | --- | --- |
+| `domain.events` | `domain.events.retry` | `domain.events.dlq` | `domain-events-consumer` |
+| `exam.results` | `exam.results.retry` | `exam.results.dlq` | `exam-results-consumer` |
+
+Both consumers store an event in `infra_observability.system_events`. They use
+the AMQP `messageId` and `infra_eventing.processed_messages` to ACK duplicate
+deliveries without processing them again.
+
+Invalid contracts go directly to the queue DLQ. Temporary database failures are
+retried up to three times through a retry queue with a five-second delay. When
+the retry limit is reached, the message is dead-lettered.
 
 ## Current delivery behavior
 
 Producers wait for broker confirmation. A broker failure is logged and returned
 internally as `published: false`, but it does not roll back an already completed
-business operation. A transactional outbox is required in the reliability phase
-to guarantee later delivery when RabbitMQ is unavailable.
+business operation. A transactional outbox is still required to guarantee later
+delivery when RabbitMQ is unavailable.
 
 Consumers must use `event_id`/AMQP `messageId` for idempotency because RabbitMQ
 delivery is at least once.
