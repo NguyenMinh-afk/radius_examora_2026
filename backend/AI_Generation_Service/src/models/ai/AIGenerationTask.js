@@ -63,6 +63,7 @@ const AIGenerationTask = sequelize.define('AIGenerationTask', {
   tableName: 'ai_generation_tasks',
   schema: 'ai_db',
   timestamps: true,
+  updatedAt: false,
   underscored: true,
 });
 

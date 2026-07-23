@@ -59,6 +59,7 @@ const AIGenerationLog = sequelize.define('AIGenerationLog', {
   tableName: 'ai_generation_logs',
   schema: 'ai_db',
   timestamps: true,
+  updatedAt: false,
   underscored: true,
 });
 

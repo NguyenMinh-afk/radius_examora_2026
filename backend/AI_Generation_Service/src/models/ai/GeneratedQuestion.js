@@ -75,6 +75,7 @@ const GeneratedQuestion = sequelize.define('GeneratedQuestion', {
   tableName: 'generated_questions',
   schema: 'ai_db',
   timestamps: true,
+  updatedAt: false,
   underscored: true,
 });
 
