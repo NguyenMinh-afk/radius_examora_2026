@@ -3,7 +3,7 @@
  *
  * Python AI Worker is the only consumer of ai.generation. Infrastructure
  * declares that queue so the whole platform shares one durable topology, but
- * it only consumes email.send and notification.send.
+ * it consumes the platform infrastructure queues.
  */
 import amqp from 'amqplib';
 
@@ -23,7 +23,11 @@ export const QUEUES = Object.freeze({
   EMAIL_SEND_DLQ: 'email.send.dlq',
   NOTIFICATION_SEND: 'notification.send',
   NOTIFICATION_SEND_DLQ: 'notification.send.dlq',
+  DOMAIN_EVENTS: 'domain.events',
+  DOMAIN_EVENTS_RETRY: 'domain.events.retry',
+  DOMAIN_EVENTS_DLQ: 'domain.events.dlq',
   EXAM_RESULTS: 'exam.results',
+  EXAM_RESULTS_RETRY: 'exam.results.retry',
   EXAM_RESULTS_DLQ: 'exam.results.dlq',
 });
 
@@ -40,6 +44,8 @@ export const ROUTING_KEYS = Object.freeze({
   QUESTION_CREATED: 'question.created',
   QUESTION_UPDATED: 'question.updated',
   QUESTION_DELETED: 'question.deleted',
+  DOMAIN_EVENTS_RETRY: 'domain.events.retry',
+  EXAM_RESULTS_RETRY: 'exam.results.retry',
 });
 
 export const QUEUE_CONFIGS = Object.freeze([
@@ -62,9 +68,33 @@ export const QUEUE_CONFIGS = Object.freeze([
     routingKeys: Object.freeze([ROUTING_KEYS.NOTIFICATION_NEW]),
   }),
   Object.freeze({
+    queue: QUEUES.DOMAIN_EVENTS,
+    retryQueue: QUEUES.DOMAIN_EVENTS_RETRY,
+    dlq: QUEUES.DOMAIN_EVENTS_DLQ,
+    retryRoutingKey: ROUTING_KEYS.DOMAIN_EVENTS_RETRY,
+    routingKeys: Object.freeze([
+      ROUTING_KEYS.USER_CREATED,
+      ROUTING_KEYS.USER_UPDATED,
+      ROUTING_KEYS.EXAM_CREATED,
+      ROUTING_KEYS.EXAM_UPDATED,
+      ROUTING_KEYS.EXAM_DELETED,
+      ROUTING_KEYS.QUESTION_CREATED,
+      ROUTING_KEYS.QUESTION_UPDATED,
+      ROUTING_KEYS.QUESTION_DELETED,
+      ROUTING_KEYS.DOMAIN_EVENTS_RETRY,
+    ]),
+    retryDelayMs: 5_000,
+  }),
+  Object.freeze({
     queue: QUEUES.EXAM_RESULTS,
+    retryQueue: QUEUES.EXAM_RESULTS_RETRY,
     dlq: QUEUES.EXAM_RESULTS_DLQ,
-    routingKeys: Object.freeze([ROUTING_KEYS.EXAM_COMPLETED]),
+    retryRoutingKey: ROUTING_KEYS.EXAM_RESULTS_RETRY,
+    routingKeys: Object.freeze([
+      ROUTING_KEYS.EXAM_COMPLETED,
+      ROUTING_KEYS.EXAM_RESULTS_RETRY,
+    ]),
+    retryDelayMs: 5_000,
   }),
 ]);
 
@@ -140,6 +170,17 @@ export async function setupExchangesAndQueues() {
   for (const config of QUEUE_CONFIGS) {
     await currentChannel.assertQueue(config.dlq, { durable: true });
     await currentChannel.bindQueue(config.dlq, EXCHANGES.EXAMORA_DLX, config.dlq);
+
+    if (config.retryQueue) {
+      await currentChannel.assertQueue(config.retryQueue, {
+        durable: true,
+        arguments: {
+          'x-message-ttl': config.retryDelayMs,
+          'x-dead-letter-exchange': EXCHANGES.EXAMORA_TOPIC,
+          'x-dead-letter-routing-key': config.retryRoutingKey,
+        },
+      });
+    }
 
     await currentChannel.assertQueue(config.queue, {
       durable: true,

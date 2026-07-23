@@ -65,6 +65,9 @@ describe('RabbitMQ infrastructure topology', () => {
     });
     expect(QUEUES.AI_GENERATION).toBe('ai.generation');
     expect(QUEUES.AI_GENERATION_DLQ).toBe('ai.generation.dlq');
+    expect(QUEUES.DOMAIN_EVENTS).toBe('domain.events');
+    expect(QUEUES.DOMAIN_EVENTS_DLQ).toBe('domain.events.dlq');
+    expect(QUEUES.EXAM_RESULTS).toBe('exam.results');
     expect(ROUTING_KEYS.AI_GENERATE).toBe('ai.generate');
   });
 
@@ -100,6 +103,18 @@ describe('RabbitMQ infrastructure topology', () => {
         EXCHANGES.EXAMORA_DLX,
         config.dlq
       );
+
+      if (config.retryQueue) {
+        expect(mocks.channel.assertQueue).toHaveBeenCalledWith(config.retryQueue, {
+          durable: true,
+          arguments: {
+            'x-message-ttl': config.retryDelayMs,
+            'x-dead-letter-exchange': EXCHANGES.EXAMORA_TOPIC,
+            'x-dead-letter-routing-key': config.retryRoutingKey,
+          },
+        });
+      }
+
       expect(mocks.channel.assertQueue).toHaveBeenCalledWith(config.queue, {
         durable: true,
         arguments: {

@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // PostgreSQL connection pool
-console.log('DB_PASSWORD (db.js):', typeof process.env.DB_PASSWORD, process.env.DB_PASSWORD);
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 5432,
@@ -67,4 +66,8 @@ const getClient = async () => {
   return client;
 };
 
-export { pool, query, getClient };
+const closeDatabase = async () => {
+  await pool.end();
+};
+
+export { pool, query, getClient, closeDatabase };

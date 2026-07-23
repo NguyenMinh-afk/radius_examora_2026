@@ -16,7 +16,11 @@ export const QUEUES = Object.freeze({
   EMAIL_SEND_DLQ: "email.send.dlq",
   NOTIFICATION_SEND: "notification.send",
   NOTIFICATION_SEND_DLQ: "notification.send.dlq",
+  DOMAIN_EVENTS: "domain.events",
+  DOMAIN_EVENTS_RETRY: "domain.events.retry",
+  DOMAIN_EVENTS_DLQ: "domain.events.dlq",
   EXAM_RESULTS: "exam.results",
+  EXAM_RESULTS_RETRY: "exam.results.retry",
   EXAM_RESULTS_DLQ: "exam.results.dlq",
 });
 
@@ -33,29 +37,55 @@ export const ROUTING_KEYS = Object.freeze({
   QUESTION_CREATED: "question.created",
   QUESTION_UPDATED: "question.updated",
   QUESTION_DELETED: "question.deleted",
+  DOMAIN_EVENTS_RETRY: "domain.events.retry",
+  EXAM_RESULTS_RETRY: "exam.results.retry",
 });
 
 const QUEUE_CONFIGS = Object.freeze([
   {
     queue: QUEUES.AI_GENERATION,
     dlq: QUEUES.AI_GENERATION_DLQ,
-    routingKey: ROUTING_KEYS.AI_GENERATE,
+    routingKeys: [ROUTING_KEYS.AI_GENERATE],
     arguments: { "x-message-ttl": 3_600_000 },
   },
   {
     queue: QUEUES.EMAIL_SEND,
     dlq: QUEUES.EMAIL_SEND_DLQ,
-    routingKey: ROUTING_KEYS.EMAIL_SEND,
+    routingKeys: [ROUTING_KEYS.EMAIL_SEND],
   },
   {
     queue: QUEUES.NOTIFICATION_SEND,
     dlq: QUEUES.NOTIFICATION_SEND_DLQ,
-    routingKey: ROUTING_KEYS.NOTIFICATION_NEW,
+    routingKeys: [ROUTING_KEYS.NOTIFICATION_NEW],
+  },
+  {
+    queue: QUEUES.DOMAIN_EVENTS,
+    retryQueue: QUEUES.DOMAIN_EVENTS_RETRY,
+    dlq: QUEUES.DOMAIN_EVENTS_DLQ,
+    retryRoutingKey: ROUTING_KEYS.DOMAIN_EVENTS_RETRY,
+    retryDelayMs: 5_000,
+    routingKeys: [
+      ROUTING_KEYS.USER_CREATED,
+      ROUTING_KEYS.USER_UPDATED,
+      ROUTING_KEYS.EXAM_CREATED,
+      ROUTING_KEYS.EXAM_UPDATED,
+      ROUTING_KEYS.EXAM_DELETED,
+      ROUTING_KEYS.QUESTION_CREATED,
+      ROUTING_KEYS.QUESTION_UPDATED,
+      ROUTING_KEYS.QUESTION_DELETED,
+      ROUTING_KEYS.DOMAIN_EVENTS_RETRY,
+    ],
   },
   {
     queue: QUEUES.EXAM_RESULTS,
+    retryQueue: QUEUES.EXAM_RESULTS_RETRY,
     dlq: QUEUES.EXAM_RESULTS_DLQ,
-    routingKey: ROUTING_KEYS.EXAM_COMPLETED,
+    retryRoutingKey: ROUTING_KEYS.EXAM_RESULTS_RETRY,
+    retryDelayMs: 5_000,
+    routingKeys: [
+      ROUTING_KEYS.EXAM_COMPLETED,
+      ROUTING_KEYS.EXAM_RESULTS_RETRY,
+    ],
   },
 ]);
 
@@ -120,6 +150,16 @@ export async function setupExchangesAndQueues() {
   for (const config of QUEUE_CONFIGS) {
     await channel.assertQueue(config.dlq, { durable: true });
     await channel.bindQueue(config.dlq, EXCHANGES.EXAMORA_DLX, config.dlq);
+    if (config.retryQueue) {
+      await channel.assertQueue(config.retryQueue, {
+        durable: true,
+        arguments: {
+          "x-message-ttl": config.retryDelayMs,
+          "x-dead-letter-exchange": EXCHANGES.EXAMORA_TOPIC,
+          "x-dead-letter-routing-key": config.retryRoutingKey,
+        },
+      });
+    }
     await channel.assertQueue(config.queue, {
       durable: true,
       arguments: {
@@ -128,11 +168,13 @@ export async function setupExchangesAndQueues() {
         ...(config.arguments || {}),
       },
     });
-    await channel.bindQueue(
-      config.queue,
-      EXCHANGES.EXAMORA_TOPIC,
-      config.routingKey,
-    );
+    for (const routingKey of config.routingKeys) {
+      await channel.bindQueue(
+        config.queue,
+        EXCHANGES.EXAMORA_TOPIC,
+        routingKey,
+      );
+    }
   }
 
   console.log("[RabbitMQ] Standard EXMORA topology configured");
