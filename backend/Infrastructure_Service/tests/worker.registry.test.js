@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   startExamResultsConsumer: vi.fn().mockResolvedValue(undefined),
   startNotificationConsumer: vi.fn().mockResolvedValue(undefined),
   startOutboxWorker: vi.fn().mockResolvedValue(undefined),
+  stopOutboxWorker: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../src/workers/domain-event.consumer.js', () => ({
@@ -26,9 +27,14 @@ vi.mock('../src/workers/notification.consumer.js', () => ({
 
 vi.mock('../src/workers/outbox.worker.js', () => ({
   startOutboxWorker: mocks.startOutboxWorker,
+  stopOutboxWorker: mocks.stopOutboxWorker,
 }));
 
-import { INFRASTRUCTURE_CONSUMERS, startInfrastructureConsumers } from '../src/workers/registry.js';
+import {
+  INFRASTRUCTURE_CONSUMERS,
+  startInfrastructureConsumers,
+  stopInfrastructureConsumers,
+} from '../src/workers/registry.js';
 
 describe('Infrastructure consumer registry', () => {
   it('starts every Infrastructure-owned consumer', async () => {
@@ -46,5 +52,11 @@ describe('Infrastructure consumer registry', () => {
     expect(mocks.startExamResultsConsumer).toHaveBeenCalledOnce();
     expect(mocks.startNotificationConsumer).toHaveBeenCalledOnce();
     expect(mocks.startOutboxWorker).toHaveBeenCalledOnce();
+  });
+
+  it('stops the outbox timer before reconnecting or shutting down', async () => {
+    await stopInfrastructureConsumers();
+
+    expect(mocks.stopOutboxWorker).toHaveBeenCalledOnce();
   });
 });

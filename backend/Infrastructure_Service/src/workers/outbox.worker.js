@@ -19,27 +19,48 @@ function parsePayload(payload) {
 
 async function publishOutboxEvent(channel, event) {
   const payload = parsePayload(event.payload);
-  channel.publish(
-    event.exchange_name || 'examora.topic',
-    event.routing_key,
-    Buffer.from(JSON.stringify(payload)),
-    {
-      persistent: true,
-      contentType: 'application/json',
-      contentEncoding: 'utf-8',
-      messageId: event.message_id,
-      correlationId: event.trace_id || event.message_id,
-      type: event.event_type,
-      timestamp: Date.now(),
-      headers: {
-        'x-service': payload.source,
-        'x-trace-id': event.trace_id || event.message_id,
-        'x-event-version': payload.event_version || 1,
-        'x-outbox-id': event.outbox_event_id,
-      },
+  let returnedMessage = null;
+  const onReturn = (message) => {
+    if (message.properties.messageId === event.message_id) {
+      returnedMessage = message;
     }
-  );
-  await channel.waitForConfirms();
+  };
+
+  channel.on('return', onReturn);
+  try {
+    channel.publish(
+      event.exchange_name || 'examora.topic',
+      event.routing_key,
+      Buffer.from(JSON.stringify(payload)),
+      {
+        persistent: true,
+        mandatory: true,
+        contentType: 'application/json',
+        contentEncoding: 'utf-8',
+        messageId: event.message_id,
+        correlationId: event.trace_id || event.message_id,
+        type: event.event_type,
+        timestamp: Date.now(),
+        headers: {
+          'x-service': payload.source,
+          'x-trace-id': event.trace_id || event.message_id,
+          'x-event-version': payload.event_version || 1,
+          'x-outbox-id': event.outbox_event_id,
+        },
+      },
+    );
+    await channel.waitForConfirms();
+    await new Promise((resolve) => setImmediate(resolve));
+
+    if (returnedMessage) {
+      throw new Error(
+        `RabbitMQ returned unroutable message ${event.message_id}: ` +
+          `${returnedMessage.fields.replyText || 'NO_ROUTE'}`
+      );
+    }
+  } finally {
+    channel.off('return', onReturn);
+  }
 }
 
 export async function processNextOutboxEvent({

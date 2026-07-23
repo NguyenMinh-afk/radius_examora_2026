@@ -25,9 +25,13 @@ function createDependencies() {
   const databasePool = {
     connect: vi.fn().mockResolvedValue(client),
   };
+  const listeners = new Map();
   const channel = {
+    off: vi.fn((eventName) => listeners.delete(eventName)),
+    on: vi.fn((eventName, handler) => listeners.set(eventName, handler)),
     publish: vi.fn(),
     waitForConfirms: vi.fn().mockResolvedValue(undefined),
+    emitReturn: (message) => listeners.get('return')?.(message),
   };
   return { channel, client, databasePool };
 }
@@ -62,6 +66,7 @@ describe('Transactional outbox publisher worker', () => {
       expect.any(Buffer),
       expect.objectContaining({
         persistent: true,
+        mandatory: true,
         messageId: event.message_id,
         correlationId: 'trace-id',
       })
@@ -141,6 +146,35 @@ describe('Transactional outbox publisher worker', () => {
     expect(client.query.mock.calls[2][1][1]).toBe('FAILED');
     expect(client.query.mock.calls[3][0]).toContain('infra_eventing.dead_letter_messages');
     expect(client.query.mock.calls[4][0]).toBe('COMMIT');
+  });
+
+  it('does not mark an unroutable confirmed message as PUBLISHED', async () => {
+    const { channel, client, databasePool } = createDependencies();
+    channel.publish.mockImplementation(() => {
+      channel.emitReturn({
+        fields: { replyText: 'NO_ROUTE' },
+        properties: { messageId: event.message_id },
+      });
+    });
+    client.query
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce({ rowCount: 1, rows: [event] })
+      .mockResolvedValueOnce({ rowCount: 1 })
+      .mockResolvedValueOnce(undefined);
+
+    const result = await processNextOutboxEvent({
+      channel,
+      databasePool,
+      maxRetries: 3,
+    });
+
+    expect(result).toEqual({
+      processed: true,
+      published: false,
+      status: 'PENDING',
+      retryCount: 1,
+    });
+    expect(client.query.mock.calls[2][1][4]).toContain('NO_ROUTE');
   });
 
   it('rolls back and releases the database client on database errors', async () => {

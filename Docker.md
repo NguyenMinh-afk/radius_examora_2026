@@ -50,6 +50,24 @@ Each service has its own `.env.docker` file. These are loaded into containers vi
 - `backend/Infrastructure_Service/.env.docker`
 - `backend/API_Gateway_Service/.env.docker`
 
+Real `.env.docker` files are intentionally ignored by Git. After a fresh clone,
+copy each tracked template before starting Compose:
+
+```powershell
+Get-ChildItem backend -Filter ".env.docker.example" -Recurse | ForEach-Object {
+  Copy-Item $_.FullName ($_.FullName -replace "\.example$", "")
+}
+```
+
+```bash
+find backend -name '.env.docker.example' -exec sh -c \
+  'cp "$1" "${1%.example}"' _ {} \;
+```
+
+The templates contain local-development defaults and empty placeholders only.
+Set real API/SMTP credentials locally. Never commit `.env.docker` or production
+secrets.
+
 The frontend uses environment variables directly in compose:
 
 ```yaml
@@ -112,6 +130,28 @@ If you changed `.env.docker`, recreate containers so new env vars are applied:
 docker compose down
 docker compose up -d --force-recreate
 ```
+
+### One-time AI queue migration
+
+The `ai.generation` queue no longer expires pending messages after one hour.
+RabbitMQ cannot change queue arguments in place. Existing installations that
+still show `x-message-ttl=3600000` must recreate this queue once.
+
+First stop AI publishing/consuming and verify that the queue is empty:
+
+```bash
+docker compose stop ai-generation-service ai-worker-service infrastructure-service
+docker exec exmora-rabbitmq rabbitmqctl list_queues name messages consumers arguments
+```
+
+Only when `ai.generation` has `messages=0`, recreate it and restart the services:
+
+```bash
+docker exec exmora-rabbitmq rabbitmqctl delete_queue ai.generation
+docker compose up -d ai-generation-service ai-worker-service infrastructure-service
+```
+
+If messages exist, do not delete the queue. Drain or export them first.
 
 ## 8. View Logs
 

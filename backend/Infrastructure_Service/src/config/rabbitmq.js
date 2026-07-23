@@ -20,8 +20,10 @@ export const QUEUES = Object.freeze({
   AI_GENERATION: 'ai.generation',
   AI_GENERATION_DLQ: 'ai.generation.dlq',
   EMAIL_SEND: 'email.send',
+  EMAIL_SEND_RETRY: 'email.send.retry',
   EMAIL_SEND_DLQ: 'email.send.dlq',
   NOTIFICATION_SEND: 'notification.send',
+  NOTIFICATION_SEND_RETRY: 'notification.send.retry',
   NOTIFICATION_SEND_DLQ: 'notification.send.dlq',
   DOMAIN_EVENTS: 'domain.events',
   DOMAIN_EVENTS_RETRY: 'domain.events.retry',
@@ -34,7 +36,9 @@ export const QUEUES = Object.freeze({
 export const ROUTING_KEYS = Object.freeze({
   AI_GENERATE: 'ai.generate',
   EMAIL_SEND: 'email.send',
+  EMAIL_SEND_RETRY: 'email.send.retry',
   NOTIFICATION_NEW: 'notification.new',
+  NOTIFICATION_SEND_RETRY: 'notification.send.retry',
   EXAM_COMPLETED: 'exam.completed',
   USER_CREATED: 'user.created',
   USER_UPDATED: 'user.updated',
@@ -53,19 +57,25 @@ export const QUEUE_CONFIGS = Object.freeze([
     queue: QUEUES.AI_GENERATION,
     dlq: QUEUES.AI_GENERATION_DLQ,
     routingKeys: Object.freeze([ROUTING_KEYS.AI_GENERATE]),
-    arguments: Object.freeze({
-      'x-message-ttl': 3_600_000,
-    }),
   }),
   Object.freeze({
     queue: QUEUES.EMAIL_SEND,
+    retryQueue: QUEUES.EMAIL_SEND_RETRY,
     dlq: QUEUES.EMAIL_SEND_DLQ,
-    routingKeys: Object.freeze([ROUTING_KEYS.EMAIL_SEND]),
+    retryRoutingKey: ROUTING_KEYS.EMAIL_SEND_RETRY,
+    retryDelayMs: 5_000,
+    routingKeys: Object.freeze([ROUTING_KEYS.EMAIL_SEND, ROUTING_KEYS.EMAIL_SEND_RETRY]),
   }),
   Object.freeze({
     queue: QUEUES.NOTIFICATION_SEND,
+    retryQueue: QUEUES.NOTIFICATION_SEND_RETRY,
     dlq: QUEUES.NOTIFICATION_SEND_DLQ,
-    routingKeys: Object.freeze([ROUTING_KEYS.NOTIFICATION_NEW]),
+    retryRoutingKey: ROUTING_KEYS.NOTIFICATION_SEND_RETRY,
+    retryDelayMs: 5_000,
+    routingKeys: Object.freeze([
+      ROUTING_KEYS.NOTIFICATION_NEW,
+      ROUTING_KEYS.NOTIFICATION_SEND_RETRY,
+    ]),
   }),
   Object.freeze({
     queue: QUEUES.DOMAIN_EVENTS,
@@ -101,6 +111,24 @@ export const QUEUE_CONFIGS = Object.freeze([
 let connection = null;
 let channel = null;
 let connectingPromise = null;
+let disconnectHandler = null;
+let closing = false;
+
+function notifyDisconnected(reason) {
+  if (closing || !disconnectHandler) {
+    return;
+  }
+
+  try {
+    disconnectHandler(reason);
+  } catch (error) {
+    console.error('[RabbitMQ] Disconnect handler failed:', error.message);
+  }
+}
+
+export function setRabbitMQDisconnectHandler(handler) {
+  disconnectHandler = typeof handler === 'function' ? handler : null;
+}
 
 function sanitizeUrl(url) {
   return url.replace(/:[^:@]+@/, ':***@');
@@ -114,6 +142,7 @@ export async function connectRabbitMQ(url = DEFAULT_RABBITMQ_URL) {
   if (!connectingPromise) {
     connectingPromise = (async () => {
       try {
+        closing = false;
         console.log('[RabbitMQ] Connecting to:', sanitizeUrl(url));
         const currentConnection = await amqp.connect(url);
         const currentChannel = await currentConnection.createConfirmChannel();
@@ -127,6 +156,7 @@ export async function connectRabbitMQ(url = DEFAULT_RABBITMQ_URL) {
           if (connection === currentConnection) {
             connection = null;
             channel = null;
+            notifyDisconnected(new Error('RabbitMQ connection closed'));
           }
           console.log('[RabbitMQ] Connection closed');
         });
@@ -136,6 +166,11 @@ export async function connectRabbitMQ(url = DEFAULT_RABBITMQ_URL) {
         currentChannel.on('close', () => {
           if (channel === currentChannel) {
             channel = null;
+            connection = null;
+            notifyDisconnected(new Error('RabbitMQ channel closed'));
+            if (!closing) {
+              void currentConnection.close().catch(() => {});
+            }
           }
         });
 
@@ -216,6 +251,7 @@ export function getRabbitMQStatus() {
 }
 
 export async function closeRabbitMQ() {
+  closing = true;
   const currentChannel = channel;
   const currentConnection = connection;
   channel = null;
@@ -232,6 +268,8 @@ export async function closeRabbitMQ() {
     console.log('[RabbitMQ] Connection closed gracefully');
   } catch (error) {
     console.error('[RabbitMQ] Error closing:', error.message);
+  } finally {
+    closing = false;
   }
 }
 
@@ -240,6 +278,7 @@ export default {
   setupExchangesAndQueues,
   getChannel,
   getRabbitMQStatus,
+  setRabbitMQDisconnectHandler,
   closeRabbitMQ,
   EXCHANGES,
   QUEUES,
