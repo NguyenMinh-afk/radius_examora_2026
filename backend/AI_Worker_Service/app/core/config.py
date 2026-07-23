@@ -53,8 +53,11 @@ class Settings(BaseSettings):
     # --- RabbitMQ ---
     use_rabbitmq: bool = Field(default=False)
     rabbitmq_url: str = Field(default="amqp://guest:guest@localhost:5672/")
-    rabbitmq_queue: str = Field(default="ai_generation_queue")
-    rabbitmq_dlq: str = Field(default="ai_generation_dlq")
+    rabbitmq_exchange: str = Field(default="examora.topic")
+    rabbitmq_routing_key: str = Field(default="ai.generate")
+    rabbitmq_queue: str = Field(default="ai.generation")
+    rabbitmq_dlx: str = Field(default="examora.dlx")
+    rabbitmq_dlq: str = Field(default="ai.generation.dlq")
     rabbitmq_max_retries: int = Field(default=3)
 
     # --- Text Processing ---
