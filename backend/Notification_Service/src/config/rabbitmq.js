@@ -1,61 +1,132 @@
 /**
- * RabbitMQ Publisher - Notification Service
- * Gửi message đến queue để xử lý async
+ * RabbitMQ publisher for asynchronous notifications and emails.
  */
 import amqp from "amqplib";
+import { randomUUID } from "node:crypto";
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 
+const RABBITMQ_URL =
+  process.env.RABBITMQ_URL ||
   `amqp://${process.env.RABBITMQ_USER || "admin"}:${process.env.RABBITMQ_PASSWORD || "StrongPassword123"}@${process.env.RABBITMQ_HOST || "localhost"}:${process.env.RABBITMQ_PORT || 5672}`;
 
-// Exchange và Queue names
 const EXCHANGE = "examora.topic";
-const NOTIFICATION_QUEUE = "notification.send";
-const EMAIL_QUEUE = "email.send";
-const NOTIFICATION_ROUTING_KEY = "notification.new";
-const EMAIL_ROUTING_KEY = "email.send";
+const DLX = "examora.dlx";
+
+const DESTINATIONS = Object.freeze({
+  notification: Object.freeze({
+    queue: "notification.send",
+    dlq: "notification.send.dlq",
+    routingKey: "notification.new",
+  }),
+  email: Object.freeze({
+    queue: "email.send",
+    dlq: "email.send.dlq",
+    routingKey: "email.send",
+  }),
+});
 
 let connection = null;
 let channel = null;
+let connectingPromise = null;
 
-/**
- * Kết nối đến RabbitMQ
- */
-async function connect() {
-  if (connection && channel) return;
-  
+async function assertDestination(currentChannel, destination) {
+  await currentChannel.assertQueue(destination.dlq, { durable: true });
+  await currentChannel.bindQueue(destination.dlq, DLX, destination.dlq);
+  await currentChannel.assertQueue(destination.queue, {
+    durable: true,
+    arguments: {
+      "x-dead-letter-exchange": DLX,
+      "x-dead-letter-routing-key": destination.dlq,
+    },
+  });
+  await currentChannel.bindQueue(
+    destination.queue,
+    EXCHANGE,
+    destination.routingKey,
+  );
+}
+
+async function createConnection() {
   try {
-    connection = await amqp.connect(RABBITMQ_URL);
-    channel = await connection.createChannel();
-    
-    // Đảm bảo queues tồn tại
-    await channel.assertQueue(NOTIFICATION_QUEUE, { durable: true });
-    await channel.assertQueue(EMAIL_QUEUE, { durable: true });
-    
-    connection.on("error", (err) => {
-      console.error("[Notification Publisher] Connection error:", err.message);
-      connection = null;
-      channel = null;
+    const currentConnection = await amqp.connect(RABBITMQ_URL);
+    const currentChannel = await currentConnection.createConfirmChannel();
+
+    currentConnection.on("error", (error) => {
+      console.error("[Notification Publisher] Connection error:", error.message);
     });
-    
-    connection.on("close", () => {
+    currentConnection.on("close", () => {
+      if (connection === currentConnection) {
+        connection = null;
+        channel = null;
+      }
       console.log("[Notification Publisher] Connection closed");
-      connection = null;
-      channel = null;
     });
-    
+    currentChannel.on("error", (error) => {
+      console.error("[Notification Publisher] Channel error:", error.message);
+    });
+    currentChannel.on("close", () => {
+      if (channel === currentChannel) {
+        channel = null;
+      }
+    });
+
+    await currentChannel.assertExchange(EXCHANGE, "topic", { durable: true });
+    await currentChannel.assertExchange(DLX, "direct", { durable: true });
+    await assertDestination(currentChannel, DESTINATIONS.notification);
+    await assertDestination(currentChannel, DESTINATIONS.email);
+
+    connection = currentConnection;
+    channel = currentChannel;
     console.log("[Notification Publisher] Connected to RabbitMQ");
+    return currentChannel;
   } catch (error) {
-    console.error("[Notification Publisher] Failed to connect:", error.message);
+    connection = null;
+    channel = null;
+    console.error(
+      "[Notification Publisher] Failed to connect:",
+      error.message,
+    );
     throw error;
   }
 }
 
-/**
- * Publish notification vào queue
- */
+async function connect() {
+  if (channel) {
+    return channel;
+  }
+  if (!connectingPromise) {
+    connectingPromise = createConnection().finally(() => {
+      connectingPromise = null;
+    });
+  }
+  return connectingPromise;
+}
+
+async function publish(destination, message, traceId) {
+  const currentChannel = await connect();
+  const messageId = randomUUID();
+
+  currentChannel.publish(
+    EXCHANGE,
+    destination.routingKey,
+    Buffer.from(JSON.stringify(message)),
+    {
+      persistent: true,
+      contentType: "application/json",
+      messageId,
+      correlationId: traceId,
+      type: destination.routingKey,
+      timestamp: Date.now(),
+      headers: {
+        "x-service": "Notification_Service",
+        "x-trace-id": traceId,
+      },
+    },
+  );
+  await currentChannel.waitForConfirms();
+  return { messageId };
+}
+
 export async function publishNotification(data) {
-  await connect();
-  
   const message = {
     userId: data.userId,
     type: data.type || "system",
@@ -65,34 +136,19 @@ export async function publishNotification(data) {
     traceId: data.traceId,
     timestamp: new Date().toISOString(),
   };
-  
-  const success = channel.publish(
-    EXCHANGE,
-    NOTIFICATION_ROUTING_KEY,
-    Buffer.from(JSON.stringify(message)),
-    {
-      persistent: true,
-      contentType: "application/json",
-      headers: {
-        "x-service": "Notification_Service",
-        "x-trace-id": data.traceId,
-      },
-    }
+
+  const result = await publish(
+    DESTINATIONS.notification,
+    message,
+    data.traceId,
   );
-  
-  if (success) {
-    console.log(`[Notification Publisher] Published notification for user: ${data.userId}`);
-  }
-  
-  return success;
+  console.log(
+    `[Notification Publisher] Published notification for user: ${data.userId}`,
+  );
+  return result;
 }
 
-/**
- * Publish email vào queue
- */
 export async function publishEmail(data) {
-  await connect();
-  
   const message = {
     to: data.to,
     subject: data.subject,
@@ -102,36 +158,27 @@ export async function publishEmail(data) {
     traceId: data.traceId,
     timestamp: new Date().toISOString(),
   };
-  
-  const success = channel.publish(
-    EXCHANGE,
-    EMAIL_ROUTING_KEY,
-    Buffer.from(JSON.stringify(message)),
-    {
-      persistent: true,
-      contentType: "application/json",
-      headers: {
-        "x-service": "Notification_Service",
-        "x-trace-id": data.traceId,
-      },
-    }
-  );
-  
-  if (success) {
-    console.log(`[Notification Publisher] Published email to: ${data.to}`);
-  }
-  
-  return success;
+
+  const result = await publish(DESTINATIONS.email, message, data.traceId);
+  console.log(`[Notification Publisher] Published email to: ${data.to}`);
+  return result;
 }
 
-/**
- * Đóng kết nối
- */
 export async function close() {
+  const currentChannel = channel;
+  const currentConnection = connection;
+  channel = null;
+  connection = null;
+  connectingPromise = null;
+
   try {
-    if (channel) await channel.close();
-    if (connection) await connection.close();
-    console.log("[Notification Publisher] Connection closed");
+    if (currentChannel) {
+      await currentChannel.close();
+    }
+    if (currentConnection) {
+      await currentConnection.close();
+    }
+    console.log("[Notification Publisher] Connection closed gracefully");
   } catch (error) {
     console.error("[Notification Publisher] Error closing:", error.message);
   }

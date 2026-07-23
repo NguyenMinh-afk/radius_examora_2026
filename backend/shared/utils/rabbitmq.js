@@ -1,202 +1,199 @@
 /**
- * RabbitMQ Configuration với production features
- * - durable queue
- * - persistent message
- * - manual ACK
- * - retry queue
- * - dead letter queue
- * - prefetch
- * - publisher confirm
+ * Shared RabbitMQ client for Node services.
+ *
+ * Topology names must stay aligned with Infrastructure Service and the Python
+ * AI Worker. Service-specific consumers remain in their owning services.
  */
+export const EXCHANGES = Object.freeze({
+  EXAMORA_TOPIC: "examora.topic",
+  EXAMORA_DLX: "examora.dlx",
+});
+
+export const QUEUES = Object.freeze({
+  AI_GENERATION: "ai.generation",
+  AI_GENERATION_DLQ: "ai.generation.dlq",
+  EMAIL_SEND: "email.send",
+  EMAIL_SEND_DLQ: "email.send.dlq",
+  NOTIFICATION_SEND: "notification.send",
+  NOTIFICATION_SEND_DLQ: "notification.send.dlq",
+  EXAM_RESULTS: "exam.results",
+  EXAM_RESULTS_DLQ: "exam.results.dlq",
+});
+
+export const ROUTING_KEYS = Object.freeze({
+  AI_GENERATE: "ai.generate",
+  EMAIL_SEND: "email.send",
+  NOTIFICATION_NEW: "notification.new",
+  EXAM_COMPLETED: "exam.completed",
+});
+
+const QUEUE_CONFIGS = Object.freeze([
+  {
+    queue: QUEUES.AI_GENERATION,
+    dlq: QUEUES.AI_GENERATION_DLQ,
+    routingKey: ROUTING_KEYS.AI_GENERATE,
+    arguments: { "x-message-ttl": 3_600_000 },
+  },
+  {
+    queue: QUEUES.EMAIL_SEND,
+    dlq: QUEUES.EMAIL_SEND_DLQ,
+    routingKey: ROUTING_KEYS.EMAIL_SEND,
+  },
+  {
+    queue: QUEUES.NOTIFICATION_SEND,
+    dlq: QUEUES.NOTIFICATION_SEND_DLQ,
+    routingKey: ROUTING_KEYS.NOTIFICATION_NEW,
+  },
+  {
+    queue: QUEUES.EXAM_RESULTS,
+    dlq: QUEUES.EXAM_RESULTS_DLQ,
+    routingKey: ROUTING_KEYS.EXAM_COMPLETED,
+  },
+]);
 
 let channel = null;
 let connection = null;
 
 export async function connectRabbitMQ(url) {
-  const amqp = await import("amqplib");
-  connection = await amqp.connect(url);
+  if (connection) {
+    return connection;
+  }
 
-  // Publisher confirms
-  await connection.confirmConnect();
+  const amqpModule = await import("amqplib");
+  const amqp = amqpModule.default || amqpModule;
+  const currentConnection = await amqp.connect(url);
 
-  connection.on("error", (err) => {
-    console.error("[RabbitMQ] Connection error:", err.message);
+  currentConnection.on("error", (error) => {
+    console.error("[RabbitMQ] Connection error:", error.message);
   });
-
-  connection.on("close", () => {
+  currentConnection.on("close", () => {
+    if (connection === currentConnection) {
+      connection = null;
+      channel = null;
+    }
     console.warn("[RabbitMQ] Connection closed");
   });
 
-  return connection;
+  connection = currentConnection;
+  return currentConnection;
 }
 
 export async function createChannel(prefetch = 10) {
-  if (!connection) throw new Error("RabbitMQ not connected");
+  if (!connection) {
+    throw new Error("RabbitMQ not connected");
+  }
+  if (channel) {
+    return channel;
+  }
 
-  channel = await connection.createConfirmChannel();
-  await channel.prefetch(prefetch);
-
-  return channel;
+  const currentChannel = await connection.createConfirmChannel();
+  await currentChannel.prefetch(prefetch);
+  currentChannel.on("close", () => {
+    if (channel === currentChannel) {
+      channel = null;
+    }
+  });
+  channel = currentChannel;
+  return currentChannel;
 }
 
 export async function setupExchangesAndQueues() {
-  if (!channel) throw new Error("Channel not created");
+  if (!channel) {
+    throw new Error("RabbitMQ channel not created");
+  }
 
-  // ========== Exchanges ==========
-  // Main exchange cho AI tasks
-  await channel.assertExchange("ai.exchange", "direct", { durable: true });
-
-  // Exchange cho notifications
-  await channel.assertExchange("notification.exchange", "direct", { durable: true });
-
-  // Exchange cho email
-  await channel.assertExchange("email.exchange", "direct", { durable: true });
-
-  // Dead letter exchange
-  await channel.assertExchange("dlx.exchange", "direct", { durable: true });
-
-  // ========== Queues ==========
-  // Main AI processing queue
-  await channel.assertQueue("ai.tasks", {
+  await channel.assertExchange(EXCHANGES.EXAMORA_TOPIC, "topic", {
     durable: true,
-    arguments: {
-      "x-dead-letter-exchange": "dlx.exchange",
-      "x-dead-letter-routing-key": "ai.failed",
-    },
+  });
+  await channel.assertExchange(EXCHANGES.EXAMORA_DLX, "direct", {
+    durable: true,
   });
 
-  // Retry queue với TTL (5 phút)
-  await channel.assertQueue("ai.retry", {
-    durable: true,
-    arguments: {
-      "x-message-ttl": 5 * 60 * 1000,
-      "x-dead-letter-exchange": "ai.exchange",
-      "x-dead-letter-routing-key": "ai.task",
-    },
-  });
-
-  // Dead letter queue (AI)
-  await channel.assertQueue("ai.failed", { durable: true });
-
-  // Notification queue
-  await channel.assertQueue("notifications", {
-    durable: true,
-    arguments: {
-      "x-dead-letter-exchange": "dlx.exchange",
-      "x-dead-letter-routing-key": "notification.failed",
-    },
-  });
-
-  // Email queue
-  await channel.assertQueue("emails", {
-    durable: true,
-    arguments: {
-      "x-dead-letter-exchange": "dlx.exchange",
-      "x-dead-letter-routing-key": "email.failed",
-    },
-  });
-
-  // Failed queues
-  await channel.assertQueue("notification.failed", { durable: true });
-  await channel.assertQueue("email.failed", { durable: true });
-
-  // ========== Bindings ==========
-  await channel.bindQueue("ai.tasks", "ai.exchange", "ai.task");
-  await channel.bindQueue("ai.retry", "ai.exchange", "ai.retry");
-  await channel.bindQueue("notifications", "notification.exchange", "notification.send");
-  await channel.bindQueue("emails", "email.exchange", "email.send");
-
-  console.log("[RabbitMQ] Exchanges and queues setup complete");
-}
-
-/**
- * Publish message với confirm
- */
-export async function publishMessage(exchange, routingKey, message) {
-  if (!channel) throw new Error("Channel not created");
-
-  const messageBuffer = Buffer.from(JSON.stringify(message));
-
-  return new Promise((resolve, reject) => {
-    channel.publish(
-      exchange,
-      routingKey,
-      messageBuffer,
-      {
-        persistent: true, // durable message
-        contentType: "application/json",
-        timestamp: Date.now(),
+  for (const config of QUEUE_CONFIGS) {
+    await channel.assertQueue(config.dlq, { durable: true });
+    await channel.bindQueue(config.dlq, EXCHANGES.EXAMORA_DLX, config.dlq);
+    await channel.assertQueue(config.queue, {
+      durable: true,
+      arguments: {
+        "x-dead-letter-exchange": EXCHANGES.EXAMORA_DLX,
+        "x-dead-letter-routing-key": config.dlq,
+        ...(config.arguments || {}),
       },
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(true);
-        }
-      }
+    });
+    await channel.bindQueue(
+      config.queue,
+      EXCHANGES.EXAMORA_TOPIC,
+      config.routingKey,
     );
-  });
+  }
+
+  console.log("[RabbitMQ] Standard EXMORA topology configured");
 }
 
-/**
- * Consume message với manual ACK
- */
+export async function publishMessage(
+  exchange,
+  routingKey,
+  message,
+  options = {},
+) {
+  if (!channel) {
+    throw new Error("RabbitMQ channel not created");
+  }
+
+  channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {
+    persistent: true,
+    contentType: "application/json",
+    timestamp: Date.now(),
+    ...options,
+  });
+  await channel.waitForConfirms();
+  return true;
+}
+
 export async function consumeMessages(queue, handler) {
-  if (!channel) throw new Error("Channel not created");
+  if (!channel) {
+    throw new Error("RabbitMQ channel not created");
+  }
 
   await channel.consume(
     queue,
-    async (msg) => {
-      if (!msg) return;
+    async (message) => {
+      if (!message) {
+        return;
+      }
 
       try {
-        const content = JSON.parse(msg.content.toString());
-        await handler(content);
-
-        // ACK thành công
-        channel.ack(msg);
+        const content = JSON.parse(message.content.toString());
+        await handler(content, message);
+        channel.ack(message);
       } catch (error) {
         console.error("[RabbitMQ] Error processing message:", error.message);
-
-        // Check retry count
-        const retryCount = (msg.properties.headers?.["x-retry-count"] || 0) + 1;
-
-        if (retryCount < 3) {
-          // Retry bằng cách gửi sang retry queue
-          await publishMessage("ai.exchange", "ai.retry", {
-            ...JSON.parse(msg.content.toString()),
-            _retryCount: retryCount,
-            _lastError: error.message,
-          });
-        }
-
-        // ACK để không nhận lại nữa (message đã sang DLQ)
-        channel.ack(msg);
+        channel.nack(message, false, false);
       }
     },
-    { noAck: false }
+    { noAck: false },
   );
 }
 
 export function getRabbitMQStatus() {
-  if (!connection) {
-    return { status: "DISCONNECTED" };
-  }
   return {
-    status: connection.isOpen() ? "CONNECTED" : "DISCONNECTED",
-    channelOpen: channel?.isOpen() || false,
+    status: connection ? "CONNECTED" : "DISCONNECTED",
+    channelOpen: Boolean(channel),
   };
 }
 
 export async function closeRabbitMQ() {
+  const currentChannel = channel;
+  const currentConnection = connection;
+  channel = null;
+  connection = null;
+
   try {
-    if (channel) {
-      await channel.close();
-      channel = null;
+    if (currentChannel) {
+      await currentChannel.close();
     }
-    if (connection) {
-      await connection.close();
-      connection = null;
+    if (currentConnection) {
+      await currentConnection.close();
     }
     console.log("[RabbitMQ] Connection closed");
   } catch (error) {

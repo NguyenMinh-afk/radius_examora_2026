@@ -10,8 +10,14 @@ import { Notification } from "../models/index.js";
 
 const router = express.Router();
 
-// Các endpoint đọc/đánh dấu cần auth của user hiện tại
-router.use(authenticate);
+// Infrastructure Service calls the internal POST endpoint. All user-facing
+// notification routes still require a valid access token.
+router.use((req, res, next) => {
+  if (req.method === "POST" && req.path === "/internal") {
+    return next();
+  }
+  return authenticate(req, res, next);
+});
 
 router.get("/", async (req, res) => {
   try {
