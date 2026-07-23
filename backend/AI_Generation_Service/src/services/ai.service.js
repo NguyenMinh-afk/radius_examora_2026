@@ -61,20 +61,32 @@ class AIService {
       await publishAIGeneration({
         requestId: request.id,
         taskId: task.id,
-        userId,
-        courseId,
-        chapterId,
-        knowledgeUnitId,
-        questionType,
-        difficulty,
-        quantity: quantity || 10,
-        context,
         traceId,
       });
       console.log("[AIService] Published message to RabbitMQ for request:", request.id);
     } catch (error) {
       console.error("[AIService] Failed to publish to queue:", error.message);
-      // Don't fail the request if queue publish fails - the task can be picked up later
+      const errorMessage = `RabbitMQ publish failed: ${error.message}`;
+      try {
+        await Promise.all([
+          request.update({
+            status: "failed",
+            error_message: errorMessage,
+          }),
+          task.update({
+            status: "failed",
+            error_message: errorMessage,
+          }),
+        ]);
+      } catch (statusError) {
+        console.error(
+          "[AIService] Failed to mark request/task as failed:",
+          statusError.message,
+        );
+      }
+      throw new Error("Unable to queue AI generation request. Please try again.", {
+        cause: error,
+      });
     }
 
     return {
