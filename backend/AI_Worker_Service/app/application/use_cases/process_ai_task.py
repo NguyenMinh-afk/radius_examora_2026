@@ -34,7 +34,6 @@ from app.application.services.topic_resolver import (
 )
 from app.core.config import get_settings
 from app.core.exceptions import (
-    GeminiAllModelsExhaustedError,
     GeminiError,
     InsufficientContextError,
     NotFoundError,

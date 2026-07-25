@@ -18,8 +18,7 @@ import re
 import time
 from typing import Any
 
-from openai import AsyncOpenAI, RateLimitError
-from openai import APIError, APIStatusError, AuthenticationError, NotFoundError as OpenAINotFoundError
+from openai import APIStatusError, AsyncOpenAI, AuthenticationError, RateLimitError
 from openai import Timeout as OpenAISDKTimeout
 
 from app.core.config import get_settings
@@ -67,7 +66,7 @@ def _classify_openai_error(exc: Exception, model_name: str) -> OpenAIError:
         return OpenAIInvalidKeyError()
     elif isinstance(exc, RateLimitError) or status == 429:
         return OpenAIRateLimitError()
-    elif isinstance(exc, NotFoundError) or status == 404:
+    elif status == 404:
         return OpenAIModelNotFoundError(model_name)
     elif isinstance(exc, AuthenticationError) or status == 403:
         return OpenAIPermissionError(error_msg[:200])
