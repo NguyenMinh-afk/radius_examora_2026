@@ -226,10 +226,17 @@ interface PendingQuestionRaw {
   id: string;
   task_id: string;
   question_content: string;
-  option_a: string;
-  option_b: string;
-  option_c: string;
-  option_d: string;
+  // Support both formats: options object (new) or individual fields (legacy)
+  options?: {
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+  };
+  option_a?: string;
+  option_b?: string;
+  option_c?: string;
+  option_d?: string;
   correct_answer: string;
   difficulty: string;
   topic: string | null;
@@ -252,22 +259,30 @@ export const getPendingQuestions = async (
     `/questions/pending-review?${params.toString()}`
   );
 
-  // Transform snake_case -> camelCase
-  const items: PendingQuestion[] = response.data.items.map((item: PendingQuestionRaw) => ({
-    id: item.id,
-    taskId: item.task_id,
-    questionContent: item.question_content,
-    optionA: item.option_a,
-    optionB: item.option_b,
-    optionC: item.option_c,
-    optionD: item.option_d,
-    correctAnswer: item.correct_answer || "",
-    difficulty: item.difficulty || "medium",
-    topic: item.topic || null,
-    explanation: item.explanation || null,
-    status: item.status,
-    createdAt: item.created_at,
-  }));
+  // Transform from API response - support both options object and legacy fields
+  const items: PendingQuestion[] = response.data.items.map((item: PendingQuestionRaw) => {
+    // Prefer options object format, fallback to individual fields
+    const optionA = item.options?.A || item.option_a || "";
+    const optionB = item.options?.B || item.option_b || "";
+    const optionC = item.options?.C || item.option_c || "";
+    const optionD = item.options?.D || item.option_d || "";
+
+    return {
+      id: item.id,
+      taskId: item.task_id,
+      questionContent: item.question_content,
+      optionA,
+      optionB,
+      optionC,
+      optionD,
+      correctAnswer: item.correct_answer || "",
+      difficulty: item.difficulty || "medium",
+      topic: item.topic || null,
+      explanation: item.explanation || null,
+      status: item.status,
+      createdAt: item.created_at,
+    };
+  });
 
   return { items, total: response.data.total };
 };
