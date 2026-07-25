@@ -21,8 +21,8 @@ class RabbitMQConnectionTests(unittest.IsolatedAsyncioTestCase):
         rabbitmq._queues_setup_for_channel_id = None
 
     async def test_initial_connection_waits_instead_of_failing_fast(self) -> None:
-        connection = SimpleNamespace(is_closed=False)
-        settings = SimpleNamespace(
+        connection = SimpleNamespace(is_closed=False)  # type: ignore[assignment]
+        settings = SimpleNamespace(  # type: ignore[assignment]
             rabbitmq_url="amqp://test:test@rabbitmq:5672/",
             rabbitmq_reconnect_interval_seconds=0.25,
         )
