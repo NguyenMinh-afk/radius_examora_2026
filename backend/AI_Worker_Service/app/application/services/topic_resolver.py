@@ -600,6 +600,19 @@ class TopicResolver:
             ),
         )
 
+    def detect_topic(
+        self,
+        text: str,
+        user_topic: str | None = None,
+        filename: str | None = None,
+    ) -> TopicResolveResult:
+        """Alias for resolve() to satisfy interface compatibility."""
+        return self.resolve(
+            text,
+            user_topic=user_topic,
+            filename=filename,
+        )
+
     def _resolve_from_document(
         self,
         *,
