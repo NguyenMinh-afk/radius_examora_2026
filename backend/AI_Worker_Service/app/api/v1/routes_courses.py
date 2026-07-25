@@ -5,7 +5,7 @@ GET /api/v1/courses            — List all courses
 GET /api/v1/subjects           — List all subjects (optionally filtered by course_id)
 """
 
-from typing import Any, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -32,7 +32,7 @@ class CourseItem(BaseModel):
 class SubjectItem(BaseModel):
     id: int
     name: str
-    course_id: Optional[int] = None
+    course_id: int | None = None
 
     model_config = {"from_attributes": True}
 
@@ -44,7 +44,7 @@ class SubjectItem(BaseModel):
 
 @router.get(
     "/courses",
-    response_model=List[CourseItem],
+    response_model=list[CourseItem],
     summary="List all courses",
 )
 async def list_courses(
@@ -64,11 +64,11 @@ async def list_courses(
 
 @router.get(
     "/subjects",
-    response_model=List[SubjectItem],
+    response_model=list[SubjectItem],
     summary="List all subjects",
 )
 async def list_subjects(
-    course_id: Optional[int] = Query(
+    course_id: int | None = Query(
         default=None, description="Filter subjects by course ID"
     ),
     db: AsyncSession = Depends(get_db),

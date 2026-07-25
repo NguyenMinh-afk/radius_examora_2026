@@ -11,6 +11,7 @@ import {
   getApprovalStatusForRole,
   toPublicUser,
   requestPasswordReset,
+  verifyPasswordResetOTP,
   verifyResetToken,
   resetPassword,
 } from '../../services/auth/index.js';
@@ -117,8 +118,9 @@ export const forgotPassword = async (req, res) => {
     const result = await requestPasswordReset(req.body);
 
     return res.json({
-      message: 'If an account exists, a password reset link has been sent to your email.',
+      message: 'If an account exists, a password reset link and OTP have been sent to your email.',
       success: true,
+      expiresAt: result.otpExpiresAt,
     });
   } catch (err) {
     if (err.code === 'oauth_only_reset') {
@@ -133,6 +135,25 @@ export const forgotPassword = async (req, res) => {
     return res.status(err.status || 500).json({
       message: 'Failed to request password reset',
       error: err.message,
+      code: err.code,
+    });
+  }
+};
+
+export const verifyOTP = async (req, res) => {
+  try {
+    const result = await verifyPasswordResetOTP(req.body);
+
+    return res.json({
+      valid: result.valid,
+      userId: result.userId,
+      expiresAt: result.expiresAt,
+      message: 'OTP verified successfully. You can now reset your password.',
+    });
+  } catch (err) {
+    return res.status(err.status || 400).json({
+      valid: false,
+      message: err.message || 'Invalid or expired OTP',
       code: err.code,
     });
   }

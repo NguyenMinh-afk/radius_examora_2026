@@ -5,7 +5,6 @@ Stores and retrieves usage counts in ai_db.ai_api_usage.
 
 import uuid
 from datetime import date
-from typing import Optional
 
 from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -27,7 +26,7 @@ class QuotaRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_today_usage(self, provider: str, model: str) -> Optional[AIApiUsage]:
+    async def get_today_usage(self, provider: str, model: str) -> AIApiUsage | None:
         """Fetch today's usage record, or None if no calls made yet today."""
         try:
             result = await self.db.execute(
@@ -45,7 +44,7 @@ class QuotaRepository:
         self,
         provider: str,
         model: str,
-        token_estimate: Optional[int] = None,
+        token_estimate: int | None = None,
     ) -> int:
         """
         Increment request_count by 1 for today.

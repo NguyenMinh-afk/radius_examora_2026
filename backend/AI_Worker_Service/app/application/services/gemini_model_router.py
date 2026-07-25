@@ -20,7 +20,7 @@ Design decisions:
   "Succeeded with model".
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -78,7 +78,7 @@ class GeminiModelRouter:
         request_id: Trace ID for log correlation.
     """
 
-    def __init__(self, db: AsyncSession, request_id: Optional[str] = None) -> None:
+    def __init__(self, db: AsyncSession, request_id: str | None = None) -> None:
         self.db = db
         self.request_id = request_id
         self.settings = get_settings()
@@ -86,14 +86,14 @@ class GeminiModelRouter:
         self.gemini_client = GeminiClient()
 
     @property
-    def _model_candidates(self) -> List[str]:
+    def _model_candidates(self) -> list[str]:
         """Ordered, deduplicated list of Gemini model names to try."""
         return self.settings.gemini_model_candidates
 
     async def generate_with_fallback(
         self,
         prompt: str,
-    ) -> Tuple[Dict[str, Any], str]:
+    ) -> tuple[dict[str, Any], str]:
         """
         Attempt Gemini generation, trying each candidate model in order.
 
@@ -105,7 +105,7 @@ class GeminiModelRouter:
                 exhausted or rate-limited.
         """
         candidates = self._model_candidates
-        tried_models: List[str] = []
+        tried_models: list[str] = []
 
         logger.info(
             "GeminiModelRouter | candidates=%s | request_id=%s",

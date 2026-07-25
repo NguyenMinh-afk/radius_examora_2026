@@ -15,7 +15,7 @@ import asyncio
 import json
 import re
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 from google import genai
 from google.genai import types
@@ -39,7 +39,7 @@ _rate_lock = asyncio.Lock()
 _last_call_time: float = 0.0
 
 
-def _extract_http_status(error_msg: str) -> Optional[int]:
+def _extract_http_status(error_msg: str) -> int | None:
     """Extract HTTP status code from error message string."""
     # Patterns: "404", "HTTP 404", "status 404", "code: 404", "ClientError 404"
     match = re.search(r"\b(4\d{2}|5\d{2})\b", str(error_msg))
@@ -144,9 +144,9 @@ class GeminiClient:
     async def generate_questions(
         self,
         prompt: str,
-        request_id: Optional[str] = None,
-        model_name: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        request_id: str | None = None,
+        model_name: str | None = None,
+    ) -> dict[str, Any]:
         """
         Call Gemini and return parsed JSON dict.
 
@@ -160,7 +160,7 @@ class GeminiClient:
         Fails immediately for 404, 403, 400.
         """
         effective_model = model_name or self.model_name
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(1, self.max_retries + 1):
             try:
@@ -260,7 +260,7 @@ class GeminiClient:
             f"Last error: {last_error}"
         )
 
-    async def _call_api(self, prompt: str, model_name: Optional[str] = None) -> str:
+    async def _call_api(self, prompt: str, model_name: str | None = None) -> str:
         """Run Gemini generation in a thread pool to keep async non-blocking."""
         effective_model = model_name or self.model_name
         loop = asyncio.get_running_loop()
@@ -277,7 +277,7 @@ class GeminiClient:
         except Exception as e:
             raise _classify_gemini_error(e, effective_model) from e
 
-    def _sync_generate(self, prompt: str, model_name: Optional[str] = None) -> str:
+    def _sync_generate(self, prompt: str, model_name: str | None = None) -> str:
         """Synchronous Gemini call (runs in executor)."""
         effective_model = model_name or self.model_name
         response = self.client.models.generate_content(
@@ -287,7 +287,7 @@ class GeminiClient:
         )
         return response.text
 
-    def _parse_json(self, raw: str) -> Optional[Dict[str, Any]]:
+    def _parse_json(self, raw: str) -> dict[str, Any] | None:
         """
         Try to extract and parse JSON from raw text.
         Handles markdown code blocks: ```json ... ```

@@ -4,7 +4,6 @@ Removes duplicate questions within the same task using exact and near-exact matc
 """
 
 import re
-from typing import Dict, List
 
 from app.core.logging import get_logger
 
@@ -30,7 +29,7 @@ class QuestionDeduplicator:
 
     SIMILARITY_THRESHOLD = 0.80
 
-    def deduplicate(self, questions: List[Dict]) -> List[Dict]:
+    def deduplicate(self, questions: list[dict]) -> list[dict]:
         """
         Return only unique questions.
 
@@ -44,8 +43,8 @@ class QuestionDeduplicator:
             return []
 
         seen_normalized: set[str] = set()
-        seen_word_sets: List[set] = []
-        unique: List[Dict] = []
+        seen_word_sets: list[set] = []
+        unique: list[dict] = []
         removed = 0
 
         for q in questions:
@@ -76,7 +75,7 @@ class QuestionDeduplicator:
 
         return unique
 
-    def _is_near_duplicate(self, words: set, seen: List[set]) -> bool:
+    def _is_near_duplicate(self, words: set, seen: list[set]) -> bool:
         """Check if word set is near-duplicate of any seen set via Jaccard."""
         if not words:
             return False

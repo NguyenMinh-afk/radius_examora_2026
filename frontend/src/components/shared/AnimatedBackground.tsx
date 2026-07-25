@@ -278,7 +278,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
                   <stop offset="100%" stopColor="#06B6D4" />
                 </linearGradient>
               </defs>
-              <path d="M0,0 Q50%,20% 100%,0 T200%,0 L200%,100% Q150%,80% 100%,100% T0%,100% Z" fill="url(#mesh-gradient)" />
+              <path d="M 0,0 Q 50,20 100,0 T 200,0 L 200,100 Q 150,80 100,100 T 0,100 Z" fill="url(#mesh-gradient)" />
             </svg>
           </div>
 
@@ -403,9 +403,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
                 <stop offset="100%" stopColor="rgba(129, 140, 248, 0)" />
               </linearGradient>
             </defs>
-            <path d="M0 20% Q 30% 80%, 50% 20% T 100% 30%" fill="none" stroke="url(#neon-gradient)" strokeWidth="1" className="animate-dash" />
-            <path d="M0 60% Q 40% 20%, 70% 60% T 100% 50%" fill="none" stroke="url(#neon-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "3s" }} />
-            <path d="M0 80% Q 20% 50%, 60% 80% T 100% 70%" fill="none" stroke="url(#neon-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "6s" }} />
+            <path d="M 0 20 Q 30 80, 50 20 T 100 30" fill="none" stroke="url(#neon-gradient)" strokeWidth="1" className="animate-dash" />
+            <path d="M 0 60 Q 40 20, 70 60 T 100 50" fill="none" stroke="url(#neon-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "3s" }} />
+            <path d="M 0 80 Q 20 50, 60 80 T 100 70" fill="none" stroke="url(#neon-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "6s" }} />
           </svg>
 
           {/* Star-like dots with glow */}
@@ -502,9 +502,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
               <stop offset="100%" stopColor="rgba(99, 102, 241, 0)" />
             </linearGradient>
           </defs>
-          <path d="M0 50% Q 25% 30%, 50% 50% T 100% 50%" fill="none" stroke="url(#line-gradient)" strokeWidth="1" className="animate-dash" />
-          <path d="M0 30% Q 30% 50%, 60% 30% T 100% 40%" fill="none" stroke="url(#line-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "2s" }} />
-          <path d="M0 70% Q 40% 50%, 70% 70% T 100% 60%" fill="none" stroke="url(#line-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "4s" }} />
+          <path d="M 0 50 Q 25 30, 50 50 T 100 50" fill="none" stroke="url(#line-gradient)" strokeWidth="1" className="animate-dash" />
+          <path d="M 0 30 Q 30 50, 60 30 T 100 40" fill="none" stroke="url(#line-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "2s" }} />
+          <path d="M 0 70 Q 40 50, 70 70 T 100 60" fill="none" stroke="url(#line-gradient)" strokeWidth="0.5" className="animate-dash" style={{ animationDelay: "4s" }} />
         </svg>
       )}
 

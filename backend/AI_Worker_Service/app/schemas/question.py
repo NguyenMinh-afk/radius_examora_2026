@@ -3,7 +3,7 @@ Pydantic v2 schemas for question review, question bank, and results endpoints.
 """
 
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -32,7 +32,7 @@ class QuestionResultItem(BaseModel):
     topic: str
     explanation: str
     status: str
-    generation_source: Optional[str] = "gemini"
+    generation_source: str | None = "gemini"
 
     model_config = {"from_attributes": True}
 
@@ -55,12 +55,12 @@ class TaskResultsResponse(BaseModel):
 
     task_id: uuid.UUID
     status: str
-    warning: Optional[str] = None
-    error_message: Optional[str] = Field(
+    warning: str | None = None
+    error_message: str | None = Field(
         default=None,
         description="Error message when task status is failed; null for completed/pending tasks.",
     )
-    questions: List[QuestionResultItem]
+    questions: list[QuestionResultItem]
 
     model_config = {
         "json_schema_extra": {
@@ -119,7 +119,7 @@ class ApproveQuestionResponse(BaseModel):
     question_id: uuid.UUID
     status: str
     message: str
-    question_bank_id: Optional[uuid.UUID] = None
+    question_bank_id: uuid.UUID | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -159,26 +159,26 @@ class RejectQuestionResponse(BaseModel):
 class UpdateQuestionRequest(BaseModel):
     """PUT /api/v1/ai/questions/{question_id} â€” Edit a pending_review question."""
 
-    question_content: Optional[str] = Field(
+    question_content: str | None = Field(
         default=None,
         min_length=1,
         description="Updated question text.",
     )
-    option_a: Optional[str] = Field(default=None, min_length=1)
-    option_b: Optional[str] = Field(default=None, min_length=1)
-    option_c: Optional[str] = Field(default=None, min_length=1)
-    option_d: Optional[str] = Field(default=None, min_length=1)
-    correct_answer: Optional[str] = Field(
+    option_a: str | None = Field(default=None, min_length=1)
+    option_b: str | None = Field(default=None, min_length=1)
+    option_c: str | None = Field(default=None, min_length=1)
+    option_d: str | None = Field(default=None, min_length=1)
+    correct_answer: str | None = Field(
         default=None,
         description="Must be A, B, C, or D.",
     )
-    difficulty: Optional[DifficultyLevel] = None
-    topic: Optional[str] = Field(default=None, min_length=1, max_length=500)
-    explanation: Optional[str] = Field(default=None, min_length=1)
+    difficulty: DifficultyLevel | None = None
+    topic: str | None = Field(default=None, min_length=1, max_length=500)
+    explanation: str | None = Field(default=None, min_length=1)
 
     @field_validator("correct_answer")
     @classmethod
-    def valid_answer(cls, v: Optional[str]) -> Optional[str]:
+    def valid_answer(cls, v: str | None) -> str | None:
         if v is not None and v.upper() not in {"A", "B", "C", "D"}:
             raise ValueError("correct_answer must be one of: A, B, C, D")
         return v.upper() if v else v
@@ -251,7 +251,7 @@ class PendingReviewItem(BaseModel):
 class PendingReviewListResponse(BaseModel):
     """GET /api/v1/ai/questions/pending-review"""
 
-    items: List[PendingReviewItem]
+    items: list[PendingReviewItem]
     total: int
     page: int
     page_size: int
@@ -266,19 +266,19 @@ class QuestionBankItem(BaseModel):
     """A single approved question in the question bank."""
 
     id: uuid.UUID
-    source_generated_question_id: Optional[uuid.UUID] = None
+    source_generated_question_id: uuid.UUID | None = None
     course_id: int
-    subject_id: Optional[int] = None
-    chapter_id: Optional[int] = None
-    knowledge_unit_id: Optional[int] = None
+    subject_id: int | None = None
+    chapter_id: int | None = None
+    knowledge_unit_id: int | None = None
     question_type: str
     difficulty: str
     content: str
-    options: Optional[Dict[str, str]] = None
+    options: dict[str, str] | None = None
     correct_answer: str
-    explanation: Optional[str] = None
+    explanation: str | None = None
     is_ai_generated: bool
-    ai_model: Optional[str] = None
+    ai_model: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -286,7 +286,7 @@ class QuestionBankItem(BaseModel):
 class QuestionBankListResponse(BaseModel):
     """GET /api/v1/question-bank"""
 
-    items: List[QuestionBankItem]
+    items: list[QuestionBankItem]
     total: int
     page: int
     page_size: int

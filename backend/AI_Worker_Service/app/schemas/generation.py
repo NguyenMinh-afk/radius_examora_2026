@@ -3,7 +3,6 @@ Pydantic v2 schemas for question generation API endpoints.
 """
 
 import uuid
-from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -34,37 +33,37 @@ class GenerateQuestionsRequest(BaseModel):
     user_id: uuid.UUID
 
     # --- Course/Subject (all optional; auto-resolved from topic) ---
-    course_id: Optional[int] = Field(
+    course_id: int | None = Field(
         default=None,
         ge=1,
         description="Course ID ≥ 1. Leave null for auto-resolve from topic.",
     )
-    course_name: Optional[str] = Field(
+    course_name: str | None = Field(
         default=None,
         description="Course name. Leave null for auto-resolve. Do NOT send 'string'.",
     )
-    chapter_id: Optional[int] = Field(
+    chapter_id: int | None = Field(
         default=None,
         ge=1,
         description="Chapter ID ≥ 1. Leave null or omit. Do NOT send 0.",
     )
-    knowledge_unit_id: Optional[int] = Field(
+    knowledge_unit_id: int | None = Field(
         default=None,
         ge=1,
         description="Knowledge unit ID ≥ 1. Leave null or omit. Do NOT send 0.",
     )
-    subject_id: Optional[int] = Field(
+    subject_id: int | None = Field(
         default=None,
         ge=1,
         description="Subject ID ≥ 1. Leave null for auto-resolve from topic.",
     )
-    subject_name: Optional[str] = Field(
+    subject_name: str | None = Field(
         default=None,
         description="Subject name. Leave null — defaults to topic value. Do NOT send 'string'.",
     )
 
     # --- Required fields ---
-    topic: Optional[str] = Field(
+    topic: str | None = Field(
         default=None,
         max_length=500,
         description="Topic of the questions. Leave null/blank for worker-side auto-detect.",
@@ -96,7 +95,7 @@ class GenerateQuestionsRequest(BaseModel):
 
     @field_validator("topic", mode="before")
     @classmethod
-    def validate_topic(cls, v: Optional[str]) -> str:
+    def validate_topic(cls, v: str | None) -> str:
         """Convert empty or Swagger-placeholder topic values to unknown."""
         if v is None:
             return _UNKNOWN_TOPIC
@@ -113,7 +112,7 @@ class GenerateQuestionsRequest(BaseModel):
 
     @field_validator("course_name", "subject_name", mode="before")
     @classmethod
-    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+    def sanitize_text_fields(cls, v: str | None) -> str | None:
         """Convert Swagger placeholder text ('string', 'null', etc.) to None."""
         if v is None:
             return None
@@ -160,7 +159,7 @@ class RequestStatusResponse(BaseModel):
     request_id: uuid.UUID
     status: str
     progress: int
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class RetryTaskResponse(BaseModel):

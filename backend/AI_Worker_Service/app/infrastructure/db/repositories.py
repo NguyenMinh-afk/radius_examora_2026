@@ -6,7 +6,6 @@ No business logic, only CRUD and queries.
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
 
 from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +35,7 @@ class CourseRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_by_name(self, name: str) -> Optional[Course]:
+    async def get_by_name(self, name: str) -> Course | None:
         try:
             result = await self.db.execute(select(Course).where(Course.name == name))
             return result.scalar_one_or_none()
@@ -53,7 +52,7 @@ class CourseRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to create course: {e}") from e
 
-    async def list_all(self) -> List[Course]:
+    async def list_all(self) -> list[Course]:
         try:
             result = await self.db.execute(select(Course).order_by(Course.name.asc()))
             return list(result.scalars().all())
@@ -71,8 +70,8 @@ class SubjectRepository:
         self.db = db
 
     async def get_by_name(
-        self, name: str, course_id: Optional[int]
-    ) -> Optional[Subject]:
+        self, name: str, course_id: int | None
+    ) -> Subject | None:
         try:
             stmt = select(Subject).where(Subject.name == name)
             if course_id is None:
@@ -84,7 +83,7 @@ class SubjectRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to fetch subject: {e}") from e
 
-    async def create(self, name: str, course_id: Optional[int]) -> Subject:
+    async def create(self, name: str, course_id: int | None) -> Subject:
         try:
             obj = Subject(name=name, course_id=course_id)
             self.db.add(obj)
@@ -94,14 +93,14 @@ class SubjectRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to create subject: {e}") from e
 
-    async def list_all(self) -> List[Subject]:
+    async def list_all(self) -> list[Subject]:
         try:
             result = await self.db.execute(select(Subject).order_by(Subject.name.asc()))
             return list(result.scalars().all())
         except Exception as e:
             raise DatabaseError(f"Failed to list subjects: {e}") from e
 
-    async def list_by_course_id(self, course_id: int) -> List[Subject]:
+    async def list_by_course_id(self, course_id: int) -> list[Subject]:
         try:
             result = await self.db.execute(
                 select(Subject)
@@ -133,7 +132,7 @@ class DocumentRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to create document: {e}") from e
 
-    async def get_by_id(self, document_id: uuid.UUID) -> Optional[Document]:
+    async def get_by_id(self, document_id: uuid.UUID) -> Document | None:
         """Fetch an uploaded document metadata record by document_id."""
         try:
             result = await self.db.execute(
@@ -143,7 +142,7 @@ class DocumentRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to fetch document: {e}") from e
 
-    async def get_by_id_or_primary(self, id_value: uuid.UUID) -> Optional[Document]:
+    async def get_by_id_or_primary(self, id_value: uuid.UUID) -> Document | None:
         """Fetch document by document_id or legacy id (for backward compatibility)."""
         try:
             result = await self.db.execute(
@@ -196,7 +195,7 @@ class GenerationRequestRepository:
             logger.error("Failed to create generation request: %s", e)
             raise DatabaseError(f"Failed to create generation request: {e}") from e
 
-    async def get_by_id(self, request_id: uuid.UUID) -> Optional[AIGenerationRequest]:
+    async def get_by_id(self, request_id: uuid.UUID) -> AIGenerationRequest | None:
         try:
             result = await self.db.execute(
                 select(AIGenerationRequest).where(AIGenerationRequest.id == request_id)
@@ -210,9 +209,9 @@ class GenerationRequestRepository:
         request_id: uuid.UUID,
         status: str,
         progress: int = 0,
-        error_message: Optional[str] = None,
-        started_at: Optional[datetime] = None,
-        completed_at: Optional[datetime] = None,
+        error_message: str | None = None,
+        started_at: datetime | None = None,
+        completed_at: datetime | None = None,
     ) -> None:
         try:
             values: dict = {"status": status, "progress": progress}
@@ -251,7 +250,7 @@ class GenerationTaskRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to create generation task: {e}") from e
 
-    async def get_by_id(self, task_id: uuid.UUID) -> Optional[AIGenerationTask]:
+    async def get_by_id(self, task_id: uuid.UUID) -> AIGenerationTask | None:
         try:
             result = await self.db.execute(
                 select(AIGenerationTask).where(AIGenerationTask.id == task_id)
@@ -264,8 +263,8 @@ class GenerationTaskRepository:
         self,
         task_id: uuid.UUID,
         status: str,
-        error_message: Optional[str] = None,
-        completed_at: Optional[datetime] = None,
+        error_message: str | None = None,
+        completed_at: datetime | None = None,
     ) -> None:
         try:
             values: dict = {"status": status}
@@ -305,7 +304,7 @@ class GeneratedQuestionRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def bulk_create(self, questions_data: List[dict]) -> List[GeneratedQuestion]:
+    async def bulk_create(self, questions_data: list[dict]) -> list[GeneratedQuestion]:
         """Insert multiple questions in one flush."""
         try:
             objs = [GeneratedQuestion(**data) for data in questions_data]
@@ -317,7 +316,7 @@ class GeneratedQuestionRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to bulk create questions: {e}") from e
 
-    async def get_by_id(self, question_id: uuid.UUID) -> Optional[GeneratedQuestion]:
+    async def get_by_id(self, question_id: uuid.UUID) -> GeneratedQuestion | None:
         try:
             result = await self.db.execute(
                 select(GeneratedQuestion).where(GeneratedQuestion.id == question_id)
@@ -326,7 +325,7 @@ class GeneratedQuestionRepository:
         except Exception as e:
             raise DatabaseError(f"Failed to fetch question: {e}") from e
 
-    async def get_by_task_id(self, task_id: uuid.UUID) -> List[GeneratedQuestion]:
+    async def get_by_task_id(self, task_id: uuid.UUID) -> list[GeneratedQuestion]:
         try:
             result = await self.db.execute(
                 select(GeneratedQuestion)
@@ -342,12 +341,12 @@ class GeneratedQuestionRepository:
 
     async def list_pending_review(
         self,
-        task_id: Optional[uuid.UUID] = None,
-        difficulty: Optional[str] = None,
-        topic: Optional[str] = None,
+        task_id: uuid.UUID | None = None,
+        difficulty: str | None = None,
+        topic: str | None = None,
         page: int = 1,
         page_size: int = 20,
-    ) -> tuple[List[GeneratedQuestion], int]:
+    ) -> tuple[list[GeneratedQuestion], int]:
         """List questions with status=pending_review, with optional filters and pagination."""
         try:
             from sqlalchemy import func as sa_func
@@ -413,7 +412,7 @@ class QuestionBankRepository:
 
     async def get_by_source_generated_id(
         self, source_id: uuid.UUID
-    ) -> Optional[Question]:
+    ) -> Question | None:
         """Check if a generated question was already approved (by source ID)."""
         try:
             result = await self.db.execute(
@@ -489,15 +488,15 @@ class QuestionBankRepository:
 
     async def list_questions(
         self,
-        course_id: Optional[int] = None,
-        subject_id: Optional[int] = None,
-        chapter_id: Optional[int] = None,
-        knowledge_unit_id: Optional[int] = None,
-        difficulty: Optional[str] = None,
-        topic: Optional[str] = None,
+        course_id: int | None = None,
+        subject_id: int | None = None,
+        chapter_id: int | None = None,
+        knowledge_unit_id: int | None = None,
+        difficulty: str | None = None,
+        topic: str | None = None,
         page: int = 1,
         page_size: int = 20,
-    ) -> tuple[List[Question], int]:
+    ) -> tuple[list[Question], int]:
         """List approved questions from the question bank with filters and pagination."""
         try:
             from sqlalchemy import func as sa_func

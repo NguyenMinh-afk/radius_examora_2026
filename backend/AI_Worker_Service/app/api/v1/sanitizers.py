@@ -12,7 +12,6 @@ Rules:
   - sanitize_topic: None/""/default Swagger values → raise ValidationError(422)
 """
 
-from typing import Optional, Union
 
 from app.core.exceptions import ValidationError
 
@@ -36,8 +35,8 @@ _UNKNOWN_TOPIC = "Chưa xác định"
 
 
 def sanitize_optional_int(
-    value: Optional[Union[int, str]], field_name: str = "field"
-) -> Optional[int]:
+    value: int | str | None, field_name: str = "field"
+) -> int | None:
     """
     Convert placeholder integer values to None.
 
@@ -81,8 +80,8 @@ def sanitize_optional_int(
 
 
 def sanitize_optional_text(
-    value: Optional[str], field_name: str = "field"
-) -> Optional[str]:
+    value: str | None, field_name: str = "field"
+) -> str | None:
     """
     Convert placeholder / empty text values to None.
 
@@ -114,7 +113,7 @@ def sanitize_optional_text(
     return stripped
 
 
-def sanitize_topic(value: Optional[str]) -> str:
+def sanitize_topic(value: str | None) -> str:
     """
     Validate and sanitize the required `topic` field.
 
@@ -147,13 +146,13 @@ def sanitize_topic(value: Optional[str]) -> str:
 
 def sanitize_upload_fields(
     *,
-    topic: Optional[str],
-    course_id: Optional[Union[int, str]] = None,
-    course_name: Optional[str] = None,
-    subject_id: Optional[Union[int, str]] = None,
-    subject_name: Optional[str] = None,
-    chapter_id: Optional[Union[int, str]] = None,
-    knowledge_unit_id: Optional[Union[int, str]] = None,
+    topic: str | None,
+    course_id: int | str | None = None,
+    course_name: str | None = None,
+    subject_id: int | str | None = None,
+    subject_name: str | None = None,
+    chapter_id: int | str | None = None,
+    knowledge_unit_id: int | str | None = None,
 ) -> dict:
     """
     Convenience wrapper: sanitize all common upload/generate fields at once.

@@ -71,8 +71,11 @@ export const googleResultApi = (state: string) => {
 export const requestPasswordReset = (data: { email: string }) =>
 	axios.post(`${AUTH_API_URL}/forgot-password`, data);
 
+export const verifyOTP = (data: { email: string; otp: string }) =>
+	axios.post(`${AUTH_API_URL}/verify-otp`, data);
+
 export const verifyResetToken = (data: { token: string }) =>
 	axios.post(`${AUTH_API_URL}/verify-reset-token`, data);
 
-export const resetPassword = (data: { token: string; password: string }) =>
+export const resetPassword = (data: { token?: string; email?: string; password: string }) =>
 	axios.post(`${AUTH_API_URL}/reset-password`, data);

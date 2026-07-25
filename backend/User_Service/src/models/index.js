@@ -20,6 +20,7 @@ import TeacherProfile from './TeacherProfile.js';
 import OAuthProvider from './user/OAuthProvider.js';
 import VerificationToken from './user/VerificationToken.js';
 import PasswordResetToken from './user/PasswordResetToken.js';
+import PasswordResetOTP from './user/PasswordResetOTP.js';
 
 // ============ Admin Dashboard Models (cross-service) ============
 import Course from './Course.js';           // course_db.courses
@@ -51,6 +52,8 @@ User.hasMany(OAuthProvider, { foreignKey: 'user_id', as: 'oauthProviders' });
 
 VerificationToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 PasswordResetToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+PasswordResetOTP.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(PasswordResetOTP, { foreignKey: 'user_id', as: 'passwordResetOTPs' });
 
 // ============ Cross-service associations (read-only for admin) ============
 // Course -> Question (course_db -> question_db)
@@ -81,6 +84,7 @@ export {
   OAuthProvider,
   VerificationToken,
   PasswordResetToken,
+  PasswordResetOTP,
   Course,
   Question,
   Notification,

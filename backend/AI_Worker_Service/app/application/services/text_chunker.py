@@ -6,7 +6,6 @@ Prefers heading-based splits, falls back to sentence-aware length splitting.
 
 import re
 from dataclasses import dataclass
-from typing import List
 
 from app.core.logging import get_logger
 
@@ -50,7 +49,7 @@ class TextChunker:
         self.chunk_size = chunk_size
         self.overlap = overlap
 
-    def chunk(self, text: str) -> List[TextChunk]:
+    def chunk(self, text: str) -> list[TextChunk]:
         """
         Split text into chunks.
 
@@ -73,13 +72,13 @@ class TextChunker:
 
     # ------------------------------------------------------------------
 
-    def _split_by_headings(self, text: str) -> List[TextChunk]:
+    def _split_by_headings(self, text: str) -> list[TextChunk]:
         """Split at detected headings; sub-split large sections."""
         matches = list(_HEADING_PATTERN.finditer(text))
         if len(matches) < 2:
             return []
 
-        sections: List[str] = []
+        sections: list[str] = []
         for i, match in enumerate(matches):
             start = match.start()
             end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
@@ -87,7 +86,7 @@ class TextChunker:
             if section:
                 sections.append(section)
 
-        chunks: List[TextChunk] = []
+        chunks: list[TextChunk] = []
         char_cursor = 0
         for i, section in enumerate(sections):
             if len(section) <= self.chunk_size:
@@ -117,12 +116,12 @@ class TextChunker:
         text: str,
         base_index: int = 0,
         char_offset: int = 0,
-    ) -> List[TextChunk]:
+    ) -> list[TextChunk]:
         """
         Fixed-size chunking with overlap.
         Tries to split at sentence boundaries (. ? !) to avoid mid-sentence cuts.
         """
-        chunks: List[TextChunk] = []
+        chunks: list[TextChunk] = []
         start = 0
         idx = base_index
 

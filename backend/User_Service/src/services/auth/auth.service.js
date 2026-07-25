@@ -11,6 +11,7 @@ import {
 import User from '../../models/User.js';
 import UserSession from '../../models/UserSession.js';
 import PasswordResetToken from '../../models/user/PasswordResetToken.js';
+import PasswordResetOTP from '../../models/user/PasswordResetOTP.js';
 import OAuthProvider from '../../models/user/OAuthProvider.js';
 import sequelize from '../../config/sequelize.js';
 import { enqueueUserCreated } from '../../config/outbox.js';
@@ -20,12 +21,14 @@ import {
   assertUserCanLogin,
   getBearerToken,
 } from './shared.service.js';
-import { sendPasswordResetEmail, sendPasswordChangedEmail } from '../email.service.js';
+import { sendPasswordResetEmail, sendPasswordResetOTPEmail, sendPasswordChangedEmail } from '../email.service.js';
 
 export { getBearerToken };
 
 const PASSWORD_RESET_EXPIRES_MS = Number(process.env.PASSWORD_RESET_EXPIRES_MS) || 15 * 60 * 1000;
 const PASSWORD_RESET_TOKEN_BYTES = 32;
+const PASSWORD_RESET_OTP_EXPIRES_MS = Number(process.env.PASSWORD_RESET_OTP_EXPIRES_MS) || 5 * 60 * 1000;
+const PASSWORD_RESET_OTP_MAX_ATTEMPTS = 5;
 
 const hashToken = (rawToken) => crypto.createHash('sha256').update(rawToken).digest('hex');
 
@@ -249,7 +252,7 @@ export const requestPasswordReset = async ({ email }) => {
   const user = await User.findOne({ where: { email: normalizedEmail } });
   if (!user) {
     // Return success even if user not found (security best practice)
-    return { requested: true, message: 'If an account exists, a reset link has been sent' };
+    return { requested: true, message: 'If an account exists, a reset link and OTP have been sent' };
   }
 
   if (await hasOAuthLoginOnly(user)) {
@@ -260,6 +263,7 @@ export const requestPasswordReset = async ({ email }) => {
     throw error;
   }
 
+  // Generate token for link
   const rawToken = generateRawResetToken();
   const tokenHash = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRES_MS);
@@ -281,27 +285,109 @@ export const requestPasswordReset = async ({ email }) => {
     });
   }
 
+  // Generate 6-digit OTP
+  const rawOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpHash = hashToken(rawOTP);
+  const otpExpiresAt = new Date(Date.now() + PASSWORD_RESET_OTP_EXPIRES_MS);
+
+  await PasswordResetOTP.destroy({ where: { user_id: user.id } });
+  await PasswordResetOTP.create({
+    user_id: user.id,
+    otp_hash: otpHash,
+    expires_at: otpExpiresAt,
+  });
+
   // Generate reset URL
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
   const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}`;
 
-  // Send password reset email
+  // Send password reset email with both link and OTP
   try {
-    await sendPasswordResetEmail({
+    await sendPasswordResetOTPEmail({
       to: user.email,
       resetUrl,
+      otp: rawOTP,
       userName: user.full_name || user.email,
       expiresInMinutes: Math.round(PASSWORD_RESET_EXPIRES_MS / 60000),
+      otpExpiresInMinutes: Math.round(PASSWORD_RESET_OTP_EXPIRES_MS / 60000),
     });
   } catch (emailError) {
-    // Log error but don't fail the request - token is still valid
     console.error('[AuthService] Failed to send reset email:', emailError.message);
   }
 
   return {
     requested: true,
     expiresAt,
+    otpExpiresAt,
   };
+};
+
+export const verifyPasswordResetOTP = async ({ email, otp }) => {
+  if (!email || !otp) {
+    const error = new Error('email and otp are required');
+    error.status = 400;
+    throw error;
+  }
+
+  const normalizedEmail = email?.trim().toLowerCase();
+  const user = await User.findOne({ where: { email: normalizedEmail } });
+  if (!user) {
+    const error = new Error('invalid_otp');
+    error.status = 400;
+    throw error;
+  }
+
+  const otpHash = hashToken(otp);
+  const otpRecord = await PasswordResetOTP.findOne({
+    where: { user_id: user.id, otp_hash: otpHash },
+  });
+
+  if (!otpRecord) {
+    const error = new Error('invalid_otp');
+    error.status = 400;
+    throw error;
+  }
+
+  if (otpRecord.is_verified) {
+    const error = new Error('otp_already_used');
+    error.status = 400;
+    throw error;
+  }
+
+  if (new Date(otpRecord.expires_at).getTime() < Date.now()) {
+    const error = new Error('otp_expired');
+    error.status = 400;
+    throw error;
+  }
+
+  if (otpRecord.attempts >= PASSWORD_RESET_OTP_MAX_ATTEMPTS) {
+    const error = new Error('otp_max_attempts_exceeded');
+    error.status = 400;
+    throw error;
+  }
+
+  await otpRecord.update({ is_verified: true, verified_at: new Date() });
+
+  return {
+    valid: true,
+    userId: user.id,
+    expiresAt: otpRecord.expires_at,
+  };
+};
+
+export const incrementOTPAttempts = async ({ email, otp }) => {
+  const normalizedEmail = email?.trim().toLowerCase();
+  const user = await User.findOne({ where: { email: normalizedEmail } });
+  if (!user) return;
+
+  const otpHash = hashToken(otp);
+  const otpRecord = await PasswordResetOTP.findOne({
+    where: { user_id: user.id, otp_hash: otpHash },
+  });
+
+  if (otpRecord && !otpRecord.is_verified) {
+    await otpRecord.increment('attempts');
+  }
 };
 
 export const verifyResetToken = async ({ token }) => {
@@ -342,48 +428,83 @@ export const verifyResetToken = async ({ token }) => {
   };
 };
 
-export const resetPassword = async ({ token, password }) => {
-  if (!token || typeof token !== 'string') {
-    const error = new Error('token is required');
-    error.status = 400;
-    throw error;
-  }
-
+export const resetPassword = async ({ token, password, email }) => {
   if (!password || typeof password !== 'string' || password.length < 8) {
     const error = new Error('password must be at least 8 characters');
     error.status = 400;
     throw error;
   }
 
-  const tokenHash = hashToken(token);
-  const resetRecord = await PasswordResetToken.findOne({
-    where: { token_hash: tokenHash },
-    include: [{ model: User, as: 'user' }],
-  });
+  let user = null;
 
-  if (!resetRecord) {
-    const error = new Error('invalid_or_expired_token');
+  if (token) {
+    const tokenHash = hashToken(token);
+    const resetRecord = await PasswordResetToken.findOne({
+      where: { token_hash: tokenHash },
+      include: [{ model: User, as: 'user' }],
+    });
+
+    if (!resetRecord) {
+      const error = new Error('invalid_or_expired_token');
+      error.status = 400;
+      throw error;
+    }
+
+    if (resetRecord.used_at) {
+      const error = new Error('token_already_used');
+      error.status = 400;
+      throw error;
+    }
+
+    if (new Date(resetRecord.expires_at).getTime() < Date.now()) {
+      const error = new Error('token_expired');
+      error.status = 400;
+      throw error;
+    }
+
+    user = resetRecord.user;
+  } else if (email) {
+    const normalizedEmail = email?.trim().toLowerCase();
+    const foundUser = await User.findOne({ where: { email: normalizedEmail } });
+    if (!foundUser) {
+      const error = new Error('user_not_found');
+      error.status = 400;
+      throw error;
+    }
+
+    const otpRecord = await PasswordResetOTP.findOne({
+      where: { user_id: foundUser.id, is_verified: true },
+      order: [['verified_at', 'DESC']],
+    });
+
+    if (!otpRecord) {
+      const error = new Error('otp_not_verified');
+      error.status = 400;
+      throw error;
+    }
+
+    user = foundUser;
+  } else {
+    const error = new Error('token or email is required');
     error.status = 400;
     throw error;
   }
 
-  if (resetRecord.used_at) {
-    const error = new Error('token_already_used');
-    error.status = 400;
-    throw error;
-  }
-
-  if (new Date(resetRecord.expires_at).getTime() < Date.now()) {
-    const error = new Error('token_expired');
-    error.status = 400;
-    throw error;
-  }
-
-  const user = resetRecord.user;
   const passwordHash = await bcrypt.hash(password, Number(process.env.BCRYPT_ROUNDS) || 10);
 
   await user.update({ password_hash: passwordHash });
-  await resetRecord.update({ used_at: new Date() });
+
+  if (token) {
+    const tokenHash = hashToken(token);
+    await PasswordResetToken.update(
+      { used_at: new Date() },
+      { where: { token_hash: tokenHash } }
+    );
+  }
+
+  if (email) {
+    await PasswordResetOTP.destroy({ where: { user_id: user.id } });
+  }
 
   // Invalidate all user sessions (security)
   await UserSession.update(

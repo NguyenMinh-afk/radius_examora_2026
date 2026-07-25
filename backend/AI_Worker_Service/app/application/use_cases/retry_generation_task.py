@@ -1,7 +1,7 @@
 """Use Case: Retry a failed generation task."""
 
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +21,7 @@ class RetryGenerationTaskUseCase:
         self.task_repo = GenerationTaskRepository(db)
         self.req_repo = GenerationRequestRepository(db)
 
-    async def execute(self, task_id: uuid.UUID) -> Dict[str, Any]:
+    async def execute(self, task_id: uuid.UUID) -> dict[str, Any]:
         """
         Retry a failed task by resetting its status to pending.
         """

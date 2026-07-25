@@ -7,7 +7,7 @@ Supports dead-letter queue (DLQ) for failed messages.
 import asyncio
 import json
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aio_pika
 from aio_pika import DeliveryMode, ExchangeType, Message
@@ -19,9 +19,9 @@ from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-_connection: Optional[AbstractConnection] = None
-_channel: Optional[AbstractChannel] = None
-_queues_setup_for_channel_id: Optional[int] = None
+_connection: AbstractConnection | None = None
+_channel: AbstractChannel | None = None
+_queues_setup_for_channel_id: int | None = None
 _queues_setup_lock = asyncio.Lock()
 
 
@@ -125,7 +125,7 @@ async def publish_task_message(
     request_id: str,
     task_id: str,
     trace_id: str,
-    extra_payload: Optional[Dict[str, Any]] = None,
+    extra_payload: dict[str, Any] | None = None,
 ) -> None:
     """
     Publish a generation task message to the main queue.
@@ -136,7 +136,7 @@ async def publish_task_message(
         channel = await get_rabbitmq_channel()
         await ensure_queues_setup(channel)
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "request_id": request_id,
             "task_id": task_id,
             "trace_id": trace_id,

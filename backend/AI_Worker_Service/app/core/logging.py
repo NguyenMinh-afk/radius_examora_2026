@@ -7,14 +7,13 @@ import logging
 import sys
 import uuid
 from contextvars import ContextVar
-from typing import Optional
 
 from app.core.config import get_settings
 
 # Context variable to hold trace_id across async tasks
-_trace_id_var: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
-_request_id_var: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
-_task_id_var: ContextVar[Optional[str]] = ContextVar("task_id", default=None)
+_trace_id_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
+_request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
+_task_id_var: ContextVar[str | None] = ContextVar("task_id", default=None)
 
 
 def get_trace_id() -> str:

@@ -4,7 +4,6 @@ Loads from .env file automatically.
 """
 
 from functools import lru_cache
-from typing import List, Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -16,7 +15,7 @@ def _running_in_docker() -> bool:
     if os.path.exists("/.dockerenv"):
         return True
     try:
-        if "docker" in open("/proc/1/cgroup", "r").read():
+        if "docker" in open("/proc/1/cgroup").read():
             return True
     except Exception:
         pass
@@ -44,7 +43,7 @@ class Settings(BaseSettings):
     )
 
     # --- Gemini API ---
-    gemini_api_key: Optional[str] = Field(default=None)
+    gemini_api_key: str | None = Field(default=None)
     gemini_model: str = Field(default="gemini-3.1-flash-lite")
     gemini_timeout_seconds: int = Field(default=120)
     gemini_max_retries: int = Field(default=3)
@@ -96,7 +95,7 @@ class Settings(BaseSettings):
     # --- Course/Subject Auto-Resolve ---
     auto_resolve_course_subject_from_topic: bool = Field(default=True)
     default_course_name: str = Field(default="Khóa học mặc định")
-    default_subject_name: Optional[str] = Field(default=None)
+    default_subject_name: str | None = Field(default=None)
     use_topic_as_subject_name: bool = Field(default=True)
     use_topic_as_course_name: bool = Field(default=False)
 
@@ -113,7 +112,7 @@ class Settings(BaseSettings):
     ocr_min_text_length: int = Field(default=100)
     tesseract_cmd: str = Field(default="")
     poppler_path: str = Field(default="")
-    ocr_space_api_key: Optional[str] = Field(default=None)
+    ocr_space_api_key: str | None = Field(default=None)
     ocr_space_endpoint: str = Field(default="https://api.ocr.space/parse/image")
     ocr_space_language: str = Field(default="eng")
     ocr_space_engine: int = Field(default=2)
@@ -203,7 +202,7 @@ class Settings(BaseSettings):
         return f"engine_{self.ocr_space_engine}"
 
     @property
-    def gemini_model_candidates(self) -> List[str]:
+    def gemini_model_candidates(self) -> list[str]:
         """
         Return an ordered, deduplicated list of Gemini model names to try.
 
@@ -211,7 +210,7 @@ class Settings(BaseSettings):
         follow in the order specified by gemini_fallback_models. Duplicates
         are removed while preserving order.
         """
-        candidates: List[str] = [self.gemini_model]
+        candidates: list[str] = [self.gemini_model]
         if self.enable_model_fallback and self.gemini_fallback_models:
             for model in self.gemini_fallback_models.split(","):
                 name = model.strip()

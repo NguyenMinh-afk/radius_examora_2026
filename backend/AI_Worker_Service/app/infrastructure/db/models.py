@@ -8,10 +8,10 @@ import uuid
 from decimal import Decimal
 
 from sqlalchemy import (
-    BigInteger,
     DECIMAL,
     JSON,
     TIMESTAMP,
+    BigInteger,
     Boolean,
     Column,
     ForeignKey,

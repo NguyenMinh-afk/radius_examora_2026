@@ -138,4 +138,5 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 
-
+# Ruff cache
+.ruff_cache/
