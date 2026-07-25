@@ -218,8 +218,7 @@ class GenerationRequestRepository:
                 count_query = count_query.where(AIGenerationRequest.user_id == user_id)
 
             base_query = (
-                base_query
-                .order_by(AIGenerationRequest.created_at.desc())
+                base_query.order_by(AIGenerationRequest.created_at.desc())
                 .limit(limit)
                 .offset(offset)
             )

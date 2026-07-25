@@ -196,6 +196,7 @@ class GeminiClient:
                     # Log the actual parsed content
                     try:
                         import json as _json
+
                         logger.info(
                             "Gemini parsed content | json='%s'",
                             _json.dumps(parsed, ensure_ascii=False)[:1000],

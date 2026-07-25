@@ -286,9 +286,7 @@ class LLMModelRouter:
                 return result, "local", "local_fallback"
 
         # All providers failed
-        raise Exception(
-            f"All LLM providers failed for request_id={self.request_id}"
-        )
+        raise Exception(f"All LLM providers failed for request_id={self.request_id}")
 
     async def close(self) -> None:
         """Clean up resources."""

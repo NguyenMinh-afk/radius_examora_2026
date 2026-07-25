@@ -93,6 +93,7 @@ def _select_and_merge_chunks(chunks: list, max_chars: int) -> str:
             budget = max_chars - total_chars
             if budget > 200:
                 from app.application.services.text_chunker import TextChunk
+
                 selected.append(
                     TextChunk(
                         index=chunk.index,
@@ -317,16 +318,20 @@ class ProcessAITaskUseCase:
             )
 
             # Step 2: Try LLM (OpenAI -> Gemini with fallback)
-            questions_to_insert, prompt_text, response_text, model_used, provider_used = (
-                await self._run_llm_single_call(
-                    request=request_data,
-                    task=task_data,
-                    resolved_topic=resolved_topic,
-                    cleaned=cleaned,
-                    request_id=request_id,
-                    task_id=task_id,
-                    trace_id=trace_id,
-                )
+            (
+                questions_to_insert,
+                prompt_text,
+                response_text,
+                model_used,
+                provider_used,
+            ) = await self._run_llm_single_call(
+                request=request_data,
+                task=task_data,
+                resolved_topic=resolved_topic,
+                cleaned=cleaned,
+                request_id=request_id,
+                task_id=task_id,
+                trace_id=trace_id,
             )
             generation_source = provider_used
             final_task_status = TaskStatus.COMPLETED.value
@@ -459,9 +464,7 @@ class ProcessAITaskUseCase:
             try:
                 await self.task_repo.update_topic(task_id, result.topic)
             except Exception as exc:
-                logger.warning(
-                    "Topic metadata update failed: %s", str(exc)[:300]
-                )
+                logger.warning("Topic metadata update failed: %s", str(exc)[:300])
                 try:
                     await self.db.rollback()
                 except Exception:
