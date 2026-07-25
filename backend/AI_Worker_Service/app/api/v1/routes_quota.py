@@ -5,7 +5,7 @@ Mục tiêu chính là cho vận hành/dev nhìn nhanh trạng thái usage hiệ
 provider mà không phải đọc trực tiếp từ DB.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -28,16 +28,16 @@ class ProviderQuotaStatus(BaseModel):
     remaining_today: int
     usage_date: str
     reset_hint: str
-    hourly_limit: Optional[int] = None
-    monthly_limit: Optional[int] = None
-    configured: Optional[bool] = None
-    enforced_limits: Optional[list[str]] = None
+    hourly_limit: int | None = None
+    monthly_limit: int | None = None
+    configured: bool | None = None
+    enforced_limits: list[str] | None = None
 
 
 class QuotaOverviewResponse(ProviderQuotaStatus):
     """Gemini quota plus optional OCR.Space visibility."""
 
-    ocr_space: Optional[ProviderQuotaStatus] = None
+    ocr_space: ProviderQuotaStatus | None = None
 
 
 class SetDevRequest(BaseModel):

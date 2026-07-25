@@ -7,7 +7,7 @@ xử lý nặng sang worker để pipeline OCR/Gemini chạy nền.
 
 import json
 import uuid
-from typing import Any, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -124,7 +124,7 @@ def _document_reference(document_info: dict[str, Any]) -> dict[str, Any]:
 async def upload_document(
     file: UploadFile = File(..., description=_SINGLE_FILE_DESCRIPTION),
     user_id: uuid.UUID = Form(..., description="User UUID"),
-    topic: Optional[str] = Form(
+    topic: str | None = Form(
         default=None,
         description="Topic / subject of the questions. Leave blank for worker-side auto-detect.",
     ),
@@ -138,22 +138,22 @@ async def upload_document(
     question_type: QuestionType = Form(
         QuestionType.MULTIPLE_CHOICE, description="Type of questions"
     ),
-    course_id: Optional[str] = Form(
+    course_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    course_name: Optional[str] = Form(
+    course_name: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    subject_id: Optional[str] = Form(
+    subject_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    subject_name: Optional[str] = Form(
+    subject_name: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    chapter_id: Optional[str] = Form(
+    chapter_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    knowledge_unit_id: Optional[str] = Form(
+    knowledge_unit_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
     db: AsyncSession = Depends(get_db),
@@ -308,9 +308,9 @@ async def upload_document(
     },
 )
 async def upload_document_batch(
-    files: List[UploadFile] = File(..., description=_BATCH_FILE_DESCRIPTION),
+    files: list[UploadFile] = File(..., description=_BATCH_FILE_DESCRIPTION),
     user_id: uuid.UUID = Form(..., description="User UUID"),
-    topic: Optional[str] = Form(
+    topic: str | None = Form(
         default=None,
         description="Topic / subject of the questions. Leave blank for worker-side auto-detect.",
     ),
@@ -327,22 +327,22 @@ async def upload_document_batch(
     batch_mode: str = Form(
         "merge", description="Batch mode: only 'merge' is supported"
     ),
-    course_id: Optional[str] = Form(
+    course_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    course_name: Optional[str] = Form(
+    course_name: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    subject_id: Optional[str] = Form(
+    subject_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    subject_name: Optional[str] = Form(
+    subject_name: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    chapter_id: Optional[str] = Form(
+    chapter_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
-    knowledge_unit_id: Optional[str] = Form(
+    knowledge_unit_id: str | None = Form(
         default=None, description=_OPTIONAL_FORM_DESCRIPTION, examples=[""]
     ),
     db: AsyncSession = Depends(get_db),

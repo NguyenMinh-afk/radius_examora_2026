@@ -27,7 +27,6 @@ import hashlib
 import random
 import re
 from dataclasses import dataclass
-from typing import List, Optional
 
 from app.core.logging import get_logger
 from app.domain.enums import DifficultyLevel, GenerationSource, QuestionStatus
@@ -128,7 +127,7 @@ def _is_quality_option(s: str) -> bool:
 
 
 def _shuffle_options(
-    correct: str, distractors: List[str]
+    correct: str, distractors: list[str]
 ) -> tuple[dict[str, str], str]:
     """Place the correct answer in a varied deterministic position."""
     items = [(correct, True)] + [(d, False) for d in distractors[:3]]
@@ -200,10 +199,10 @@ def _looks_like_exam_artifact(s: str) -> bool:
 @dataclass
 class _ParsedMcq:
     question_content: str
-    options: List[str]
+    options: list[str]
 
 
-def _parse_existing_mcq(text: str, max_items: int) -> tuple[List[_ParsedMcq], int, int]:
+def _parse_existing_mcq(text: str, max_items: int) -> tuple[list[_ParsedMcq], int, int]:
     """Parse existing MCQ blocks in the specific format using [<$>] markers."""
     if not text:
         return [], 0, 0
@@ -212,7 +211,7 @@ def _parse_existing_mcq(text: str, max_items: int) -> tuple[List[_ParsedMcq], in
     ]
     lines = [ln for ln in lines if ln]
 
-    parsed: List[_ParsedMcq] = []
+    parsed: list[_ParsedMcq] = []
     raw_headers = 0
     skipped_invalid = 0
     i = 0
@@ -230,7 +229,7 @@ def _parse_existing_mcq(text: str, max_items: int) -> tuple[List[_ParsedMcq], in
             continue
 
         # Collect option lines until next question header
-        options: List[str] = []
+        options: list[str] = []
         j = i + 1
         while j < len(lines) and not _QUESTION_HEADER_RE.match(lines[j]):
             opt_match = _OPTION_MARKER_RE.search(lines[j])
@@ -255,7 +254,7 @@ def _parse_existing_mcq(text: str, max_items: int) -> tuple[List[_ParsedMcq], in
     return parsed, raw_headers, skipped_invalid
 
 
-def _clean_and_split_with_stats(text: str) -> tuple[List[str], int, int]:
+def _clean_and_split_with_stats(text: str) -> tuple[list[str], int, int]:
     """Return (sentences, raw_count, skipped_count)."""
     if not text:
         return [], 0, 0
@@ -268,7 +267,7 @@ def _clean_and_split_with_stats(text: str) -> tuple[List[str], int, int]:
     raw = re.split(r"[.!?\n;]+", text)
     raw_count = 0
     skipped = 0
-    sentences: List[str] = []
+    sentences: list[str] = []
 
     for s in raw:
         s = _clean_candidate_text(s)
@@ -392,10 +391,10 @@ def _question_content_from_source(source_sentence: str, topic: str) -> str:
     return "Nội dung nào được nêu trực tiếp trong phần học này?"
 
 
-def _pick_distractors(source_sentence: str, sentences: List[str]) -> List[str]:
+def _pick_distractors(source_sentence: str, sentences: list[str]) -> list[str]:
     source_category = _sentence_category(source_sentence)
     seen = {source_sentence}
-    pool: List[str] = []
+    pool: list[str] = []
     for candidate in sentences:
         candidate = _clean_candidate_text(candidate)
         if candidate in seen:
@@ -414,7 +413,7 @@ def _pick_distractors(source_sentence: str, sentences: List[str]) -> List[str]:
     return sorted(pool, key=sort_key)[:3]
 
 
-def _clean_and_split(text: str) -> List[str]:
+def _clean_and_split(text: str) -> list[str]:
     """Split text into clean candidate sentences."""
     sentences, _, _ = _clean_and_split_with_stats(text)
     return sentences
@@ -422,11 +421,11 @@ def _clean_and_split(text: str) -> List[str]:
 
 def _build_question(
     source_sentence: str,
-    distractors: List[str],
+    distractors: list[str],
     topic: str,
     difficulty: str,
-    question_templates: Optional[List[str]] = None,
-) -> Optional[dict]:
+    question_templates: list[str] | None = None,
+) -> dict | None:
     """Build one MCQ from a source sentence and 3 distractors."""
     source_sentence = _clean_candidate_text(source_sentence)
     d = [_clean_candidate_text(item) for item in distractors]
@@ -468,7 +467,7 @@ class LocalQuestionGenerator:
         quantity: int,
         topic: str,
         difficulty: str = DifficultyLevel.MEDIUM.value,
-    ) -> List[dict]:
+    ) -> list[dict]:
         """
         Generate `quantity` MCQ questions from `context`.
 
@@ -492,7 +491,7 @@ class LocalQuestionGenerator:
             context, max_items=effective_quantity
         )
         if parsed_mcq:
-            questions: List[dict] = []
+            questions: list[dict] = []
             for item in parsed_mcq[:effective_quantity]:
                 clean_question = _clean_candidate_text(item.question_content)
                 clean_options = [

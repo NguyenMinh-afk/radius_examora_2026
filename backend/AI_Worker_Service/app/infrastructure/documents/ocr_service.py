@@ -5,11 +5,12 @@ File này chỉ xử lý nhánh OCR nội bộ; các dependency OCR được n�
 làm ảnh hưởng luồng đọc TXT/DOCX/PDF text-layer thông thường.
 """
 
-from io import BytesIO
-from pathlib import Path
 import re
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from io import BytesIO
+from pathlib import Path
+from typing import Any
 
 from app.core.config import Settings, get_settings
 from app.core.exceptions import DocumentError

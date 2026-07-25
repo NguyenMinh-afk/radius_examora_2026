@@ -147,6 +147,24 @@ CREATE TABLE password_reset_tokens (
 CREATE INDEX idx_password_reset_user ON password_reset_tokens(user_id);
 CREATE INDEX idx_password_reset_token ON password_reset_tokens(token_hash);
 
+CREATE TABLE password_reset_otps (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL
+        REFERENCES user_db.users(id)
+        ON DELETE CASCADE,
+    otp_hash VARCHAR(64) NOT NULL,
+    attempts INTEGER DEFAULT 0,
+    is_verified BOOLEAN DEFAULT FALSE,
+    verified_at TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_password_reset_otps_user ON password_reset_otps(user_id);
+CREATE INDEX idx_password_reset_otps_otp ON password_reset_otps(otp_hash);
+CREATE INDEX idx_password_reset_otps_expires ON password_reset_otps(expires_at);
+
 -- =====================================================
 -- 2. COURSE SERVICE (course_db)
 -- =====================================================

@@ -5,9 +5,9 @@ Provider này phù hợp nhánh OCR nhanh khi còn key/quota; nếu không ổn,
 sẽ để tầng gọi phía trên fallback về OCR local.
 """
 
-from pathlib import Path
 import re
 import time
+from pathlib import Path
 from typing import Any
 
 from app.core.config import Settings, get_settings

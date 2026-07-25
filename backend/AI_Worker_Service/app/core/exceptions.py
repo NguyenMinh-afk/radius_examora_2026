@@ -3,7 +3,7 @@ Custom exception classes and FastAPI exception handlers.
 All errors return structured JSON, no stack traces exposed to clients.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
@@ -26,7 +26,7 @@ class AIServiceError(Exception):
         message: str,
         error_code: str = "INTERNAL_ERROR",
         status_code: int = 500,
-        details: Optional[Any] = None,
+        details: Any | None = None,
     ) -> None:
         self.message = message
         self.error_code = error_code
@@ -57,7 +57,7 @@ class NotFoundError(AIServiceError):
 
 
 class ValidationError(AIServiceError):
-    def __init__(self, message: str, details: Optional[Any] = None) -> None:
+    def __init__(self, message: str, details: Any | None = None) -> None:
         super().__init__(
             message=message,
             error_code="VALIDATION_ERROR",
@@ -210,7 +210,7 @@ def _error_response(
     status_code: int,
     error_code: str,
     message: str,
-    details: Optional[Any] = None,
+    details: Any | None = None,
 ) -> JSONResponse:
     content: dict = {"error_code": error_code, "message": message}
     if details is not None:

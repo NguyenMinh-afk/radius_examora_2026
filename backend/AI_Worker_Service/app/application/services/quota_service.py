@@ -6,7 +6,6 @@ API có thể trả về trạng thái quota hiện tại.
 """
 
 from datetime import date
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -73,7 +72,7 @@ class ApiQuotaService:
         self,
         provider: str,
         model_name: str,
-        token_estimate: Optional[int] = None,
+        token_estimate: int | None = None,
     ) -> int:
         """Record one provider call after a real upstream request was made."""
         return await self.repo.increment_usage(provider, model_name, token_estimate)
@@ -101,7 +100,7 @@ class ApiQuotaService:
         )
 
     async def record_call_model(
-        self, model_name: str, token_estimate: Optional[int] = None
+        self, model_name: str, token_estimate: int | None = None
     ) -> int:
         return await self.record_call_provider(
             _GEMINI_PROVIDER, model_name, token_estimate
@@ -110,7 +109,7 @@ class ApiQuotaService:
     async def can_call(self) -> bool:
         return await self.can_call_model(self._gemini_model)
 
-    async def record_call(self, token_estimate: Optional[int] = None) -> int:
+    async def record_call(self, token_estimate: int | None = None) -> int:
         return await self.record_call_model(self._gemini_model, token_estimate)
 
     async def get_status(self) -> dict:

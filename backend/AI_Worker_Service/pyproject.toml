@@ -1,0 +1,16 @@
+[tool.ruff]
+line-length = 150
+
+[tool.ruff.lint]
+extend-ignore = [
+    "B008",      # FastAPI Depends() in default params
+    "BLE001",    # Background workers need broad Exception catch
+    "B904",      # raise from err - style preference
+    "B905",      # zip without strict - not critical
+    "B007",      # unused loop variable - minor style
+    "E501",      # line length - handled by line-length setting
+]
+select = ["E", "F", "I", "UP", "BLE", "B", "C4"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]

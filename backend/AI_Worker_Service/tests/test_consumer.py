@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, patch
 from app.core.exceptions import DatabaseError, InsufficientContextError
 from app.infrastructure.mq import consumer
 
-
 REQUEST_ID = uuid.UUID("11111111-1111-4111-8111-111111111111")
 TASK_ID = uuid.UUID("22222222-2222-4222-8222-222222222222")
 

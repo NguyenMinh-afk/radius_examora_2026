@@ -2,8 +2,8 @@
 Async SQLAlchemy session factory and dependency injection helpers.
 """
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,

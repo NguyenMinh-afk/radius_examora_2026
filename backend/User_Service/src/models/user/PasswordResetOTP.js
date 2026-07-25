@@ -1,9 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../../config/sequelize.js';
 
-class PasswordResetToken extends Model {}
+class PasswordResetOTP extends Model {}
 
-PasswordResetToken.init({
+PasswordResetOTP.init({
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -13,35 +13,40 @@ PasswordResetToken.init({
     type: DataTypes.UUID,
     allowNull: false,
   },
-  token_hash: {
+  otp_hash: {
     type: DataTypes.STRING(64),
     allowNull: false,
-    unique: true,
-    comment: 'SHA256 hash of the reset token',
+    comment: 'SHA256 hash of the 6-digit OTP',
   },
-  used_at: DataTypes.DATE,
+  attempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  is_verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  verified_at: DataTypes.DATE,
   expires_at: {
     type: DataTypes.DATE,
     allowNull: false,
   },
   ip_address: DataTypes.STRING,
-  user_agent: DataTypes.TEXT,
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
 }, {
   sequelize,
-  modelName: 'PasswordResetToken',
-  tableName: 'password_reset_tokens',
+  modelName: 'PasswordResetOTP',
+  tableName: 'password_reset_otps',
   timestamps: false,
   indexes: [
     {
       fields: ['user_id'],
     },
     {
-      fields: ['token_hash'],
-      unique: true,
+      fields: ['otp_hash'],
     },
     {
       fields: ['expires_at'],
@@ -49,4 +54,4 @@ PasswordResetToken.init({
   ],
 });
 
-export default PasswordResetToken;
+export default PasswordResetOTP;

@@ -10,9 +10,10 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any
 
 from app.core.logging import get_logger
 
@@ -472,8 +473,8 @@ class TopicResolver:
         self,
         text: str,
         *,
-        user_topic: Optional[str] = None,
-        filename: Optional[str] = None,
+        user_topic: str | None = None,
+        filename: str | None = None,
     ) -> TopicResolveResult:
         """Resolve the best topic from user input and document evidence."""
         clean_user_topic = _compact_original(user_topic or "")
@@ -510,7 +511,7 @@ class TopicResolver:
     def is_placeholder_topic(self, topic: str) -> bool:
         return normalize_text(topic) in _PLACEHOLDER_TOPICS
 
-    def classify_topic(self, topic: str) -> Optional[str]:
+    def classify_topic(self, topic: str) -> str | None:
         normalized_topic = normalize_text(topic)
         if not normalized_topic or self.is_placeholder_topic(topic):
             return None
@@ -528,7 +529,7 @@ class TopicResolver:
     def extract_title_candidates(
         self,
         text: str,
-        filename: Optional[str] = None,
+        filename: str | None = None,
     ) -> list[TitleCandidate]:
         return extract_title_candidates(text, filename, max_chars=self.max_chars)
 
@@ -603,7 +604,7 @@ class TopicResolver:
         self,
         *,
         text: str,
-        filename: Optional[str],
+        filename: str | None,
     ) -> tuple[TopicResolveResult, list[TopicCandidate], dict[str, dict[str, Any]]]:
         title_candidates = self.extract_title_candidates(text, filename)
         candidates: list[TopicCandidate] = []
@@ -653,7 +654,7 @@ class TopicResolver:
                 )
         return candidates
 
-    def _best_alias_match(self, text: str, entry: TopicCatalogEntry) -> Optional[str]:
+    def _best_alias_match(self, text: str, entry: TopicCatalogEntry) -> str | None:
         aliases = _dedupe_preserve_order([entry.canonical, *entry.aliases])
         # Prefer original-text matches first so diacritics can distinguish pairs
         # like "Kinh tế vi mô" and "Kinh tế vĩ mô".
@@ -926,7 +927,7 @@ class TopicResolver:
         self,
         *,
         result: TopicResolveResult,
-        filename: Optional[str],
+        filename: str | None,
         user_topic: str,
         candidates: list[TopicCandidate],
         catalog_scores: dict[str, dict[str, Any]],
@@ -969,7 +970,7 @@ class TopicResolver:
 
 def extract_title_candidates(
     text: str,
-    filename: Optional[str] = None,
+    filename: str | None = None,
     *,
     max_chars: int = 8000,
 ) -> list[TitleCandidate]:

@@ -6,7 +6,7 @@ bị ghi log và loại khỏi kết quả lưu DB.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from app.core.logging import get_logger
 
@@ -22,9 +22,9 @@ MIN_EXPLANATION_LENGTH = 5
 
 @dataclass
 class ValidationResult:
-    valid_questions: List[Dict]
+    valid_questions: list[dict]
     invalid_count: int
-    error_reasons: List[str]
+    error_reasons: list[str]
 
     @property
     def has_valid(self) -> bool:
@@ -58,7 +58,7 @@ class QuestionValidator:
         Returns:
             ValidationResult with valid questions and error info
         """
-        errors: List[str] = []
+        errors: list[str] = []
 
         # Top-level structure check
         if not isinstance(raw_data, dict):
@@ -90,7 +90,7 @@ class QuestionValidator:
                 error_reasons=["'questions' list is empty."],
             )
 
-        valid: List[Dict] = []
+        valid: list[dict] = []
         invalid_count = 0
 
         for i, q in enumerate(questions_raw):
@@ -119,7 +119,7 @@ class QuestionValidator:
             error_reasons=errors,
         )
 
-    def _validate_single(self, q: Any, index: int) -> Tuple[bool, str]:
+    def _validate_single(self, q: Any, index: int) -> tuple[bool, str]:
         """Validate a single question dict. Returns (is_valid, error_reason)."""
         if not isinstance(q, dict):
             return False, "Question is not a dict."

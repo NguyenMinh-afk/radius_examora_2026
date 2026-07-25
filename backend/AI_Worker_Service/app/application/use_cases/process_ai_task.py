@@ -10,13 +10,13 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.document_context_loader import DocumentContextLoader
 from app.application.services.gemini_model_router import GeminiModelRouter
 from app.application.services.local_question_generator import LocalQuestionGenerator
-from app.application.services.document_context_loader import DocumentContextLoader
 from app.application.services.prompt_builder import PromptBuilder
 from app.application.services.question_deduplicator import QuestionDeduplicator
 from app.application.services.question_text_normalizer import (
@@ -28,9 +28,9 @@ from app.application.services.quota_service import ApiQuotaService
 from app.application.services.text_chunker import TextChunker
 from app.application.services.text_preprocessor import TextPreprocessor
 from app.application.services.topic_resolver import (
-    TopicResolveResult,
-    TopicResolver,
     UNKNOWN_TOPIC,
+    TopicResolver,
+    TopicResolveResult,
 )
 from app.core.config import get_settings
 from app.core.exceptions import (
@@ -49,11 +49,11 @@ from app.domain.enums import (
     TaskStatus,
 )
 from app.infrastructure.db.repositories import (
+    DocumentRepository,
     GeneratedQuestionRepository,
     GenerationLogRepository,
     GenerationRequestRepository,
     GenerationTaskRepository,
-    DocumentRepository,
 )
 from app.infrastructure.documents.document_text_extractor import DocumentTextExtractor
 
@@ -141,11 +141,11 @@ def _select_and_merge_chunks(
 
 
 def _build_question_records(
-    questions: List[Dict],
+    questions: list[dict],
     task_id: uuid.UUID,
     topic: str,
     generation_source: str,
-) -> List[Dict]:
+) -> list[dict]:
     """Convert validated question dicts to DB-ready dicts."""
     records = []
     for index, q in enumerate(questions, start=1):
@@ -172,10 +172,10 @@ def _build_question_records(
 
 
 def _limit_questions_to_requested(
-    questions: List[Dict],
+    questions: list[dict],
     requested_quantity: int,
     task_id: uuid.UUID,
-) -> List[Dict]:
+) -> list[dict]:
     """Keep at most the number of questions requested by the user."""
     if requested_quantity <= 0 or len(questions) <= requested_quantity:
         return questions
@@ -192,7 +192,7 @@ def _limit_questions_to_requested(
 def _build_short_warning(
     valid_count: int,
     requested_count: int,
-) -> Optional[str]:
+) -> str | None:
     """Build a user-facing warning when fewer questions were generated."""
     if valid_count >= requested_count:
         return None
@@ -276,8 +276,8 @@ class ProcessAITaskUseCase:
         self,
         request_id: uuid.UUID,
         task_id: uuid.UUID,
-        trace_id: Optional[str] = None,
-        message_payload: Optional[Dict[str, Any]] = None,
+        trace_id: str | None = None,
+        message_payload: dict[str, Any] | None = None,
         defer_failure_status: bool = False,
     ) -> None:
         """Run the full AI pipeline. Updates DB in-place."""
@@ -513,7 +513,7 @@ class ProcessAITaskUseCase:
         cleaned: str,
         user_topic: str,
         task_id: uuid.UUID,
-        filename: Optional[str] = None,
+        filename: str | None = None,
     ) -> TopicResolveResult:
         """Resolve topic from cleaned text and update task metadata if needed."""
         original_topic = (user_topic or "").strip()
@@ -530,9 +530,7 @@ class ProcessAITaskUseCase:
                 reason="AUTO_DETECT_TOPIC=false; skipped content-based detection.",
             )
 
-        resolver = getattr(self, "topic_resolver", None) or getattr(
-            self, "topic_detector"
-        )
+        resolver = getattr(self, "topic_resolver", None) or self.topic_detector
         if hasattr(resolver, "resolve"):
             result = resolver.resolve(
                 cleaned,
@@ -578,8 +576,8 @@ class ProcessAITaskUseCase:
         self,
         *,
         task: Any,
-        message_payload: Optional[Dict[str, Any]],
-    ) -> Optional[str]:
+        message_payload: dict[str, Any] | None,
+    ) -> str | None:
         """Best-effort filename for topic evidence/logging; never blocks generation."""
         sources = getattr(self.document_context_loader, "last_sources", None) or []
         names = [
@@ -599,7 +597,7 @@ class ProcessAITaskUseCase:
                 return filename
         return None
 
-    def _parse_input_reference(self, value: Optional[str]) -> Optional[Dict[str, Any]]:
+    def _parse_input_reference(self, value: str | None) -> dict[str, Any] | None:
         if not value:
             return None
         try:
@@ -609,12 +607,12 @@ class ProcessAITaskUseCase:
         return parsed if isinstance(parsed, dict) else None
 
     def _filename_from_mapping(
-        self, payload: Optional[Dict[str, Any]]
-    ) -> Optional[str]:
+        self, payload: dict[str, Any] | None
+    ) -> str | None:
         if not isinstance(payload, dict):
             return None
 
-        refs: list[Dict[str, Any]] = []
+        refs: list[dict[str, Any]] = []
         documents = payload.get("documents")
         if isinstance(documents, list):
             refs.extend(item for item in documents if isinstance(item, dict))
@@ -641,7 +639,7 @@ class ProcessAITaskUseCase:
         *,
         request: Any,
         task: Any,
-        message_payload: Optional[Dict[str, Any]],
+        message_payload: dict[str, Any] | None,
     ) -> str:
         """
         Resolve input text for both document-backed and legacy text tasks.
@@ -664,9 +662,9 @@ class ProcessAITaskUseCase:
         cleaned: str,
         request_id: uuid.UUID,
         task_id: uuid.UUID,
-        trace_id: Optional[str],
-        resolved_topic: Optional[str] = None,
-    ) -> Tuple[List[Dict], str, str, str]:
+        trace_id: str | None,
+        resolved_topic: str | None = None,
+    ) -> tuple[list[dict], str, str, str]:
         """
         Call Gemini exactly once, using the model router for fallback.
 
@@ -762,7 +760,7 @@ class ProcessAITaskUseCase:
         topic: str,
         difficulty: str,
         task_id: uuid.UUID,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Generate questions locally. Returns DB-ready records."""
         qty = int(quantity or 0)
         logger.info(
@@ -786,7 +784,7 @@ class ProcessAITaskUseCase:
         request_id: uuid.UUID,
         task_id: uuid.UUID,
         error: Exception,
-        trace_id: Optional[str] = None,
+        trace_id: str | None = None,
     ) -> None:
         """Persist the terminal failure selected by the RabbitMQ consumer."""
         await self._handle_failure(
@@ -807,7 +805,7 @@ class ProcessAITaskUseCase:
         prompt_text: str,
         response_text: str,
         model_used: str,
-        trace_id: Optional[str],
+        trace_id: str | None,
     ) -> None:
         """Write failure log and update statuses."""
         error_msg = str(error)

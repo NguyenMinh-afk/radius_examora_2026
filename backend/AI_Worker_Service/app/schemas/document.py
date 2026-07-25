@@ -3,7 +3,6 @@ Pydantic v2 schemas for document upload endpoint.
 """
 
 import uuid
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -24,7 +23,7 @@ class BatchFileResult(BaseModel):
     file_path: str
     file_size: int
     status: str
-    text_length: Optional[int] = None
+    text_length: int | None = None
 
 
 class DocumentBatchUploadResponse(BaseModel):

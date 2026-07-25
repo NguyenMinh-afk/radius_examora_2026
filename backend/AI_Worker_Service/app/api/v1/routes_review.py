@@ -11,7 +11,7 @@ Endpoints:
 """
 
 import uuid
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,8 +19,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.use_cases.review_generated_question import (
     ReviewGeneratedQuestionUseCase,
 )
-from app.infrastructure.db.repositories import QuestionBankRepository
-from app.infrastructure.db.repositories import GeneratedQuestionRepository
+from app.infrastructure.db.repositories import (
+    GeneratedQuestionRepository,
+    QuestionBankRepository,
+)
 from app.infrastructure.db.session import get_db
 from app.schemas.question import (
     ApproveQuestionResponse,
@@ -181,11 +183,11 @@ async def regenerate_question(
     summary="List questions awaiting review",
 )
 async def list_pending_review(
-    task_id: Optional[uuid.UUID] = Query(default=None, description="Filter by task ID"),
-    difficulty: Optional[str] = Query(
+    task_id: uuid.UUID | None = Query(default=None, description="Filter by task ID"),
+    difficulty: str | None = Query(
         default=None, description="Filter by difficulty: easy|medium|hard|very_hard"
     ),
-    topic: Optional[str] = Query(default=None, description="Partial match on topic"),
+    topic: str | None = Query(default=None, description="Partial match on topic"),
     page: int = Query(default=1, ge=1, description="Page number"),
     page_size: int = Query(default=20, ge=1, le=100, description="Items per page"),
     db: AsyncSession = Depends(get_db),
@@ -223,16 +225,16 @@ async def list_pending_review(
     summary="List approved questions in the question bank",
 )
 async def list_question_bank(
-    course_id: Optional[int] = Query(default=None, description="Filter by course ID"),
-    subject_id: Optional[int] = Query(default=None, description="Filter by subject ID"),
-    chapter_id: Optional[int] = Query(default=None, description="Filter by chapter ID"),
-    knowledge_unit_id: Optional[int] = Query(
+    course_id: int | None = Query(default=None, description="Filter by course ID"),
+    subject_id: int | None = Query(default=None, description="Filter by subject ID"),
+    chapter_id: int | None = Query(default=None, description="Filter by chapter ID"),
+    knowledge_unit_id: int | None = Query(
         default=None, description="Filter by knowledge unit ID"
     ),
-    difficulty: Optional[str] = Query(
+    difficulty: str | None = Query(
         default=None, description="Filter by difficulty: easy|medium|hard|very_hard"
     ),
-    topic: Optional[str] = Query(
+    topic: str | None = Query(
         default=None, description="Partial match search on question content"
     ),
     page: int = Query(default=1, ge=1, description="Page number"),

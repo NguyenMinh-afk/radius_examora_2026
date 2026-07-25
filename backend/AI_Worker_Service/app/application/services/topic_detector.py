@@ -8,12 +8,11 @@ legacy imports/tests working while preserving the no-LLM detection guarantee.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 from app.application.services.topic_resolver import (
     UNKNOWN_TOPIC,
-    TopicResolveResult,
     TopicResolver,
+    TopicResolveResult,
     normalize_text,
 )
 
@@ -65,18 +64,18 @@ class TopicDetector:
     def detect_topic(
         self,
         text: str,
-        user_topic: Optional[str] = None,
-        filename: Optional[str] = None,
+        user_topic: str | None = None,
+        filename: str | None = None,
     ) -> TopicDetectionResult:
         return self._resolver.resolve(text, user_topic=user_topic, filename=filename)
 
-    def extract_title_candidates(self, text: str, filename: Optional[str] = None):
+    def extract_title_candidates(self, text: str, filename: str | None = None):
         return self._resolver.extract_title_candidates(text, filename)
 
     def _is_placeholder_topic(self, topic: str) -> bool:
         return self._resolver.is_placeholder_topic(topic)
 
-    def _classify_user_topic(self, topic: str) -> Optional[str]:
+    def _classify_user_topic(self, topic: str) -> str | None:
         return self._resolver.classify_topic(topic)
 
 

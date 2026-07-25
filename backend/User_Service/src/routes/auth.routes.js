@@ -10,6 +10,7 @@ import {
   refresh,
   register,
   forgotPassword,
+  verifyOTP,
   verifyToken,
   doResetPassword,
 } from "../controllers/auth/index.js";
@@ -30,6 +31,7 @@ router.get("/google/callback", googleCallback);
 router.get("/google/result", googleResult);
 
 router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp", verifyOTP);
 router.post("/verify-reset-token", verifyToken);
 router.post("/reset-password", doResetPassword);
 

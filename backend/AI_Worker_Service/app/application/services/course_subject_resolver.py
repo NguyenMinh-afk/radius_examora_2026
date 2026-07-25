@@ -1,7 +1,6 @@
 """Course/Subject resolver for auto-resolving IDs from topic or names."""
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 from app.core.config import get_settings
 from app.core.exceptions import ValidationError
@@ -31,11 +30,11 @@ class CourseSubjectResolver:
 
     async def resolve(
         self,
-        topic: Optional[str],
-        course_id: Optional[int],
-        subject_id: Optional[int],
-        course_name: Optional[str] = None,
-        subject_name: Optional[str] = None,
+        topic: str | None,
+        course_id: int | None,
+        subject_id: int | None,
+        course_name: str | None = None,
+        subject_name: str | None = None,
     ) -> ResolvedCourseSubject:
         topic_value = (topic or "").strip()
         if not self.settings.auto_resolve_course_subject_from_topic:
@@ -72,9 +71,9 @@ class CourseSubjectResolver:
     async def _resolve_course(
         self,
         topic: str,
-        course_id: Optional[int],
-        course_name: Optional[str],
-    ) -> Tuple[int, str]:
+        course_id: int | None,
+        course_name: str | None,
+    ) -> tuple[int, str]:
         if course_id is not None:
             return course_id, course_name or ""
 
@@ -104,10 +103,10 @@ class CourseSubjectResolver:
     async def _resolve_subject(
         self,
         topic: str,
-        subject_id: Optional[int],
-        subject_name: Optional[str],
-        course_id: Optional[int],
-    ) -> Tuple[int, str]:
+        subject_id: int | None,
+        subject_name: str | None,
+        course_id: int | None,
+    ) -> tuple[int, str]:
         if subject_id is not None:
             return subject_id, subject_name or ""
 

@@ -6,7 +6,6 @@ These represent the core business objects.
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from app.domain.enums import (
     DifficultyLevel,
@@ -31,13 +30,13 @@ class GenerationRequest:
     quantity: int
     context: str
     status: RequestStatus
-    chapter_id: Optional[int] = None
-    knowledge_unit_id: Optional[int] = None
+    chapter_id: int | None = None
+    knowledge_unit_id: int | None = None
     progress: int = 0
-    error_message: Optional[str] = None
-    trace_id: Optional[str] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    error_message: str | None = None
+    trace_id: str | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     created_at: datetime = field(default_factory=datetime.utcnow)
 
 
@@ -52,10 +51,10 @@ class GenerationTask:
     difficulty: DifficultyLevel
     status: TaskStatus
     created_by: uuid.UUID
-    input_reference: Optional[str] = None
-    error_message: Optional[str] = None
+    input_reference: str | None = None
+    error_message: str | None = None
     created_at: datetime = field(default_factory=datetime.utcnow)
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
 
 @dataclass
@@ -83,9 +82,9 @@ class GenerationLog:
     prompt: str
     response: str
     status: LogStatus
-    question_id: Optional[uuid.UUID] = None
-    tokens_used: Optional[int] = None
-    cost: Optional[float] = None
-    error_message: Optional[str] = None
-    trace_id: Optional[str] = None
+    question_id: uuid.UUID | None = None
+    tokens_used: int | None = None
+    cost: float | None = None
+    error_message: str | None = None
+    trace_id: str | None = None
     created_at: datetime = field(default_factory=datetime.utcnow)

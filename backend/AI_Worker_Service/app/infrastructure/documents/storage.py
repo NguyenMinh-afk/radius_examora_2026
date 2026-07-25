@@ -6,11 +6,11 @@ Files are written to local disk under data/raw using safe, readable names:
 The original filename is stored only as metadata.
 """
 
-from pathlib import Path
-from typing import BinaryIO
 import re
 import unicodedata
 import uuid
+from pathlib import Path
+from typing import BinaryIO
 
 from fastapi import UploadFile
 
