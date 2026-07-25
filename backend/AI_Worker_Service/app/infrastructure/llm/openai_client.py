@@ -188,6 +188,7 @@ class OpenAIClient:
                 if parsed is not None:
                     try:
                         import json as _json
+
                         logger.info(
                             "OpenAI parsed content | json='%s'",
                             _json.dumps(parsed, ensure_ascii=False)[:1000],
@@ -202,9 +203,7 @@ class OpenAIClient:
                     )
                     return parsed, q_count
 
-                raise OpenAIError(
-                    "OpenAI returned invalid JSON."
-                ) from None
+                raise OpenAIError("OpenAI returned invalid JSON.") from None
 
             except _NO_RETRY_ERRORS as e:
                 logger.error(

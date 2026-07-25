@@ -237,7 +237,10 @@ class Settings(BaseSettings):
 
     def validate_openai_key(self) -> None:
         """Raise ValueError if OpenAI API key is configured but empty."""
-        if self.openai_api_key and self.openai_api_key == "PASTE_YOUR_OPENAI_API_KEY_HERE":
+        if (
+            self.openai_api_key
+            and self.openai_api_key == "PASTE_YOUR_OPENAI_API_KEY_HERE"
+        ):
             raise ValueError(
                 "OPENAI_API_KEY is set but empty. "
                 "Please set your OpenAI API key in the .env file. "
