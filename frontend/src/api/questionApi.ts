@@ -5,7 +5,7 @@
 import axios, { AxiosError } from "axios";
 import { getAuthTokens } from "../utils/auth";
 
-const QUESTION_API_URL = import.meta.env.VITE_QUESTION_API_URL || "http://localhost:3002/api/questions";
+const QUESTION_API_URL = import.meta.env.VITE_QUESTION_API_URL || "http://localhost:3000/api/questions";
 
 const questionApi = axios.create({
   baseURL: QUESTION_API_URL,
@@ -57,6 +57,7 @@ export interface QuestionItem {
   chapterId: number | null;
   tags: { id: string; name: string }[];
   answers: { id: string; content: string; isCorrect: boolean }[];
+  isAiGenerated?: boolean;
   createdAt: string;
 }
 
@@ -80,12 +81,14 @@ export const getQuestions = async (filters?: {
   chapterId?: number;
   difficulty?: string;
   limit?: number;
+  isAiGenerated?: boolean;
 }): Promise<QuestionsResponse> => {
   const params = new URLSearchParams();
   if (filters?.search) params.append("search", filters.search);
   if (filters?.chapterId) params.append("chapterId", String(filters.chapterId));
   if (filters?.difficulty) params.append("difficulty", filters.difficulty);
   if (filters?.limit) params.append("limit", String(filters.limit));
+  if (filters?.isAiGenerated !== undefined) params.append("isAiGenerated", String(filters.isAiGenerated));
 
   const response = await questionApi.get<QuestionsResponse>(`/?${params.toString()}`);
   return response.data;

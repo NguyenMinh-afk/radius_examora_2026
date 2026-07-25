@@ -5,7 +5,7 @@
 import axios, { AxiosError } from "axios";
 import { getAuthTokens } from "../utils/auth";
 
-const TEACHER_API_URL = import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3001/api/teacher";
+const TEACHER_API_URL = import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3000/api/teacher";
 
 const teacherApi = axios.create({
   baseURL: TEACHER_API_URL,

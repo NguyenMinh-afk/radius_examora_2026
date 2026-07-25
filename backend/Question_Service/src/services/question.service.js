@@ -10,12 +10,26 @@ import {
 
 class QuestionService {
   // Helper: Parse options JSON to answers array
-  parseOptionsToAnswers(options) {
-    if (!options || !Array.isArray(options)) return [];
+  // Supports both array format [{key, text, is_correct}] and object format {A: "...", B: "..."}
+  parseOptionsToAnswers(options, correctAnswer = null) {
+    if (!options) return [];
+
+    // Handle object format: { "A": "...", "B": "...", ... }
+    if (typeof options === 'object' && !Array.isArray(options)) {
+      const keys = Object.keys(options).sort();
+      return keys.map((key, index) => ({
+        id: key,
+        content: options[key] || '',
+        isCorrect: correctAnswer ? correctAnswer.toUpperCase().split(',').includes(key.toUpperCase()) : false,
+      }));
+    }
+
+    // Handle array format
+    if (!Array.isArray(options)) return [];
     return options.map((opt, index) => ({
-      id: opt.key || String.fromCharCode(65 + index), // A, B, C, D...
+      id: opt.key || String.fromCharCode(65 + index),
       content: opt.text || opt.content || '',
-      isCorrect: opt.is_correct === true,
+      isCorrect: correctAnswer ? correctAnswer.toUpperCase().split(',').map(a => a.trim()).includes(String.fromCharCode(65 + index).toUpperCase()) : opt.is_correct === true,
     }));
   }
 
@@ -43,6 +57,7 @@ class QuestionService {
     tagId,
     difficulty,
     questionType,
+    isAiGenerated,
     limit = 50,
     offset = 0,
   } = {}) {
@@ -64,6 +79,9 @@ class QuestionService {
     if (questionType) {
       where.question_type = questionType;
     }
+    if (isAiGenerated !== undefined) {
+      where.is_ai_generated = isAiGenerated === true || isAiGenerated === 'true';
+    }
 
     const { rows, count } = await Question.findAndCountAll({
       where,
@@ -81,7 +99,8 @@ class QuestionService {
         difficulty: q.difficulty,
         chapterId: q.chapter_id,
         tags: q.tags?.map((t) => ({ id: t.id, name: t.name })) || [],
-        answers: this.parseOptionsToAnswers(q.options),
+        answers: this.parseOptionsToAnswers(q.options, q.correct_answer),
+        isAiGenerated: q.is_ai_generated || false,
         createdAt: q.created_at,
       })),
       total: count,
@@ -103,7 +122,7 @@ class QuestionService {
       difficulty: question.difficulty,
       chapterId: question.chapter_id,
       tags: question.tags?.map((t) => ({ id: t.id, name: t.name })) || [],
-      answers: this.parseOptionsToAnswers(question.options),
+      answers: this.parseOptionsToAnswers(question.options, question.correct_answer),
       createdAt: question.created_at,
     };
   }

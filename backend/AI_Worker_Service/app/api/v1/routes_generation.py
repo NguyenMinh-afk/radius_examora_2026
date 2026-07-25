@@ -19,19 +19,59 @@ from app.application.use_cases.create_generation_request import (
 from app.application.use_cases.get_task_results import GetTaskResultsUseCase
 from app.application.use_cases.retry_generation_task import RetryGenerationTaskUseCase
 from app.core.config import get_settings
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError, ValidationError
 from app.domain.enums import InputType
 from app.infrastructure.db.repositories import GenerationRequestRepository
 from app.infrastructure.db.session import get_db
 from app.schemas.generation import (
     GenerateQuestionsRequest,
     GenerateQuestionsResponse,
+    GenerationHistoryItem,
+    GenerationHistoryResponse,
     RequestStatusResponse,
     RetryTaskResponse,
 )
 from app.schemas.question import TaskResultsResponse
 
 router = APIRouter(prefix="/ai", tags=["Generation"])
+
+
+@router.get("/requests", response_model=GenerationHistoryResponse)
+async def list_requests(
+    limit: int = 20,
+    offset: int = 0,
+    user_id: uuid.UUID | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """
+    List all generation requests with pagination.
+    Optionally filter by user_id.
+    """
+    repo = GenerationRequestRepository(db)
+    items, total = await repo.list_requests(
+        limit=min(limit, 100),
+        offset=offset,
+        user_id=user_id,
+    )
+    return GenerationHistoryResponse(
+        items=[
+            GenerationHistoryItem(
+                id=r.id,
+                status=r.status,
+                progress=r.progress,
+                quantity=r.quantity,
+            difficulty=str(r.difficulty) if r.difficulty else None,
+            question_type=str(r.question_type) if r.question_type else None,
+                course_id=r.course_id,
+                chapter_id=r.chapter_id,
+                created_at=r.created_at,
+                completed_at=r.completed_at,
+            )
+            for r in items
+        ],
+        total=total,
+        limit=limit,
+    )
 
 
 @router.post("/generate-questions", response_model=GenerateQuestionsResponse)
@@ -43,6 +83,10 @@ async def generate_questions(
     """
     Create a new task to generate questions from provided text context.
     """
+    # Validate user_id is provided
+    if not req.user_id:
+        raise ValidationError("user_id is required. Please provide your user ID.")
+
     use_case = CreateGenerationRequestUseCase(db)
 
     # Sanitize — catches any dummy values not already caught by Pydantic validator

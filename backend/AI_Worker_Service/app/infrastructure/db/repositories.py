@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import and_, select, update
+from sqlalchemy import and_, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import DatabaseError
@@ -201,6 +201,40 @@ class GenerationRequestRepository:
             return result.scalar_one_or_none()
         except Exception as e:
             raise DatabaseError(f"Failed to fetch request: {e}") from e
+
+    async def list_requests(
+        self,
+        limit: int = 20,
+        offset: int = 0,
+        user_id: uuid.UUID | None = None,
+    ) -> tuple[list[AIGenerationRequest], int]:
+        """List requests with pagination, optionally filtered by user_id."""
+        try:
+            base_query = select(AIGenerationRequest)
+            count_query = select(AIGenerationRequest.id)
+
+            if user_id is not None:
+                base_query = base_query.where(AIGenerationRequest.user_id == user_id)
+                count_query = count_query.where(AIGenerationRequest.user_id == user_id)
+
+            base_query = (
+                base_query
+                .order_by(AIGenerationRequest.created_at.desc())
+                .limit(limit)
+                .offset(offset)
+            )
+
+            result = await self.db.execute(base_query)
+            items = list(result.scalars().all())
+
+            count_result = await self.db.execute(
+                select(func.count()).select_from(count_query.subquery())
+            )
+            total = count_result.scalar() or 0
+
+            return items, total
+        except Exception as e:
+            raise DatabaseError(f"Failed to list requests: {e}") from e
 
     async def update_status(
         self,

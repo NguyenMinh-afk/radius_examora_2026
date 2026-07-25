@@ -17,6 +17,7 @@ export const getQuestions = async (req, res) => {
       tagId,
       difficulty,
       questionType,
+      isAiGenerated,
       limit = 50,
       offset = 0,
     } = req.query;
@@ -27,6 +28,7 @@ export const getQuestions = async (req, res) => {
       tagId,
       difficulty,
       questionType,
+      isAiGenerated,
       limit: parseInt(limit, 10),
       offset: parseInt(offset, 10),
     });

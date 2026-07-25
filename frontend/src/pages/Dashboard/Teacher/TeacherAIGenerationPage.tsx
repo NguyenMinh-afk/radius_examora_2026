@@ -13,8 +13,10 @@ import {
   Zap,
   Settings,
   History,
+  ClipboardCheck,
 } from "lucide-react";
 import { useTheme } from "../../../contexts/useTheme";
+import { useAuth } from "../../../hooks/useAuth";
 import {
   createGenerationRequest,
   getGenerationHistory,
@@ -22,9 +24,10 @@ import {
   type GenerationHistoryItem,
   type CreateGenerationPayload,
 } from "../../../api/aiApi";
+import ReviewQuestionsTab from "./ReviewQuestionsTab";
 import { getCourses, type Course } from "../../../api/teacherApi";
 
-type Tab = "create" | "history";
+type Tab = "create" | "review" | "history";
 
 const difficultyOptions = [
   { value: "easy", label: "Dễ", color: "text-emerald-500 bg-emerald-500/10" },
@@ -43,6 +46,7 @@ const questionTypeOptions = [
 const TeacherAIGenerationPage: React.FC = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const isDark = theme === "dark";
 
   const [activeTab, setActiveTab] = useState<Tab>("create");
@@ -156,6 +160,7 @@ const TeacherAIGenerationPage: React.FC = () => {
     try {
       setSubmitting(true);
       const payload: CreateGenerationPayload = {
+        userId: user?.id,
         courseId: selectedCourseId,
         questionType,
         difficulty,
@@ -254,6 +259,17 @@ const TeacherAIGenerationPage: React.FC = () => {
         >
           <Zap size={16} />
           Tạo mới
+        </button>
+        <button
+          onClick={() => setActiveTab("review")}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === "review"
+              ? isDark ? "bg-slate-700 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm"
+              : isDark ? "text-gray-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          <ClipboardCheck size={16} />
+          Duyệt
         </button>
         <button
           onClick={() => setActiveTab("history")}
@@ -550,6 +566,9 @@ const TeacherAIGenerationPage: React.FC = () => {
           </div>
         </form>
       )}
+
+      {/* Review Tab */}
+      {activeTab === "review" && <ReviewQuestionsTab />}
 
       {/* History Tab */}
       {activeTab === "history" && (

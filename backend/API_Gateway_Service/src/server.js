@@ -54,16 +54,22 @@ const SERVICES = {
 };
 
 // Proxy helper
-async function proxyRequest(req, res, serviceName) {
+async function proxyRequest(req, res, serviceName, serviceBasePath) {
   const baseURL = SERVICES[serviceName];
   if (!baseURL) {
     return res.status(500).json({ error: "Service not configured" });
   }
 
-  const path = req.originalUrl.replace(/^\/api/, "");
+  // Strip gateway prefix, replace with service prefix
+  const path = req.originalUrl.replace(/^\/api\/[^/]+/, serviceBasePath);
+  const timeout = 60_000; // 60 seconds
 
+  let timeoutId;
   try {
     const startTime = Date.now();
+    const controller = new AbortController();
+    timeoutId = setTimeout(() => controller.abort(), timeout);
+    
     const response = await fetch(`${baseURL}${path}`, {
       method: req.method,
       headers: {
@@ -73,19 +79,43 @@ async function proxyRequest(req, res, serviceName) {
         "x-correlation-id": req.correlationId,
       },
       body: req.method !== "GET" ? JSON.stringify(req.body) : undefined,
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
+    timeoutId = undefined;
 
     const duration = Date.now() - startTime;
     log.http(req, { status: response.status, duration }, { service: serviceName });
 
-    const data = await response.json();
-    res.status(response.status).json(data);
+    const contentType = response.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+
+    try {
+      if (isJson) {
+        const data = await response.json();
+        res.status(response.status).json(data);
+      } else {
+        const text = await response.text();
+        if (response.ok) {
+          res.status(response.status).send(text || response.statusText);
+        } else {
+          res.status(response.status).type("text/plain").send(text || response.statusText);
+        }
+      }
+    } catch (bodyError) {
+      log.warn("Failed to parse response body, sending raw status", { error: bodyError.message });
+      res.status(response.status).end();
+    }
   } catch (error) {
+    if (timeoutId) clearTimeout(timeoutId);
     log.error(`Proxy ${serviceName} error`, { error: error.message });
-    if (error.code === "ECONNREFUSED") {
+    if (error.name === "AbortError" || error.message.includes("aborted")) {
+      res.status(504).json({ error: "Gateway timeout", service: serviceName, detail: "Service took too long to respond" });
+    } else if (error.cause?.code === "ECONNREFUSED" || error.message.includes("ECONNREFUSED")) {
       res.status(503).json({ error: "Service unavailable", service: serviceName });
     } else {
-      res.status(500).json({ error: "Gateway error", message: error.message });
+      res.status(502).json({ error: "Bad response from service", service: serviceName, detail: error.message });
     }
   }
 }
@@ -105,16 +135,16 @@ app.get("/ready", (req, res) => {
 });
 
 // Routes với rate limiting cho auth
-app.use("/api/auth", authLimiter, (req, res, next) => proxyRequest(req, res, "user"));
-app.use("/api/profile", (req, res, next) => proxyRequest(req, res, "user"));
-app.use("/api/admin", (req, res, next) => proxyRequest(req, res, "user"));
-app.use("/api/student", (req, res, next) => proxyRequest(req, res, "exam"));
-app.use("/api/teacher", (req, res, next) => proxyRequest(req, res, "exam"));
-app.use("/api/questions", (req, res, next) => proxyRequest(req, res, "question"));
-app.use("/api/collections", (req, res, next) => proxyRequest(req, res, "question"));
-app.use("/api/ai", (req, res, next) => proxyRequest(req, res, "ai"));
-app.use("/api/notifications", (req, res, next) => proxyRequest(req, res, "notification"));
-app.get("/api/infra/health", (req, res, next) => proxyRequest(req, res, "infra"));
+app.use("/api/auth", authLimiter, (req, res, _next) => proxyRequest(req, res, "user", "/api/auth"));
+app.use("/api/profile", (req, res, _next) => proxyRequest(req, res, "user", "/api/profile"));
+app.use("/api/admin", (req, res, _next) => proxyRequest(req, res, "user", "/api/admin"));
+app.use("/api/student", (req, res, _next) => proxyRequest(req, res, "exam", "/api/student"));
+app.use("/api/teacher", (req, res, _next) => proxyRequest(req, res, "exam", "/api/teacher"));
+app.use("/api/questions", (req, res, _next) => proxyRequest(req, res, "question", "/api/questions"));
+app.use("/api/collections", (req, res, _next) => proxyRequest(req, res, "question", "/api/collections"));
+app.use("/api/ai", (req, res, _next) => proxyRequest(req, res, "ai", "/api/v1/ai"));
+app.use("/api/notifications", (req, res, _next) => proxyRequest(req, res, "notification", "/api/notifications"));
+app.get("/api/infra/health", (req, res, _next) => proxyRequest(req, res, "infra", "/api/infra"));
 
 // Root
 app.get("/", (req, res) => {
@@ -126,7 +156,7 @@ app.get("/", (req, res) => {
 });
 
 // Global error handler (ĐẶT SAU TẤT CẢ ROUTES)
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   log.error("Unhandled error", { error: err.message, stack: err.stack, requestId: req.requestId });
   res.status(err.status || 500).json({
     error: err.message || "Internal server error",

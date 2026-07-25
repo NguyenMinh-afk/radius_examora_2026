@@ -2,7 +2,8 @@ import bcrypt from 'bcrypt';
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  host: 'postgres-db',
+  // host: 'postgres-db',
+  host: 'localhost',
   port: 5432,
   database: 'Exam_Bank',
   user: 'postgres',

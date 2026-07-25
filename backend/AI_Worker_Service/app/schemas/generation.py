@@ -3,6 +3,7 @@ Pydantic v2 schemas for question generation API endpoints.
 """
 
 import uuid
+from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -30,37 +31,49 @@ _UNKNOWN_TOPIC = "Chưa xác định"
 class GenerateQuestionsRequest(BaseModel):
     """POST /api/v1/ai/generate-questions"""
 
-    user_id: uuid.UUID
+    user_id: uuid.UUID | None = Field(
+        default=None,
+        validation_alias="userId",
+        description="User ID (UUID format).",
+    )
 
     # --- Course/Subject (all optional; auto-resolved from topic) ---
     course_id: int | None = Field(
         default=None,
+        validation_alias="courseId",
         ge=1,
         description="Course ID ≥ 1. Leave null for auto-resolve from topic.",
     )
     course_name: str | None = Field(
         default=None,
+        validation_alias="courseName",
         description="Course name. Leave null for auto-resolve. Do NOT send 'string'.",
     )
     chapter_id: int | None = Field(
         default=None,
+        validation_alias="chapterId",
         ge=1,
         description="Chapter ID ≥ 1. Leave null or omit. Do NOT send 0.",
     )
     knowledge_unit_id: int | None = Field(
         default=None,
+        validation_alias="knowledgeUnitId",
         ge=1,
         description="Knowledge unit ID ≥ 1. Leave null or omit. Do NOT send 0.",
     )
     subject_id: int | None = Field(
         default=None,
+        validation_alias="subjectId",
         ge=1,
         description="Subject ID ≥ 1. Leave null for auto-resolve from topic.",
     )
     subject_name: str | None = Field(
         default=None,
+        validation_alias="subjectName",
         description="Subject name. Leave null — defaults to topic value. Do NOT send 'string'.",
     )
+
+    model_config = {"populate_by_name": True}
 
     # --- Required fields ---
     topic: str | None = Field(
@@ -169,3 +182,40 @@ class RetryTaskResponse(BaseModel):
     request_id: uuid.UUID
     status: str
     message: str
+
+
+class GenerationHistoryItem(BaseModel):
+    """Single item in the generation history list."""
+
+    id: uuid.UUID
+    status: str
+    progress: int
+    quantity: int
+    difficulty: str | None = None
+    question_type: str | None = Field(default=None, validation_alias="questionType")
+    course_id: int | None = Field(default=None, validation_alias="courseId")
+    chapter_id: int | None = Field(default=None, validation_alias="chapterId")
+    created_at: datetime = Field(validation_alias="createdAt")
+    completed_at: datetime | None = Field(default=None, validation_alias="completedAt")
+
+    model_config = {
+        "populate_by_name": True,
+        "alias_generator": lambda s: "".join(
+            w.capitalize() if i > 0 else w for i, w in enumerate(s.split("_"))
+        ),
+    }
+
+
+class GenerationHistoryResponse(BaseModel):
+    """GET /api/v1/ai/requests?limit=N"""
+
+    items: list[GenerationHistoryItem]
+    total: int | None = None
+    limit: int | None = None
+
+    model_config = {
+        "populate_by_name": True,
+        "alias_generator": lambda s: "".join(
+            w.capitalize() if i > 0 else w for i, w in enumerate(s.split("_"))
+        ),
+    }

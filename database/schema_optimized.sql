@@ -248,6 +248,8 @@ CREATE TABLE questions (
 
     is_ai_generated BOOLEAN DEFAULT false,
     ai_model VARCHAR(100),
+    source_generated_question_id UUID,
+    subject_id INTEGER,
 
     is_active BOOLEAN DEFAULT true,
     is_public BOOLEAN DEFAULT false,
@@ -889,6 +891,25 @@ CREATE TRIGGER update_class_members_updated_at BEFORE UPDATE ON exam_db.class_me
 
 CREATE TRIGGER update_class_posts_updated_at BEFORE UPDATE ON exam_db.class_posts
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- =====================================================
+-- AI WORKER SERVICE TABLES
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS ai_db.courses (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ai_db.subjects (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    course_id INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- =====================================================
 -- END OF OPTIMIZED CORE SCHEMA

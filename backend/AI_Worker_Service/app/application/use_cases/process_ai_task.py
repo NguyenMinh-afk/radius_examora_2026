@@ -337,6 +337,13 @@ class ProcessAITaskUseCase:
                 message_payload=message_payload,
             )
 
+            logger.info(
+                "Context resolved | raw_length=%d | stripped_length=%d | request_id=%s",
+                len(context),
+                len(context.strip()),
+                request_id,
+            )
+
             if len(context.strip()) < 50:
                 raise InsufficientContextError()
 

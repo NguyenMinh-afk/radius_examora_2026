@@ -204,35 +204,35 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/50 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full my-8">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/50 dark:bg-black/70 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-4xl w-full my-8">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Tạo nhiều câu hỏi</h3>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Tạo nhiều câu hỏi</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               {questions.length} câu hỏi - {questions.reduce((sum, q) => sum + q.answers.filter((a) => a.content.trim()).length, 0)} đáp án
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="p-2 hover:bg-slate-100 rounded-lg transition"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
             >
-              <X size={20} className="text-slate-500" />
+              <X size={20} className="text-slate-500 dark:text-slate-400" />
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="px-6 pt-4 border-b border-slate-100">
+        <div className="px-6 pt-4 border-b border-slate-100 dark:border-slate-700">
           <div className="flex gap-4">
             <button
               onClick={() => setImportMode("manual")}
               className={`pb-3 text-sm font-medium transition border-b-2 ${
                 importMode === "manual"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
+                  ? "border-blue-600 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >
               Nhập thủ công
@@ -241,8 +241,8 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
               onClick={() => setImportMode("file")}
               className={`pb-3 text-sm font-medium transition border-b-2 ${
                 importMode === "file"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
+                  ? "border-blue-600 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >
               Nhập từ file
@@ -255,10 +255,10 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
           {/* File Import Mode */}
           {importMode === "file" && (
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 transition">
-                <Upload size={48} className="mx-auto text-slate-400 mb-4" />
-                <p className="text-sm text-slate-600 mb-2">Tải lên file câu hỏi</p>
-                <p className="text-xs text-slate-400 mb-4">Hỗ trợ .txt (định dạng CSV)</p>
+              <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition">
+                <Upload size={48} className="mx-auto text-slate-400 dark:text-slate-500 mb-4" />
+                <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">Tải lên file câu hỏi</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Hỗ trợ .txt (định dạng CSV)</p>
                 <input
                   type="file"
                   accept=".txt,.csv"
@@ -275,14 +275,14 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                 </label>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm font-medium text-amber-800 mb-2">Định dạng file:</p>
-                <code className="text-xs text-amber-700 block mb-2">
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-2">Định dạng file:</p>
+                <code className="text-xs text-amber-700 dark:text-amber-400 block mb-2">
                   Nội dung|câu_hỏi|độ_khó|đáp án 1|đáp án 2|đáp án 3|đáp án 4|chỉ_số_đúng
                 </code>
                 <button
                   onClick={downloadTemplate}
-                  className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                  className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                 >
                   <Download size={14} />
                   Tải file mẫu
@@ -290,8 +290,8 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
               </div>
 
               {fileData && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-700">
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                  <p className="text-sm text-green-700 dark:text-green-300">
                     Đã import {fileData.length} câu hỏi thành công!
                   </p>
                 </div>
@@ -304,9 +304,9 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
             <div className="space-y-6">
               {/* Errors */}
               {errors.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-1">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 space-y-1">
                   {errors.map((err, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm text-red-600">
+                    <div key={i} className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">
                       <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
                       {err}
                     </div>
@@ -316,9 +316,9 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
 
               {/* Success */}
               {successCount > 0 && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
-                  <Check size={20} className="text-green-600" />
-                  <p className="text-sm text-green-700">
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 flex items-center gap-2">
+                  <Check size={20} className="text-green-600 dark:text-green-400" />
+                  <p className="text-sm text-green-700 dark:text-green-300">
                     Đã tạo thành công {successCount} câu hỏi!
                   </p>
                 </div>
@@ -326,19 +326,19 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
 
               {/* Questions */}
               {questions.map((q, qIndex) => (
-                <div key={qIndex} className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                <div key={qIndex} className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50 dark:bg-slate-700/30">
                   {/* Question Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span className="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
                         {qIndex + 1}
                       </span>
-                      <span className="text-sm font-medium text-slate-700">Câu hỏi</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Câu hỏi</span>
                     </div>
                     <button
                       onClick={() => removeQuestion(qIndex)}
                       disabled={questions.length === 1}
-                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -350,7 +350,7 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                     onChange={(e) => updateQuestion(qIndex, { content: e.target.value })}
                     placeholder="Nhập nội dung câu hỏi..."
                     rows={2}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-white dark:bg-slate-700 dark:text-white"
                   />
 
                   {/* Meta Row */}
@@ -358,7 +358,7 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                     <select
                       value={q.questionType}
                       onChange={(e) => updateQuestion(qIndex, { questionType: e.target.value })}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                      className="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 dark:text-white"
                     >
                       <option value="multiple_choice">Trắc nghiệm</option>
                       <option value="true_false">Đúng/Sai</option>
@@ -366,21 +366,21 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                     <select
                       value={q.difficulty}
                       onChange={(e) => updateQuestion(qIndex, { difficulty: e.target.value })}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                      className="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 dark:text-white"
                     >
                       <option value="easy">Dễ</option>
                       <option value="medium">Trung bình</option>
                       <option value="hard">Khó</option>
                     </select>
                     <div className="flex items-center gap-2">
-                      <label className="text-sm text-slate-600">Điểm:</label>
+                      <label className="text-sm text-slate-600 dark:text-slate-400">Điểm:</label>
                       <input
                         type="number"
                         min={1}
                         max={10}
                         value={q.points}
                         onChange={(e) => updateQuestion(qIndex, { points: parseInt(e.target.value, 10) || 1 })}
-                        className="w-16 px-2 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                        className="w-16 px-2 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 dark:text-white"
                       />
                     </div>
                   </div>
@@ -394,7 +394,7 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                           className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition ${
                             answer.isCorrect
                               ? "bg-green-500 border-green-500"
-                              : "border-slate-300 hover:border-green-400"
+                              : "border-slate-300 dark:border-slate-500 hover:border-green-400"
                           }`}
                         >
                           {answer.isCorrect && <Check size={14} className="text-white" />}
@@ -404,12 +404,12 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                           value={answer.content}
                           onChange={(e) => updateAnswer(qIndex, aIndex, { content: e.target.value })}
                           placeholder={`Đáp án ${aIndex + 1}`}
-                          className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                          className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 dark:text-white"
                         />
                         <button
                           onClick={() => removeAnswer(qIndex, aIndex)}
                           disabled={q.answers.length <= 2}
-                          className="p-1.5 text-slate-400 hover:text-red-500 rounded transition disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 rounded transition disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           <X size={16} />
                         </button>
@@ -418,7 +418,7 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
                   </div>
                   <button
                     onClick={() => addAnswer(qIndex)}
-                    className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                    className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     <Plus size={14} />
                     Thêm đáp án
@@ -429,7 +429,7 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
               {/* Add More */}
               <button
                 onClick={addQuestion}
-                className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-sm font-medium text-slate-500 hover:border-blue-400 hover:text-blue-600 transition flex items-center justify-center gap-2"
+                className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-center gap-2"
               >
                 <Plus size={18} />
                 Thêm câu hỏi
@@ -439,14 +439,14 @@ Một câu hỏi khác|multiple_choice|hard|Option 1|Option 2|Option 3|Option 4|
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
-          <div className="text-sm text-slate-500">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/30">
+          <div className="text-sm text-slate-500 dark:text-slate-400">
             {questions.length} câu hỏi sẽ được tạo
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition"
+              className="px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
             >
               Hủy
             </button>
