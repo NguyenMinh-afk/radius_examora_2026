@@ -32,7 +32,7 @@ async def supervise_consumer(
         except asyncio.CancelledError:
             logger.info("Consumer cancelled, shutting down.")
             raise
-        except Exception as e:
+        except Exception:
             if stop_event.is_set():
                 logger.info("Shutdown requested, exiting.")
                 return

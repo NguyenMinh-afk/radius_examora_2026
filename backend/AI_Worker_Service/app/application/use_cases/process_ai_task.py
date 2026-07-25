@@ -1,8 +1,8 @@
 """
-Use case trung tâm của worker.
+Use case trung tam cua worker.
 
-Luồng chính: lấy nội dung đầu vào, tiền xử lý, dựng context, gọi Gemini một lần,
-validate + loại trùng, rồi lưu câu hỏi hợp lệ vào DB.
+Luong chinh: lay noi dung dau vao, tien xu ly, dung context, goi LLM (OpenAI/Gemini),
+validate + loai trung, roi luu cau hoi hop le vao DB.
 """
 
 import json
@@ -15,7 +15,7 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.document_context_loader import DocumentContextLoader
-from app.application.services.gemini_model_router import GeminiModelRouter
+from app.application.services.llm_model_router import LLMModelRouter
 from app.application.services.local_question_generator import LocalQuestionGenerator
 from app.application.services.prompt_builder import PromptBuilder
 from app.application.services.question_deduplicator import QuestionDeduplicator
@@ -62,8 +62,6 @@ logger = get_logger(__name__)
 
 @dataclass(frozen=True)
 class _RequestSnapshot:
-    """Primitive request values used after ORM fetch/commit boundaries."""
-
     id: uuid.UUID
     quantity: int
     question_type: str
@@ -75,8 +73,6 @@ class _RequestSnapshot:
 
 @dataclass(frozen=True)
 class _TaskSnapshot:
-    """Primitive task values used after ORM fetch/commit boundaries."""
-
     id: uuid.UUID
     topic: str
     difficulty: str
@@ -84,29 +80,10 @@ class _TaskSnapshot:
     input_reference: str | None
 
 
-# ---------------------------------------------------------------------------
-# Pure helper functions
-# ---------------------------------------------------------------------------
-
-
-def _select_and_merge_chunks(
-    chunks: list,
-    max_chars: int,
-) -> str:
-    """
-    Select the richest (longest) chunks and merge them into a single context
-    string that fits within max_chars.
-
-    Chunks are sorted by descending length so we prefer content-rich sections.
-    The merged string preserves reading order by re-sorting selected chunks by
-    their original index before joining.
-    """
+def _select_and_merge_chunks(chunks: list, max_chars: int) -> str:
     if not chunks:
         return ""
-
-    # Sort by descending content length to pick the most informative chunks
     ranked = sorted(chunks, key=lambda c: len(c.text), reverse=True)
-
     selected = []
     total_chars = 0
     for chunk in ranked:
@@ -114,28 +91,21 @@ def _select_and_merge_chunks(
             selected.append(chunk)
             total_chars += len(chunk.text)
         else:
-            # Try to include a partial piece of the remaining budget
             budget = max_chars - total_chars
-            if budget > 200:  # Only bother if there's meaningful space left
-                truncated_text = chunk.text[:budget]
-                # Create a lightweight copy for the merged context
+            if budget > 200:
                 from app.application.services.text_chunker import TextChunk
-
                 selected.append(
                     TextChunk(
                         index=chunk.index,
-                        text=truncated_text,
+                        text=chunk.text[:budget],
                         char_start=chunk.char_start,
                         char_end=chunk.char_start + budget,
                         is_heading_based=chunk.is_heading_based,
                     )
                 )
             break
-
     if not selected:
         return ""
-
-    # Restore reading order (ascending by original chunk index)
     selected.sort(key=lambda c: c.index)
     return "\n\n".join(c.text for c in selected)
 
@@ -146,7 +116,6 @@ def _build_question_records(
     topic: str,
     generation_source: str,
 ) -> list[dict]:
-    """Convert validated question dicts to DB-ready dicts."""
     records = []
     for index, q in enumerate(questions, start=1):
         opts = q.get("options", {})
@@ -176,12 +145,10 @@ def _limit_questions_to_requested(
     requested_quantity: int,
     task_id: uuid.UUID,
 ) -> list[dict]:
-    """Keep at most the number of questions requested by the user."""
     if requested_quantity <= 0 or len(questions) <= requested_quantity:
         return questions
-
     logger.warning(
-        "Gemini returned more questions than requested | requested=%d valid=%d task=%s",
+        "LLM returned more questions than requested | requested=%d valid=%d task=%s",
         requested_quantity,
         len(questions),
         task_id,
@@ -189,22 +156,16 @@ def _limit_questions_to_requested(
     return questions[:requested_quantity]
 
 
-def _build_short_warning(
-    valid_count: int,
-    requested_count: int,
-) -> str | None:
-    """Build a user-facing warning when fewer questions were generated."""
+def _build_short_warning(valid_count: int, requested_count: int) -> str | None:
     if valid_count >= requested_count:
         return None
     return (
         f"Generated {valid_count}/{requested_count} requested questions after "
-        "validation and deduplication. The remaining questions were removed or "
-        "not generated to preserve quality."
+        "validation and deduplication."
     )
 
 
 def _snapshot_request(request: Any) -> _RequestSnapshot:
-    """Copy ORM request fields into primitives before commit/update steps."""
     return _RequestSnapshot(
         id=request.id,
         quantity=int(request.quantity),
@@ -217,7 +178,6 @@ def _snapshot_request(request: Any) -> _RequestSnapshot:
 
 
 def _snapshot_task(task: Any) -> _TaskSnapshot:
-    """Copy ORM task fields into primitives before commit/update steps."""
     return _TaskSnapshot(
         id=task.id,
         topic=(task.topic or UNKNOWN_TOPIC),
@@ -227,18 +187,11 @@ def _snapshot_task(task: Any) -> _TaskSnapshot:
     )
 
 
-# ---------------------------------------------------------------------------
-# Use Case
-# ---------------------------------------------------------------------------
-
-
 class ProcessAITaskUseCase:
     """
-    Quota-aware AI pipeline: GeminiModelRouter â†’ local fallback â†’ queue â†’ fail.
+    Unified LLM pipeline: OpenAI -> Gemini (model fallback) -> Local fallback.
 
-    Single-call mode: one Gemini call per task, regardless of context length.
-    Context longer than MAX_SINGLE_CALL_CONTEXT_CHARS is compressed by selecting
-    the top chunks and merging them (no repeated calls).
+    Single-call mode: one LLM call per task, regardless of context length.
     """
 
     def __init__(self, db: AsyncSession) -> None:
@@ -260,7 +213,6 @@ class ProcessAITaskUseCase:
             mismatch_override=self.settings.topic_mismatch_override,
             max_chars=self.settings.topic_detection_max_chars,
         )
-        # Backward-compatible alias for tests/extensions still using topic_detector.
         self.topic_detector = self.topic_resolver
         self.chunker = TextChunker(
             chunk_size=self.settings.chunk_size,
@@ -280,13 +232,12 @@ class ProcessAITaskUseCase:
         message_payload: dict[str, Any] | None = None,
         defer_failure_status: bool = False,
     ) -> None:
-        """Run the full AI pipeline. Updates DB in-place."""
         set_request_id(str(request_id))
         set_task_id(str(task_id))
         logger.info(
-            "Starting AI task | trace=%s | candidates=%s",
+            "Starting AI task | trace=%s | openai_configured=%s",
             trace_id,
-            self.settings.gemini_model_candidates,
+            self.settings.has_openai_key,
         )
 
         request = await self.req_repo.get_by_id(request_id)
@@ -301,7 +252,7 @@ class ProcessAITaskUseCase:
 
         if task.status in {
             TaskStatus.COMPLETED.value,
-            "completed_with_local_fallback",  # Legacy rows before normalization
+            "completed_with_local_fallback",
         }:
             logger.info(
                 "Skipping duplicate completed task | request=%s task=%s status=%s",
@@ -323,10 +274,12 @@ class ProcessAITaskUseCase:
 
         prompt_text = ""
         response_text = ""
-        model_used = self.settings.gemini_model  # default; updated on success
+        model_used = "unknown"
+        provider_used = "unknown"
+        generation_source = "unknown"
 
         try:
-            # â”€â”€ 1. Resolve source text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            # Step 1: Resolve source text
             context = await self._resolve_source_text(
                 request=request_data,
                 task=task_data,
@@ -338,9 +291,8 @@ class ProcessAITaskUseCase:
             )
 
             logger.info(
-                "Context resolved | raw_length=%d | stripped_length=%d | request_id=%s",
+                "Context resolved | raw_length=%d | request_id=%s",
                 len(context),
-                len(context.strip()),
                 request_id,
             )
 
@@ -359,73 +311,31 @@ class ProcessAITaskUseCase:
             )
             resolved_topic = topic_detection.topic
             logger.info(
-                "Topic resolved | task=%s | topic=%s | source=%s | confidence=%.3f | keywords=%s | titles=%s | evidence=%s | reason=%s",
+                "Topic resolved | task=%s | topic=%s | confidence=%.3f",
                 task_id,
                 topic_detection.topic,
-                topic_detection.source,
                 topic_detection.confidence,
-                topic_detection.matched_keywords[:8],
-                topic_detection.title_candidates[:5],
-                topic_detection.evidence[:5],
-                topic_detection.reason,
             )
 
-            # â”€â”€ 2. Try Gemini (with model fallback) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            try:
-                questions_to_insert, prompt_text, response_text, model_used = (
-                    await self._run_gemini_single_call(
-                        request=request_data,
-                        task=task_data,
-                        resolved_topic=resolved_topic,
-                        cleaned=cleaned,
-                        request_id=request_id,
-                        task_id=task_id,
-                        trace_id=trace_id,
-                    )
+            # Step 2: Try LLM (OpenAI -> Gemini with fallback)
+            questions_to_insert, prompt_text, response_text, model_used, provider_used = (
+                await self._run_llm_single_call(
+                    request=request_data,
+                    task=task_data,
+                    resolved_topic=resolved_topic,
+                    cleaned=cleaned,
+                    request_id=request_id,
+                    task_id=task_id,
+                    trace_id=trace_id,
                 )
-                generation_source = "gemini"
-                final_task_status = TaskStatus.COMPLETED.value
-                final_req_status = RequestStatus.COMPLETED.value
-                log_status = LogStatus.SUCCESS.value
+            )
+            generation_source = provider_used
+            final_task_status = TaskStatus.COMPLETED.value
+            final_req_status = RequestStatus.COMPLETED.value
+            log_status = LogStatus.SUCCESS.value
 
-            except GeminiAllModelsExhaustedError:
-                # â”€â”€ 3a. All Gemini models exhausted â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                logger.warning(
-                    "All Gemini models exhausted | task=%s | fallback=%s",
-                    task_id,
-                    self.settings.enable_local_fallback
-                    and self.settings.local_fallback_when_quota_exceeded,
-                )
-
-                if (
-                    self.settings.enable_local_fallback
-                    and self.settings.local_fallback_when_quota_exceeded
-                ):
-                    # â”€â”€ 3b. Local fallback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                    questions_to_insert = self._run_local_fallback(
-                        cleaned=cleaned,
-                        quantity=request_data.quantity,
-                        topic=resolved_topic,
-                        difficulty=task_data.difficulty,
-                        task_id=task_id,
-                    )
-                    generation_source = GenerationSource.LOCAL_FALLBACK.value
-                    final_task_status = TaskStatus.COMPLETED.value
-                    final_req_status = RequestStatus.COMPLETED.value
-                    log_status = LogStatus.PARTIAL.value
-                    prompt_text = "[LOCAL_FALLBACK â€” no Gemini call]"
-                    response_text = f"Generated {len(questions_to_insert)} local fallback questions."
-                    model_used = "local_fallback"
-
-                else:
-                    # No scheduler state: let RabbitMQ retry/backoff handle it.
-                    raise GeminiError(
-                        "All Gemini models exhausted quota/rate limit. "
-                        "Enable ENABLE_LOCAL_FALLBACK to use local generation."
-                    )
-
-            # â”€â”€ 4. Dedup (Gemini path only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            if generation_source == "gemini":
+            # Step 3: Dedup (LLM path only)
+            if provider_used in ("gemini", "openai"):
                 unique = self.deduplicator.deduplicate(
                     [
                         {
@@ -451,10 +361,10 @@ class ProcessAITaskUseCase:
             if not questions_to_insert:
                 raise GeminiError("No valid questions generated.")
 
-            # â”€â”€ 5. Save questions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            # Step 4: Save questions
             await self.q_repo.bulk_create(questions_to_insert)
 
-            # â”€â”€ 6. Write log (record which model was actually used) â”€â”€â”€â”€â”€â”€â”€â”€
+            # Step 5: Write log
             await self.log_repo.create(
                 {
                     "id": uuid.uuid4(),
@@ -471,7 +381,7 @@ class ProcessAITaskUseCase:
                 }
             )
 
-            # â”€â”€ 7. Mark completed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            # Step 6: Mark completed
             completed_at = datetime.now(timezone.utc)
             await self.task_repo.update_status(
                 task_id, final_task_status, completed_at=completed_at
@@ -482,20 +392,18 @@ class ProcessAITaskUseCase:
             await self.db.commit()
 
             logger.info(
-                "Task completed | task=%s | status=%s | questions=%d | source=%s | model=%s",
+                "Task completed | task=%s | provider=%s | model=%s | questions=%d",
                 task_id,
-                final_task_status,
-                len(questions_to_insert),
-                generation_source,
+                provider_used,
                 model_used,
+                len(questions_to_insert),
             )
 
         except Exception as e:
             if defer_failure_status:
                 await self.db.rollback()
                 logger.warning(
-                    "Deferring failed status to RabbitMQ retry handler | "
-                    "task=%s error=%s",
+                    "Deferring failed status to RabbitMQ retry handler | task=%s error=%s",
                     task_id,
                     str(e),
                 )
@@ -510,10 +418,6 @@ class ProcessAITaskUseCase:
                 trace_id=trace_id,
             )
 
-    # -------------------------------------------------------------------------
-    # Private helpers
-    # -------------------------------------------------------------------------
-
     async def _resolve_task_topic(
         self,
         *,
@@ -522,7 +426,6 @@ class ProcessAITaskUseCase:
         task_id: uuid.UUID,
         filename: str | None = None,
     ) -> TopicResolveResult:
-        """Resolve topic from cleaned text and update task metadata if needed."""
         original_topic = (user_topic or "").strip()
 
         if not self.settings.auto_detect_topic:
@@ -534,7 +437,7 @@ class ProcessAITaskUseCase:
                 title_candidates=[],
                 evidence=[],
                 source="user" if original_topic else "fallback",
-                reason="AUTO_DETECT_TOPIC=false; skipped content-based detection.",
+                reason="AUTO_DETECT_TOPIC=false",
             )
 
         resolver = getattr(self, "topic_resolver", None) or self.topic_detector
@@ -551,11 +454,6 @@ class ProcessAITaskUseCase:
                 filename=filename,
             )
 
-        if result.reason.startswith(
-            "User topic may not match"
-        ) or result.reason.startswith("Topic overridden"):
-            logger.warning("%s | task=%s", result.reason, task_id)
-
         if result.topic != original_topic:
             if result.source not in {"user", "fallback"}:
                 logger.info("%s | task=%s", result.reason, task_id)
@@ -563,19 +461,12 @@ class ProcessAITaskUseCase:
                 await self.task_repo.update_topic(task_id, result.topic)
             except Exception as exc:
                 logger.warning(
-                    "Topic metadata update failed; continuing with resolved topic | task=%s | topic=%s | error=%s",
-                    task_id,
-                    result.topic,
-                    str(exc)[:300],
+                    "Topic metadata update failed: %s", str(exc)[:300]
                 )
                 try:
                     await self.db.rollback()
-                except Exception as rollback_exc:
-                    logger.warning(
-                        "Rollback after topic metadata update failure also failed | task=%s | error=%s",
-                        task_id,
-                        str(rollback_exc)[:300],
-                    )
+                except Exception:
+                    pass
 
         return result
 
@@ -585,7 +476,6 @@ class ProcessAITaskUseCase:
         task: Any,
         message_payload: dict[str, Any] | None,
     ) -> str | None:
-        """Best-effort filename for topic evidence/logging; never blocks generation."""
         sources = getattr(self.document_context_loader, "last_sources", None) or []
         names = [
             str(getattr(source, "original_filename", "")).strip()
@@ -646,12 +536,6 @@ class ProcessAITaskUseCase:
         task: Any,
         message_payload: dict[str, Any] | None,
     ) -> str:
-        """
-        Resolve input text for both document-backed and legacy text tasks.
-
-        Document-backed tasks ignore request.context and read from the shared
-        document volume. Text tasks continue to use request.context unchanged.
-        """
         document_context = await self.document_context_loader.load_context(
             task=task,
             message_payload=message_payload,
@@ -660,7 +544,7 @@ class ProcessAITaskUseCase:
             return document_context
         return request.context or ""
 
-    async def _run_gemini_single_call(
+    async def _run_llm_single_call(
         self,
         request: Any,
         task: Any,
@@ -669,19 +553,9 @@ class ProcessAITaskUseCase:
         task_id: uuid.UUID,
         trace_id: str | None,
         resolved_topic: str | None = None,
-    ) -> tuple[list[dict], str, str, str]:
+    ) -> tuple[list[dict], str, str, str, str]:
         """
-        Call Gemini exactly once, using the model router for fallback.
-
-        Context preparation:
-        - If len(cleaned) <= MAX_SINGLE_CALL_CONTEXT_CHARS: use cleaned directly.
-        - Else: chunk â†’ pick top chunks by content richness â†’ merge to fit limit.
-
-        Returns:
-            Tuple of (question_records, prompt_text, response_text, model_used).
-
-        Raises:
-            GeminiAllModelsExhaustedError: when every model fails.
+        Call LLM via unified router (OpenAI -> Gemini -> Local fallback).
         """
         max_ctx = self.settings.max_single_call_context_chars
         requested_quantity = int(request.quantity)
@@ -689,7 +563,7 @@ class ProcessAITaskUseCase:
             resolved_topic or getattr(task, "topic", UNKNOWN_TOPIC) or ""
         )
 
-        # â”€â”€ Prepare single-call context â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        # Prepare single-call context
         if len(cleaned) <= max_ctx:
             context_for_call = cleaned
             logger.info(
@@ -698,22 +572,20 @@ class ProcessAITaskUseCase:
                 task_id,
             )
         else:
-            # Text too long â€” chunk and select top content
             chunks = self.chunker.chunk(cleaned)
             max_merged = self.settings.max_merged_context_chars
             context_for_call = _select_and_merge_chunks(chunks, max_merged)
             logger.info(
-                "Single-call context: merged from chunks | original=%d | merged=%d | chunks=%d | task=%s",
+                "Single-call context: merged | original=%d | merged=%d | task=%s",
                 len(cleaned),
                 len(context_for_call),
-                len(chunks),
                 task_id,
             )
 
         if not context_for_call.strip():
             raise InsufficientContextError()
 
-        # â”€â”€ Build prompt with full requested quantity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        # Build prompt
         prompt_text = self.prompt_builder.build_generation_prompt(
             context=context_for_call,
             topic=topic_for_generation,
@@ -727,36 +599,40 @@ class ProcessAITaskUseCase:
         )
 
         logger.info(
-            "Gemini single call | context_chars=%d | qty=%d | task=%s",
+            "LLM single call | context_chars=%d | qty=%d | task=%s",
             len(context_for_call),
             requested_quantity,
             task_id,
         )
 
-        # â”€â”€ Call Gemini via model router (1 call, with fallback) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        router = GeminiModelRouter(db=self.db, request_id=str(request_id))
-        raw_response, model_used = await router.generate_with_fallback(
-            prompt=prompt_text
+        # Call via unified LLM router
+        router = LLMModelRouter(db=self.db, request_id=str(request_id))
+        raw_response, provider, model = await router.generate_with_fallback(
+            prompt=prompt_text,
+            context=context_for_call,
+            topic=topic_for_generation,
+            quantity=requested_quantity,
+            difficulty=task.difficulty,
         )
         response_text = str(raw_response)
 
-        # â”€â”€ Validate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        # Validate
         normalized = normalize_question_payload(raw_response)
         validation = self.validator.validate_batch(normalized)
         valid_questions = validation.valid_questions
 
-        # â”€â”€ Warn if fewer questions than requested â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        # Warn if fewer questions
         warning = _build_short_warning(len(valid_questions), requested_quantity)
         if warning:
-            logger.warning("%s | task=%s | model=%s", warning, task_id, model_used)
+            logger.warning("%s | task=%s | model=%s", warning, task_id, model)
 
         limited = _limit_questions_to_requested(
             valid_questions, requested_quantity, task_id
         )
         records = _build_question_records(
-            limited, task_id, topic_for_generation, "gemini"
+            limited, task_id, topic_for_generation, provider
         )
-        return records, prompt_text, response_text, model_used
+        return records, prompt_text, response_text, model, provider
 
     def _run_local_fallback(
         self,
@@ -766,7 +642,6 @@ class ProcessAITaskUseCase:
         difficulty: str,
         task_id: uuid.UUID,
     ) -> list[dict]:
-        """Generate questions locally. Returns DB-ready records."""
         qty = int(quantity or 0)
         logger.info(
             "LOCAL FALLBACK activated | task=%s | qty=%d | topic=%s",
@@ -791,7 +666,6 @@ class ProcessAITaskUseCase:
         error: Exception,
         trace_id: str | None = None,
     ) -> None:
-        """Persist the terminal failure selected by the RabbitMQ consumer."""
         await self._handle_failure(
             request_id=request_id,
             task_id=task_id,
@@ -812,7 +686,6 @@ class ProcessAITaskUseCase:
         model_used: str,
         trace_id: str | None,
     ) -> None:
-        """Write failure log and update statuses."""
         error_msg = str(error)
         logger.error("Task FAILED | task=%s | error=%s", task_id, error_msg)
 
