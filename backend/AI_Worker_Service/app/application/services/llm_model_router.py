@@ -20,7 +20,6 @@ from app.application.services.local_question_generator import LocalQuestionGener
 from app.application.services.quota_service import ApiQuotaService
 from app.core.config import get_settings
 from app.core.exceptions import (
-    GeminiAllModelsExhaustedError,
     GeminiError,
     GeminiInvalidArgumentError,
     GeminiModelNotFoundError,
@@ -28,7 +27,6 @@ from app.core.exceptions import (
     GeminiRateLimitError,
     OpenAIError,
     OpenAIInvalidKeyError,
-    OpenAIInvalidRequestError,
     OpenAIModelNotFoundError,
     OpenAIPermissionError,
     OpenAIRateLimitError,
