@@ -20,16 +20,16 @@ class ProcessAITaskIdempotencyTests(unittest.IsolatedAsyncioTestCase):
         )
 
         use_case = ProcessAITaskUseCase.__new__(ProcessAITaskUseCase)
-        use_case.settings = SimpleNamespace(gemini_model_candidates=["test-model"])
-        use_case.req_repo = SimpleNamespace(
+        use_case.settings = SimpleNamespace(gemini_model_candidates=["test-model"])  # type: ignore[assignment]
+        use_case.req_repo = SimpleNamespace(  # type: ignore[assignment]
             get_by_id=AsyncMock(return_value=request),
             update_status=AsyncMock(),
         )
-        use_case.task_repo = SimpleNamespace(
+        use_case.task_repo = SimpleNamespace(  # type: ignore[assignment]
             get_by_id=AsyncMock(return_value=task),
             update_status=AsyncMock(),
         )
-        use_case.db = SimpleNamespace(
+        use_case.db = SimpleNamespace(  # type: ignore[assignment]
             commit=AsyncMock(),
             rollback=AsyncMock(),
         )
@@ -41,9 +41,9 @@ class ProcessAITaskIdempotencyTests(unittest.IsolatedAsyncioTestCase):
             defer_failure_status=True,
         )
 
-        use_case.req_repo.update_status.assert_not_awaited()
-        use_case.task_repo.update_status.assert_not_awaited()
-        use_case.db.commit.assert_not_awaited()
+        use_case.req_repo.update_status.assert_not_awaited()  # type: ignore[attr-defined]
+        use_case.task_repo.update_status.assert_not_awaited()  # type: ignore[attr-defined]
+        use_case.db.commit.assert_not_awaited()  # type: ignore[attr-defined]
 
 
 if __name__ == "__main__":
