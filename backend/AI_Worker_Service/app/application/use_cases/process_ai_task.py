@@ -606,9 +606,7 @@ class ProcessAITaskUseCase:
             return None
         return parsed if isinstance(parsed, dict) else None
 
-    def _filename_from_mapping(
-        self, payload: dict[str, Any] | None
-    ) -> str | None:
+    def _filename_from_mapping(self, payload: dict[str, Any] | None) -> str | None:
         if not isinstance(payload, dict):
             return None
 

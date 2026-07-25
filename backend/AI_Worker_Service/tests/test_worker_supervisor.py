@@ -80,7 +80,9 @@ class ConsumerSupervisorTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(start_consumer.await_count, 2)
         close.assert_awaited_once()
 
-    async def test_stops_during_backoff_without_another_connection_attempt(self) -> None:
+    async def test_stops_during_backoff_without_another_connection_attempt(
+        self,
+    ) -> None:
         stop_event = asyncio.Event()
         start_consumer = AsyncMock(side_effect=RuntimeError("broker unavailable"))
 

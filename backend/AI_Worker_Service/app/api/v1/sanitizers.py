@@ -12,7 +12,6 @@ Rules:
   - sanitize_topic: None/""/default Swagger values → raise ValidationError(422)
 """
 
-
 from app.core.exceptions import ValidationError
 
 # Text values that indicate the user left the Swagger default and did NOT
@@ -79,9 +78,7 @@ def sanitize_optional_int(
     return value
 
 
-def sanitize_optional_text(
-    value: str | None, field_name: str = "field"
-) -> str | None:
+def sanitize_optional_text(value: str | None, field_name: str = "field") -> str | None:
     """
     Convert placeholder / empty text values to None.
 

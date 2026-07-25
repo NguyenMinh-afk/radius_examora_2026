@@ -196,11 +196,7 @@ async def get_task_results(
         "Retry is only allowed for tasks in 'failed' status. "
         "Do not use it for pending, processing, or completed tasks."
     ),
-    responses={
-        409: {
-            "description": "Task is not retryable because it is not failed."
-        }
-    },
+    responses={409: {"description": "Task is not retryable because it is not failed."}},
 )
 async def retry_task(
     task_id: uuid.UUID,

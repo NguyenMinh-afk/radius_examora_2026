@@ -69,9 +69,7 @@ class SubjectRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_by_name(
-        self, name: str, course_id: int | None
-    ) -> Subject | None:
+    async def get_by_name(self, name: str, course_id: int | None) -> Subject | None:
         try:
             stmt = select(Subject).where(Subject.name == name)
             if course_id is None:
@@ -410,9 +408,7 @@ class QuestionBankRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def get_by_source_generated_id(
-        self, source_id: uuid.UUID
-    ) -> Question | None:
+    async def get_by_source_generated_id(self, source_id: uuid.UUID) -> Question | None:
         """Check if a generated question was already approved (by source ID)."""
         try:
             result = await self.db.execute(
