@@ -134,19 +134,31 @@ class GeminiModelRouter:
             )
 
             try:
-                result = await self.gemini_client.generate_questions(
+                result, q_count = await self.gemini_client.generate_questions(
                     prompt=prompt,
                     request_id=self.request_id,
                     model_name=model_name,
                 )
-                # ── Success ────────────────────────────────────────────────
+                # Only treat as success when questions were actually generated.
+                # An empty array means the model failed to produce content — try next.
+                if q_count > 0:
+                    await self.quota_svc.record_call_model(model_name)
+                    logger.info(
+                        "Gemini generation succeeded with model: %s | questions=%d | request_id=%s",
+                        model_name,
+                        q_count,
+                        self.request_id,
+                    )
+                    return result, model_name
+
+                # Empty response — treat as failure, consume quota, try next model
                 await self.quota_svc.record_call_model(model_name)
-                logger.info(
-                    "Gemini generation succeeded with model: %s | request_id=%s",
+                logger.warning(
+                    "Model returned 0 questions: %s, trying next model | request_id=%s",
                     model_name,
                     self.request_id,
                 )
-                return result, model_name
+                continue
 
             except _SKIP_ERRORS as exc:
                 # Config/permission error — log, do NOT count against quota,

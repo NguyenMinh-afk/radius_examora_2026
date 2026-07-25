@@ -5,11 +5,11 @@
 import axios, { AxiosError } from "axios";
 import { getAuthTokens } from "../utils/auth";
 
-const AI_API_URL = import.meta.env.VITE_AI_API_URL || "http://localhost:3100/api/ai";
+const AI_API_URL = import.meta.env.VITE_AI_API_URL || "http://localhost:3000/api/ai";
 
 const aiApi = axios.create({
   baseURL: AI_API_URL,
-  timeout: 30000,
+  timeout: 60000,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -126,6 +126,7 @@ export interface GenerationHistoryResponse {
 }
 
 export interface CreateGenerationPayload {
+  userId?: string;
   courseId?: number;
   chapterId?: number;
   knowledgeUnitId?: number;
@@ -174,6 +175,147 @@ export const getGenerationHistory = async (
     `/requests?limit=${limit}`
   );
   return response.data;
+};
+
+// ============================================================================
+// Review Types
+// ============================================================================
+
+export interface PendingQuestion {
+  id: string;
+  taskId: string;
+  questionContent: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  correctAnswer: string;
+  difficulty: string;
+  topic: string | null;
+  explanation: string | null;
+  status: string;
+  createdAt: string;
+}
+
+export interface PendingQuestionsResponse {
+  items: PendingQuestion[];
+  total: number;
+}
+
+export interface ApproveResponse {
+  questionId: string;
+  status: string;
+  message: string;
+  questionBankId: number | null;
+}
+
+export interface RejectResponse {
+  questionId: string;
+  status: string;
+  message: string;
+}
+
+// ============================================================================
+// Review API Functions
+// ============================================================================
+
+/**
+ * Lấy danh sách câu hỏi đang chờ duyệt
+ */
+interface PendingQuestionRaw {
+  id: string;
+  task_id: string;
+  question_content: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct_answer: string;
+  difficulty: string;
+  topic: string | null;
+  explanation: string | null;
+  status: string;
+  created_at: string;
+}
+
+export const getPendingQuestions = async (
+  taskId?: string,
+  difficulty?: string,
+  topic?: string
+): Promise<PendingQuestionsResponse> => {
+  const params = new URLSearchParams();
+  if (taskId) params.append("task_id", taskId);
+  if (difficulty) params.append("difficulty", difficulty);
+  if (topic) params.append("topic", topic);
+
+  const response = await aiApi.get<{ items: PendingQuestionRaw[]; total: number }>(
+    `/questions/pending-review?${params.toString()}`
+  );
+
+  // Transform snake_case -> camelCase
+  const items: PendingQuestion[] = response.data.items.map((item: PendingQuestionRaw) => ({
+    id: item.id,
+    taskId: item.task_id,
+    questionContent: item.question_content,
+    optionA: item.option_a,
+    optionB: item.option_b,
+    optionC: item.option_c,
+    optionD: item.option_d,
+    correctAnswer: item.correct_answer || "",
+    difficulty: item.difficulty || "medium",
+    topic: item.topic || null,
+    explanation: item.explanation || null,
+    status: item.status,
+    createdAt: item.created_at,
+  }));
+
+  return { items, total: response.data.total };
+};
+
+/**
+ * Duyệt một câu hỏi AI - copy sang ngân hàng câu hỏi
+ */
+export const approveQuestion = async (
+  questionId: string
+): Promise<ApproveResponse> => {
+  const response = await aiApi.post<ApproveResponse>(
+    `/questions/${questionId}/approve`
+  );
+  return response.data;
+};
+
+/**
+ * Từ chối một câu hỏi AI
+ */
+export const rejectQuestion = async (
+  questionId: string,
+  reason?: string
+): Promise<RejectResponse> => {
+  const response = await aiApi.post<RejectResponse>(
+    `/questions/${questionId}/reject`,
+    reason ? { reason } : {}
+  );
+  return response.data;
+};
+
+/**
+ * Duyệt tất cả câu hỏi đang chờ
+ */
+export const approveAllQuestions = async (
+  questionIds: string[]
+): Promise<{ approved: number; failed: number }> => {
+  const results = { approved: 0, failed: 0 };
+
+  for (const id of questionIds) {
+    try {
+      await approveQuestion(id);
+      results.approved++;
+    } catch {
+      results.failed++;
+    }
+  }
+
+  return results;
 };
 
 export default aiApi;

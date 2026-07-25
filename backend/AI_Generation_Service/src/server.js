@@ -50,6 +50,40 @@ app.disable("x-powered-by");
 // Rate limiting
 app.use(generalLimiter);
 
+// AI Worker Service URL (FastAPI backend)
+const AI_WORKER_URL = process.env.AI_WORKER_URL || "http://localhost:8000";
+
+// Proxy review requests to AI Worker Service (FastAPI) - MUST be before /api/ai routes
+app.use("/api/ai/questions", async (req, res) => {
+  const path = req.originalUrl.replace("/api/ai/questions", "");
+  try {
+    const response = await fetch(`${AI_WORKER_URL}/api/v1/ai/questions${path}`, {
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: undefined,
+        "x-request-id": req.requestId,
+        "x-correlation-id": req.correlationId,
+      },
+      body: req.method !== "GET" ? JSON.stringify(req.body) : undefined,
+    });
+
+    const contentType = response.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+
+    if (isJson) {
+      const data = await response.json();
+      res.status(response.status).json(data);
+    } else {
+      const text = await response.text();
+      res.status(response.status).type("text/plain").send(text || response.statusText);
+    }
+  } catch (error) {
+    log.error(`Proxy AI Worker error`, { error: error.message });
+    res.status(502).json({ error: "Bad response from AI Worker", detail: error.message });
+  }
+});
+
 // Routes - AI generation với rate limit riêng
 import aiRoutes from "./routes/ai.routes.js";
 app.use("/api/ai/generate", aiLimiter, aiRoutes);

@@ -270,3 +270,4 @@ async def start_consumer() -> None:
         await asyncio.Future()
     except asyncio.CancelledError:
         logger.info("Consumer cancelled, shutting down.")
+        raise

@@ -21,6 +21,7 @@ const TeacherQuestionsPage: React.FC = () => {
   const [displayQuestions, setDisplayQuestions] = useState<QuestionItem[]>([]);
   const [difficulty, setDifficulty] = useState("");
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [aiCount, setAiCount] = useState(0);
 
   const fetchQuestions = async () => {
     try {
@@ -38,8 +39,18 @@ const TeacherQuestionsPage: React.FC = () => {
     }
   };
 
+  const fetchAiCount = async () => {
+    try {
+      const data = await getQuestions({ isAiGenerated: true, limit: 1 });
+      setAiCount(data.total || 0);
+    } catch (err) {
+      console.error("Failed to fetch AI count:", err);
+    }
+  };
+
   useEffect(() => {
     fetchQuestions();
+    fetchAiCount();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -110,7 +121,7 @@ const TeacherQuestionsPage: React.FC = () => {
       <StatGrid className="mt-6" columns={3}>
         <StatCard label="Tổng câu hỏi" value={total} icon={HelpCircle} variant="blue" isDark={isDark} />
         <StatCard label="Đang hoạt động" value={activeCount} icon={HelpCircle} variant="green" isDark={isDark} />
-        <StatCard label="AI đã tạo" value={0} icon={HelpCircle} variant="purple" isDark={isDark} />
+        <StatCard label="AI đã tạo" value={aiCount} icon={HelpCircle} variant="purple" isDark={isDark} />
       </StatGrid>
 
       <Card className="mt-6">

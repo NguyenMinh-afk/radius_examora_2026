@@ -38,6 +38,7 @@ class Course(Base):
     """Course lookup table for auto-resolving course_id."""
 
     __tablename__ = "courses"
+    __table_args__ = {"schema": "ai_db"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), unique=True, nullable=False)
@@ -56,13 +57,11 @@ class Subject(Base):
     """Subject lookup table for auto-resolving subject_id."""
 
     __tablename__ = "subjects"
-    __table_args__ = (
-        UniqueConstraint("name", "course_id", name="uq_subjects_name_course"),
-    )
+    __table_args__ = {"schema": "ai_db"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    course_id = Column(Integer, ForeignKey("courses.id"), nullable=True)
+    course_id = Column(Integer, nullable=True)
     created_at = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )

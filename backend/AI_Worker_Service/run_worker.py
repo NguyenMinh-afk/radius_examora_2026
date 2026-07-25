@@ -16,23 +16,22 @@ if __name__ == "__main__":
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        main_task = None
-
         def handle_signal(sig, frame):
             print(f"\nReceived signal {sig}, shutting down...")
-            if main_task and not main_task.done():
-                main_task.cancel()
+            for task in asyncio.all_tasks(loop):
+                task.cancel()
 
         signal.signal(signal.SIGINT, handle_signal)
         signal.signal(signal.SIGTERM, handle_signal)
 
         try:
-            main_task = loop.create_task(main())
-            loop.run_until_complete(main_task)
-        except (KeyboardInterrupt, asyncio.CancelledError):
-            print("\nWorker stopped by user.")
+            loop.run_until_complete(main())
+        except (KeyboardInterrupt, asyncio.CancelledError) as e:
+            print(f"\nWorker stopped by user: {e}")
         finally:
+            loop.run_until_complete(loop.shutdown_asyncgens())
             loop.close()
+            print("Event loop closed.")
     else:
         try:
             asyncio.run(main())

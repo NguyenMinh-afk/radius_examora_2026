@@ -146,9 +146,9 @@ class GeminiClient:
         prompt: str,
         request_id: str | None = None,
         model_name: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> tuple[dict[str, Any], int]:
         """
-        Call Gemini and return parsed JSON dict.
+        Call Gemini and return (parsed JSON dict, question count).
 
         Args:
             prompt: The full prompt text to send.
@@ -158,6 +158,9 @@ class GeminiClient:
 
         Retries only for transient errors (429, 5xx, timeout).
         Fails immediately for 404, 403, 400.
+        Returns:
+            Tuple of (parsed dict, number of questions in response).
+            q_count=0 means the model returned an empty/invalid response.
         """
         effective_model = model_name or self.model_name
         last_error: Exception | None = None
@@ -184,18 +187,32 @@ class GeminiClient:
 
                 # First parse attempt
                 parsed = self._parse_json(raw_response)
+                logger.info(
+                    "Gemini raw response | length=%d | preview='%s'",
+                    len(raw_response) if raw_response else 0,
+                    (raw_response[:500] if raw_response else "EMPTY"),
+                )
                 if parsed is not None:
+                    # Log the actual parsed content
+                    try:
+                        import json as _json
+                        logger.info(
+                            "Gemini parsed content | json='%s'",
+                            _json.dumps(parsed, ensure_ascii=False)[:1000],
+                        )
+                    except Exception:
+                        logger.info("Gemini parsed content | type=%s", type(parsed))
                     q_count = len(parsed.get("questions", []))
                     logger.info(
                         "Gemini returned %d question(s) | request_id=%s",
                         q_count,
                         request_id,
                     )
-                    return parsed
+                    return parsed, q_count
 
                 raise GeminiInvalidResponseError(
                     "Gemini returned invalid JSON. No repair call was made to preserve single-call mode."
-                )
+                ) from None
 
             except _NO_RETRY_ERRORS as e:
                 # These errors must not be retried

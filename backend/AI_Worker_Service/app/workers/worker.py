@@ -30,9 +30,16 @@ async def supervise_consumer(
                 return
             raise RuntimeError("RabbitMQ consumer exited unexpectedly")
         except asyncio.CancelledError:
+            logger.info("Consumer cancelled, shutting down.")
             raise
-        except Exception:
+        except Exception as e:
+            if stop_event.is_set():
+                logger.info("Shutdown requested, exiting.")
+                return
             consecutive_failures += 1
+            if consecutive_failures > 10:
+                logger.error("Too many consecutive failures, exiting.")
+                raise
             retry_delay = min(
                 base_delay_seconds * (2 ** (consecutive_failures - 1)),
                 max_delay_seconds,

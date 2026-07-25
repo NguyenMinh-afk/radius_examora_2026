@@ -93,7 +93,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({ isOpen, onClose, onSu
 
     try {
       // Gọi API giao bài thi
-      const response = await fetch(`${import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3001/api/teacher"}/assignments`, {
+      const response = await fetch(`${import.meta.env.VITE_TEACHER_API_URL || "http://localhost:3000/api/teacher"}/assignments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

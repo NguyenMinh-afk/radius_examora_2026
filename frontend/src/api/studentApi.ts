@@ -5,7 +5,7 @@
 import axios, { AxiosError } from "axios";
 import { getAuthTokens } from "../utils/auth";
 
-const STUDENT_API_URL = import.meta.env.VITE_STUDENT_API_URL || "http://localhost:3001/api/student";
+const STUDENT_API_URL = import.meta.env.VITE_STUDENT_API_URL || "http://localhost:3000/api/student";
 
 // Tạo axios instance
 const studentApi = axios.create({

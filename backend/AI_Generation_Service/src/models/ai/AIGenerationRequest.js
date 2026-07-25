@@ -17,7 +17,7 @@ const AIGenerationRequest = sequelize.define('AIGenerationRequest', {
   },
   course_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   chapter_id: {
     type: DataTypes.INTEGER,
