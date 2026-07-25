@@ -531,20 +531,14 @@ class ProcessAITaskUseCase:
             )
 
         resolver = getattr(self, "topic_resolver", None) or self.topic_detector
-        if hasattr(resolver, "resolve") and hasattr(resolver, "detect_topic"):
-            result = resolver.resolve(
-                cleaned,
-                user_topic=original_topic,
-                filename=filename,
-            )
-        elif hasattr(resolver, "resolve"):
-            result = resolver.resolve(
+        if hasattr(resolver, "detect_topic"):
+            result = resolver.detect_topic(
                 cleaned,
                 user_topic=original_topic,
                 filename=filename,
             )
         else:
-            result = resolver.detect_topic(
+            result = resolver.resolve(
                 cleaned,
                 user_topic=original_topic,
                 filename=filename,
