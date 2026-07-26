@@ -31,10 +31,10 @@ psql -U postgres -d Exam_Bank -h localhost -p 5432
 psql -U postgres -d Exam_Bank -W
 
 -- Connect inside a Docker container
-docker exec -it exmora-postgres psql -U postgres -d Exam_Bank
+docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank
 
 -- Connect as a specific user inside the container
-docker exec -it exmora-postgres psql -U postgres -d Exam_Bank -W
+docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank -W
 ```
 
 ### General Commands (inside psql)
@@ -737,8 +737,8 @@ pg_dump -U postgres -d Exam_Bank -n user_db -f user_db_backup.sql
 pg_dumpall -U postgres -f all_databases.sql
 
 -- Run inside Docker container
-docker exec exmora-postgres pg_dump -U postgres -d Exam_Bank -f /tmp/backup.sql
-docker cp exmora-postgres:/tmp/backup.sql ./backup.sql
+docker exec EXAMORA-postgres pg_dump -U postgres -d Exam_Bank -f /tmp/backup.sql
+docker cp EXAMORA-postgres:/tmp/backup.sql ./backup.sql
 ```
 
 ### Restore
@@ -773,58 +773,58 @@ psql -U postgres -d Exam_Bank -f backup.sql
 
 ```bash
 # Connect to the Postgres interactive terminal
-docker exec -it exmora-postgres psql -U postgres -d Exam_Bank
+docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank
 
 # Run a single SQL command without entering psql
-docker exec -it exmora-postgres psql -U postgres -d Exam_Bank -c "SELECT COUNT(*) FROM user_db.users;"
+docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank -c "SELECT COUNT(*) FROM user_db.users;"
 
 # Run a SQL file inside the container
-docker exec -i exmora-postgres psql -U postgres -d Exam_Bank < ./database/schema_optimized.sql
+docker exec -i EXAMORA-postgres psql -U postgres -d Exam_Bank < ./database/schema_optimized.sql
 
 # Copy a backup file into the container
-docker cp ./backup.sql exmora-postgres:/tmp/backup.sql
+docker cp ./backup.sql EXAMORA-postgres:/tmp/backup.sql
 
 # Copy a backup out of the container
-docker cp exmora-postgres:/tmp/backup.sql ./backup.sql
+docker cp EXAMORA-postgres:/tmp/backup.sql ./backup.sql
 
 # Check Postgres version
-docker exec exmora-postgres psql -U postgres -d Exam_Bank -c "SELECT version();"
+docker exec EXAMORA-postgres psql -U postgres -d Exam_Bank -c "SELECT version();"
 
 # Check active connections
-docker exec -it exmora-postgres psql -U postgres -d Exam_Bank -c "SELECT COUNT(*) FROM pg_stat_activity WHERE state = 'active';"
+docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank -c "SELECT COUNT(*) FROM pg_stat_activity WHERE state = 'active';"
 
 # List all databases inside the container
-docker exec -it exmora-postgres psql -U postgres -c "\l"
+docker exec -it EXAMORA-postgres psql -U postgres -c "\l"
 
 # Restart Postgres (reload config)
-docker exec exmora-postgres pg_ctl reload -D /var/lib/postgresql/data
+docker exec EXAMORA-postgres pg_ctl reload -D /var/lib/postgresql/data
 
 # Verify Postgres is accepting connections
-docker exec exmora-postgres pg_isready -U postgres
+docker exec EXAMORA-postgres pg_isready -U postgres
 
 # Open a shell inside the container
-docker exec -it exmora-postgres sh
+docker exec -it EXAMORA-postgres sh
 
 # Check disk usage of the Postgres data directory
-docker exec exmora-postgres du -sh /var/lib/postgresql/data
+docker exec EXAMORA-postgres du -sh /var/lib/postgresql/data
 
 # Check RabbitMQ status
-docker exec exmora-rabbitmq rabbitmqctl status
+docker exec EXAMORA-rabbitmq rabbitmqctl status
 
 # List RabbitMQ queues
-docker exec exmora-rabbitmq rabbitmqctl list_queues
+docker exec EXAMORA-rabbitmq rabbitmqctl list_queues
 
 # List RabbitMQ exchanges
-docker exec exmora-rabbitmq rabbitmqctl list_exchanges
+docker exec EXAMORA-rabbitmq rabbitmqctl list_exchanges
 
 # List RabbitMQ bindings
-docker exec exmora-rabbitmq rabbitmqctl list_bindings
+docker exec EXAMORA-rabbitmq rabbitmqctl list_bindings
 
 # Purge a specific queue
-docker exec exmora-rabbitmq rabbitmqctl purge_queue examora.exam.queue
+docker exec EXAMORA-rabbitmq rabbitmqctl purge_queue examora.exam.queue
 
 # Check RabbitMQ health
-docker exec exmora-rabbitmq rabbitmq-diagnostics -q ping
+docker exec EXAMORA-rabbitmq rabbitmq-diagnostics -q ping
 ```
 
 ---
@@ -833,7 +833,7 @@ docker exec exmora-rabbitmq rabbitmq-diagnostics -q ping
 
 | Task | Command |
 | --- | --- |
-| Enter psql | `docker exec -it exmora-postgres psql -U postgres -d Exam_Bank` |
+| Enter psql | `docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank` |
 | List tables | `\dt` |
 | Describe table | `\d tablename` |
 | List databases | `\l` |
@@ -846,7 +846,7 @@ docker exec exmora-rabbitmq rabbitmq-diagnostics -q ping
 | Kill session | `SELECT pg_terminate_backend(pid);` |
 | Backup DB | `pg_dump -U postgres -d Exam_Bank -f backup.sql` |
 | Restore DB | `psql -U postgres -d Exam_Bank -f backup.sql` |
-| Restart Postgres | `docker restart exmora-postgres` |
-| Check health | `docker exec exmora-postgres pg_isready -U postgres` |
+| Restart Postgres | `docker restart EXAMORA-postgres` |
+| Check health | `docker exec EXAMORA-postgres pg_isready -U postgres` |
 | View logs | `docker compose logs postgres-db` |
-| Shell into container | `docker exec -it exmora-postgres sh` |
+| Shell into container | `docker exec -it EXAMORA-postgres sh` |

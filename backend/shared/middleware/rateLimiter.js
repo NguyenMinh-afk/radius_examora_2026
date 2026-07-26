@@ -10,11 +10,26 @@ import rateLimit from "express-rate-limit";
  */
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 phút
-  max: 500,
+  max: 5000, // tăng từ 500 lên 5000 cho development
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     error: "Too many requests",
+    retryAfter: "Please try again in 15 minutes",
+  },
+});
+
+/**
+ * Rate limit cho benchmark/testing
+ * 10000 requests / 15 phút
+ */
+export const benchmarkLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 phút
+  max: 10000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many requests for benchmark",
     retryAfter: "Please try again in 15 minutes",
   },
 });

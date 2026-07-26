@@ -1,4 +1,5 @@
 import React from "react";
+import { useTheme } from "../../../contexts/useTheme";
 
 interface SettingsSectionProps {
   title: string;
@@ -31,8 +32,10 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({
   icon,
   children,
   color = "blue",
-  isDark,
+  isDark: isDarkProp,
 }) => {
+  const { theme } = useTheme();
+  const isDark = isDarkProp ?? theme === "dark";
   const colorClass = isDark ? colorMapDark[color] : colorMapLight[color];
 
   return (

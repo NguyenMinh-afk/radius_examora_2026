@@ -59,7 +59,11 @@ const StudentClassesPage: React.FC = () => {
         actions={
           <button
             onClick={() => setShowJoinDialog(true)}
-            className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm"
+            className={`inline-flex items-center gap-2 h-11 px-5 rounded-lg transition font-semibold text-sm ${
+              isDark
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
             <Plus className="w-4 h-4" />
             Tham gia lớp

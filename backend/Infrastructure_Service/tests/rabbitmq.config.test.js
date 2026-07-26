@@ -58,7 +58,7 @@ describe('RabbitMQ infrastructure topology', () => {
     await closeRabbitMQ();
   });
 
-  it('uses the agreed EXMORA names', () => {
+  it('uses the agreed EXAMORA names', () => {
     expect(EXCHANGES).toEqual({
       EXAMORA_TOPIC: 'examora.topic',
       EXAMORA_DLX: 'examora.dlx',

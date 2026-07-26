@@ -53,9 +53,15 @@ app.use(generalLimiter);
 // AI Worker Service URL (FastAPI backend)
 const AI_WORKER_URL = process.env.AI_WORKER_URL || "http://localhost:8000";
 
+// HTTP timeout when calling AI Worker (in milliseconds)
+const AI_WORKER_TIMEOUT_MS = parseInt(process.env.AI_WORKER_TIMEOUT_MS || "60000", 10);
+
 // Proxy review requests to AI Worker Service (FastAPI) - MUST be before /api/ai routes
 app.use("/api/ai/questions", async (req, res) => {
   const path = req.originalUrl.replace("/api/ai/questions", "");
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), AI_WORKER_TIMEOUT_MS);
+
   try {
     const response = await fetch(`${AI_WORKER_URL}/api/v1/ai/questions${path}`, {
       method: req.method,
@@ -66,7 +72,10 @@ app.use("/api/ai/questions", async (req, res) => {
         "x-correlation-id": req.correlationId,
       },
       body: req.method !== "GET" ? JSON.stringify(req.body) : undefined,
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     const contentType = response.headers.get("content-type") || "";
     const isJson = contentType.includes("application/json");
@@ -79,8 +88,13 @@ app.use("/api/ai/questions", async (req, res) => {
       res.status(response.status).type("text/plain").send(text || response.statusText);
     }
   } catch (error) {
+    clearTimeout(timeoutId);
     log.error(`Proxy AI Worker error`, { error: error.message });
-    res.status(502).json({ error: "Bad response from AI Worker", detail: error.message });
+    if (error.name === "AbortError") {
+      res.status(504).json({ error: "Gateway timeout - AI Worker did not respond in time", detail: `Timeout after ${AI_WORKER_TIMEOUT_MS}ms` });
+    } else {
+      res.status(502).json({ error: "Bad response from AI Worker", detail: error.message });
+    }
   }
 });
 

@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     database_url: str = Field(
         default="postgresql+asyncpg://ai_user:ai_password@localhost:5432/ai_service_db"
     )
+    # Database connection pool tuning
+    db_pool_size: int = Field(default=20, ge=5, le=100)
+    db_max_overflow: int = Field(default=30, ge=0, le=50)
+    db_pool_timeout: int = Field(default=30, ge=5)
+    db_pool_recycle: int = Field(default=3600, ge=300)
 
     # --- Gemini API ---
     gemini_api_key: str | None = Field(default=None)
@@ -53,6 +58,7 @@ class Settings(BaseSettings):
     openai_api_key: str | None = Field(default=None)
     openai_model: str = Field(default="gpt-4o-mini")
     openai_api_base: str = Field(default="https://api.openai.com/v1")
+    openai_timeout_seconds: int = Field(default=120)
 
     # --- RabbitMQ ---
     use_rabbitmq: bool = Field(default=False)
@@ -66,6 +72,10 @@ class Settings(BaseSettings):
     rabbitmq_reconnect_interval_seconds: float = Field(default=5.0, gt=0)
     rabbitmq_consumer_restart_base_delay_seconds: float = Field(default=1.0, gt=0)
     rabbitmq_consumer_restart_max_delay_seconds: float = Field(default=30.0, gt=0)
+    # Performance tuning
+    rabbitmq_prefetch_count: int = Field(default=5, ge=1, le=50)
+    rabbitmq_queue_max_length: int = Field(default=1000, ge=100)
+    rabbitmq_overflow_policy: str = Field(default="reject-publish")
 
     # --- Text Processing ---
     chunk_size: int = Field(default=6000)

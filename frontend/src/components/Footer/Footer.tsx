@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
           <h3 className={`font-semibold mb-2.5 ${isDark ? "text-gray-300" : "text-gray-800"}`}>Contact</h3>
           <ul className="space-y-2 text-sm">
             <li>+84 123 456 789</li>
-            <li>support@exmora.ai</li>
+            <li>support@EXAMORA.ai</li>
             <li>Hanoi, Vietnam</li>
           </ul>
         </div>
@@ -100,7 +100,7 @@ const Footer: React.FC = () => {
         isDark ? "text-gray-500" : "text-gray-500"
       }`}>
         <div className="flex items-center gap-4">
-          <span>© {new Date().getFullYear()} EXMORA. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} EXAMORA. All rights reserved.</span>
           <div className="hidden md:flex items-center gap-4 text-xs">
             <Link to="/terms" className={`hover:${isDark ? "text-indigo-400" : "text-blue-600"} transition`}>Terms</Link>
             <Link to="/privacy" className={`hover:${isDark ? "text-indigo-400" : "text-blue-600"} transition`}>Privacy Policy</Link>

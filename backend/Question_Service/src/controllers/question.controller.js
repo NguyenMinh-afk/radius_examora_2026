@@ -86,3 +86,43 @@ export const deleteQuestion = async (req, res) => {
     return res.status(status).json({ error: error.message });
   }
 };
+
+// Version Control Endpoints
+
+export const getQuestionVersions = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const versions = await questionService.getQuestionVersions(id);
+    return res.json({ items: versions, total: versions.length });
+  } catch (error) {
+    const status = error.message?.includes('not found') ? 404 : 500;
+    return res.status(status).json({ error: error.message });
+  }
+};
+
+export const getVersionDiff = async (req, res) => {
+  try {
+    const { id, versionId } = req.params;
+    const diff = await questionService.getVersionDiff(id, versionId);
+    return res.json(diff);
+  } catch (error) {
+    const status = error.message?.includes('not found') ? 404 : 500;
+    return res.status(status).json({ error: error.message });
+  }
+};
+
+export const restoreQuestionVersion = async (req, res) => {
+  try {
+    const { id, versionId } = req.params;
+    const result = await questionService.restoreVersion(
+      id,
+      versionId,
+      req.user.id,
+      getEventContext(req)
+    );
+    return res.json(result);
+  } catch (error) {
+    const status = error.message?.includes('not found') ? 404 : 500;
+    return res.status(status).json({ error: error.message });
+  }
+};

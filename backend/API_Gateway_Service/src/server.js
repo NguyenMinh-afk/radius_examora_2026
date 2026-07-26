@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 // Shared modules
 import { validateServiceEnv } from "../../shared/utils/env.validator.js";
 import { requestIdMiddleware, correlationIdMiddleware } from "../../shared/middleware/requestId.js";
-import { generalLimiter, authLimiter } from "../../shared/middleware/rateLimiter.js";
+import { generalLimiter, authLimiter, benchmarkLimiter } from "../../shared/middleware/rateLimiter.js";
 import { default as logger, log } from "../../shared/utils/logger.js";
 
 dotenv.config();
@@ -142,7 +142,9 @@ app.use("/api/student", (req, res, _next) => proxyRequest(req, res, "exam", "/ap
 app.use("/api/teacher", (req, res, _next) => proxyRequest(req, res, "exam", "/api/teacher"));
 app.use("/api/questions", (req, res, _next) => proxyRequest(req, res, "question", "/api/questions"));
 app.use("/api/collections", (req, res, _next) => proxyRequest(req, res, "question", "/api/collections"));
-app.use("/api/ai", (req, res, _next) => proxyRequest(req, res, "ai", "/api/v1/ai"));
+
+// AI routes - use benchmarkLimiter for high-volume requests
+app.use("/api/ai", benchmarkLimiter, (req, res, _next) => proxyRequest(req, res, "ai", "/api/v1/ai"));
 app.use("/api/notifications", (req, res, _next) => proxyRequest(req, res, "notification", "/api/notifications"));
 app.get("/api/infra/health", (req, res, _next) => proxyRequest(req, res, "infra", "/api/infra"));
 

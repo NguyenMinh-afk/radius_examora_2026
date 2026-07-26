@@ -62,13 +62,17 @@ const SecuritySettingsCard: React.FC = () => {
                 <Key size={18} className={isDark ? "text-gray-300" : "text-slate-600"} />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Đổi mật khẩu</p>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Cập nhật mật khẩu mới</p>
+                <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>Đổi mật khẩu</p>
+                <p className={`text-xs ${isDark ? "text-gray-400" : "text-slate-500"}`}>Cập nhật mật khẩu mới</p>
               </div>
             </div>
             <button
               onClick={() => setShowPasswordModal(true)}
-              className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-500/20 dark:hover:bg-blue-500/30 rounded-lg transition"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
+                isDark
+                  ? "text-blue-400 bg-blue-500/20 hover:bg-blue-500/30"
+                  : "text-blue-600 bg-blue-50 hover:bg-blue-100"
+              }`}
             >
               Đổi mật khẩu
             </button>
@@ -80,8 +84,8 @@ const SecuritySettingsCard: React.FC = () => {
                 <Smartphone size={18} className={isDark ? "text-gray-300" : "text-slate-600"} />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Xác thực hai yếu tố (2FA)</p>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Thêm lớp bảo mật cho tài khoản</p>
+                <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>Xác thực hai yếu tố (2FA)</p>
+                <p className={`text-xs ${isDark ? "text-gray-400" : "text-slate-500"}`}>Thêm lớp bảo mật cho tài khoản</p>
               </div>
             </div>
             <button
@@ -104,11 +108,15 @@ const SecuritySettingsCard: React.FC = () => {
                 <Shield size={18} className={isDark ? "text-gray-300" : "text-slate-600"} />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Phiên đăng nhập</p>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Đang hoạt động trên 1 thiết bị</p>
+                <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>Phiên đăng nhập</p>
+                <p className={`text-xs ${isDark ? "text-gray-400" : "text-slate-500"}`}>Đang hoạt động trên 1 thiết bị</p>
               </div>
             </div>
-            <button className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/20 rounded-lg transition">
+            <button className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
+              isDark
+                ? "text-red-400 hover:bg-red-500/20"
+                : "text-red-600 hover:bg-red-50"
+            }`}>
               Đăng xuất tất cả
             </button>
           </div>
@@ -119,7 +127,7 @@ const SecuritySettingsCard: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className={`rounded-2xl shadow-xl max-w-md w-full ${isDark ? "bg-slate-900 border border-white/10" : "bg-white"}`}>
             <div className={`flex items-center justify-between px-6 py-4 border-b ${isDark ? "border-white/10" : "border-slate-200"}`}>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Đổi mật khẩu</h3>
+              <h3 className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Đổi mật khẩu</h3>
               <button
                 onClick={() => setShowPasswordModal(false)}
                 className={`p-2 rounded-lg transition ${isDark ? "hover:bg-slate-800" : "hover:bg-slate-100"}`}
@@ -129,30 +137,42 @@ const SecuritySettingsCard: React.FC = () => {
             </div>
             <div className="p-6 space-y-4">
               {passwordError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 dark:bg-red-500/20 dark:border-red-500/30 dark:text-red-400">
+                <div className={`p-3 border rounded-lg text-sm ${
+                  isDark
+                    ? "bg-red-500/20 border-red-500/30 text-red-400"
+                    : "bg-red-50 border-red-200 text-red-600"
+                }`}>
                   {passwordError}
                 </div>
               )}
               {passwordSuccess && (
-                <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600 dark:bg-emerald-500/20 dark:border-emerald-500/30 dark:text-emerald-400">
+                <div className={`p-3 border rounded-lg text-sm ${
+                  isDark
+                    ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
+                    : "bg-green-50 border-green-200 text-green-600"
+                }`}>
                   Đổi mật khẩu thành công!
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Mật khẩu hiện tại</label>
+                <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Mật khẩu hiện tại</label>
                 <div className="relative">
                   <input
                     type={showCurrentPassword ? "text" : "password"}
                     value={passwords.currentPassword}
                     onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
-                    className="w-full px-4 py-2.5 pr-10 border border-slate-200 dark:border-white/10 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className={`w-full px-4 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                      isDark
+                        ? "border-white/10 bg-slate-800 text-white"
+                        : "border-slate-200 bg-white text-gray-900"
+                    }`}
                     placeholder="Nhập mật khẩu hiện tại"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500 hover:text-gray-300" : "text-slate-400 hover:text-slate-600"}`}
                   >
                     {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -160,19 +180,23 @@ const SecuritySettingsCard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Mật khẩu mới</label>
+                <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Mật khẩu mới</label>
                 <div className="relative">
                   <input
                     type={showNewPassword ? "text" : "password"}
                     value={passwords.newPassword}
                     onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                    className="w-full px-4 py-2.5 pr-10 border border-slate-200 dark:border-white/10 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className={`w-full px-4 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                      isDark
+                        ? "border-white/10 bg-slate-800 text-white"
+                        : "border-slate-200 bg-white text-gray-900"
+                    }`}
                     placeholder="Ít nhất 8 ký tự"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500 hover:text-gray-300" : "text-slate-400 hover:text-slate-600"}`}
                   >
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -180,19 +204,23 @@ const SecuritySettingsCard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Xác nhận mật khẩu mới</label>
+                <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-slate-700"}`}>Xác nhận mật khẩu mới</label>
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     value={passwords.confirmPassword}
                     onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-2.5 pr-10 border border-slate-200 dark:border-white/10 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className={`w-full px-4 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                      isDark
+                        ? "border-white/10 bg-slate-800 text-white"
+                        : "border-slate-200 bg-white text-gray-900"
+                    }`}
                     placeholder="Nhập lại mật khẩu mới"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500 hover:text-gray-300" : "text-slate-400 hover:text-slate-600"}`}
                   >
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -209,7 +237,11 @@ const SecuritySettingsCard: React.FC = () => {
               <button
                 onClick={handlePasswordChange}
                 disabled={saving || !passwords.currentPassword || !passwords.newPassword || !passwords.confirmPassword}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                className={`px-4 py-2 rounded-lg transition disabled:opacity-50 ${
+                  isDark
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
               >
                 {saving ? "Đang lưu..." : "Lưu"}
               </button>

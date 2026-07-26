@@ -428,6 +428,28 @@ export const updateAdminCourseStatus = async (courseId: number, isActive: boolea
   return response.data;
 };
 
+export const updateAdminCourse = async (
+  courseId: number,
+  data: { name?: string; code?: string; description?: string; credits?: number; semester_type?: string }
+) => {
+  const response = await axios.patch<{ message: string; course: AdminCourse }>(
+    `${ADMIN_API_URL}/courses/${courseId}`,
+    data,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const deleteAdminCourse = async (courseId: number) => {
+  const response = await axios.delete<{ message: string }>(
+    `${ADMIN_API_URL}/courses/${courseId}`,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
 export const updateAdminQuestionStatus = async (questionId: string, isActive: boolean) => {
   const response = await axios.patch<{ message: string; question: AdminQuestion }>(
     `${ADMIN_API_URL}/questions/${questionId}/status`,
@@ -455,6 +477,28 @@ export const updateAdminUserRole = async (userId: string, roleId: number) => {
   const response = await axios.patch<{ message: string; user: AdminUser }>(
     `${ADMIN_API_URL}/users/${userId}/role`,
     { role_id: roleId },
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const updateAdminUser = async (
+  userId: string,
+  data: { full_name?: string; email?: string; role_id?: number }
+) => {
+  const response = await axios.patch<{ message: string; user: AdminUser }>(
+    `${ADMIN_API_URL}/users/${userId}`,
+    data,
+    { headers: buildAuthHeader() }
+  );
+
+  return response.data;
+};
+
+export const deleteAdminUser = async (userId: string) => {
+  const response = await axios.delete<{ message: string }>(
+    `${ADMIN_API_URL}/users/${userId}`,
     { headers: buildAuthHeader() }
   );
 

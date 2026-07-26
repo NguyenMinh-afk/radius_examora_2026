@@ -98,7 +98,7 @@ const Login: React.FC = () => {
                 <ShieldCheck className="text-white" size={22} />
               </div>
               <span className={`text-2xl font-bold tracking-tight ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-                EXMORA
+                EXAMORA
               </span>
             </Link>
             <p className={`mt-4 text-sm ${theme === "light" ? "text-slate-500" : "text-white/50"}`}>

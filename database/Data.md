@@ -1,6 +1,6 @@
 # Database Documentation
 
-This document describes the PostgreSQL database setup, schema organization, initialization, seeding, and reset procedures for the EXMORA project.
+This document describes the PostgreSQL database setup, schema organization, initialization, seeding, and reset procedures for the EXAMORA project.
 
 ## 1. Database Setup
 
@@ -125,15 +125,15 @@ If you need to drop and recreate the database:
 
 ```bash
 docker compose down
-docker volume remove Project_Exmora_postgres-data
+docker volume remove Project_EXAMORA_postgres-data
 docker compose up -d postgres-db
 ```
 
 Or apply manually from host:
 
 ```bash
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\schema_optimized.sql"
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\seed_data.sql"
+psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\schema_optimized.sql"
+psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\seed_data.sql"
 ```
 
 ## 7. Notes

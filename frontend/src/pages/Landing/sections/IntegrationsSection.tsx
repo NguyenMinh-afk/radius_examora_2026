@@ -109,7 +109,7 @@ const IntegrationsSection: React.FC = () => {
           <p className={`max-w-xl mx-auto ${
             isDark ? "text-gray-400" : "text-gray-500"
           }`}>
-            EXMORA integrates seamlessly with popular learning management systems, authentication providers, and third-party tools.
+            EXAMORA integrates seamlessly with popular learning management systems, authentication providers, and third-party tools.
           </p>
         </div>
 

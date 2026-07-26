@@ -5,6 +5,7 @@ import { useTheme } from "../../../contexts/useTheme";
 
 const AppearanceSettingsCard: React.FC = () => {
   const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
   const [localTheme, setLocalTheme] = useState<"light" | "dark" | "system">(theme);
 
   const themes = [
@@ -39,27 +40,37 @@ const AppearanceSettingsCard: React.FC = () => {
               onClick={() => handleSelect(t.id)}
               className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition ${
                 isActive
-                  ? "border-purple-500 bg-purple-50 dark:bg-purple-500/20"
-                  : "border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 hover:border-purple-300 dark:hover:border-purple-500/40"
+                  ? "border-purple-500" + (isDark ? " bg-purple-500/20" : " bg-purple-50")
+                  : (isDark ? " border-white/10 bg-slate-800 hover:border-purple-500/40" : " border-slate-200 bg-white hover:border-purple-300")
               }`}
             >
               <div className={`p-2.5 rounded-lg ${
                 isActive
-                  ? "bg-purple-100 dark:bg-purple-500/30"
-                  : "bg-slate-100 dark:bg-slate-700"
+                  ? (isDark ? " bg-purple-500/30" : " bg-purple-100")
+                  : (isDark ? " bg-slate-700" : " bg-slate-100")
               }`}>
                 <t.icon size={20} className={
                   isActive
-                    ? "text-purple-600 dark:text-purple-300"
-                    : "text-slate-600 dark:text-gray-300"
+                    ? (isDark ? " text-purple-300" : " text-purple-600")
+                    : (isDark ? " text-gray-300" : " text-slate-600")
                 } />
               </div>
               <div className="text-left">
-                <p className={`text-sm font-medium ${isActive ? "text-purple-700 dark:text-purple-200" : "text-slate-900 dark:text-white"}`}>{t.label}</p>
-                <p className={`text-xs ${isActive ? "text-purple-600/80 dark:text-purple-300/80" : "text-slate-500 dark:text-gray-400"}`}>{t.desc}</p>
+                <p className={`text-sm font-medium ${
+                  isActive
+                    ? (isDark ? " text-purple-200" : " text-purple-700")
+                    : (isDark ? " text-white" : " text-slate-900")
+                }`}>{t.label}</p>
+                <p className={`text-xs ${
+                  isActive
+                    ? (isDark ? " text-purple-300/80" : " text-purple-600/80")
+                    : (isDark ? " text-gray-400" : " text-slate-500")
+                }`}>{t.desc}</p>
               </div>
               {isActive && (
-                <div className="ml-auto w-5 h-5 rounded-full bg-purple-600 dark:bg-purple-500 flex items-center justify-center">
+                <div className={`ml-auto w-5 h-5 rounded-full flex items-center justify-center ${
+                  isDark ? " bg-purple-500" : " bg-purple-600"
+                }`}>
                   <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
                     <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>

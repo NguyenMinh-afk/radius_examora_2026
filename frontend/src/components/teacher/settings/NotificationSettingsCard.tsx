@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Bell } from "lucide-react";
 import SettingsSection from "./SettingsSection";
+import { useTheme } from "../../../contexts/useTheme";
 
 const NotificationSettingsCard: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [settings, setSettings] = useState({
     emailNotifications: true,
     examReminders: true,
@@ -36,7 +39,11 @@ const NotificationSettingsCard: React.FC = () => {
     >
       <div className="space-y-4">
         {success && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600 dark:bg-emerald-500/20 dark:border-emerald-500/30 dark:text-emerald-400">
+          <div className={`p-3 border rounded-lg text-sm ${
+            isDark
+              ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
+              : "bg-green-50 border-green-200 text-green-600"
+          }`}>
             Đã lưu cài đặt!
           </div>
         )}
@@ -44,13 +51,13 @@ const NotificationSettingsCard: React.FC = () => {
         {notificationItems.map((item) => (
           <div key={item.key} className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-900 dark:text-white">{item.label}</p>
-              <p className="text-xs text-slate-500 dark:text-gray-400">{item.desc}</p>
+              <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{item.label}</p>
+              <p className={`text-xs ${isDark ? "text-gray-400" : "text-slate-500"}`}>{item.desc}</p>
             </div>
             <button
               onClick={() => toggleSetting(item.key)}
               className={`relative w-12 h-6 rounded-full transition-colors ${
-                settings[item.key] ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-600"
+                settings[item.key] ? "bg-blue-600" : isDark ? "bg-slate-600" : "bg-slate-300"
               }`}
             >
               <span

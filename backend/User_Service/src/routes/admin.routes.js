@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  deleteAdminUser,
   getAdminAIJobById,
   getAdminAIJobs,
   getAdminAuditLogs,
@@ -20,6 +21,7 @@ import {
   updateAdminCourseTeachers,
   updateAdminQuestionStatus,
   createAdminNotification,
+  updateAdminUser,
   updateAdminUserRole,
   updateAdminUserStatus,
 } from "../controllers/admin.controller.js";
@@ -34,8 +36,10 @@ router.get("/dashboard", getAdminDashboard);
 
 router.get("/users", getAdminUsers);
 router.get("/users/:id", getAdminUserById);
+router.patch("/users/:id", updateAdminUser);
 router.patch("/users/:id/status", updateAdminUserStatus);
 router.patch("/users/:id/role", updateAdminUserRole);
+router.delete("/users/:id", deleteAdminUser);
 
 router.get("/roles", getAdminRoles);
 

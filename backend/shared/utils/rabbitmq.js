@@ -189,7 +189,7 @@ export async function setupExchangesAndQueues() {
     }
   }
 
-  console.log("[RabbitMQ] Standard EXMORA topology configured");
+  console.log("[RabbitMQ] Standard EXAMORA topology configured");
 }
 
 export async function publishMessage(

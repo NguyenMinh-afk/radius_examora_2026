@@ -1,7 +1,7 @@
 services:
   postgres-db:
     image: postgres:15
-    container_name: exmora-postgres
+    container_name: examora-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
@@ -16,7 +16,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: exmora-rabbitmq
+    container_name: examora-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -35,7 +35,7 @@ services:
     build:
       context: ./backend/User_Service
       dockerfile: Dockerfile
-    container_name: exmora-user-service
+    container_name: examora-user-service
     volumes:
       - ./backend/shared:/shared:ro
     env_file:
@@ -53,7 +53,7 @@ services:
     build:
       context: ./backend/Exam_Service
       dockerfile: Dockerfile
-    container_name: exmora-exam-service
+    container_name: examora-exam-service
     volumes:
       - ./backend/shared:/shared:ro
     env_file:
@@ -71,7 +71,7 @@ services:
     build:
       context: ./backend/Question_Service
       dockerfile: Dockerfile
-    container_name: exmora-question-service
+    container_name: examora-question-service
     volumes:
       - ./backend/shared:/shared:ro
     env_file:
@@ -89,7 +89,7 @@ services:
     build:
       context: ./backend/AI_Generation_Service
       dockerfile: Dockerfile
-    container_name: exmora-ai-generation-service
+    container_name: examora-ai-generation-service
     working_dir: /app
     volumes:
       - ./backend/AI_Generation_Service:/app
@@ -110,7 +110,7 @@ services:
     build:
       context: ./backend/AI_Worker_Service
       dockerfile: Dockerfile
-    container_name: exmora-ai-worker-api
+    container_name: examora-ai-worker-api
     working_dir: /app
     ports:
       - "8000:8000"
@@ -131,7 +131,7 @@ services:
     build:
       context: ./backend/AI_Worker_Service
       dockerfile: Dockerfile
-    container_name: exmora-ai-worker-service
+    container_name: examora-ai-worker-service
     working_dir: /app
     volumes:
       - ./backend/AI_Worker_Service:/app
@@ -150,7 +150,7 @@ services:
     build:
       context: ./backend/Notification_Service
       dockerfile: Dockerfile
-    container_name: exmora-notification-service
+    container_name: examora-notification-service
     volumes:
       - ./backend/shared:/shared:ro
     env_file:
@@ -167,7 +167,7 @@ services:
     build:
       context: ./backend/Infrastructure_Service
       dockerfile: Dockerfile
-    container_name: exmora-infrastructure-service
+    container_name: examora-infrastructure-service
     volumes:
       - ./backend/shared:/shared:ro
     env_file:
@@ -186,7 +186,7 @@ services:
     build:
       context: ./backend/API_Gateway_Service
       dockerfile: Dockerfile
-    container_name: exmora-api-gateway
+    container_name: examora-api-gateway
     volumes:
       - ./backend/shared:/shared:ro
     env_file:
@@ -209,7 +209,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: exmora-frontend
+    container_name: examora-frontend
     environment:
       VITE_API_BASE_URL: http://localhost:3100
     ports:
@@ -219,7 +219,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: exmora-prometheus
+    container_name: examora-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -229,7 +229,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: exmora-grafana
+    container_name: examora-grafana
     ports:
       - "3006:3000"
     volumes:

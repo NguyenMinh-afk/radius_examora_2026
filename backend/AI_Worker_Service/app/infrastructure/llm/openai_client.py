@@ -108,6 +108,7 @@ class OpenAIClient:
         self.client = AsyncOpenAI(
             api_key=self.settings.openai_api_key,
             base_url=self.settings.openai_api_base,
+            timeout=self.settings.openai_timeout_seconds,
         )
         self.model_name = self.settings.openai_model
         self.max_retries = self.settings.gemini_max_retries

@@ -47,8 +47,9 @@ async def get_rabbitmq_channel() -> AbstractChannel:
     global _channel
     conn = await get_rabbitmq_connection()
     if _channel is None or _channel.is_closed:
+        settings = get_settings()
         _channel = await conn.channel()
-        await _channel.set_qos(prefetch_count=1)
+        await _channel.set_qos(prefetch_count=settings.rabbitmq_prefetch_count)
     return _channel
 
 
@@ -81,12 +82,16 @@ async def setup_queues(channel: AbstractChannel) -> tuple[AbstractQueue, Abstrac
     await dlq.bind(dlx, routing_key=settings.rabbitmq_dlq)
 
     # Failed messages are routed through the DLX into the DLQ.
+    # x-max-length protects RabbitMQ from unbounded memory growth.
+    # x-overflow=reject-publish rejects new messages when max is reached.
     main_queue = await channel.declare_queue(
         settings.rabbitmq_queue,
         durable=True,
         arguments={
             "x-dead-letter-exchange": settings.rabbitmq_dlx,
             "x-dead-letter-routing-key": settings.rabbitmq_dlq,
+            "x-max-length": settings.rabbitmq_queue_max_length,
+            "x-overflow": settings.rabbitmq_overflow_policy,
         },
     )
     await main_queue.bind(

@@ -100,7 +100,7 @@ const VideoDemoSection: React.FC = () => {
           <h2 className={`text-3xl lg:text-4xl font-bold mb-3 ${
             isDark ? "text-white" : "text-gray-900"
           }`}>
-            Watch how EXMORA works
+            Watch how EXAMORA works
           </h2>
           <p className={`max-w-xl mx-auto ${
             isDark ? "text-gray-400" : "text-gray-500"
@@ -147,7 +147,7 @@ const VideoDemoSection: React.FC = () => {
                   <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-full flex items-center justify-center">
                     <Play className="w-8 h-8" />
                   </div>
-                  <p className="font-medium">EXMORA Platform Demo</p>
+                  <p className="font-medium">EXAMORA Platform Demo</p>
                   <p className="text-sm">Duration: 3:24</p>
                 </div>
               </div>

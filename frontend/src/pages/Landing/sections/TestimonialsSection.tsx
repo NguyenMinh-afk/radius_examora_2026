@@ -4,7 +4,7 @@ import { Star, Quote, ChevronLeft, ChevronRight, Building2, GraduationCap, Award
 
 const testimonials = [
   {
-    quote: "EXMORA has completely transformed how our university conducts examinations. The AI-generated questions are remarkably accurate and aligned with our curriculum.",
+    quote: "EXAMORA has completely transformed how our university conducts examinations. The AI-generated questions are remarkably accurate and aligned with our curriculum.",
     name: "Dr. Sarah Chen",
     role: "Dean of Academic Affairs",
     institution: "Stanford University",
@@ -31,7 +31,7 @@ const testimonials = [
     avatar: "EW"
   },
   {
-    quote: "We've seen a 40% reduction in exam-related complaints since switching to EXMORA. The analytics help us identify knowledge gaps before they become problems.",
+    quote: "We've seen a 40% reduction in exam-related complaints since switching to EXAMORA. The analytics help us identify knowledge gaps before they become problems.",
     name: "James Thompson",
     role: "IT Director",
     institution: "Duke University",
@@ -116,7 +116,7 @@ const TestimonialsSection: React.FC = () => {
           <p className={`max-w-xl mx-auto ${
             isDark ? "text-gray-400" : "text-gray-500"
           }`}>
-            See what universities and institutions say about transforming their examination process with EXMORA.
+            See what universities and institutions say about transforming their examination process with EXAMORA.
           </p>
         </div>
 

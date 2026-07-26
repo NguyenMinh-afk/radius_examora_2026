@@ -157,3 +157,90 @@ export const getAdminRoles = async (_req, res) => {
     return res.status(500).json({ message: "Failed to fetch roles", error: error.message });
   }
 };
+
+export const updateAdminUser = async (req, res) => {
+  try {
+    const { full_name, email, role_id } = req.body;
+    const updates = {};
+
+    if (typeof full_name === "string" && full_name.trim()) {
+      updates.full_name = full_name.trim();
+    }
+    if (typeof email === "string" && email.trim()) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+      updates.email = email.trim().toLowerCase();
+    }
+
+    const { User, Role } = await import("../../models/index.js");
+
+    if (role_id !== undefined) {
+      const role = await Role.findByPk(role_id);
+      if (!role) return res.status(404).json({ message: "Role not found" });
+      updates.role_id = role.id;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No valid fields provided" });
+    }
+
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Check for duplicate email
+    if (updates.email) {
+      const existingUser = await User.findOne({
+        where: { email: updates.email, id: { [Op.ne]: user.id } },
+      });
+      if (existingUser) {
+        return res.status(409).json({ message: "Email already in use" });
+      }
+    }
+
+    await user.update(updates);
+    await writeAuditLog(req, {
+      action: "admin.user.update",
+      entityType: "user",
+      entityId: user.id,
+      metadata: { fields_updated: Object.keys(updates) },
+    });
+
+    const reloaded = await User.findByPk(user.id, {
+      include: [{ model: Role, as: "role", attributes: ["id", "name", "description"] }],
+      attributes: { exclude: ["password_hash"] },
+    });
+
+    return res.json({ message: "User updated", user: toUserRow(reloaded) });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to update user", error: error.message });
+  }
+};
+
+export const deleteAdminUser = async (req, res) => {
+  try {
+    const { User } = await import("../../models/index.js");
+    const user = await User.findByPk(req.params.id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Prevent self-deletion
+    const currentUserId = req.user?.id || req.user?.userId;
+    if (user.id === currentUserId) {
+      return res.status(400).json({ message: "Cannot delete your own account" });
+    }
+
+    await writeAuditLog(req, {
+      action: "admin.user.delete",
+      entityType: "user",
+      entityId: user.id,
+      metadata: { deleted_email: user.email, deleted_name: user.full_name },
+    });
+
+    await user.destroy();
+
+    return res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to delete user", error: error.message });
+  }
+};

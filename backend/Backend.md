@@ -133,8 +133,8 @@ uvicorn app.main:app --reload --port 8000
 - To manually apply schema and seed on local without recreating the container:
 
 ```bash
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\schema_optimized.sql"
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\seed_data.sql"
+psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\schema_optimized.sql"
+psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\seed_data.sql"
 ```
 
 ## 9. Observability
@@ -151,7 +151,7 @@ psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\seed_da
 - Inspect actual environment variables inside a container:
 
 ```bash
-docker exec -it exmora-ai-worker-api sh
+docker exec -it EXAMORA-ai-worker-api sh
 env | grep DATABASE_URL
 env | grep RABBITMQ_URL
 ```

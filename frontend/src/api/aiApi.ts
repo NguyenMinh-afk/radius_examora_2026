@@ -31,6 +31,12 @@ aiApi.interceptors.response.use(
       localStorage.removeItem("user");
       window.location.href = "/login";
     }
+    // Xử lý rate limit graceful - không crash UI
+    if (error.response?.status === 429) {
+      console.warn("Rate limit exceeded. Please wait a moment.");
+      // Reject với message rõ ràng thay vì crash
+      return Promise.reject(new Error("Too many requests. Please wait and try again."));
+    }
     return Promise.reject(error);
   }
 );

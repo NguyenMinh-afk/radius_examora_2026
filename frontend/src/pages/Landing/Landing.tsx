@@ -49,7 +49,7 @@ const Landing: React.FC = () => {
             <p className={`text-lg mb-7 ${
               theme === "dark" ? "text-gray-300" : "text-gray-700"
             }`}>
-              EXMORA integrates AI, RabbitMQ distributed messaging and adaptive learning
+              EXAMORA integrates AI, RabbitMQ distributed messaging and adaptive learning
               to build a scalable academic ecosystem.
             </p>
 

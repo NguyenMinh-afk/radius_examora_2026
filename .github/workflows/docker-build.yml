@@ -18,7 +18,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository_owner }}/exmora
+  IMAGE_PREFIX: ${{ github.repository_owner }}/EXAMORA
 
 jobs:
   # Build Node.js services
@@ -186,7 +186,7 @@ jobs:
       # - name: Run Trivy on built images
       #   uses: aquasecurity/trivy-action@master
       #   with:
-      #     image-ref: 'ghcr.io/nguyenminh-afk/exmora-api-gateway:latest'
+      #     image-ref: 'ghcr.io/nguyenminh-afk/EXAMORA-api-gateway:latest'
       #     format: 'sarif'
       #     output: 'trivy-image-results.sarif'
       #   continue-on-error: true

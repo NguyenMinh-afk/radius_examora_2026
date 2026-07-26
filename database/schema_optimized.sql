@@ -289,6 +289,31 @@ CREATE INDEX idx_questions_difficulty ON questions(difficulty);
 CREATE INDEX idx_questions_created_by ON questions(created_by);
 CREATE INDEX idx_questions_active ON questions(is_active);
 
+-- Question versions (for tracking changes and version control)
+-- Each update to a question creates a new version snapshot before applying changes
+CREATE TABLE question_versions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    question_id UUID NOT NULL REFERENCES questions(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    version_number INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    question_type question_type NOT NULL DEFAULT 'multiple_choice',
+    difficulty difficulty_level NOT NULL DEFAULT 'medium',
+    options JSONB NOT NULL,
+    correct_answer TEXT NOT NULL,
+    explanation TEXT,
+    changed_by UUID,
+    change_reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT question_versions_qid_version_unique UNIQUE (question_id, version_number)
+);
+
+CREATE INDEX idx_question_versions_question_id ON question_versions(question_id);
+CREATE INDEX idx_question_versions_version_number ON question_versions(question_id, version_number DESC);
+
+COMMENT ON TABLE question_versions IS 'Stores version snapshots of questions for tracking changes over time';
+COMMENT ON COLUMN question_versions.version_number IS 'Sequential version number per question (1, 2, 3...)';
+COMMENT ON COLUMN question_versions.change_reason IS 'Reason for the change (e.g., editorial fix, restore, etc.)';
+
 -- =====================================================
 -- 4. AI SERVICE (ai_db)
 -- =====================================================
@@ -586,7 +611,7 @@ INSERT INTO notification_db.email_templates (template_key, template_name, subjec
 VALUES (
   'PASSWORD_RESET',
   'Password Reset',
-  'Đặt lại mật khẩu EXMORA',
+  'Đặt lại mật khẩu EXAMORA',
   '<p>Xin chào {{name}},</p><p>Nhấn vào liên kết sau để đặt lại mật khẩu: <a href="{{reset_url}}">{{reset_url}}</a></p><p>Liên kết có hiệu lực trong {{expires_in}}.</p>',
   'Xin chào {{name}}, dùng liên kết sau để đặt lại mật khẩu: {{reset_url}}. Có hiệu lực trong {{expires_in}}.',
   '{"name": "", "reset_url": "", "expires_in": "15 phút"}',
@@ -851,6 +876,9 @@ CREATE TRIGGER update_user_profiles_updated_at BEFORE UPDATE ON user_db.user_pro
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE TRIGGER update_questions_updated_at BEFORE UPDATE ON question_db.questions
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_question_versions_updated_at BEFORE UPDATE ON question_db.question_versions
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE TRIGGER update_exams_updated_at BEFORE UPDATE ON exam_db.exams

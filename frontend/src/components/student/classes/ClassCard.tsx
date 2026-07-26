@@ -95,7 +95,11 @@ const ClassCard: React.FC<ClassCardProps> = ({ classData }) => {
         <div className="flex gap-2">
           <Link
             to={`/student/classes/${classData.classId}`}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition text-center"
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition text-center ${
+              isDark
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
             Xem lớp
           </Link>
