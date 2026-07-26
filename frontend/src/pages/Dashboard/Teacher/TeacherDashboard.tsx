@@ -8,7 +8,7 @@ const mockUsers = [
   {
     avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     name: "Marcus Sterling",
-    email: "marcus@exmora.io",
+    email: "marcus@EXAMORA.io",
     role: "INITIAL_ADMIN",
     status: "Active",
     lastActivity: "2 mins ago",
@@ -16,7 +16,7 @@ const mockUsers = [
   {
     avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     name: "Elena Rodriguez",
-    email: "elena@exmora.io",
+    email: "elena@EXAMORA.io",
     role: "AI_MODEL_OPS",
     status: "Active",
     lastActivity: "14 mins ago",
@@ -24,7 +24,7 @@ const mockUsers = [
   {
     avatarUrl: "https://randomuser.me/api/portraits/men/12.jpg",
     name: "Julian Smith",
-    email: "julian@exmora.io",
+    email: "julian@EXAMORA.io",
     role: "OFFICE",
     status: "Offline",
     lastActivity: "3 hours ago",

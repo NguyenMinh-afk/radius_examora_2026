@@ -36,6 +36,10 @@ teacherApi.interceptors.response.use(
       localStorage.removeItem("user");
       window.location.href = "/login";
     }
+    if (error.response?.status === 429) {
+      console.warn("Rate limit exceeded. Please wait a moment.");
+      return Promise.reject(new Error("Too many requests. Please wait and try again."));
+    }
     return Promise.reject(error);
   }
 );

@@ -33,7 +33,7 @@ const steps = [
   {
     number: "04",
     title: "Analytics & Adaptive Learning",
-    desc: "View individual scores, class distributions, and question analytics. Exmora's adaptive engine personalizes future sessions automatically.",
+    desc: "View individual scores, class distributions, and question analytics. EXAMORA's adaptive engine personalizes future sessions automatically.",
     badge: "Analytics",
     icon: <BarChart3 className="w-6 h-6" />,
     details: ["Real-time tracking", "Question calibration", "Adaptive engine"],

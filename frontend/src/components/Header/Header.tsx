@@ -8,7 +8,7 @@ import { useTheme } from "../../contexts/useTheme";
 
 /**
  * =============================================
- * STICKY HEADER - EXMORA
+ * STICKY HEADER - EXAMORA
  * =============================================
  * Tính năng: Giữ thanh menu (header) cố định ở đầu trang khi người dùng cuộn chuột xuống.
  *
@@ -88,7 +88,7 @@ const Header: React.FC = () => {
         <span className={`text-xl font-bold hover:text-blue-600 transition ${
           isDark ? "text-white" : "text-gray-900"
         }`}>
-          EXMORA
+          EXAMORA
         </span>
       </Link>
 

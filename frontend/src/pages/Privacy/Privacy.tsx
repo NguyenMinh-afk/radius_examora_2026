@@ -49,7 +49,7 @@ const Privacy: React.FC = () => {
       content: (
         <div className="space-y-4 text-gray-600 leading-relaxed">
           <p>
-            EXMORA ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered examination platform and related services (collectively, the "Services").
+            EXAMORA ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered examination platform and related services (collectively, the "Services").
           </p>
           <p>
             This policy applies to all users of our Services, including students, educators, administrators, and visitors. By using our Services, you consent to the collection and use of your information as described in this Privacy Policy.
@@ -269,13 +269,13 @@ const Privacy: React.FC = () => {
           <div className="mt-6">
             <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-2`}>How to Exercise Your Rights</h4>
             <p className="text-sm">
-              You can exercise most rights through your account settings. For data export or deletion requests, contact privacy@exmora.ai. We will respond within 30 days.
+              You can exercise most rights through your account settings. For data export or deletion requests, contact privacy@EXAMORA.ai. We will respond within 30 days.
             </p>
           </div>
 
           <div className={`${isDark ? "bg-blue-500/20 border-white/10" : "bg-blue-50 border-blue-200"} border rounded-xl p-4`}>
             <p className={`text-sm ${isDark ? "text-blue-300" : "text-blue-800"}`}>
-              <strong>European Users (GDPR):</strong> You have additional rights including the right to lodge a complaint with your local data protection authority. Contact us at dpo@exmora.ai for GDPR-related inquiries.
+              <strong>European Users (GDPR):</strong> You have additional rights including the right to lodge a complaint with your local data protection authority. Contact us at dpo@EXAMORA.ai for GDPR-related inquiries.
             </p>
           </div>
         </div>
@@ -396,7 +396,7 @@ const Privacy: React.FC = () => {
             Our Services are not directed to children under 13 years of age. We do not knowingly collect personal information from children under 13 without parental consent.
           </p>
           <p>
-            If you are a parent or guardian and believe your child has provided us with personal information without your consent, please contact us immediately at privacy@exmora.ai.
+            If you are a parent or guardian and believe your child has provided us with personal information without your consent, please contact us immediately at privacy@EXAMORA.ai.
           </p>
           <div className={`${isDark ? "bg-slate-700" : "bg-gray-100"} rounded-xl p-4`}>
             <p className={`text-sm ${isDark ? "text-gray-200" : "text-gray-700"}`}>
@@ -413,7 +413,7 @@ const Privacy: React.FC = () => {
       content: (
         <div className="space-y-4 text-gray-600 leading-relaxed">
           <p>
-            EXMORA operates globally, and your information may be transferred to and processed in countries other than your own, including the United States and Vietnam.
+            EXAMORA operates globally, and your information may be transferred to and processed in countries other than your own, including the United States and Vietnam.
           </p>
           <p>
             When we transfer data internationally, we ensure appropriate safeguards are in place:
@@ -472,20 +472,20 @@ const Privacy: React.FC = () => {
           <div className={`${isDark ? "bg-slate-700" : "bg-gray-50"} rounded-xl p-6 space-y-4`}>
             <div>
               <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>General Privacy Inquiries</h4>
-              <p className="text-sm">privacy@exmora.ai</p>
+              <p className="text-sm">privacy@EXAMORA.ai</p>
             </div>
             <div>
               <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Data Protection Officer</h4>
-              <p className="text-sm">dpo@exmora.ai</p>
+              <p className="text-sm">dpo@EXAMORA.ai</p>
             </div>
             <div>
               <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Legal Department</h4>
-              <p className="text-sm">legal@exmora.ai</p>
+              <p className="text-sm">legal@EXAMORA.ai</p>
             </div>
             <div>
               <h4 className={`font-semibold ${isDark ? "text-white" : "text-gray-900"} mb-1`}>Mailing Address</h4>
               <p className="text-sm">
-                EXMORA Privacy Team<br />
+                EXAMORA Privacy Team<br />
                 Hanoi, Vietnam
               </p>
             </div>
@@ -624,7 +624,7 @@ const Privacy: React.FC = () => {
                   Our privacy team is here to help with any questions about your data.
                 </p>
                 <a
-                  href="mailto:privacy@exmora.ai"
+                  href="mailto:privacy@EXAMORA.ai"
                   className={`inline-flex items-center gap-2 px-6 py-3 ${isDark ? "bg-slate-800 text-green-300 hover:bg-slate-700" : "bg-white text-green-600 hover:bg-green-50"} rounded-xl font-semibold transition-colors`}
                 >
                   <Mail className="w-4 h-4" />

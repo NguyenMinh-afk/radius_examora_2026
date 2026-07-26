@@ -141,7 +141,11 @@ export const JoinClassDialog: React.FC<JoinClassDialogProps> = ({
             <button
               type="submit"
               disabled={loading || !classCode.trim()}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className={`flex-1 px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                isDark
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
               {loading ? (
                 <>

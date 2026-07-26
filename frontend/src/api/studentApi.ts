@@ -33,12 +33,15 @@ studentApi.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Token hết hạn - clear auth data và redirect
       localStorage.removeItem("token");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
       window.location.href = "/login";
+    }
+    if (error.response?.status === 429) {
+      console.warn("Rate limit exceeded. Please wait a moment.");
+      return Promise.reject(new Error("Too many requests. Please wait and try again."));
     }
     return Promise.reject(error);
   }

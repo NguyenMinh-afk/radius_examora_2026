@@ -96,19 +96,31 @@ const TeacherQuestionsPage: React.FC = () => {
             </button>
             <button
               onClick={() => setShowBulkModal(true)}
-              className="inline-flex items-center gap-2 h-11 px-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:opacity-90 transition"
+              className={`inline-flex items-center gap-2 h-11 px-5 font-semibold rounded-lg transition ${
+                isDark
+                  ? "bg-gradient-to-r from-emerald-500 to-green-500 text-white hover:opacity-90"
+                  : "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:opacity-90"
+              }`}
             >
               <FileStack size={18} />
               Tạo nhiều câu hỏi
             </button>
             <Link
               to="/teacher/questions/create"
-              className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+              className={`inline-flex items-center gap-2 h-11 px-5 font-semibold rounded-lg transition ${
+                isDark
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
               <Plus size={18} />
               Tạo câu hỏi
             </Link>
-            <button className="inline-flex items-center gap-2 h-11 px-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:opacity-90 transition">
+            <button className={`inline-flex items-center gap-2 h-11 px-5 font-semibold rounded-lg transition ${
+              isDark
+                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
+            }`}>
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>

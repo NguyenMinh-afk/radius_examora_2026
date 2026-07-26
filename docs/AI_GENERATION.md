@@ -238,10 +238,10 @@ LOCAL_FALLBACK_WHEN_QUOTA_EXCEEDED=true
 Kiểm tra:
 ```bash
 # Kiểm tra RabbitMQ
-docker exec -it exmora-rabbitmq rabbitmqctl list_queues name messages consumers arguments
+docker exec -it EXAMORA-rabbitmq rabbitmqctl list_queues name messages consumers arguments
 
 # Kiểm tra message trong queue
-docker exec -it exmora-rabbitmq rabbitmqctl list_queues name messages_ready messages_unacknowledged consumers
+docker exec -it EXAMORA-rabbitmq rabbitmqctl list_queues name messages_ready messages_unacknowledged consumers
 ```
 
 ### 2. Worker không nhận message
@@ -253,7 +253,7 @@ Kiểm tra:
 
 ```bash
 # Kiểm tra worker logs
-docker logs exmora-ai-worker-service
+docker logs EXAMORA-ai-worker-service
 ```
 
 ### 3. Gemini API lỗi quota
@@ -286,10 +286,10 @@ Truy cập: http://localhost:15672
 
 ```bash
 # Xem logs real-time
-docker logs -f exmora-ai-worker-service
+docker logs -f EXAMORA-ai-worker-service
 
 # Xem logs với grep
-docker logs exmora-ai-worker-service | grep ERROR
+docker logs EXAMORA-ai-worker-service | grep ERROR
 ```
 
 ### Database Queries

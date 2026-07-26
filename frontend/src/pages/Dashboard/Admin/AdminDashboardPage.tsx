@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AlertTriangle,
+  CheckCircle2,
   CircleDot,
   LibraryBig,
   RefreshCw,
@@ -10,11 +11,15 @@ import {
 } from "lucide-react";
 
 import {
+  deleteAdminCourse,
+  deleteAdminUser,
   getAdminCourses,
   getAdminDashboard,
   getAdminRoles,
   getAdminUsers,
+  updateAdminCourse,
   updateAdminCourseStatus,
+  updateAdminUser,
   updateAdminUserRole,
   updateAdminUserStatus,
   type AdminCourse,
@@ -25,6 +30,8 @@ import {
 } from "../../../api/Admin";
 import AdminSidebar from "../../../components/admin/layout/AdminSidebar";
 import { CourseTable, UserTable } from "../../../components/admin";
+import EditCourseModal from "../../../components/admin/courses/EditCourseModal";
+import DeleteCourseDialog from "../../../components/admin/courses/DeleteCourseDialog";
 import AdminDashboardStats, { AdminOperations, AdminSystemHealth } from "./components/AdminDashboardStats";
 import { useTheme } from "../../../contexts/useTheme";
 
@@ -81,7 +88,10 @@ const AdminDashboardPage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [actionUserId, setActionUserId] = useState<string | null>(null);
   const [actionCourseId, setActionCourseId] = useState<number | null>(null);
+  const [editCourse, setEditCourse] = useState<AdminCourse | null>(null);
+  const [deleteCourse, setDeleteCourse] = useState<AdminCourse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const loadUsers = useCallback(
     async (page: number = userPagination.page) => {
@@ -236,6 +246,46 @@ const AdminDashboardPage: React.FC = () => {
     }
   };
 
+  const handleEditUser = async (userId: string, data: { full_name: string; email: string; role_id: number }) => {
+    console.log("handleEditUser called:", userId, data);
+    setActionUserId(userId);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await updateAdminUser(userId, data);
+      console.log("handleEditUser success");
+      setSuccess("User updated successfully!");
+      await Promise.all([loadUsers(), loadDashboard()]);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unable to update user.";
+      console.error("handleEditUser error:", err);
+      setError(message);
+    } finally {
+      setActionUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    console.log("handleDeleteUser called:", userId);
+    setActionUserId(userId);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await deleteAdminUser(userId);
+      console.log("handleDeleteUser success");
+      setSuccess("User deleted successfully!");
+      await Promise.all([loadUsers(), loadDashboard()]);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unable to delete user.";
+      console.error("handleDeleteUser error:", err);
+      setError(message);
+    } finally {
+      setActionUserId(null);
+    }
+  };
+
   const handleToggleCourseActive = async (course: AdminCourse) => {
     setActionCourseId(course.id);
     setError(null);
@@ -245,6 +295,35 @@ const AdminDashboardPage: React.FC = () => {
       await Promise.all([loadCourses(), loadDashboard()]);
     } catch {
       setError("Unable to update course status.");
+    } finally {
+      setActionCourseId(null);
+    }
+  };
+
+  const handleEditCourse = async (courseId: number, data: { name: string; code: string; description: string; credits: number; semester_type: string }) => {
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await updateAdminCourse(courseId, data);
+      setSuccess("Course updated successfully!");
+      await loadCourses();
+    } catch {
+      setError("Unable to update course.");
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: number) => {
+    setActionCourseId(courseId);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await deleteAdminCourse(courseId);
+      setSuccess("Course deleted successfully!");
+      await Promise.all([loadCourses(), loadDashboard()]);
+    } catch {
+      setError("Unable to delete course.");
     } finally {
       setActionCourseId(null);
     }
@@ -351,6 +430,15 @@ const AdminDashboardPage: React.FC = () => {
           </div>
         )}
 
+        {success && (
+          <div className={`mb-6 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium ${
+            isDark ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-emerald-200 bg-emerald-50 text-emerald-700"
+          }`}>
+            <CheckCircle2 size={18} />
+            {success}
+          </div>
+        )}
+
         {activeSection === "dashboard" && (
           <>
             <AdminDashboardStats summary={summary} isDark={isDark} />
@@ -399,6 +487,8 @@ const AdminDashboardPage: React.FC = () => {
                   onPageChange={(page: number) => void loadUsers(page)}
                   onRoleChange={handleRoleChange}
                   onToggleActive={handleToggleActive}
+                  onEditUser={handleEditUser}
+                  onDeleteUser={handleDeleteUser}
                   isDark={isDark}
                 />
               </div>
@@ -488,6 +578,8 @@ const AdminDashboardPage: React.FC = () => {
               onPageChange={(page: number) => void loadUsers(page)}
               onRoleChange={handleRoleChange}
               onToggleActive={handleToggleActive}
+              onEditUser={handleEditUser}
+              onDeleteUser={handleDeleteUser}
               isDark={isDark}
             />
           </div>
@@ -546,8 +638,28 @@ const AdminDashboardPage: React.FC = () => {
               actionCourseId={actionCourseId}
               onPageChange={loadCourses}
               onToggleActive={handleToggleCourseActive}
+              onEditCourse={(course) => setEditCourse(course)}
+              onDeleteCourse={(course) => setDeleteCourse(course)}
               isDark={isDark}
             />
+
+            {editCourse && (
+              <EditCourseModal
+                course={editCourse}
+                onClose={() => setEditCourse(null)}
+                onSave={handleEditCourse}
+                isDark={isDark}
+              />
+            )}
+
+            {deleteCourse && (
+              <DeleteCourseDialog
+                course={deleteCourse}
+                onClose={() => setDeleteCourse(null)}
+                onConfirm={handleDeleteCourse}
+                isDark={isDark}
+              />
+            )}
           </div>
         )}
       </main>

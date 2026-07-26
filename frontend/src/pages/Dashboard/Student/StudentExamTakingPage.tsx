@@ -407,7 +407,7 @@ const StudentExamTakingPage: React.FC = () => {
                   style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
                 />
               </div>
-              <span className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>EXMORA</span>
+              <span className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>EXAMORA</span>
             </button>
 
             {/* Secure Session Badge */}

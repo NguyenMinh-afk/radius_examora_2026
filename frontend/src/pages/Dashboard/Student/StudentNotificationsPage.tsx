@@ -104,7 +104,11 @@ const StudentNotificationsPage: React.FC = () => {
           unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="inline-flex h-11 items-center gap-2 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm"
+              className={`inline-flex h-11 items-center gap-2 px-5 rounded-lg transition font-semibold text-sm ${
+                isDark
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
               Đánh dấu tất cả đã đọc
             </button>

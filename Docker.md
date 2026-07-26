@@ -1,6 +1,6 @@
 # Docker Documentation
 
-This document explains how to run the EXMORA project with Docker Compose, what each service does, how to manage containers, view logs, rebuild images, and reset data.
+This document explains how to run the EXAMORA project with Docker Compose, what each service does, how to manage containers, view logs, rebuild images, and reset data.
 
 ## 1. Prerequisites
 
@@ -22,20 +22,20 @@ The AI worker service in the root compose reuses:
 
 | Service | Container Name | Image / Build | Ports | Description |
 | --- | --- | --- | --- | --- |
-| Postgres | exmora-postgres | postgres:15 | 5432:5432 | Main database |
-| RabbitMQ | exmora-rabbitmq | rabbitmq:3-management | 5672, 15672 | Message broker and UI |
-| User Service | exmora-user-service | node:20-alpine | 5000:5000 | Auth and user management |
-| Exam Service | exmora-exam-service | node:20-alpine | 3001:3001 | Exam, class, assignment APIs |
-| Question Service | exmora-question-service | node:20-alpine | 3002:3002 | Question bank APIs |
-| AI Generation Service | exmora-ai-generation-service | node:20-alpine | 3003:3003 | AI orchestration APIs |
-| AI Worker API | exmora-ai-worker-api | Build from Dockerfile | 8000:8000 | AI worker REST API |
-| AI Worker Service | exmora-ai-worker-service | Build from Dockerfile | none | Background AI worker |
-| Notification Service | exmora-notification-service | node:20-alpine | 3004:3004 | Notifications |
-| Infrastructure Service | exmora-infrastructure-service | node:20-alpine | 5005:5005 | Infra/monitoring APIs |
-| API Gateway | exmora-api-gateway | node:20-alpine | 3100:3000 | Main gateway |
-| Frontend | exmora-frontend | node:20-alpine | 5173:5173 | React frontend |
-| Prometheus | exmora-prometheus | prom/prometheus:latest | 9090:9090 | Metrics scraper |
-| Grafana | exmora-grafana | grafana/grafana:latest | 3006:3000 | Dashboards |
+| Postgres | EXAMORA-postgres | postgres:15 | 5432:5432 | Main database |
+| RabbitMQ | EXAMORA-rabbitmq | rabbitmq:3-management | 5672, 15672 | Message broker and UI |
+| User Service | EXAMORA-user-service | node:20-alpine | 5000:5000 | Auth and user management |
+| Exam Service | EXAMORA-exam-service | node:20-alpine | 3001:3001 | Exam, class, assignment APIs |
+| Question Service | EXAMORA-question-service | node:20-alpine | 3002:3002 | Question bank APIs |
+| AI Generation Service | EXAMORA-ai-generation-service | node:20-alpine | 3003:3003 | AI orchestration APIs |
+| AI Worker API | EXAMORA-ai-worker-api | Build from Dockerfile | 8000:8000 | AI worker REST API |
+| AI Worker Service | EXAMORA-ai-worker-service | Build from Dockerfile | none | Background AI worker |
+| Notification Service | EXAMORA-notification-service | node:20-alpine | 3004:3004 | Notifications |
+| Infrastructure Service | EXAMORA-infrastructure-service | node:20-alpine | 5005:5005 | Infra/monitoring APIs |
+| API Gateway | EXAMORA-api-gateway | node:20-alpine | 3100:3000 | Main gateway |
+| Frontend | EXAMORA-frontend | node:20-alpine | 5173:5173 | React frontend |
+| Prometheus | EXAMORA-prometheus | prom/prometheus:latest | 9090:9090 | Metrics scraper |
+| Grafana | EXAMORA-grafana | grafana/grafana:latest | 3006:3000 | Dashboards |
 
 ## 4. Important Environment Files
 
@@ -141,13 +141,13 @@ First stop AI publishing/consuming and verify that the queue is empty:
 
 ```bash
 docker compose stop ai-generation-service ai-worker-service infrastructure-service
-docker exec exmora-rabbitmq rabbitmqctl list_queues name messages consumers arguments
+docker exec EXAMORA-rabbitmq rabbitmqctl list_queues name messages consumers arguments
 ```
 
 Only when `ai.generation` has `messages=0`, recreate it and restart the services:
 
 ```bash
-docker exec exmora-rabbitmq rabbitmqctl delete_queue ai.generation
+docker exec EXAMORA-rabbitmq rabbitmqctl delete_queue ai.generation
 docker compose up -d ai-generation-service ai-worker-service infrastructure-service
 ```
 
@@ -172,7 +172,7 @@ docker compose logs -f ai-worker-api
 View logs for a specific container:
 
 ```bash
-docker logs -f exmora-frontend
+docker logs -f EXAMORA-frontend
 ```
 
 ## 9. Inspect Containers
@@ -187,7 +187,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 Check environment variables inside a container:
 
 ```bash
-docker exec -it exmora-ai-worker-api sh
+docker exec -it EXAMORA-ai-worker-api sh
 env | grep DATABASE_URL
 env | grep RABBITMQ_URL
 ```
@@ -195,8 +195,8 @@ env | grep RABBITMQ_URL
 Open a shell inside a container:
 
 ```bash
-docker exec -it exmora-frontend sh
-docker exec -it exmora-postgres psql -U postgres -d Exam_Bank
+docker exec -it EXAMORA-frontend sh
+docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank
 ```
 
 ## 10. Health and Quick Checks
@@ -224,18 +224,18 @@ Remove only the Postgres data volume to re-run init/seed:
 docker volume rm <project_name>_postgres-data
 ```
 
-Example if your project folder is `Project_Exmora`:
+Example if your project folder is `Project_EXAMORA`:
 
 ```bash
-docker volume rm Project_Exmora_postgres-data
+docker volume rm Project_EXAMORA_postgres-data
 docker compose up -d
 ```
 
 Manually apply schema and seed from host:
 
 ```bash
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\schema_optimized.sql"
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_Exmora\database\seed_data.sql"
+psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\schema_optimized.sql"
+psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\seed_data.sql"
 ```
 
 ## 12. AI Worker Standalone

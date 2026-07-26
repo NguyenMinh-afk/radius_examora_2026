@@ -12,7 +12,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const STORAGE_KEY = "exmora-theme";
+const STORAGE_KEY = "EXAMORA-theme";
 
 const getSystemTheme = (): Theme => {
   if (typeof window === "undefined") return "light";

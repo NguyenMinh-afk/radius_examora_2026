@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Globe, ChevronDown, Check } from "lucide-react";
 import SettingsSection from "./SettingsSection";
+import { useTheme } from "../../../contexts/useTheme";
 
 const languages = [
   { code: "vi", name: "Tiếng Việt", native: "Tiếng Việt", flag: "🇻🇳" },
@@ -9,6 +10,8 @@ const languages = [
 ];
 
 const LanguageSettingsCard: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [currentLang, setCurrentLang] = useState("vi");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -24,23 +27,29 @@ const LanguageSettingsCard: React.FC = () => {
       <div className="relative">
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl hover:border-teal-300 dark:hover:border-teal-500/40 transition"
+          className={`w-full flex items-center justify-between px-4 py-3 border rounded-xl hover:border-teal-300 transition ${
+            isDark
+              ? "bg-slate-800 border-white/10 hover:border-teal-500/40"
+              : "bg-white border-slate-200 hover:border-teal-300"
+          }`}
         >
           <div className="flex items-center gap-3">
             <span className="text-xl">{selectedLang?.flag}</span>
             <div className="text-left">
-              <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedLang?.native}</p>
-              <p className="text-xs text-slate-500 dark:text-gray-400">{selectedLang?.name}</p>
+              <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{selectedLang?.native}</p>
+              <p className={`text-xs ${isDark ? "text-gray-400" : "text-slate-500"}`}>{selectedLang?.name}</p>
             </div>
           </div>
           <ChevronDown
             size={18}
-            className={`text-slate-400 dark:text-gray-500 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+            className={`${isDark ? "text-gray-500" : "text-slate-400"} transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
           />
         </button>
 
         {dropdownOpen && (
-          <div className="absolute z-10 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl shadow-lg overflow-hidden">
+          <div className={`absolute z-10 w-full mt-2 border rounded-xl shadow-lg overflow-hidden ${
+            isDark ? "bg-slate-800 border-white/10" : "bg-white border-slate-200"
+          }`}>
             {languages.map((lang) => (
               <button
                 key={lang.code}
@@ -50,17 +59,17 @@ const LanguageSettingsCard: React.FC = () => {
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 transition ${
                   currentLang === lang.code
-                    ? "bg-teal-50 dark:bg-teal-500/20"
-                    : "hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    ? isDark ? "bg-teal-500/20" : "bg-teal-50"
+                    : isDark ? "hover:bg-slate-700/50" : "hover:bg-slate-50"
                 }`}
               >
                 <span className="text-xl">{lang.flag}</span>
                 <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">{lang.native}</p>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">{lang.name}</p>
+                  <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{lang.native}</p>
+                  <p className={`text-xs ${isDark ? "text-gray-400" : "text-slate-500"}`}>{lang.name}</p>
                 </div>
                 {currentLang === lang.code && (
-                  <Check size={18} className="text-teal-600 dark:text-teal-400" />
+                  <Check size={18} className={isDark ? "text-teal-400" : "text-teal-600"} />
                 )}
               </button>
             ))}

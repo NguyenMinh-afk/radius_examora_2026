@@ -45,7 +45,7 @@ const faqData: FaqItem[] = [
   {
     id: "6",
     question: "Hệ thống có hỗ trợ thi trên điện thoại không?",
-    answer: "EXMORA được thiết kế responsive, bạn có thể truy cập và làm bài thi trên cả máy tính và điện thoại. Tuy nhiên, để có trải nghiệm tốt nhất, nên sử dụng máy tính.",
+    answer: "EXAMORA được thiết kế responsive, bạn có thể truy cập và làm bài thi trên cả máy tính và điện thoại. Tuy nhiên, để có trải nghiệm tốt nhất, nên sử dụng máy tính.",
     category: "Kỹ thuật"
   },
   {
@@ -145,11 +145,11 @@ const HelpCenter: React.FC = () => {
                 </h3>
                 <div className="space-y-3">
                   <a
-                    href="mailto:support@exmora.ai"
+                    href="mailto:support@EXAMORA.ai"
                     className="flex items-center gap-3 text-white/90 hover:text-white transition-colors"
                   >
                     <Mail size={16} />
-                    <span className="text-sm">support@exmora.ai</span>
+                    <span className="text-sm">support@EXAMORA.ai</span>
                   </a>
                   <a
                     href="tel:+84123456789"
@@ -240,7 +240,7 @@ const HelpCenter: React.FC = () => {
                   Nếu bạn không tìm thấy câu trả lời phù hợp, đừng ngần ngại liên hệ với chúng tôi.
                 </p>
                 <a
-                  href="mailto:support@exmora.ai"
+                  href="mailto:support@EXAMORA.ai"
                   className={`inline-flex items-center gap-2 text-sm font-medium ${isDark ? "text-amber-300 hover:text-amber-200" : "text-amber-800 hover:text-amber-900"}`}
                 >
                   <Mail size={16} />

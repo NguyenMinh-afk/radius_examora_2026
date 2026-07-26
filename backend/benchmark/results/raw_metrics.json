@@ -1,0 +1,5002 @@
+[
+  {
+    "success": false,
+    "request_id": "346a6ef5-e50a-4c5d-875f-5c04b0035438",
+    "client_response_ms": 4.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8616baa3-1322-4b50-a677-0ad303dc466f",
+    "client_response_ms": 7.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d9943f4b-8283-4e4a-98d5-f6bb2de075d0",
+    "client_response_ms": 7.93,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "028de15a-4492-4f4b-9c28-b12548733919",
+    "client_response_ms": 8.01,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2cf92a97-c068-4ddf-8b56-d3d454303120",
+    "client_response_ms": 8.51,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3a12e958-be04-430d-84b1-d476897b70f3",
+    "client_response_ms": 4.38,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "076db386-ab36-4813-acd0-bad75a611622",
+    "client_response_ms": 6.09,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2db81df2-e84f-488c-8520-1c2b4deca33e",
+    "client_response_ms": 3.25,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4a8cca07-4576-4ab5-9949-9831a0de56cd",
+    "client_response_ms": 6.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cc759677-7321-4147-8f5d-fe396184822d",
+    "client_response_ms": 4.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "13cb0f36-8071-475b-b540-710205d0ccd6",
+    "client_response_ms": 3.16,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6d2db037-4d63-4e85-8d9a-bc24d97af279",
+    "client_response_ms": 3.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b52e9802-9f1a-4d5c-b0ad-08ab46e4c7a3",
+    "client_response_ms": 4.48,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6ac84704-659d-4790-9bb4-4d6d83d2bf54",
+    "client_response_ms": 5.12,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cce47c5f-92bd-417a-9b27-d7ac2823baa7",
+    "client_response_ms": 6.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "bb04edc6-6967-497a-b36d-11adf705baa5",
+    "client_response_ms": 3.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5b0ec6cc-9980-45ba-b5de-4fb60a93585c",
+    "client_response_ms": 3.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d7d4cdbf-e888-48f0-8e68-e3884669cd5c",
+    "client_response_ms": 4.46,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2d8eed9b-d324-435b-92db-de08fb14b4df",
+    "client_response_ms": 5.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "30c305cd-8051-4365-9753-15f3da1086c3",
+    "client_response_ms": 5.11,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f4517f38-d4f2-48a5-942c-7b058bd5d945",
+    "client_response_ms": 4.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d84f20ea-2383-442f-a928-06f84dd3259b",
+    "client_response_ms": 5.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b285e5f8-d868-4785-a547-5c8c25ca22ef",
+    "client_response_ms": 3.56,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "91d26ac4-7bb2-42e4-98ca-38ea13caadb1",
+    "client_response_ms": 6.42,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "282a5a1f-e88e-4ef7-838f-d2d9d6d0c088",
+    "client_response_ms": 7.23,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c9dd69d0-7ca0-4071-b1b6-209506c28476",
+    "client_response_ms": 10.91,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5e287b84-64aa-4efb-9aa4-c2466704f080",
+    "client_response_ms": 11.37,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ec05db95-4f9b-4d24-9ce7-9c052b6ebfa4",
+    "client_response_ms": 14.72,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "dbcac43a-2c23-48d7-8c5f-e4da4281567a",
+    "client_response_ms": 11.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5bb063ad-0416-4c3f-a937-dfbe0f9a2846",
+    "client_response_ms": 12.29,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "610a3fcc-5c36-4702-82cf-80717bf6d524",
+    "client_response_ms": 3.43,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "15cedc07-ea99-4cca-a738-eeb8247dc102",
+    "client_response_ms": 4.09,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "428c73c1-b26e-402a-bcc7-c41e94ee3b91",
+    "client_response_ms": 4.8,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "de97b527-fd51-4d64-9f0b-2f97771e42ee",
+    "client_response_ms": 5.69,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e5eb27c5-4a14-49e0-a8ad-1764b5a63993",
+    "client_response_ms": 6.26,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "12f1aa44-71b2-4d25-8dca-03074576ff1f",
+    "client_response_ms": 3.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3274ad20-3af6-4874-8b92-063cd8184c39",
+    "client_response_ms": 6.69,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d70f4842-064e-46dd-9aec-f65ce060ac23",
+    "client_response_ms": 5.62,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cd36e1d1-817c-4a09-9d64-d47addaf1144",
+    "client_response_ms": 7.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "08430512-27d5-430e-bcba-0400182f6003",
+    "client_response_ms": 8.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6232675f-481e-43d8-9e40-eadbb3272c78",
+    "client_response_ms": 3.42,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2750f8ee-87f3-4fd4-88e4-39c3228f5cd1",
+    "client_response_ms": 5.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "86cb24c6-fc21-4a3e-be02-b33d3c1eb540",
+    "client_response_ms": 4.55,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6b414be-0201-4d39-a9e8-a9e4bd899682",
+    "client_response_ms": 6.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "121d2493-3def-4236-b0ab-c85bd9265f6b",
+    "client_response_ms": 6.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "451e423c-cefc-4df1-af64-4b51f38e4c79",
+    "client_response_ms": 3.99,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3ce925c7-63a1-426a-8755-d34096a45119",
+    "client_response_ms": 4.63,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9e620b9f-2949-4eed-aa66-545b4842c41e",
+    "client_response_ms": 5.25,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "18d3ca24-a77a-41be-8250-72c9e0e2803e",
+    "client_response_ms": 6.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cf5d16a2-2dd4-48b6-a413-9e09ed2fe06c",
+    "client_response_ms": 7.42,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3b0f4b74-bd73-4185-bd0f-ce13bf98fc23",
+    "client_response_ms": 4.85,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a5478606-f995-421c-bb87-e57adc8a3d49",
+    "client_response_ms": 3.72,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "db7426a7-dcf8-478d-bc5b-fc897dc68693",
+    "client_response_ms": 6.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3ebd24f1-2535-4ffa-adf1-3207aaf0d172",
+    "client_response_ms": 5.33,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "95b92cad-d023-4cde-aacd-4c5b9d551332",
+    "client_response_ms": 6.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ff91413f-658f-43fa-bf3d-b0631f3b328c",
+    "client_response_ms": 3.24,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1b1e9032-5e92-41df-8e67-2cebafe869b8",
+    "client_response_ms": 3.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "38577faa-cd8d-4b8d-8227-8bb42541d7cb",
+    "client_response_ms": 5.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "76e5e435-e6a6-4dd8-afc0-9801112536ef",
+    "client_response_ms": 4.69,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "aeb8de88-5b0f-4977-a40d-96514ff99fb6",
+    "client_response_ms": 6.52,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9b677eaf-d2de-4f8c-b8f1-b0ff10674bd4",
+    "client_response_ms": 3.3,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2a9a6b6d-c84b-4408-b842-709d9c723c90",
+    "client_response_ms": 4.61,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2cced2ea-3aba-4a50-94ff-31ed55a59abc",
+    "client_response_ms": 3.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "99070819-d371-49e2-88d0-f6af85989be4",
+    "client_response_ms": 5.99,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "56f59b83-5c64-4dc6-bafc-ab04b20bd16e",
+    "client_response_ms": 5.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "22740d58-17c7-4dae-b591-c4027f0ae12c",
+    "client_response_ms": 3.33,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2f8e3911-a7a3-4dfa-a926-3d2b6976e59a",
+    "client_response_ms": 4.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ec48424b-78a4-4258-a028-0d65bf8737eb",
+    "client_response_ms": 4.88,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "11e395e0-43a4-4a25-bbbb-8ea27b1f38da",
+    "client_response_ms": 6.6,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1f016b9b-c4d5-4d9a-b0b8-9e23deac1d8f",
+    "client_response_ms": 5.65,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "afa26b64-9e51-435a-91d9-92d9b6a5e594",
+    "client_response_ms": 3.28,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6872e6e7-f6f8-4189-949c-3b8e3c0ab0aa",
+    "client_response_ms": 3.93,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cfa0e813-f25c-408a-a54c-5db2a9496cc5",
+    "client_response_ms": 4.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "14884277-f645-4301-984f-d412138c9410",
+    "client_response_ms": 6.32,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cc795780-84bc-469a-8c0d-1f89aec16551",
+    "client_response_ms": 5.43,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "144e7f80-d12f-44de-9b3e-67d5363c9210",
+    "client_response_ms": 3.03,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "05ebf1b9-67f6-41b4-bc4d-b0ec3e7c3b52",
+    "client_response_ms": 3.7,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2a1a65d0-2398-4e63-bb58-a480b6f8ddaa",
+    "client_response_ms": 5.28,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b93ed8e2-eccb-4427-9563-d76ac1a572ba",
+    "client_response_ms": 6.2,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "862b075b-58a7-4078-b64d-d0c66706a1ea",
+    "client_response_ms": 4.32,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9042e37b-022e-4dd7-8728-6811a962d12c",
+    "client_response_ms": 5.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6bf4f2c5-bbe9-4563-8019-2825c1172a34",
+    "client_response_ms": 3.12,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a511149c-ec47-4823-b305-d83d5168b5a0",
+    "client_response_ms": 3.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d490ae3f-4847-4804-a94a-22987fc0b270",
+    "client_response_ms": 5.52,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "df5dd983-5943-484a-bbcb-734c3956c58f",
+    "client_response_ms": 6.2,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cc8d5424-29d6-433f-a2ef-f257fd5d26af",
+    "client_response_ms": 3.0,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ea743214-0121-484d-8d87-d18edfd687f0",
+    "client_response_ms": 3.56,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ca0bda37-00cf-430e-a3a7-6601e22bf5ef",
+    "client_response_ms": 4.25,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f885a55b-09ff-4643-a63a-edd2c99da924",
+    "client_response_ms": 4.93,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0695886b-0270-4827-948f-56c8d69b946e",
+    "client_response_ms": 5.72,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a6100bd3-d0f6-41e3-898b-e77796a3e6df",
+    "client_response_ms": 3.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4115bf06-089d-40ae-a5ae-6ec18dbfd759",
+    "client_response_ms": 4.44,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2b2e6314-f06e-4253-a3d8-664afa79b862",
+    "client_response_ms": 5.04,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "36c7b1a7-8a0b-4583-a9b0-fbd29992d847",
+    "client_response_ms": 6.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1da079e3-7c40-4f88-bcb3-b45317d4a9c1",
+    "client_response_ms": 5.59,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "83a04949-8695-42fa-9ddf-53cef23e330e",
+    "client_response_ms": 4.05,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fde476c5-1fcc-46a0-860e-cc06279de794",
+    "client_response_ms": 3.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "129344bc-415a-4d78-9032-2ca454493e9c",
+    "client_response_ms": 4.48,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "67209d68-7bac-49be-a0fa-57fd404aa60d",
+    "client_response_ms": 5.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9c8c7174-9bf3-4c24-ab44-f3070384d4d9",
+    "client_response_ms": 5.8,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 1,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3f7c84fd-975b-413e-84fc-64ab97ba4c54",
+    "client_response_ms": 6.47,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "78b0ff4d-21bf-46ee-9ab0-c603567df68e",
+    "client_response_ms": 7.52,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5f3762dd-7f28-485c-8d6b-b6006ac10f85",
+    "client_response_ms": 8.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "edf62640-b454-4709-a7ae-dca3f23fef13",
+    "client_response_ms": 5.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "bc67a69d-3387-4995-85dd-d34fc81bb815",
+    "client_response_ms": 7.86,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "22eb781a-9e2c-4817-901d-76bbcdce498b",
+    "client_response_ms": 5.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "26ecb251-2c86-4395-b35e-f915e761e811",
+    "client_response_ms": 8.09,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e4e9de8e-9c53-45bb-a337-e33e82fe8e80",
+    "client_response_ms": 6.55,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "629624f6-f014-41ca-b1c4-af7f47f23214",
+    "client_response_ms": 7.27,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4a5ea2df-9543-41be-b7e3-5863fcca0004",
+    "client_response_ms": 4.25,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "99ed3aa2-7216-4a61-aa1b-fa6e48367c6e",
+    "client_response_ms": 3.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2abb5eab-d5f7-48cb-a075-a39ffab8a852",
+    "client_response_ms": 5.68,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "18ba9c31-41b1-4bfc-82aa-110da2d099c3",
+    "client_response_ms": 4.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0f12651a-4d10-42d7-8627-17d3e13d92d8",
+    "client_response_ms": 6.28,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "26a9a9ff-5a6e-41a3-9ce0-6a4f480039d5",
+    "client_response_ms": 3.85,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fa654636-c8cb-4676-a0a8-a578c7e1eb3b",
+    "client_response_ms": 4.47,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4d912789-16da-4c6f-af0d-5ffaf55cb031",
+    "client_response_ms": 3.44,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7b08e3de-c2f7-4d1a-96c6-bcd0a9ad7235",
+    "client_response_ms": 6.01,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fc6e717f-cc56-4a22-84b2-a1fae7be0636",
+    "client_response_ms": 6.92,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "25ef7809-8a02-4762-bc19-3ec4d88129d1",
+    "client_response_ms": 7.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6c0d305-f206-446a-8ae9-14e6d474c677",
+    "client_response_ms": 3.58,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ad5e1a4b-ae44-46ce-9e60-f5a993559351",
+    "client_response_ms": 4.35,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7de92b6b-83d6-42bb-a232-30379b6e23b4",
+    "client_response_ms": 4.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a7d48a1b-c91b-4200-ae24-c194966d9f0f",
+    "client_response_ms": 6.69,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "735c436b-b582-4e44-9135-8aa50003b44c",
+    "client_response_ms": 5.71,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "299a1cc9-248b-4192-8917-a45f0fedfbcc",
+    "client_response_ms": 3.66,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e7a7916f-e65d-4b17-9d40-1191b85ed892",
+    "client_response_ms": 4.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2a9baa11-2469-4cbf-b4d8-fb4b567c2738",
+    "client_response_ms": 5.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "faceda78-b6ac-4713-8a9a-4a08f26689b8",
+    "client_response_ms": 5.8,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f413b1df-ff29-4477-9f15-c1dcc5a45371",
+    "client_response_ms": 6.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c1c76963-841a-4021-9b87-b2e4c81202b6",
+    "client_response_ms": 2.96,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "312bdf3b-fe81-4152-9bcb-920d88647d0a",
+    "client_response_ms": 5.12,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b02c3ab5-124d-4cc7-a4ab-34a4dc135848",
+    "client_response_ms": 3.5,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7afc9411-ab16-4c42-9277-dd9a6696500f",
+    "client_response_ms": 5.62,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "af1f0c72-0f92-4eba-9361-61436679846a",
+    "client_response_ms": 4.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c4141420-c3c8-4f5c-abe5-21640389a7e8",
+    "client_response_ms": 3.05,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "16466a74-65c0-4934-9667-51b4c726bc5b",
+    "client_response_ms": 3.69,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "332480ed-f7f5-4db1-8c21-d5a21693522d",
+    "client_response_ms": 4.3,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f941104a-024b-417b-8c4a-595e8c3affb4",
+    "client_response_ms": 5.03,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "02a59bea-d124-41da-be17-dca8497daad0",
+    "client_response_ms": 5.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9e856c23-1ca8-4a07-be40-8cb5556185ba",
+    "client_response_ms": 3.24,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8dfebc30-c2cc-4367-b720-9c170d998371",
+    "client_response_ms": 3.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a80b47b9-291c-49c7-b5e3-4c1a2b383663",
+    "client_response_ms": 4.59,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0498737d-cc0f-46ea-a2c1-21858422e02f",
+    "client_response_ms": 5.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "68827a5a-4d10-4bef-a2cb-872c3c168a65",
+    "client_response_ms": 5.24,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a663be02-4faf-4813-8339-dcb67fdf2d60",
+    "client_response_ms": 3.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6b75f33e-8154-4a72-9493-87b771b4915b",
+    "client_response_ms": 5.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a2d766db-2463-4f6d-b8ac-a8f7b22c4edf",
+    "client_response_ms": 5.8,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "386653ab-7c70-47cc-9008-3bbdf7aa8e02",
+    "client_response_ms": 3.66,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ce0d5fd8-415d-41e4-8cad-f2eb68a6921d",
+    "client_response_ms": 6.41,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2e4c3ab7-9b9c-4799-b16f-368d98cc8a66",
+    "client_response_ms": 3.28,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "165d8af4-a37f-41eb-a75b-ca4b5ff03eec",
+    "client_response_ms": 4.9,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "dca1294d-6eda-4503-a188-c1742ac5abb4",
+    "client_response_ms": 3.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2e2a4875-3402-4e07-acc0-f6adcda48402",
+    "client_response_ms": 6.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a6bbb6d5-70ce-437a-9080-3e497c3e4fb8",
+    "client_response_ms": 5.46,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5305417c-6026-4b7d-a0e8-b8b3c2523d19",
+    "client_response_ms": 3.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a8bcfc4f-4c97-4c60-8b7e-7a5088d6d212",
+    "client_response_ms": 6.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b6c13970-c3c1-417d-8f6c-36175ce600f5",
+    "client_response_ms": 4.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "372e2fe0-7cb2-4a63-96b6-975c32f653cd",
+    "client_response_ms": 5.82,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8016e5f8-4b25-470f-8c27-e86bc6b7953f",
+    "client_response_ms": 5.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "42a0cbc5-0f34-4f7b-881c-d9287744ca4a",
+    "client_response_ms": 3.77,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e587d954-9fb3-4498-910c-e5700f0f8d9a",
+    "client_response_ms": 2.87,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c2ea97e9-81ea-4647-ae14-d21127b1a250",
+    "client_response_ms": 5.01,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "19869068-81fa-4833-850c-e3e645b5ca60",
+    "client_response_ms": 4.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a3ce0093-ce94-4d44-8f8d-d93361d55b82",
+    "client_response_ms": 5.62,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "322d6812-9ff5-4d8c-8658-0e096e1e42f5",
+    "client_response_ms": 3.25,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f73fd38b-c4c2-4785-8ba2-4a2abdb38475",
+    "client_response_ms": 3.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4f585ba2-2c6c-4398-9f11-824373d71015",
+    "client_response_ms": 4.48,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "71248433-9a7e-4f75-afaf-7dde323346ce",
+    "client_response_ms": 5.22,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "16ac4669-8384-4d01-9bf9-6fbcdf77d76b",
+    "client_response_ms": 5.85,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "bea31d44-a1bc-42dd-8fa4-58e097e208d3",
+    "client_response_ms": 9.31,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6c2338c8-a3a3-42bd-92e9-7542f67b6e6c",
+    "client_response_ms": 3.89,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "81c5812b-065d-471d-b0ed-1a3240b440c4",
+    "client_response_ms": 4.65,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "61603a07-0c00-4f53-b7ae-b00f79f28f92",
+    "client_response_ms": 6.41,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7d1d4c02-d3ac-4918-93fc-8984dc3a7abd",
+    "client_response_ms": 5.42,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a0a8993b-0413-4063-9b4e-84f97f426079",
+    "client_response_ms": 3.5,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c68a79a7-2668-4d28-941e-4d14437f6556",
+    "client_response_ms": 6.54,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fedaa2a4-8830-40ec-8680-7afe3dfbacec",
+    "client_response_ms": 5.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "67a3931c-c056-4ab7-9bfe-e9d397d08971",
+    "client_response_ms": 4.9,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e25f8a3c-a029-4b28-9ab9-9f6730b1d3f8",
+    "client_response_ms": 4.03,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b31a19fa-3cda-4d46-8bd1-bacd3e6a06c4",
+    "client_response_ms": 3.11,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8119e747-5054-4d0b-a381-7852c91aa038",
+    "client_response_ms": 3.8,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8e0631c8-bf48-4c4d-89cc-938d3bdcbc62",
+    "client_response_ms": 4.38,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1cb6f230-b9d9-4c98-aadd-5837b5ffcc9c",
+    "client_response_ms": 5.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c2728d02-ef82-4d05-b37f-cfc858fdd746",
+    "client_response_ms": 5.72,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c0e33e32-fc96-48c7-ab09-4a8fc02f9dea",
+    "client_response_ms": 4.12,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b1b73f60-293b-400a-b457-96449434f7e9",
+    "client_response_ms": 4.62,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "57b76215-ca52-41c5-8d5c-a8f940bdf167",
+    "client_response_ms": 5.27,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "13e1002f-bfea-4c99-adb9-e16ea926819b",
+    "client_response_ms": 6.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "835b2361-ede8-4bb3-9ddf-bbd638b8ede4",
+    "client_response_ms": 5.9,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "78660ec5-4e53-48ad-905a-2eb1fd93d9a1",
+    "client_response_ms": 3.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "86d3a7ea-fd17-4377-b8e9-3023b7fcbae9",
+    "client_response_ms": 4.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "dff667eb-123a-40b7-8d14-4e68358947d6",
+    "client_response_ms": 4.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a42c8f70-f9a0-4596-9d41-c8d284c22691",
+    "client_response_ms": 5.23,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "bfcb70d3-fb0d-4b17-9441-fb92810a43d2",
+    "client_response_ms": 5.89,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "51a6e255-b547-423e-a51b-b761bdfaa33b",
+    "client_response_ms": 2.66,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a3d43d7c-e810-4fdb-b03b-ad6c07e951ed",
+    "client_response_ms": 4.71,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "45683a1a-8f51-4bc3-8530-84bcf7785216",
+    "client_response_ms": 3.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a0e79eda-37cb-4c08-8541-cc6e989516f2",
+    "client_response_ms": 5.24,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "eb07fc4b-c89b-496b-82b8-ae7fb64538f6",
+    "client_response_ms": 3.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 2,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7f9aaac9-f6d8-4a02-8892-377d39e90e64",
+    "client_response_ms": 3.6,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9e4a2fa8-ea29-44f1-b21d-12f3afb41aa1",
+    "client_response_ms": 4.26,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fc312710-0de6-43d4-ac02-93693557a1ef",
+    "client_response_ms": 6.51,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8350c25c-b441-4704-9e66-c896e2491e2c",
+    "client_response_ms": 5.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "61163bb0-4632-40c8-b251-cfe916b7e274",
+    "client_response_ms": 4.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "168b9a8e-b073-4027-998b-ba7ece27ca31",
+    "client_response_ms": 5.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fe2ce88c-c67b-4eac-987c-5777484e2eee",
+    "client_response_ms": 7.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "718bc609-5477-4616-9c97-27e76d09b217",
+    "client_response_ms": 3.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c1368965-0acf-4bc6-b5a0-1242305ff774",
+    "client_response_ms": 4.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "56c752a2-a907-4f62-a863-906f1ef54616",
+    "client_response_ms": 6.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e4ceec2a-6045-479e-817a-c63b2f54f04d",
+    "client_response_ms": 3.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "364e5450-6463-4436-8b1a-9aa84c3f70e4",
+    "client_response_ms": 4.63,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6c3c7b7-3fad-4da0-80af-507aff8c02d2",
+    "client_response_ms": 6.99,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f2294497-48ba-4921-acd7-89740141188c",
+    "client_response_ms": 5.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f6cc003a-924f-4997-babc-09629365efaf",
+    "client_response_ms": 5.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3286d6a1-ae86-4dad-85bc-831f3be7d0a1",
+    "client_response_ms": 3.31,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "09e316c8-5e1e-4da8-9a67-cbde7b590485",
+    "client_response_ms": 3.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5b699858-037c-46c6-a058-af3237a9e434",
+    "client_response_ms": 5.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "565da93b-1c53-4e30-8fbe-f417ca593666",
+    "client_response_ms": 4.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d7f10da6-d880-46d2-b681-495203698d89",
+    "client_response_ms": 5.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ece516d7-e79c-4490-8ee7-a61e5b9134c1",
+    "client_response_ms": 3.46,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c5be9982-d54b-4fc4-a660-efec84513f04",
+    "client_response_ms": 5.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d04e3edd-acdf-42c4-90a7-86c3d9a63053",
+    "client_response_ms": 4.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a1c55895-7e91-4f3a-8c5f-24397ed5d79c",
+    "client_response_ms": 4.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "efe8af0d-837c-4b9c-87e7-5afdc69c378a",
+    "client_response_ms": 6.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ee1f8094-87bc-4acc-97a1-f5b34f4ce88e",
+    "client_response_ms": 4.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f327cdd3-280a-40f1-a497-ca395fd213f6",
+    "client_response_ms": 3.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "08058442-41e1-4b1b-8a12-e6056d4d7c4d",
+    "client_response_ms": 4.68,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fd892fb4-b0bf-42a9-b8ca-205e85e5bc93",
+    "client_response_ms": 6.0,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d27b3d9c-b6e1-4854-be1e-5326e9af09b5",
+    "client_response_ms": 5.17,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e4245e83-2980-45d2-8deb-4cbae87e6c07",
+    "client_response_ms": 3.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "498ae7b2-dec2-4438-9c82-88efc725a331",
+    "client_response_ms": 4.06,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a71e203a-c0b3-45e9-bd82-c3a6a6a902b4",
+    "client_response_ms": 4.66,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fe0b8cec-edce-4e9b-b5bf-93a86a786afe",
+    "client_response_ms": 5.3,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e1984d85-75c0-4d33-928e-36a282698b5d",
+    "client_response_ms": 5.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e157d464-8965-465a-9560-980d7567f2d3",
+    "client_response_ms": 3.27,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "89335918-8057-4bef-acec-f196327c4bc2",
+    "client_response_ms": 5.29,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0773717e-3d60-4441-9246-ecbef6b63712",
+    "client_response_ms": 5.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e874f891-3136-4667-a4b6-e5819b9662d2",
+    "client_response_ms": 3.58,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e1a6addf-8d9f-4d9d-806d-d084ea81aed5",
+    "client_response_ms": 4.3,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6a9ae6b1-8d5b-42a6-99ba-88aa46e8d74b",
+    "client_response_ms": 2.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f6d6dff4-dcab-419c-b9e7-2e88a9b19c8d",
+    "client_response_ms": 5.32,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "440bfa13-97dd-4a2c-ae5b-1c6ab79484b3",
+    "client_response_ms": 3.77,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6b22bc51-05a2-4040-96d1-03e11516e314",
+    "client_response_ms": 5.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ade17ead-23c2-4aa9-8c78-615b05435f6b",
+    "client_response_ms": 4.35,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c828e5c8-8aa3-4b1f-8992-2426b35e5898",
+    "client_response_ms": 4.05,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "076b8e04-32ce-47b2-beaf-5ebc682fdae3",
+    "client_response_ms": 4.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f3085246-011b-4437-8f9c-4a82a3787683",
+    "client_response_ms": 7.22,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b311c35c-fc27-4e58-b59a-8973fe1a324c",
+    "client_response_ms": 5.65,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2d9d90d3-f2e6-4eb6-9f2d-90be30ab97b9",
+    "client_response_ms": 6.34,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b1c3cf5e-4980-4260-a2a3-54e7b29ce323",
+    "client_response_ms": 4.1,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8b3b7e6a-f007-4896-96e8-f25aa2360a19",
+    "client_response_ms": 3.09,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6360294b-db45-4102-a9e1-5ccda8f51c14",
+    "client_response_ms": 6.05,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9aeea349-0624-4e5e-95a5-82141052e893",
+    "client_response_ms": 5.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9c3d7ce1-4e2f-48e8-8bbd-f0230ea5f4a0",
+    "client_response_ms": 4.33,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f2351cef-170e-4b84-a059-c5fbff4ecb23",
+    "client_response_ms": 3.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "109f565a-1e31-416d-9fbe-722a0a9b168c",
+    "client_response_ms": 4.31,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ce3e1a68-3a93-4801-ad70-88ead0504400",
+    "client_response_ms": 5.14,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "07b3fa9b-8980-4f12-9b33-0f5cec21b6b0",
+    "client_response_ms": 5.92,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "67400f35-ce16-452d-b869-217c84a96035",
+    "client_response_ms": 6.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7cf7395a-6fc5-4ab9-b024-9a218860b0c9",
+    "client_response_ms": 5.34,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ddee0c48-5d46-47d4-9505-8c440f83de2a",
+    "client_response_ms": 5.86,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fa462cad-3700-4b71-9c34-8445446153dc",
+    "client_response_ms": 3.51,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4629f38b-a381-4a79-a063-66d278b16726",
+    "client_response_ms": 6.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c70fc1df-d512-48ea-9783-fc7f93eb3099",
+    "client_response_ms": 6.93,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4a01de59-5d3f-42c3-a13e-2de1051461dc",
+    "client_response_ms": 3.46,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6deba816-f590-46d9-8d39-9f2787fa7c65",
+    "client_response_ms": 3.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ea859188-419d-4f5f-906e-15aac50b68c8",
+    "client_response_ms": 4.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fe1a4088-1380-409c-b05d-25ed51886e2d",
+    "client_response_ms": 6.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b859327b-7764-4694-bd86-ba0313cb32c3",
+    "client_response_ms": 5.29,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d6aa070c-6379-48f1-a57c-c096f381c54e",
+    "client_response_ms": 3.66,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "51583d73-ca71-4165-a44b-607025bafddb",
+    "client_response_ms": 2.75,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d1b9703d-1b50-435c-be65-5eaee659a88f",
+    "client_response_ms": 4.96,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8a7b524c-3551-4853-a32d-ead4fc4d201b",
+    "client_response_ms": 4.13,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "32a59638-2472-4fe4-b44c-14d35e570827",
+    "client_response_ms": 5.45,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "03c44a99-89c6-4b1d-a97c-cc0ef14e5afe",
+    "client_response_ms": 3.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b8480ecb-8531-4959-a993-6f1a1db515e4",
+    "client_response_ms": 4.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f851aff1-dcdf-4095-a79b-b2541b71a3f0",
+    "client_response_ms": 3.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b653d3ea-5e5f-456a-a53c-77ae05a5ca87",
+    "client_response_ms": 5.03,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a449a16b-a913-4fa5-8a5f-c06c7a52f062",
+    "client_response_ms": 5.71,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "923d6751-e46e-481f-ae3f-ee2c1645c606",
+    "client_response_ms": 3.54,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "600e78be-723a-4bd9-86ae-bda543490201",
+    "client_response_ms": 5.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3b3aecca-b0a0-4850-9285-6bccb0c9eacd",
+    "client_response_ms": 6.59,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "53bc1a5b-e955-440b-8bda-4c87c98f68d9",
+    "client_response_ms": 5.77,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e1e3310b-576f-4fb2-bb29-1d6e923ba979",
+    "client_response_ms": 4.24,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3a1c2bf1-4026-481a-ba19-9d317420b613",
+    "client_response_ms": 5.09,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "45d4b18b-7e70-4d6d-9f48-b3707076ecca",
+    "client_response_ms": 4.14,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5c25f30a-0398-4cf2-a3b1-3cbce639ab50",
+    "client_response_ms": 6.23,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7cfd318a-69d4-4de7-82ab-fb7da038853e",
+    "client_response_ms": 5.45,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f8efaf8d-42cb-48bf-a30b-4dc8f67642bb",
+    "client_response_ms": 3.2,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9115506c-8d51-4714-bda8-3913d3a3a576",
+    "client_response_ms": 3.91,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "278b3744-ad35-4a29-8e45-a7cb9be28b1a",
+    "client_response_ms": 2.96,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c09be44a-a1d5-481a-bcfd-11f72697b8cb",
+    "client_response_ms": 4.41,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "62bccdb2-68f2-4f7a-8dee-a1d41f835a2a",
+    "client_response_ms": 5.85,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ab8f57bf-c787-4806-b58f-46b15d4b6983",
+    "client_response_ms": 5.11,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a249c7e3-d2d5-473e-aba2-9c1624d67ce6",
+    "client_response_ms": 3.88,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a2c7fc79-60a3-463a-a810-9f25ab1d8568",
+    "client_response_ms": 2.9,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9d61e3c8-17d1-4cb9-b69c-03a9cb67b1ad",
+    "client_response_ms": 4.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2c32ad08-f539-4a7c-877a-8d2e6f87296f",
+    "client_response_ms": 4.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0fb6de29-afa2-4a46-b4bb-1b72ce7de482",
+    "client_response_ms": 5.53,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 3,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9e4f1903-b08f-461f-b692-1fa9177b9d7c",
+    "client_response_ms": 6.6,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f0384aee-2678-462c-b5a6-4126440351fa",
+    "client_response_ms": 7.35,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e9fbbc1a-20e3-41d3-91c9-a03a5a2da46c",
+    "client_response_ms": 4.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6a05327c-970c-47f0-976d-418d03414b77",
+    "client_response_ms": 5.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c2d6166e-abe8-4923-bb8d-a96ea7cafa64",
+    "client_response_ms": 3.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3240f16a-1540-4b95-bcf7-c77598347798",
+    "client_response_ms": 4.72,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "298167bd-f1bc-43b5-b39d-063187617f49",
+    "client_response_ms": 3.01,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d564eab6-abaf-40e6-b916-333b3c6ac51d",
+    "client_response_ms": 3.77,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "08d88f67-d6b1-4e46-88e8-44d973e32165",
+    "client_response_ms": 5.1,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7ddc1cda-c44d-4064-b15d-9947836bc969",
+    "client_response_ms": 5.75,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5f2ce7a0-da5d-43ef-afa2-5445411b9d52",
+    "client_response_ms": 3.11,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5480837a-2309-4d6f-aec7-ab9743b04627",
+    "client_response_ms": 4.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7865af88-13ae-47a6-a732-5f2c3c883b78",
+    "client_response_ms": 3.82,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "25208d93-e8dc-410d-b0c9-9c7d4c266464",
+    "client_response_ms": 5.35,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "dada5929-4649-462d-9db1-caa749f3bb88",
+    "client_response_ms": 6.14,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "391df6eb-0d06-4582-b770-8acad6fb2236",
+    "client_response_ms": 2.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ff05d559-cc14-4163-8438-9fbd507fccdb",
+    "client_response_ms": 3.63,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "84e19a16-e1b2-472e-90d3-d66200e65b2a",
+    "client_response_ms": 4.93,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7cd77b91-baf9-49ec-b494-c638d42bccf4",
+    "client_response_ms": 4.13,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6a48ec45-96e0-4939-9037-b3d93def147a",
+    "client_response_ms": 5.41,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0791a0ca-498f-454f-8540-b6b43f65adc3",
+    "client_response_ms": 4.26,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "bfeb4ab2-7bcd-44b9-9bd2-d4350679c0d3",
+    "client_response_ms": 6.37,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fc53d11f-9d04-4eb1-99b8-ac347ccdfefc",
+    "client_response_ms": 5.65,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "eed20f1a-c2f3-497b-ad4f-c850d80114f0",
+    "client_response_ms": 4.82,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "186198ba-5362-4874-8e9c-c98df92866ea",
+    "client_response_ms": 2.92,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "be3a2a88-a40a-439e-a4c3-430f555809b0",
+    "client_response_ms": 2.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c2ed9835-8b9c-46eb-bc44-1f2bdc04f38a",
+    "client_response_ms": 3.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1ff913af-95ce-49ef-951d-7471645d2985",
+    "client_response_ms": 4.19,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "da1146d9-92a7-4622-b4e9-4b88f6ffb3a7",
+    "client_response_ms": 5.38,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6711fd62-f6a7-47e6-a7be-5932b540a2f7",
+    "client_response_ms": 4.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cc454415-13f0-46e6-9330-89f42ee1ded6",
+    "client_response_ms": 5.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "afc695fb-a23f-4577-9737-aef415575987",
+    "client_response_ms": 3.62,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "484f5fd3-7ab7-4937-a928-ac29f35ee58d",
+    "client_response_ms": 4.91,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b1784dc2-8c01-470b-ac59-f15ddf8173df",
+    "client_response_ms": 4.18,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6b638c4-4dc8-4de5-a720-0c3283220036",
+    "client_response_ms": 2.69,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "51be682a-e28f-47bc-b2e8-53eded1bac94",
+    "client_response_ms": 9.06,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8e45d9e1-db92-49e2-86df-aa60da76ddd4",
+    "client_response_ms": 9.61,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "91f2f31e-3b6a-477f-ae3f-355aefe36bb7",
+    "client_response_ms": 4.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c3c1aec9-b4c2-4ba4-8e35-db61202f0480",
+    "client_response_ms": 9.1,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ec8eb1e7-0086-45b7-b1eb-6c7706fb4041",
+    "client_response_ms": 10.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3b7ca8c5-fac6-4674-9f54-4d68de4f509c",
+    "client_response_ms": 2.74,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f641642b-f549-412a-ade3-7e6ef1c9a97c",
+    "client_response_ms": 24.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4b740b46-3204-4575-a399-2dddd5eaafce",
+    "client_response_ms": 23.56,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "46c58aa3-6d68-4f9d-b58e-b9e586ebebc6",
+    "client_response_ms": 3.17,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "50fcad8d-498d-4268-af64-0cc879dc2353",
+    "client_response_ms": 22.53,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6758db2-dad1-4184-81e1-23754291fb47",
+    "client_response_ms": 3.88,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0bb08db0-3f80-4cfa-b5d3-7bbb859df757",
+    "client_response_ms": 3.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "42b79daa-b4e0-4d75-ba77-8871e3b9347e",
+    "client_response_ms": 4.27,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fcd9be83-7064-4702-a359-3b96e6926de8",
+    "client_response_ms": 4.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "68c334ba-e03f-4cad-b406-de36684c1bba",
+    "client_response_ms": 5.48,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e1e55d62-1639-436c-886e-d63a2d0dd5a5",
+    "client_response_ms": 2.78,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4cc04207-e45f-4d20-bcda-1fa4898b7a8e",
+    "client_response_ms": 4.89,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e76240d9-d0d6-4323-b50e-aa8c66445a75",
+    "client_response_ms": 4.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6ae147e2-3c3d-4295-b19d-c8d378848bae",
+    "client_response_ms": 3.27,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "80a95254-7a00-4fca-bba5-de87af9e1917",
+    "client_response_ms": 5.41,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "78155822-bcff-45b5-9c98-e5567a6ea549",
+    "client_response_ms": 3.0,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d65237cf-9625-47d2-847f-f36b92a299c1",
+    "client_response_ms": 3.59,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7be5bcee-e5d6-4808-aca1-88e0a9382c8f",
+    "client_response_ms": 4.74,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "87985189-dc5b-4a47-8ec5-c08699d09f08",
+    "client_response_ms": 4.04,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b07f7b0f-7af9-4856-a8aa-0a1d5dddc901",
+    "client_response_ms": 5.26,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b23a245b-e7c9-4984-9e23-6fe6afa182c9",
+    "client_response_ms": 2.92,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6ec70ba-5f23-4080-adb7-9a139866657f",
+    "client_response_ms": 3.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a953ea25-97af-48c0-abb5-79c934ad21a5",
+    "client_response_ms": 4.86,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d10b39f2-b06c-4302-bf62-3f1e970047cc",
+    "client_response_ms": 4.11,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1528e718-7493-4893-b0b8-ce44eff14a5a",
+    "client_response_ms": 5.33,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "49f7450e-52b1-4ac2-ae7f-3b461b6fcce4",
+    "client_response_ms": 3.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cd7bd9e5-d230-4eb1-bd1a-e367bb51d681",
+    "client_response_ms": 4.52,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4631b702-2c07-4e10-aad3-f5558219c42e",
+    "client_response_ms": 3.76,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "204f561c-2ee1-4636-be4e-dadab9ed5ea7",
+    "client_response_ms": 5.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "47c96dbd-0ce1-48aa-b2fc-feff51199c40",
+    "client_response_ms": 5.64,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "705d816b-09a7-4c97-b306-32d631d0cc27",
+    "client_response_ms": 3.1,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "36977712-ed71-443f-933e-e5d5fe819f65",
+    "client_response_ms": 3.66,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "92270f64-78e4-4bac-8820-682f0dd7c530",
+    "client_response_ms": 5.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5645e726-a93a-407a-8ff2-37a5bf9ed4f1",
+    "client_response_ms": 4.1,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "353ef5f6-a4ac-4e6f-8071-b2dbe355c470",
+    "client_response_ms": 4.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "dfbb0c2e-bff8-46b9-9e8f-23e1a4ad3f0e",
+    "client_response_ms": 2.89,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "080d6a6e-bf5d-447b-8b6e-3c40b7343782",
+    "client_response_ms": 3.51,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "626daf99-f314-4797-b07d-5048c2a6b1c2",
+    "client_response_ms": 4.12,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0fa0755d-9374-48cc-bcb2-3e9f81335dcd",
+    "client_response_ms": 4.76,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2eb5781f-d89c-420f-9e02-6f6d6e836f99",
+    "client_response_ms": 5.38,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6a77796d-e1e5-4093-a5d6-9c5ebf3ac8e8",
+    "client_response_ms": 3.13,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "1cc19c4e-aeb2-4668-ae01-67056c6f7879",
+    "client_response_ms": 4.3,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9a955e3a-4b8d-4e3a-9041-1435f433cac5",
+    "client_response_ms": 4.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0ba17c6b-cb89-4151-ac49-5bc5bf7c8376",
+    "client_response_ms": 3.5,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a9b2222b-1872-4d8c-ba83-b8d08141577c",
+    "client_response_ms": 5.58,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "94c57f91-1216-455b-8699-fd0754919d51",
+    "client_response_ms": 13.29,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a4848307-451b-46ae-b8f0-c6fb22216590",
+    "client_response_ms": 13.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b73054d5-0747-484b-bc6c-f27d9b1ad82c",
+    "client_response_ms": 14.55,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c29b1bd0-fcec-4363-8e2e-b8104db21ac6",
+    "client_response_ms": 15.88,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fbff1a3f-4284-49f6-b18e-a08f69b50dc4",
+    "client_response_ms": 15.06,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "55130336-5080-4738-b003-893169e234c4",
+    "client_response_ms": 3.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "36be6a3a-8c5b-4f69-b6fd-a0711d4d65b9",
+    "client_response_ms": 2.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0a91d3d1-78b9-4448-96d0-9e4f97be06d3",
+    "client_response_ms": 4.26,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ce53a466-0bfd-4405-9b0f-f16c64b2299d",
+    "client_response_ms": 4.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "af622477-4ced-49af-b5ef-372ef43cd92c",
+    "client_response_ms": 5.5,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ede88ab4-f035-4b36-838a-a6a3c8876f43",
+    "client_response_ms": 3.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e672db82-c7a3-44d7-a1dc-5ef67194b463",
+    "client_response_ms": 4.01,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "06e29d90-628a-4a80-842e-32ee1ae726c6",
+    "client_response_ms": 6.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "37131fa0-6265-4d80-a7dc-90d2932c6b9a",
+    "client_response_ms": 6.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6f0ecf90-a3e7-46e8-8a2e-1933cb8a57dd",
+    "client_response_ms": 5.58,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 4,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "470835f0-7544-4f9e-be05-f8ab9deb7f7d",
+    "client_response_ms": 7.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cf645345-72c7-401f-b108-a714b8c3137e",
+    "client_response_ms": 4.14,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c5cbbe0a-03d0-4186-9b97-df132d40eb57",
+    "client_response_ms": 5.44,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "16ab1178-feb0-4739-a1aa-3b8800d1df6c",
+    "client_response_ms": 4.48,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a2522b12-9576-4e8a-bf94-e1ec907f0536",
+    "client_response_ms": 5.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5a6ac03a-4559-4632-a2c6-c34099cb19c9",
+    "client_response_ms": 4.37,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fc1cf088-9c1e-4bff-b31f-c84b29a93e55",
+    "client_response_ms": 3.28,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c3be8cb9-c704-4599-b0f7-f0a7ced38ae0",
+    "client_response_ms": 4.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "69ea6b4a-8641-4fb9-b466-56a759927601",
+    "client_response_ms": 5.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5940243d-bfed-4b5b-bc50-9052f2404eb0",
+    "client_response_ms": 6.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "475dc9c5-9ded-440f-8788-b8be5fc777d1",
+    "client_response_ms": 4.96,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "409e5d26-24d2-4cc8-a998-5fd60aa0a9c3",
+    "client_response_ms": 5.51,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "18c1f335-9022-4ab3-b8ee-eb40ac291a00",
+    "client_response_ms": 2.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "670de672-9069-4f42-acda-9e83051e5053",
+    "client_response_ms": 3.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "204e906f-ad20-4249-9566-014216f162f3",
+    "client_response_ms": 5.99,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ae2c0c3a-6d6d-40cc-92d6-9d2ed6988307",
+    "client_response_ms": 3.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2c971831-b0af-4535-b1e2-26075f1b5856",
+    "client_response_ms": 6.17,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "af51e9c6-d730-4b3a-a844-2572a76f37e0",
+    "client_response_ms": 3.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "980b11b8-dea6-46be-83be-c4f5baffb563",
+    "client_response_ms": 4.49,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b23f2e2a-93b4-4d04-8e9e-9c6110871c37",
+    "client_response_ms": 5.17,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e014ace1-ad3e-419b-aa88-63d78b62c302",
+    "client_response_ms": 3.29,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e7aa932f-d5a8-4940-bf91-ef771762732a",
+    "client_response_ms": 3.99,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ca1ed776-57af-457e-b8ba-9eb9bead3348",
+    "client_response_ms": 4.71,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c8dfbbda-edab-488d-bc8f-d3e4de1f8383",
+    "client_response_ms": 6.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "306e3760-d204-4127-ba03-5db65ccc10e6",
+    "client_response_ms": 5.28,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e9d16393-62bf-4bd6-b492-66af6c108d3a",
+    "client_response_ms": 3.77,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d9418b28-086b-40fb-8762-423bac4c0a3b",
+    "client_response_ms": 4.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e728aaf0-aee1-4792-bf3a-d8c93fa1981f",
+    "client_response_ms": 2.85,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "97dd8018-b284-4243-81d5-f264eb582aea",
+    "client_response_ms": 4.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ed9cc366-0935-4a10-9151-a73e09ba96a2",
+    "client_response_ms": 5.47,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3b1fa7c1-a75e-41e6-8863-7261e8f32338",
+    "client_response_ms": 3.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5a1738aa-ecef-411e-b393-384ae463347a",
+    "client_response_ms": 4.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c6c26ba9-2111-4f99-9714-29fb46ac0ff5",
+    "client_response_ms": 2.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "5acfcc71-e4d3-4f80-a694-4a9e9c131e55",
+    "client_response_ms": 5.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3e631718-8f7b-49ac-a86f-d79d6f685ec5",
+    "client_response_ms": 5.8,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "79a65c03-9d16-41ae-8564-3274dd26ad31",
+    "client_response_ms": 3.05,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "3e5f5987-bbe8-41a2-aa76-96480807cf01",
+    "client_response_ms": 6.68,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a7a55525-6685-4aa7-825f-eda5809345ca",
+    "client_response_ms": 5.95,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "910bb21e-27f8-45ad-8c13-cdc0602697ed",
+    "client_response_ms": 4.12,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "40efe2f0-14a9-4d46-a099-15af3fe0e187",
+    "client_response_ms": 3.37,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e347dd21-9e36-45a2-aeca-717754c58dc0",
+    "client_response_ms": 3.71,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "00e88e94-75bf-452a-b343-c03ab90ecd83",
+    "client_response_ms": 4.15,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6803994e-7e45-439e-ae83-e75f7f526f7a",
+    "client_response_ms": 2.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7ae287db-d2a0-4675-a31b-a99f3004fb81",
+    "client_response_ms": 4.65,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fd2eb2ed-1cf1-4389-8f54-943150d7f53b",
+    "client_response_ms": 5.26,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "012344fb-cb18-4ec2-97db-de0ed64d4ee3",
+    "client_response_ms": 3.39,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a834204a-acf2-4ce4-bda4-5fbf2cf70ae9",
+    "client_response_ms": 4.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e8d18061-426a-4fdf-93a3-8d20657a9ad2",
+    "client_response_ms": 3.85,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d867ad38-2ee2-4145-b555-d459ff3588fa",
+    "client_response_ms": 6.16,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "10e7d47a-7bd4-470f-a7ab-a21d937d33a6",
+    "client_response_ms": 5.22,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "f07ad0ba-4e34-4735-b154-89bc4de0cc00",
+    "client_response_ms": 2.98,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "aa88b619-fdb8-4439-b246-368bb82252ee",
+    "client_response_ms": 3.67,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ad55d0d9-bbb7-4dfc-9db1-909ece9cd75f",
+    "client_response_ms": 5.07,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b0080a6f-add3-4196-9d59-1f3be8c0b91e",
+    "client_response_ms": 5.76,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "57580103-3ea7-400f-a064-148c16320b3d",
+    "client_response_ms": 4.27,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9e1958bb-31fd-4585-bce2-185ee571a12d",
+    "client_response_ms": 3.41,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6e83379b-3d61-4293-9da0-4941591b91f9",
+    "client_response_ms": 4.16,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cab067cc-8925-4066-9588-a11857253fa8",
+    "client_response_ms": 4.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0ab9afaf-babf-4ea6-b777-3c36f952bb24",
+    "client_response_ms": 6.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "340c35e4-f679-42cb-bd29-f027a03db288",
+    "client_response_ms": 5.42,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "18d4b857-752c-4334-934e-e118f0dafb73",
+    "client_response_ms": 3.37,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8547f449-cdb6-4845-82c1-1149a2b884be",
+    "client_response_ms": 5.21,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "967f3f61-8447-4d05-a6f6-51aa7a5eb592",
+    "client_response_ms": 3.83,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "30eed3df-60e9-4193-a0d7-16c217c84da9",
+    "client_response_ms": 4.44,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "aeecb96c-7ef6-41f7-b530-5980539e0228",
+    "client_response_ms": 5.74,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "91e915a8-a67d-40bc-b0f7-8b38990c09bd",
+    "client_response_ms": 2.78,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ce00c876-fbb3-4fc6-9790-614f0ed9e499",
+    "client_response_ms": 3.48,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7c51f828-b393-461f-8c09-cbb0d587093e",
+    "client_response_ms": 4.79,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b1e167b7-9d40-4758-b6cb-4771819d12d8",
+    "client_response_ms": 3.96,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "47140fc3-44ab-4ce7-9744-2f17bbb0254a",
+    "client_response_ms": 5.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d58a2f04-2983-473a-b1f9-bfd369a5b160",
+    "client_response_ms": 5.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "a9258571-367b-4fef-9700-300731926a23",
+    "client_response_ms": 3.02,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "546ff027-6545-4ed3-8125-9cfc1b7ffc2b",
+    "client_response_ms": 4.44,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d14d44fd-e99c-4428-bdae-e4ac93bc5e7b",
+    "client_response_ms": 5.84,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "2ab454a5-8cf6-49fe-8b4e-f9bc6bd49a51",
+    "client_response_ms": 3.62,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "eb3c44a6-671e-4bb7-8d75-eac4fe8f9a61",
+    "client_response_ms": 4.7,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "b1f035b0-e778-4fab-8e71-2739e61c467e",
+    "client_response_ms": 3.47,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c72bc23f-ed45-45a5-a0a5-acc17e10a35c",
+    "client_response_ms": 5.14,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "875b24e3-bac8-4f9e-a7b2-9911fc0f3821",
+    "client_response_ms": 5.72,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "86c4c2c0-b84f-44db-8fe0-878f17b4f527",
+    "client_response_ms": 6.31,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "bd3ba6a8-d210-46cc-9db9-0144f5f2a4f0",
+    "client_response_ms": 3.73,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "72719abf-932d-4721-a748-a78155628157",
+    "client_response_ms": 4.4,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4020e3c0-785a-4afb-bdc4-3d412b47d968",
+    "client_response_ms": 5.03,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d2f5bb4a-2c93-4008-afbf-f08d310f353c",
+    "client_response_ms": 5.77,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cd79e00e-d598-4c60-8762-0394561768e1",
+    "client_response_ms": 6.36,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "046dbc6c-19b7-4eb6-b118-6795d6f95a87",
+    "client_response_ms": 3.04,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "0f80f646-cab5-4281-abff-ad8ab7de7511",
+    "client_response_ms": 5.0,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "e54f9d29-7521-4e87-b4d3-bb590610aa85",
+    "client_response_ms": 5.5,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "ccca9692-93aa-49c2-8e8d-4b3767f7a5bd",
+    "client_response_ms": 4.14,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "6582667e-3c73-4c57-865c-b3bce4bcd912",
+    "client_response_ms": 3.55,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "cd78e02c-f31c-4d00-acc7-d03dbbb7fa7c",
+    "client_response_ms": 3.81,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "d5e9ced4-0e46-4d9d-a38f-0ee0e5760d14",
+    "client_response_ms": 3.03,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "c217a8b3-fb28-41da-b2f3-37c229a80289",
+    "client_response_ms": 4.3,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8942df81-ff9f-4078-ab04-bdf243a18c12",
+    "client_response_ms": 5.75,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "4bf6ee72-62c1-4cae-a407-6b758aa1d136",
+    "client_response_ms": 4.97,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "109a8702-4e90-47a0-a724-2d619330b33a",
+    "client_response_ms": 2.87,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "9807cfe1-59a1-4ed0-82b2-8310eb76da8f",
+    "client_response_ms": 3.51,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "7e8f4c4f-d989-4760-bbe8-e0b1b0a0b87a",
+    "client_response_ms": 4.94,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "fc319a84-087b-4e53-bf41-07d07e6c1fc9",
+    "client_response_ms": 4.08,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  },
+  {
+    "success": false,
+    "request_id": "8b35af80-23e8-40ab-a5a7-8e32fb34b171",
+    "client_response_ms": 5.53,
+    "status_code": 502,
+    "error": "Bad response from service",
+    "run_id": "0dc57ede",
+    "run_number": 5,
+    "test_type": "client_response_time"
+  }
+]

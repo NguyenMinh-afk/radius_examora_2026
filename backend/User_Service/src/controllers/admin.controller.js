@@ -7,7 +7,7 @@
 export { getAdminDashboard } from "./admin/admin.dashboard.controller.js";
 
 // Users
-export { getAdminUsers, getAdminUserById, updateAdminUserStatus, updateAdminUserRole, getAdminRoles } from "./admin/admin.user.controller.js";
+export { getAdminUsers, getAdminUserById, updateAdminUserStatus, updateAdminUserRole, updateAdminUser, deleteAdminUser, getAdminRoles } from "./admin/admin.user.controller.js";
 
 // Courses
 export { getAdminCourses, getAdminCourseById, updateAdminCourseStatus, updateAdminCourseTeachers } from "./admin/admin.course.controller.js";

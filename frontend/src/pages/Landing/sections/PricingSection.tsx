@@ -131,7 +131,7 @@ const faqItems = [
   },
   {
     q: "How does the AI question generation work?",
-    a: "EXMORA uses advanced language models to generate questions based on your input topics, curriculum standards, and desired Bloom's taxonomy levels.",
+    a: "EXAMORA uses advanced language models to generate questions based on your input topics, curriculum standards, and desired Bloom's taxonomy levels.",
   },
 ];
 

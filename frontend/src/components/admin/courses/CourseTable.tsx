@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Edit2,
   Eye,
   EyeOff,
   GraduationCap,
+  MoreHorizontal,
+  Trash2,
 } from "lucide-react";
 
 import type { AdminCourse, Pagination } from "../../../api/Admin";
@@ -17,6 +20,8 @@ interface CourseTableProps {
   actionCourseId: number | null;
   onPageChange: (page: number) => void;
   onToggleActive: (course: AdminCourse) => void;
+  onEditCourse?: (course: AdminCourse) => void;
+  onDeleteCourse?: (course: AdminCourse) => void;
   isDark?: boolean;
 }
 
@@ -36,8 +41,27 @@ const CourseTable: React.FC<CourseTableProps> = ({
   actionCourseId,
   onPageChange,
   onToggleActive,
+  onEditCourse,
+  onDeleteCourse,
   isDark,
 }) => {
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('.menu-toggle-btn')) {
+        return;
+      }
+      if (menuContainerRef.current && !menuContainerRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   return (
     <div className={`overflow-hidden rounded-lg border ${
@@ -136,6 +160,58 @@ const CourseTable: React.FC<CourseTableProps> = ({
                         {course.is_active ? <EyeOff size={15} /> : <Eye size={15} />}
                         {course.is_active ? "Hide" : "Show"}
                       </button>
+
+                      <div className="relative" ref={menuContainerRef}>
+                        <button
+                          type="button"
+                          onClick={() => setOpenMenuId(openMenuId === course.id ? null : course.id)}
+                          className={`menu-toggle-btn inline-flex h-9 w-9 items-center justify-center rounded-md border transition ${
+                            isDark
+                              ? "border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
+                              : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                          } ${openMenuId === course.id ? (isDark ? "bg-white/10 text-white" : "bg-slate-100 text-slate-700") : ""}`}
+                          aria-label={`Open actions for ${course.name}`}
+                        >
+                          <MoreHorizontal size={16} />
+                        </button>
+
+                        <div
+                          className={`${openMenuId === course.id ? 'block' : 'hidden'} absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border shadow-lg ${
+                            isDark ? "bg-slate-800 border-white/10" : "bg-white border-slate-200"
+                          }`}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditCourse?.(course);
+                              setOpenMenuId(null);
+                            }}
+                            className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition first:rounded-t-lg ${
+                              isDark
+                                ? "text-gray-300 hover:bg-white/5 hover:text-white"
+                                : "text-slate-700 hover:bg-slate-50"
+                            }`}
+                          >
+                            <Edit2 size={15} />
+                            Edit Course
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteCourse?.(course);
+                              setOpenMenuId(null);
+                            }}
+                            className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition last:rounded-b-lg ${
+                              isDark
+                                ? "text-rose-400 hover:bg-rose-500/10 hover:text-rose-300"
+                                : "text-rose-600 hover:bg-rose-50"
+                            }`}
+                          >
+                            <Trash2 size={15} />
+                            Delete Course
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </td>
                 </tr>

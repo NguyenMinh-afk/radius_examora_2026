@@ -117,7 +117,11 @@ const TeacherExamsPage: React.FC = () => {
         actions={
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-2 h-11 px-5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            className={`inline-flex items-center gap-2 h-11 px-5 rounded-lg font-semibold transition ${
+              isDark
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
             <Plus size={18} />
             Tạo đề thi

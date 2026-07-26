@@ -1,15 +1,17 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Mail, MapPin, Github, MessageSquare, Phone, Clock, Send, CheckCircle, AlertCircle, ExternalLink } from "lucide-react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { useTheme } from "../../contexts/useTheme";
+import AnimatedBackground from "../../components/shared/AnimatedBackground";
 
 const contactInfo = [
   {
     icon: <Mail size={20} />,
     title: "Email",
-    value: "support@exmora.ai",
-    link: "mailto:support@exmora.ai",
+    value: "support@EXAMORA.ai",
+    link: "mailto:support@EXAMORA.ai",
     color: "blue"
   },
   {
@@ -36,19 +38,19 @@ const contactInfo = [
 ];
 
 const socialLinks = [
-  { name: "GitHub", url: "https://github.com/exmora", icon: <Github size={18} /> },
+  { name: "GitHub", url: "https://github.com/EXAMORA", icon: <Github size={18} /> },
   { name: "Documentation", url: "#", icon: <ExternalLink size={18} /> },
   { name: "Research Lab", url: "#", icon: <ExternalLink size={18} /> },
 ];
 
 const faq = [
   {
-    q: "Can EXMORA integrate with university LMS systems?",
+    q: "Can EXAMORA integrate with university LMS systems?",
     a: "Yes, the platform supports integration with existing LMS infrastructure including Canvas, Moodle, Blackboard, and custom solutions through our REST API."
   },
   {
     q: "Does the system support AI-generated questions?",
-    a: "EXMORA uses advanced AI prompt engineering to generate intelligent exam questions. Teachers can customize difficulty, topic coverage, and question types."
+    a: "EXAMORA uses advanced AI prompt engineering to generate intelligent exam questions. Teachers can customize difficulty, topic coverage, and question types."
   },
   {
     q: "How does anti-cheating work?",
@@ -152,39 +154,54 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col ${isDark ? "bg-slate-900" : "bg-gradient-to-br from-white via-blue-50 to-indigo-50"}`}>
+    <AnimatedBackground theme={theme}>
+      <div className="min-h-screen flex flex-col relative z-10">
+        <Header />
 
-      <Header />
+        <main className="flex-1 px-4 sm:px-6 py-16 lg:py-24">
+          <div className="max-w-6xl mx-auto">
 
-      <main className="flex-1 px-4 sm:px-6 py-16 lg:py-24">
-        <div className="max-w-6xl mx-auto">
-
-          <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16"
+          >
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-700"}`}>
               <MessageSquare size={16} />
               Get in Touch
             </div>
             <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>
-              Contact <span className="text-blue-600">EXMORA</span>
+              Contact <span className="text-blue-600">EXAMORA</span>
             </h1>
             <p className={`text-lg max-w-2xl mx-auto ${isDark ? "text-gray-400" : "text-gray-600"}`}>
               Questions about our AI-powered examination platform, research collaboration, or system integration? Our team is ready to help.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
 
-            <div className="lg:col-span-2 space-y-10">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="lg:col-span-2 space-y-10"
+            >
 
               <div>
                 <h2 className={`text-xl font-semibold mb-5 ${isDark ? "text-white" : "text-gray-900"}`}>
                   Contact Information
                 </h2>
                 <div className="space-y-3">
-                  {contactInfo.map((item) => (
-                    <a
+                  {contactInfo.map((item, index) => (
+                    <motion.a
                       key={item.title}
                       href={item.link || undefined}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.15 + index * 0.08, duration: 0.35 }}
+                      whileHover={{ scale: 1.02 }}
                       className={`block p-4 rounded-xl border transition-all duration-200 ${isDark ? "bg-slate-800 border-white/10 hover:border-blue-500/50" : "bg-white border-gray-100 hover:shadow-md hover:border-blue-200"}`}
                     >
                       <div className="flex items-center gap-4">
@@ -200,7 +217,7 @@ const Contact: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                    </a>
+                    </motion.a>
                   ))}
                 </div>
               </div>
@@ -210,17 +227,22 @@ const Contact: React.FC = () => {
                   Connect With Us
                 </h2>
                 <div className="flex flex-wrap gap-3">
-                  {socialLinks.map((link) => (
-                    <a
+                  {socialLinks.map((link, index) => (
+                    <motion.a
                       key={link.name}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 + index * 0.08, duration: 0.35 }}
+                      whileHover={{ scale: 1.05 }}
                       className={`inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg shadow-sm text-sm font-medium transition-all duration-200 ${isDark ? "bg-slate-800 border-white/10 text-gray-300 hover:bg-blue-500/20 hover:border-blue-500/50 hover:text-blue-400" : "bg-white border-gray-200 text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"}`}
                     >
                       {link.icon}
                       {link.name}
-                    </a>
+                    </motion.a>
                   ))}
                 </div>
               </div>
@@ -231,8 +253,12 @@ const Contact: React.FC = () => {
                 </h2>
                 <div className="space-y-3">
                   {faq.map((item, index) => (
-                    <div
+                    <motion.div
                       key={index}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.25 + index * 0.08, duration: 0.35 }}
                       className={`rounded-xl border overflow-hidden ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-100 shadow-sm"}`}
                     >
                       <button
@@ -258,13 +284,18 @@ const Contact: React.FC = () => {
                           </p>
                         </div>
                       )}
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="lg:col-span-3">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="lg:col-span-3"
+            >
               <div className={`p-8 md:p-10 rounded-2xl shadow-lg border ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-100"}`}>
                 <div className="flex items-center gap-3 mb-8">
                   <div className={`p-3 rounded-xl ${isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600"}`}>
@@ -410,14 +441,15 @@ const Contact: React.FC = () => {
                   </button>
                 </form>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
-      </main>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </AnimatedBackground>
   );
 };
 

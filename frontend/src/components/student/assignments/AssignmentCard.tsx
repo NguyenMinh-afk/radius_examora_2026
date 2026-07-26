@@ -80,7 +80,11 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
         {assignment.status === "open" && (
           <Link
             to={`/student/assignments/${assignment.assignmentId}/take`}
-            className="px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition"
+            className={`px-5 py-2.5 font-medium rounded-lg transition ${
+              isDark
+                ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                : "bg-emerald-600 text-white hover:bg-emerald-700"
+            }`}
           >
             Vào thi
           </Link>
@@ -88,7 +92,11 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
         {assignment.status === "upcoming" && (
           <Link
             to={`/student/assignments/${assignment.assignmentId}`}
-            className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+            className={`px-5 py-2.5 font-medium rounded-lg transition ${
+              isDark
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
             Xem chi tiết
           </Link>
@@ -96,7 +104,11 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({ assignment }) => {
         {assignment.status === "submitted" && assignment.latestAttempt && (
           <Link
             to={`/student/results/${assignment.latestAttempt.attemptId}`}
-            className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+            className={`px-5 py-2.5 font-medium rounded-lg transition ${
+              isDark
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
           >
             Xem kết quả
           </Link>
