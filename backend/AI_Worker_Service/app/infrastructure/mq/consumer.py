@@ -256,7 +256,11 @@ async def _on_message(message: AbstractIncomingMessage) -> None:
 async def start_consumer() -> None:
     """Start the RabbitMQ consumer loop."""
     settings = get_settings()
-    logger.info("Starting RabbitMQ consumer | queue=%s | prefetch=%d", settings.rabbitmq_queue, settings.rabbitmq_prefetch_count)
+    logger.info(
+        "Starting RabbitMQ consumer | queue=%s | prefetch=%d",
+        settings.rabbitmq_queue,
+        settings.rabbitmq_prefetch_count,
+    )
 
     connection = await get_rabbitmq_connection()
     channel = await connection.channel()
