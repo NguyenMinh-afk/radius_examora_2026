@@ -162,7 +162,6 @@ class GeminiAllModelsExhaustedError(GeminiError):
         self.tried_models = tried_models
 
 
-
 class DatabaseError(AIServiceError):
     def __init__(self, message: str = "A database error occurred.") -> None:
         super().__init__(message, error_code="DATABASE_ERROR", status_code=500)
