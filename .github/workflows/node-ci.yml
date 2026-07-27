@@ -170,13 +170,11 @@ jobs:
         working-directory: backend/${{ matrix.service }}
 
       - name: Run Snyk security scan
-        uses: snyk/actions/node@master
-        continue-on-error: true
+        run: |
+          npm install -g snyk
+          npx snyk test --severity-threshold=high || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-          working-directory: backend/${{ matrix.service }}
 
   # Check for outdated dependencies
   dependency-review:
