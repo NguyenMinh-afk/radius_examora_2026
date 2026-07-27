@@ -1,169 +1,237 @@
 <mxfile host="app.diagrams.net" agent="Claude">
   <diagram name="Fig. 4 - AI Generation" id="ai-gen">
-    <mxGraphModel dx="1201" dy="811" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1088" dy="633" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- LEFT COLUMN: Main Service Flow (vertical chain) -->
+        
+        <!-- Title -->
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#333333;" value="Fig. 4 - AI Question Generation Flow" vertex="1">
+          <mxGeometry height="25" width="300" x="550" y="20" as="geometry" />
+        </mxCell>
+        
         <!-- TEACHER -->
         <mxCell id="teacher" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" value="TEACHER" vertex="1">
-          <mxGeometry height="50" width="120" x="200" y="40" as="geometry" />
+          <mxGeometry height="50" width="160" x="120" y="70" as="geometry" />
         </mxCell>
-
+        
         <!-- FRONTEND -->
         <mxCell id="frontend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;" value="FRONTEND (React)" vertex="1">
-          <mxGeometry height="50" width="120" x="200" y="140" as="geometry" />
+          <mxGeometry height="50" width="160" x="120" y="170" as="geometry" />
         </mxCell>
-
-        <!-- QUESTION SERVICE -->
-        <mxCell id="qService" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" value="QUESTION SERVICE" vertex="1">
-          <mxGeometry height="50" width="120" x="200" y="240" as="geometry" />
+        
+        <!-- API GATEWAY (NEW) -->
+        <mxCell id="gateway" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" value="API GATEWAY" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="270" as="geometry" />
         </mxCell>
-
-        <!-- AI GENERATION SERVICE -->
-        <mxCell id="aiService" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" value="AI GENERATION SERVICE" vertex="1">
-          <mxGeometry height="50" width="120" x="200" y="340" as="geometry" />
+        
+        <!-- AI GENERATION SERVICE (renamed from Question Service) -->
+        <mxCell id="aiService" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" value="AI GENERATION&#xa;SERVICE" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="370" as="geometry" />
         </mxCell>
-
+        
+        <!-- RABBITMQ -->
+        <mxCell id="rabbitmq" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" value="RABBITMQ&#xa;(ai.generation)" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="470" as="geometry" />
+        </mxCell>
+        
+        <!-- AI WORKER -->
+        <mxCell id="aiWorker" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" value="AI WORKER" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="570" as="geometry" />
+        </mxCell>
+        
         <!-- GEMINI API -->
         <mxCell id="gemini" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;" value="GEMINI API" vertex="1">
-          <mxGeometry height="50" width="120" x="200" y="440" as="geometry" />
+          <mxGeometry height="50" width="160" x="120" y="670" as="geometry" />
         </mxCell>
-
-        <!-- QUESTION BANK -->
-        <mxCell id="qBank" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;fontSize=11;" value="QUESTION BANK&#xa;(PostgreSQL)" vertex="1">
-          <mxGeometry height="50" width="120" x="200" y="540" as="geometry" />
+        
+        <!-- ai_db (generated_questions) -->
+        <mxCell id="aiDb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=10;" value="ai_db&#xa;(generated_questions)" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="770" as="geometry" />
         </mxCell>
-
-        <!-- CLEAN VERTICAL ARROWS (only top-to-bottom) -->
+        
+        <!-- TEACHER REVIEW -->
+        <mxCell id="review" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" value="TEACHER REVIEW" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="870" as="geometry" />
+        </mxCell>
+        
+        <!-- question_db (question_bank) -->
+        <mxCell id="qDb" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;fontSize=10;" value="question_db&#xa;(question_bank)" vertex="1">
+          <mxGeometry height="50" width="160" x="120" y="970" as="geometry" />
+        </mxCell>
+        
+        <!-- ARROWS -->
         <mxCell id="a1" edge="1" parent="1" source="teacher" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="frontend">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a2" edge="1" parent="1" source="frontend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="qService">
+        <mxCell id="a2" edge="1" parent="1" source="frontend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="gateway">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a3" edge="1" parent="1" source="qService" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="aiService">
+        <mxCell id="a3" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="aiService">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a4" edge="1" parent="1" source="aiService" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="gemini">
+        <mxCell id="a4" edge="1" parent="1" source="aiService" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="rabbitmq">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="a5" edge="1" parent="1" source="gemini" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;dashed=1;" target="qBank">
+        <mxCell id="a5" edge="1" parent="1" source="rabbitmq" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;" target="aiWorker">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- STEP NUMBERS (circles inline with arrows) -->
-        <mxCell id="step1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=11;fontColor=#FFFFFF;fontStyle=1;" value="1" vertex="1">
-          <mxGeometry height="22" width="22" x="320" y="104" as="geometry" />
+        <mxCell id="a6" edge="1" parent="1" source="aiWorker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;dashed=1;strokeColor=#b85450;" target="gemini">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="step2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=11;fontColor=#FFFFFF;fontStyle=1;" value="2" vertex="1">
-          <mxGeometry height="22" width="22" x="320" y="204" as="geometry" />
+        <mxCell id="a7" edge="1" parent="1" source="aiWorker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;dashed=1;" target="aiDb">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="step3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=11;fontColor=#FFFFFF;fontStyle=1;" value="3" vertex="1">
-          <mxGeometry height="22" width="22" x="320" y="304" as="geometry" />
+        <mxCell id="a8" edge="1" parent="1" source="aiDb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;strokeColor=#6c8ebf;" target="review">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="step4" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=11;fontColor=#FFFFFF;fontStyle=1;" value="4" vertex="1">
-          <mxGeometry height="22" width="22" x="320" y="404" as="geometry" />
+        <mxCell id="a9" edge="1" parent="1" source="review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;strokeColor=#28A745;" target="qDb">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="step5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=11;fontColor=#FFFFFF;fontStyle=1;" value="5" vertex="1">
-          <mxGeometry height="22" width="22" x="320" y="504" as="geometry" />
+        
+        <!-- STEP NUMBERS -->
+        <mxCell id="step1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="1" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="83" as="geometry" />
         </mxCell>
-
-        <!-- STEP DESCRIPTIONS (right side of arrows) -->
-        <mxCell id="desc1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="Upload PDF/DOCX content via web form" vertex="1">
-          <mxGeometry height="20" width="220" x="360" y="105" as="geometry" />
+        <mxCell id="step2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="2" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="183" as="geometry" />
         </mxCell>
-        <mxCell id="desc2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="POST /api/ai/generate&#xa;&lt;i style=&quot;color:#666&quot;&gt;Configure parameters (count, difficulty, type)&lt;/i&gt;" vertex="1">
-          <mxGeometry height="35" width="240" x="360" y="198" as="geometry" />
+        <mxCell id="step3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="3" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="283" as="geometry" />
         </mxCell>
-        <mxCell id="desc3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="Create ai_generation_requests record" vertex="1">
-          <mxGeometry height="20" width="240" x="360" y="305" as="geometry" />
+        <mxCell id="step4" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="4" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="383" as="geometry" />
         </mxCell>
-        <mxCell id="desc4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="Publish to RabbitMQ &amp; AI Worker consumes" vertex="1">
-          <mxGeometry height="20" width="240" x="360" y="405" as="geometry" />
+        <mxCell id="step5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="5" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="483" as="geometry" />
         </mxCell>
-        <mxCell id="desc5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="Generated questions stored to question_bank" vertex="1">
-          <mxGeometry height="20" width="240" x="360" y="505" as="geometry" />
+        <mxCell id="step6" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FF6B6B;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="6" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="583" as="geometry" />
         </mxCell>
-
-        <!-- RIGHT TOP: AI Prompt Structure -->
+        <mxCell id="step7" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b85450;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="7" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="683" as="geometry" />
+        </mxCell>
+        <mxCell id="step8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d6b656;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="8" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="783" as="geometry" />
+        </mxCell>
+        <mxCell id="step9" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#6c8ebf;strokeColor=#CC0000;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="9" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="883" as="geometry" />
+        </mxCell>
+        <mxCell id="step10" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#28A745;strokeColor=#1D7A35;fontSize=10;fontColor=#FFFFFF;fontStyle=1;" value="10" vertex="1">
+          <mxGeometry width="20" height="20" x="295" y="983" as="geometry" />
+        </mxCell>
+        
+        <!-- DESCRIPTIONS -->
+        <mxCell id="desc1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;" value="Upload PDF/DOCX&#xa;via web form" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="desc2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;" value="POST /api/ai/generate&#xa;(count, difficulty, type)" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="178" as="geometry" />
+        </mxCell>
+        <mxCell id="desc3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;" value="Route to&#xa;AI Generation Service" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="desc4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;" value="Create ai_generation_requests&#xa;record, publish to queue" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="desc5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;" value="AI Worker consumes&#xa;from queue" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="478" as="geometry" />
+        </mxCell>
+        <mxCell id="desc6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;" value="Process request&#xa;(validate, parse content)" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="578" as="geometry" />
+        </mxCell>
+        <mxCell id="desc7" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#b85450;" value="Gemini API generates&#xa;MCQ JSON response" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="678" as="geometry" />
+        </mxCell>
+        <mxCell id="desc8" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#d6b656;fontStyle=1" value="Store to ai_db&#xa;(status=pending_review)" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="778" as="geometry" />
+        </mxCell>
+        <mxCell id="desc9" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#6c8ebf;fontStyle=1" value="Teacher reviews questions&#xa;in Dashboard" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="878" as="geometry" />
+        </mxCell>
+        <mxCell id="desc10" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#28A745;fontStyle=1" value="PUT /api/ai/approve&#xa;-&gt; Move to question_bank" vertex="1">
+          <mxGeometry height="35" width="180" x="340" y="978" as="geometry" />
+        </mxCell>
+        
+        <!-- RIGHT PANEL - AI Prompt Structure -->
         <mxCell id="promptBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;align=left;spacingLeft=10;" value="AI PROMPT STRUCTURE" vertex="1">
-          <mxGeometry height="25" width="240" x="650" y="40" as="geometry" />
+          <mxGeometry height="25" width="220" x="560" y="70" as="geometry" />
         </mxCell>
-        <mxCell id="promptContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9673a6;fontSize=9;align=left;spacingLeft=10;spacingTop=5;fontFamily=Courier New;" value="System: Generate MCQ based on context&#xa;─────────────────────────────────────&#xa;User Input:&#xa;  • Context:     [uploaded PDF content]&#xa;  • Quantity:    [number of questions]&#xa;  • Difficulty:  [easy / medium / hard]&#xa;  • Type:        [MCQ / True-False / Matching]&#xa;  • Topic:       [optional topic filter]&#xa;─────────────────────────────────────&#xa;Output (JSON):&#xa;{ questions: [{ content, options,&#xa;  correct_answer, difficulty,&#xa;  explanation }] }" vertex="1">
-          <mxGeometry height="160" width="240" x="650" y="65" as="geometry" />
+        <mxCell id="promptContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9673a6;fontSize=9;align=left;spacingLeft=10;spacingTop=5;fontFamily=Courier New;" value="System: Generate MCQ based on context&#xa;-------------------------------------&#xa;User Input:&#xa;  - Context:     [uploaded PDF content]&#xa;  - Quantity:    [number of questions]&#xa;  - Difficulty:  [easy / medium / hard]&#xa;  - Type:        [MCQ / True-False]&#xa;  - Topic:       [optional topic filter]&#xa;-------------------------------------&#xa;Output (JSON):&#xa;{ questions: [{ content, options,&#xa;  correct_answer, difficulty,&#xa;  explanation }] }" vertex="1">
+          <mxGeometry height="160" width="220" x="560" y="95" as="geometry" />
         </mxCell>
-
-        <!-- RIGHT MIDDLE: Status Flow -->
-        <mxCell id="statusBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;align=left;spacingLeft=10;" value="GENERATION STATUS FLOW" vertex="1">
-          <mxGeometry height="25" width="240" x="650" y="260" as="geometry" />
+        
+        <!-- RIGHT PANEL - Human-in-the-loop -->
+        <mxCell id="hitlBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;align=left;spacingLeft=10;" value="HUMAN-IN-THE-LOOP WORKFLOW" vertex="1">
+          <mxGeometry height="25" width="220" x="560" y="280" as="geometry" />
         </mxCell>
-        <mxCell id="statusContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#6c8ebf;fontSize=10;align=left;spacingLeft=10;spacingTop=5;fontFamily=Courier New;" value="pending → processing → completed&#xa;   │          │            │&#xa;   ▼          ▼            ▼&#xa;[Queue]  [Gemini API]  [Save]&#xa;   │          │            │&#xa;   ▼          ▼            ▼&#xa;[Worker]  [Retry x3]  [Notify]&#xa;   │                       │&#xa;   ▼                       ▼&#xa;  [DLQ]              [Teacher review]&#xa;                            │&#xa;                            ▼&#xa;                  [Approved / Rejected]" vertex="1">
-          <mxGeometry height="160" width="240" x="650" y="285" as="geometry" />
+        <mxCell id="hitlContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#b85450;fontSize=9;align=left;spacingLeft=10;spacingTop=5;fontFamily=Courier New;" value="Step 1: AI WORKER (Automatic)&#xa;|- Validate JSON structure&#xa;|- Check required fields&#xa;|- Store -&gt; generated_questions&#xa;|- Set status = pending_review&#xa;&#xa;Step 2: TEACHER (Manual)&#xa;|- View pending questions&#xa;|- Review/edit if needed&#xa;|- PUT /api/ai/approve&#xa;   |- status = approved&#xa;|- PUT /api/ai/reject&#xa;   |- status = rejected&#xa;&#xa;Step 3: APPROVED -&gt; question_bank&#xa;|- Questions move to question_bank" vertex="1">
+          <mxGeometry height="200" width="220" x="560" y="305" as="geometry" />
         </mxCell>
-
-        <!-- RIGHT BOTTOM: Approval Flow -->
-        <mxCell id="approveBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;align=left;spacingLeft=10;" value="TEACHER REVIEW &amp; APPROVAL" vertex="1">
-          <mxGeometry height="25" width="240" x="650" y="480" as="geometry" />
+        
+        <!-- RIGHT PANEL - Review Process -->
+        <mxCell id="reviewBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;align=left;spacingLeft=10;" value="TEACHER REVIEW PROCESS" vertex="1">
+          <mxGeometry height="25" width="220" x="560" y="530" as="geometry" />
         </mxCell>
-        <mxCell id="approveContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#d6b656;fontSize=10;align=left;spacingLeft=10;spacingTop=5;fontFamily=Courier New;" value="1. View pending questions in UI&#xa;2. Edit / refine content if needed&#xa;3. PUT /api/ai/approve or /reject&#xa;4. Approved → move to question_bank&#xa;5. Push notification sent to teacher" vertex="1">
-          <mxGeometry height="100" width="240" x="650" y="505" as="geometry" />
+        <mxCell id="reviewContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#6c8ebf;fontSize=9;align=left;spacingLeft=10;spacingTop=5;fontFamily=Courier New;" value="1. GET /api/ai/pending-review&#xa;   -&gt; List pending questions&#xa;&#xa;2. Review content in UI&#xa;   -&gt; Edit/refine if needed&#xa;&#xa;3. PUT /api/ai/approve/{id}&#xa;   -&gt; Move to question_bank&#xa;&#xa;4. PUT /api/ai/reject/{id}&#xa;   -&gt; Mark as rejected&#xa;&#xa;5. Notification sent to teacher" vertex="1">
+          <mxGeometry height="150" width="220" x="560" y="555" as="geometry" />
         </mxCell>
-
-        <!-- LEFT BOTTOM: Database Schemas -->
-        <mxCell id="schemaTitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#333333;" value="Database Schema (key tables):" vertex="1">
-          <mxGeometry height="20" width="240" x="40" y="640" as="geometry" />
+        
+        <!-- Database Schema Section -->
+        <mxCell id="schemaTitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#333333;" value="Database Schema:" vertex="1">
+          <mxGeometry height="20" width="120" x="560" y="730" as="geometry" />
         </mxCell>
-
-        <mxCell id="reqBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;align=left;spacingLeft=5;" value="ai_generation_requests" vertex="1">
-          <mxGeometry height="22" width="180" x="40" y="665" as="geometry" />
+        
+        <mxCell id="reqBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=9;align=left;spacingLeft=5;" value="ai_generation_requests" vertex="1">
+          <mxGeometry height="18" width="150" x="560" y="755" as="geometry" />
         </mxCell>
-        <mxCell id="reqContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#82b366;fontSize=8;align=left;spacingLeft=5;fontFamily=Courier New;" value="id               UUID (PK)&#xa;user_id          UUID&#xa;course_id        INTEGER&#xa;content_text     TEXT&#xa;quantity         INTEGER&#xa;difficulty       VARCHAR&#xa;question_type    VARCHAR&#xa;status           VARCHAR&#xa;progress         INTEGER&#xa;error_message    TEXT&#xa;created_at       TIMESTAMP&#xa;started_at       TIMESTAMP&#xa;completed_at     TIMESTAMP" vertex="1">
-          <mxGeometry height="160" width="180" x="40" y="687" as="geometry" />
+        <mxCell id="reqContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#82b366;fontSize=7;align=left;spacingLeft=5;fontFamily=Courier New;" value="id, user_id, course_id, content_text,&#xa;quantity, difficulty, status, progress,&#xa;error_message, created_at, completed_at" vertex="1">
+          <mxGeometry height="45" width="150" x="560" y="773" as="geometry" />
         </mxCell>
-
-        <mxCell id="genBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;align=left;spacingLeft=5;" value="generated_questions" vertex="1">
-          <mxGeometry height="22" width="180" x="250" y="665" as="geometry" />
+        
+        <mxCell id="genBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=9;align=left;spacingLeft=5;" value="generated_questions" vertex="1">
+          <mxGeometry height="18" width="150" x="560" y="830" as="geometry" />
         </mxCell>
-        <mxCell id="genContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#82b366;fontSize=8;align=left;spacingLeft=5;fontFamily=Courier New;" value="id               UUID (PK)&#xa;task_id          UUID (FK)&#xa;question_content TEXT&#xa;option_a         TEXT&#xa;option_b         TEXT&#xa;option_c         TEXT&#xa;option_d         TEXT&#xa;correct_answer   CHAR(1)&#xa;difficulty       VARCHAR(20)&#xa;topic            TEXT&#xa;explanation      TEXT&#xa;status           VARCHAR&#xa;generation_source VARCHAR&#xa;created_at       TIMESTAMP" vertex="1">
-          <mxGeometry height="160" width="180" x="250" y="687" as="geometry" />
+        <mxCell id="genContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFDE7;strokeColor=#d6b656;fontSize=7;align=left;spacingLeft=5;fontFamily=Courier New;" value="id, task_id, content, options,&#xa;correct_answer, difficulty, status&#xa;  = pending_review&#xa;  = approved / rejected" vertex="1">
+          <mxGeometry height="55" width="150" x="560" y="848" as="geometry" />
         </mxCell>
-
-        <mxCell id="qbBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;align=left;spacingLeft=5;" value="question_bank (questions)" vertex="1">
-          <mxGeometry height="22" width="180" x="460" y="665" as="geometry" />
+        
+        <mxCell id="qbBox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;fontSize=9;align=left;spacingLeft=5;" value="question_bank" vertex="1">
+          <mxGeometry height="18" width="150" x="560" y="915" as="geometry" />
         </mxCell>
-        <mxCell id="qbContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#82b366;fontSize=8;align=left;spacingLeft=5;fontFamily=Courier New;" value="id               UUID (PK)&#xa;course_id        UUID (FK)&#xa;content          TEXT&#xa;option_a         TEXT&#xa;option_b         TEXT&#xa;option_c         TEXT&#xa;option_d         TEXT&#xa;correct_answer   CHAR(1)&#xa;difficulty       VARCHAR&#xa;topic            TEXT&#xa;explanation      TEXT&#xa;source           VARCHAR&#xa;created_by       UUID (FK)&#xa;version          INTEGER" vertex="1">
-          <mxGeometry height="160" width="180" x="460" y="687" as="geometry" />
+        <mxCell id="qbContent" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=7;align=left;spacingLeft=5;fontFamily=Courier New;" value="id, course_id, content, options,&#xa;correct_answer, difficulty, topic,&#xa;created_by, approved_by" vertex="1">
+          <mxGeometry height="50" width="150" x="560" y="933" as="geometry" />
         </mxCell>
-
+        
         <!-- LEGEND -->
-        <mxCell id="legend" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=10;fontStyle=1;" value="Legend:" vertex="1">
-          <mxGeometry height="18" width="50" x="950" y="640" as="geometry" />
+        <mxCell id="legend" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=10;fontStyle=1;" value="LEGEND:" vertex="1">
+          <mxGeometry height="18" width="50" x="800" y="730" as="geometry" />
         </mxCell>
-        <mxCell id="leg1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" value="Business Service" vertex="1">
-          <mxGeometry height="18" width="100" x="950" y="660" as="geometry" />
+        <mxCell id="leg1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=8;" value="User / Client" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="755" as="geometry" />
         </mxCell>
-        <mxCell id="leg2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;" value="Infrastructure" vertex="1">
-          <mxGeometry height="18" width="100" x="950" y="680" as="geometry" />
+        <mxCell id="leg2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;" value="Frontend" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="775" as="geometry" />
         </mxCell>
-        <mxCell id="leg3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;" value="External API" vertex="1">
-          <mxGeometry height="18" width="100" x="950" y="700" as="geometry" />
+        <mxCell id="leg3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=8;" value="Gateway / External" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="795" as="geometry" />
         </mxCell>
-        <mxCell id="leg4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=9;" value="Database" vertex="1">
-          <mxGeometry height="18" width="100" x="950" y="720" as="geometry" />
+        <mxCell id="leg4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;" value="Business Service" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="815" as="geometry" />
         </mxCell>
-        <mxCell id="leg5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" value="User / Client" vertex="1">
-          <mxGeometry height="18" width="100" x="950" y="740" as="geometry" />
+        <mxCell id="leg5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=8;" value="Message Queue" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="835" as="geometry" />
         </mxCell>
-        <mxCell id="leg6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" value="UI / Info Box" vertex="1">
-          <mxGeometry height="18" width="100" x="950" y="760" as="geometry" />
+        <mxCell id="leg6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;" value="Pending Review DB" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="855" as="geometry" />
         </mxCell>
-
-        <!-- TITLE -->
-        <mxCell id="title4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;" value="Fig. 4. AI-Based Multiple-Choice Question Generation Process with RabbitMQ" vertex="1">
-          <mxGeometry height="25" width="600" x="350" y="870" as="geometry" />
+        <mxCell id="leg7" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=5;fillColor=#e6e6e6;strokeColor=#666666;fontSize=8;" value="Approved DB" vertex="1">
+          <mxGeometry height="20" width="90" x="800" y="880" as="geometry" />
         </mxCell>
+        <mxCell id="leg8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#28A745;strokeColor=#1D7A35;fontSize=8;fontColor=#FFFFFF;" value="Human Approval" vertex="1">
+          <mxGeometry height="16" width="90" x="800" y="908" as="geometry" />
+        </mxCell>
+        
       </root>
     </mxGraphModel>
   </diagram>

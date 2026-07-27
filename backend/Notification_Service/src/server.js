@@ -3,12 +3,16 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import dotenv from "dotenv";
+import http from "node:http";
 
 // Shared modules
 import { validateServiceEnv } from "../../shared/utils/env.validator.js";
 import { requestIdMiddleware, correlationIdMiddleware } from "../../shared/middleware/requestId.js";
 import { generalLimiter } from "../../shared/middleware/rateLimiter.js";
 import { default as logger, log } from "../../shared/utils/logger.js";
+
+// WebSocket Manager
+import wsManager from "./websocket/manager.js";
 
 dotenv.config();
 
@@ -68,6 +72,18 @@ app.get("/ready", (req, res) => {
   res.json({ status: "ready", service: "Notification_Service" });
 });
 
+// WebSocket health check
+app.get("/health/ws", (req, res) => {
+  const wsStats = wsManager.getStats();
+  res.json({
+    websocket: {
+      enabled: true,
+      path: "/ws/notifications",
+      ...wsStats,
+    },
+  });
+});
+
 // Global error handler (SAU TẤT CẢ ROUTES)
 app.use((err, req, res, next) => {
   log.error("Unhandled error", { error: err.message, stack: err.stack, requestId: req.requestId });
@@ -80,8 +96,30 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3004;
 
-app.listen(PORT, () => {
+// Create HTTP server (for WebSocket support)
+const server = http.createServer(app);
+
+// Initialize WebSocket server
+wsManager.initialize(server);
+wsManager.startHeartbeat();
+
+server.listen(PORT, () => {
   log.service.started(PORT);
+  console.log(`[Notification_Service] WebSocket available at ws://localhost:${PORT}/ws/notifications`);
 });
 
+// Graceful shutdown
+const gracefulShutdown = (signal) => {
+  console.log(`\n[Notification_Service] Received ${signal}. Shutting down gracefully...`);
+  wsManager.close();
+  server.close(() => {
+    console.log("[Notification_Service] HTTP server closed");
+    process.exit(0);
+  });
+};
+
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
+
 export default app;
+export { server };

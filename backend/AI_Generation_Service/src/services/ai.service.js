@@ -26,76 +26,68 @@ class AIService {
       context,
     } = data;
 
+    console.log("[AIService] Creating generation request for user:", userId);
+    console.log("[AIService] Request data:", JSON.stringify(data, null, 2));
+    
     const traceId = uuidv4();
+    let request, task;
 
-    // Create main request
-    const request = await AIGenerationRequest.create({
-      user_id: userId,
-      course_id: courseId || null,
-      chapter_id: chapterId || null,
-      knowledge_unit_id: knowledgeUnitId || null,
-      question_type: questionType || null,
-      difficulty: difficulty || null,
-      quantity: quantity || 10,
-      context: context || null,
-      status: "pending",
-      progress: 0,
-      trace_id: traceId,
-    });
-
-    // Create task for the request
-    const task = await AIGenerationTask.create({
-      request_id: request.id,
-      subject_id: courseId || 1, // Default subject
-      topic: null,
-      input_type: "text",
-      input_reference: null,
-      number_of_questions: quantity || 10,
-      difficulty: difficulty || "medium",
-      created_by: userId,
-      status: "pending",
-    });
-
-    // Publish to RabbitMQ for AI Worker to process
     try {
+      // Create main request
+      console.log("[AIService] Creating AIGenerationRequest record...");
+      request = await AIGenerationRequest.create({
+        user_id: userId,
+        course_id: courseId || null,
+        chapter_id: chapterId || null,
+        knowledge_unit_id: knowledgeUnitId || null,
+        question_type: questionType || null,
+        difficulty: difficulty || null,
+        quantity: quantity || 10,
+        context: context || null,
+        status: "pending",
+        progress: 0,
+        trace_id: traceId,
+      });
+      console.log("[AIService] AIGenerationRequest created:", request.id);
+
+      // Create task for the request
+      console.log("[AIService] Creating AIGenerationTask record...");
+      task = await AIGenerationTask.create({
+        request_id: request.id,
+        subject_id: courseId || 1,
+        topic: null,
+        input_type: "text",
+        input_reference: null,
+        number_of_questions: quantity || 10,
+        difficulty: difficulty || "medium",
+        created_by: userId,
+        status: "pending",
+      });
+      console.log("[AIService] AIGenerationTask created:", task.id);
+
+      // Publish to RabbitMQ for AI Worker to process
+      console.log("[AIService] Publishing to RabbitMQ...");
       await publishAIGeneration({
         requestId: request.id,
         taskId: task.id,
         traceId,
       });
       console.log("[AIService] Published message to RabbitMQ for request:", request.id);
-    } catch (error) {
-      console.error("[AIService] Failed to publish to queue:", error.message);
-      const errorMessage = `RabbitMQ publish failed: ${error.message}`;
-      try {
-        await Promise.all([
-          request.update({
-            status: "failed",
-            error_message: errorMessage,
-          }),
-          task.update({
-            status: "failed",
-            error_message: errorMessage,
-          }),
-        ]);
-      } catch (statusError) {
-        console.error(
-          "[AIService] Failed to mark request/task as failed:",
-          statusError.message,
-        );
-      }
-      throw new Error("Unable to queue AI generation request. Please try again.", {
-        cause: error,
-      });
-    }
 
-    return {
-      requestId: request.id,
-      taskId: task.id,
-      status: "pending",
-      message: "AI generation request queued for processing",
-      traceId,
-    };
+      return {
+        requestId: request.id,
+        taskId: task.id,
+        status: "pending",
+        message: "AI generation request queued for processing",
+        traceId,
+      };
+    } catch (error) {
+      console.error("[AIService] Failed:", error.message);
+      console.error("[AIService] Cause:", error.cause?.message);
+      console.error("[AIService] Stack:", error.stack);
+      const errorMessage = error.cause?.message || error.message;
+      throw new Error(`Unable to queue AI generation request: ${errorMessage}`);
+    }
   }
 
   /**

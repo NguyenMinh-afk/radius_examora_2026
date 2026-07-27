@@ -162,62 +162,6 @@ class GeminiAllModelsExhaustedError(GeminiError):
         self.tried_models = tried_models
 
 
-# ---------------------------------------------------------------------------
-# OpenAI Exceptions
-# ---------------------------------------------------------------------------
-
-
-class OpenAIError(AIServiceError):
-    """Errors from OpenAI API calls."""
-
-    def __init__(self, message: str, error_code: str = "OPENAI_ERROR") -> None:
-        super().__init__(message, error_code=error_code, status_code=502)
-
-
-class OpenAITimeoutError(OpenAIError):
-    def __init__(self) -> None:
-        super().__init__("OpenAI API request timed out.", error_code="OPENAI_TIMEOUT")
-
-
-class OpenAIRateLimitError(OpenAIError):
-    def __init__(self) -> None:
-        super().__init__(
-            "OpenAI API rate limit exceeded (HTTP 429). Please try again later.",
-            error_code="OPENAI_RATE_LIMIT",
-        )
-
-
-class OpenAIModelNotFoundError(OpenAIError):
-    def __init__(self, model: str) -> None:
-        super().__init__(
-            f"OpenAI model '{model}' not found or not available (HTTP 404).",
-            error_code="OPENAI_MODEL_NOT_FOUND",
-        )
-
-
-class OpenAIPermissionError(OpenAIError):
-    def __init__(self, detail: str = "") -> None:
-        super().__init__(
-            f"OpenAI API key is invalid or lacks permission (HTTP 403). {detail}".strip(),
-            error_code="OPENAI_PERMISSION_DENIED",
-        )
-
-
-class OpenAIInvalidKeyError(OpenAIError):
-    def __init__(self) -> None:
-        super().__init__(
-            "OpenAI API key is invalid (HTTP 401). Check your OPENAI_API_KEY.",
-            error_code="OPENAI_INVALID_KEY",
-        )
-
-
-class OpenAIInvalidRequestError(OpenAIError):
-    def __init__(self, detail: str = "") -> None:
-        super().__init__(
-            f"OpenAI request has invalid arguments (HTTP 400). {detail}".strip(),
-            error_code="OPENAI_INVALID_REQUEST",
-        )
-
 
 class DatabaseError(AIServiceError):
     def __init__(self, message: str = "A database error occurred.") -> None:

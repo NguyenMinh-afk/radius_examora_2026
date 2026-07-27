@@ -1,14 +1,12 @@
 """
-LLM Model Router — Unified router for Gemini and OpenAI.
+LLM Model Router — Gemini-only router.
 
 Strategy:
-1. If OpenAI key is configured, use OpenAI as primary (higher quality).
-2. Fallback to Gemini with model fallback list.
-3. Final fallback to local question generator (CPU-only).
+1. Gemini with model fallback list.
+2. Final fallback to local question generator (CPU-only).
 
 Provider Priority:
-- Primary: OpenAI (if key configured)
-- Secondary: Gemini with model fallback chain
+- Primary: Gemini with model fallback chain
 - Final: Local CPU-based generator
 """
 
@@ -25,15 +23,9 @@ from app.core.exceptions import (
     GeminiModelNotFoundError,
     GeminiPermissionError,
     GeminiRateLimitError,
-    OpenAIError,
-    OpenAIInvalidKeyError,
-    OpenAIModelNotFoundError,
-    OpenAIPermissionError,
-    OpenAIRateLimitError,
 )
 from app.core.logging import get_logger
 from app.infrastructure.llm.gemini_client import GeminiClient
-from app.infrastructure.llm.openai_client import OpenAIClient
 
 logger = get_logger(__name__)
 
@@ -60,8 +52,7 @@ def _is_gemini_quota_error(exc: Exception) -> bool:
 
 class LLMModelRouter:
     """
-    Unified model router supporting both OpenAI (primary, higher quality)
-    and Gemini (fallback).
+    Model router supporting Gemini only.
 
     Usage:
         router = LLMModelRouter(db, request_id="xxx")
@@ -78,22 +69,7 @@ class LLMModelRouter:
         self.settings = get_settings()
         self.quota_svc = ApiQuotaService(db)
         self.gemini_client = GeminiClient()
-        self._openai_client: OpenAIClient | None = None
         self._local_generator = LocalQuestionGenerator()
-
-    @property
-    def openai_client(self) -> OpenAIClient | None:
-        """Lazy initialization of OpenAI client (only if key is configured)."""
-        if self._openai_client is None and self.settings.has_openai_key:
-            try:
-                self._openai_client = OpenAIClient()
-            except Exception as e:
-                logger.warning(
-                    "Failed to initialize OpenAI client: %s | falling back to Gemini",
-                    str(e),
-                )
-                self._openai_client = None
-        return self._openai_client
 
     @property
     def _gemini_candidates(self) -> list[str]:
@@ -109,12 +85,11 @@ class LLMModelRouter:
         difficulty: str = "medium",
     ) -> tuple[dict[str, Any], str, str]:
         """
-        Attempt generation with provider fallback.
+        Attempt generation with Gemini.
 
         Priority:
-        1. OpenAI (if configured)
-        2. Gemini with model fallback chain
-        3. Local CPU generator (final fallback)
+        1. Gemini with model fallback chain
+        2. Local CPU generator (final fallback)
 
         Returns:
             Tuple of (parsed_response_dict, provider_name, model_name)
@@ -122,68 +97,7 @@ class LLMModelRouter:
         Raises:
             Exception: When all providers fail.
         """
-        # ── Step 1: Try OpenAI (highest quality) ─────────────────────────────
-        if self.openai_client and self.settings.has_openai_key:
-            try:
-                has_quota = await self.quota_svc.can_call_openai()
-                if has_quota:
-                    result, q_count = await self.openai_client.generate_questions(
-                        prompt=prompt,
-                        request_id=self.request_id,
-                    )
-                    if q_count > 0:
-                        await self.quota_svc.record_openai_call()
-                        logger.info(
-                            "OpenAI generation succeeded | model=%s | questions=%d | request_id=%s",
-                            self.settings.openai_model,
-                            q_count,
-                            self.request_id,
-                        )
-                        return result, "openai", self.settings.openai_model
-
-                    # Empty response — treat as failure
-                    await self.quota_svc.record_openai_call()
-                    logger.warning(
-                        "OpenAI returned 0 questions, trying next provider | request_id=%s",
-                        self.request_id,
-                    )
-            except OpenAIInvalidKeyError as e:
-                logger.error(
-                    "OpenAI key invalid: %s | switching to Gemini | request_id=%s",
-                    str(e),
-                    self.request_id,
-                )
-            except OpenAIModelNotFoundError as e:
-                logger.warning(
-                    "OpenAI model not found: %s | switching to Gemini | request_id=%s",
-                    str(e),
-                    self.request_id,
-                )
-            except OpenAIPermissionError as e:
-                logger.error(
-                    "OpenAI permission denied: %s | switching to Gemini | request_id=%s",
-                    str(e),
-                    self.request_id,
-                )
-            except OpenAIRateLimitError:
-                logger.warning(
-                    "OpenAI rate limited | switching to Gemini | request_id=%s",
-                    self.request_id,
-                )
-            except OpenAIError as e:
-                logger.warning(
-                    "OpenAI error: %s | switching to Gemini | request_id=%s",
-                    str(e),
-                    self.request_id,
-                )
-            except Exception as e:
-                logger.warning(
-                    "OpenAI unexpected error: %s | switching to Gemini | request_id=%s",
-                    str(e),
-                    self.request_id,
-                )
-
-        # ── Step 2: Try Gemini with model fallback ──────────────────────────
+        # ── Step 1: Try Gemini with model fallback ──────────────────────────
         if self.settings.gemini_api_key:
             tried_models: list[str] = []
             for model_name in self._gemini_candidates:
@@ -264,7 +178,7 @@ class LLMModelRouter:
                 self.request_id,
             )
 
-        # ── Step 3: Local CPU fallback (final) ─────────────────────────────
+        # ── Step 2: Local CPU fallback (final) ─────────────────────────────
         logger.info(
             "Using local CPU fallback for question generation | request_id=%s",
             self.request_id,
@@ -290,5 +204,4 @@ class LLMModelRouter:
 
     async def close(self) -> None:
         """Clean up resources."""
-        if self._openai_client:
-            await self._openai_client.close()
+        pass

@@ -1,0 +1,4 @@
+worker_count,requests_sent,requests_completed,total_time_seconds,throughput_req_per_sec,avg_client_response_ms,scaling_efficiency,cpu_mean,cpu_max,memory_mean,memory_max
+1,20,20,143.23,0.14,70.13,1.0,16.36,64.2,93.53,97.1
+2,20,20,119.06,0.17,78.84,0.6015,18.88,66.7,95.44,97.8
+4,20,20,118.3,0.17,78.19,0.3027,19.7,74.9,94.86,96.9

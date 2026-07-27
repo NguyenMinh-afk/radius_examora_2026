@@ -50,6 +50,10 @@ const QUEUE_CONFIGS = Object.freeze([
     queue: QUEUES.AI_GENERATION,
     dlq: QUEUES.AI_GENERATION_DLQ,
     routingKeys: [ROUTING_KEYS.AI_GENERATE],
+    arguments: {
+      'x-max-length': 1000,
+      'x-overflow': 'reject-publish',
+    },
   },
   {
     queue: QUEUES.EMAIL_SEND,

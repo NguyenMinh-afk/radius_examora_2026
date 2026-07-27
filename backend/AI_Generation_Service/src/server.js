@@ -103,6 +103,10 @@ import aiRoutes from "./routes/ai.routes.js";
 app.use("/api/ai/generate", aiLimiter, aiRoutes);
 app.use("/api/ai", aiRoutes);
 
+// Support /api/v1/ai routes as well (for compatibility with AI Worker docs)
+app.use("/api/v1/ai/generate", aiLimiter, aiRoutes);
+app.use("/api/v1/ai", aiRoutes);
+
 app.get("/", (req, res) => res.send("Examora AI_Generation_Service is running..."));
 
 // Enhanced Health Check

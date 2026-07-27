@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "cross-env SERVICE_NAME=notification-service nodemon src/server.js",
     "start": "cross-env SERVICE_NAME=notification-service node src/server.js",
+    "test:email": "node scripts/test-email.mjs",
     "lint": "eslint src",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -32,10 +33,12 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^6.9.0",
     "pg": "^8.20.0",
     "pg-hstore": "^2.3.4",
     "pino": "^9.6.0",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
