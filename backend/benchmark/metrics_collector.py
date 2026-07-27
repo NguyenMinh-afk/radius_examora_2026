@@ -433,19 +433,31 @@ class MetricsCollector:
 # ==================== Helper Functions ====================
 
 def calculate_statistics(values: list[float]) -> dict[str, float]:
-    """Calculate mean, std, min, max from a list of values."""
+    """
+    Calculate comprehensive statistics including percentiles.
+    Suitable for scientific papers.
+    """
     if not values:
-        return {"mean": 0, "std": 0, "min": 0, "max": 0, "count": 0}
+        return {
+            "mean": 0, "std": 0, "min": 0, "max": 0,
+            "median": 0, "p50": 0, "p75": 0, "p90": 0,
+            "p95": 0, "p99": 0, "count": 0
+        }
 
     import numpy as np
     arr = np.array(values)
 
     return {
-        "mean": float(np.mean(arr)),
-        "std": float(np.std(arr)),
-        "min": float(np.min(arr)),
-        "max": float(np.max(arr)),
-        "median": float(np.median(arr)),
+        "mean": round(float(np.mean(arr)), 2),
+        "std": round(float(np.std(arr)), 2),
+        "min": round(float(np.min(arr)), 2),
+        "max": round(float(np.max(arr)), 2),
+        "median": round(float(np.median(arr)), 2),
+        "p50": round(float(np.percentile(arr, 50)), 2),
+        "p75": round(float(np.percentile(arr, 75)), 2),
+        "p90": round(float(np.percentile(arr, 90)), 2),
+        "p95": round(float(np.percentile(arr, 95)), 2),
+        "p99": round(float(np.percentile(arr, 99)), 2),
         "count": len(values),
     }
 

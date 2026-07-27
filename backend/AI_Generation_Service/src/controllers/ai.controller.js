@@ -8,7 +8,7 @@ export const generateQuestions = async (req, res) => {
     const data = await aiService.createGenerationRequest(req.user.id, req.body);
     return res.status(202).json(data);
   } catch (error) {
-    console.error("[AI] generateQuestions error:", error);
+    console.error("[AI Controller] generateQuestions error:", error.message);
     return res.status(500).json({ error: error.message });
   }
 };

@@ -54,12 +54,6 @@ class Settings(BaseSettings):
     gemini_max_retries: int = Field(default=3)
     gemini_min_interval_seconds: float = Field(default=6.0)
 
-    # --- OpenAI API (Optional - higher quality questions) ---
-    openai_api_key: str | None = Field(default=None)
-    openai_model: str = Field(default="gpt-4o-mini")
-    openai_api_base: str = Field(default="https://api.openai.com/v1")
-    openai_timeout_seconds: int = Field(default=120)
-
     # --- RabbitMQ ---
     use_rabbitmq: bool = Field(default=False)
     rabbitmq_url: str = Field(default="amqp://guest:guest@localhost:5672/")
@@ -245,22 +239,6 @@ class Settings(BaseSettings):
                 "Get your key at: https://aistudio.google.com/app/apikey"
             )
 
-    def validate_openai_key(self) -> None:
-        """Raise ValueError if OpenAI API key is configured but empty."""
-        if (
-            self.openai_api_key
-            and self.openai_api_key == "PASTE_YOUR_OPENAI_API_KEY_HERE"
-        ):
-            raise ValueError(
-                "OPENAI_API_KEY is set but empty. "
-                "Please set your OpenAI API key in the .env file. "
-                "Get your key at: https://platform.openai.com/api-keys"
-            )
-
-    @property
-    def has_openai_key(self) -> bool:
-        """Return True if OpenAI API key is configured."""
-        return bool((self.openai_api_key or "").strip())
 
 
 @lru_cache(maxsize=1)

@@ -1,7 +1,7 @@
 """
 Use case trung tam cua worker.
 
-Luong chinh: lay noi dung dau vao, tien xu ly, dung context, goi LLM (OpenAI/Gemini),
+Luong chinh: lay noi dung dau vao, tien xu ly, dung context, goi LLM (Gemini),
 validate + loai trung, roi luu cau hoi hop le vao DB.
 """
 
@@ -189,7 +189,7 @@ def _snapshot_task(task: Any) -> _TaskSnapshot:
 
 class ProcessAITaskUseCase:
     """
-    Unified LLM pipeline: OpenAI -> Gemini (model fallback) -> Local fallback.
+    LLM pipeline: Gemini (model fallback) -> Local fallback.
 
     Single-call mode: one LLM call per task, regardless of context length.
     """
@@ -234,11 +234,7 @@ class ProcessAITaskUseCase:
     ) -> None:
         set_request_id(str(request_id))
         set_task_id(str(task_id))
-        logger.info(
-            "Starting AI task | trace=%s | openai_configured=%s",
-            trace_id,
-            self.settings.has_openai_key,
-        )
+        logger.info("Starting AI task | trace=%s", trace_id)
 
         request = await self.req_repo.get_by_id(request_id)
         task = await self.task_repo.get_by_id(task_id)
@@ -317,7 +313,7 @@ class ProcessAITaskUseCase:
                 topic_detection.confidence,
             )
 
-            # Step 2: Try LLM (OpenAI -> Gemini with fallback)
+            # Step 2: Try LLM (Gemini with fallback)
             (
                 questions_to_insert,
                 prompt_text,
@@ -339,7 +335,7 @@ class ProcessAITaskUseCase:
             log_status = LogStatus.SUCCESS.value
 
             # Step 3: Dedup (LLM path only)
-            if provider_used in ("gemini", "openai"):
+            if provider_used in ("gemini",):
                 unique = self.deduplicator.deduplicate(
                     [
                         {
@@ -557,7 +553,7 @@ class ProcessAITaskUseCase:
         resolved_topic: str | None = None,
     ) -> tuple[list[dict], str, str, str, str]:
         """
-        Call LLM via unified router (OpenAI -> Gemini -> Local fallback).
+        Call LLM via unified router (Gemini -> Local fallback).
         """
         max_ctx = self.settings.max_single_call_context_chars
         requested_quantity = int(request.quantity)

@@ -1,5 +1,5 @@
 """
-Theo dõi quota cho Gemini, OpenAI và OCR.Space.
+Theo dõi quota cho Gemini và OCR.Space.
 
 Service này đọc/ghi usage theo ngày để worker biết còn được gọi provider nào và
 API có thể trả về trạng thái quota hiện tại.
@@ -16,7 +16,6 @@ from app.infrastructure.db.quota_repository import QuotaRepository
 logger = get_logger(__name__)
 
 _GEMINI_PROVIDER = "gemini"
-_OPENAI_PROVIDER = "openai"
 _OCR_SPACE_PROVIDER = "ocr_space"
 
 
@@ -34,14 +33,6 @@ class ApiQuotaService:
 
     @property
     def _gemini_limit(self) -> int:
-        return self.settings.gemini_daily_request_limit
-
-    @property
-    def _openai_model(self) -> str:
-        return self.settings.openai_model
-
-    @property
-    def _openai_limit(self) -> int:
         return self.settings.gemini_daily_request_limit
 
     @property
@@ -156,31 +147,7 @@ class ApiQuotaService:
     async def get_overview(self) -> dict:
         gemini_status = await self.get_status()
         gemini_status["ocr_space"] = await self.get_ocr_space_status()
-        if self.settings.has_openai_key:
-            gemini_status["openai"] = await self.get_openai_status()
         return gemini_status
-
-    # ─── OpenAI Quota Methods ────────────────────────────────────────────────
-
-    async def can_call_openai(self) -> bool:
-        """Return True if OpenAI still has daily quota today."""
-        return await self.can_call_provider(
-            _OPENAI_PROVIDER, self._openai_model, self._openai_limit
-        )
-
-    async def record_openai_call(self, token_estimate: int | None = None) -> int:
-        """Record one OpenAI API call after a successful request."""
-        return await self.record_call_provider(
-            _OPENAI_PROVIDER, self._openai_model, token_estimate
-        )
-
-    async def get_openai_status(self) -> dict:
-        """Return current daily status for OpenAI."""
-        return await self.get_provider_status(
-            _OPENAI_PROVIDER,
-            self._openai_model,
-            self._openai_limit,
-        )
 
     async def reset_dev(self) -> None:
         await self.repo.reset_usage(_GEMINI_PROVIDER, self._gemini_model)

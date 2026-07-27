@@ -71,11 +71,11 @@ export const forgotPasswordLimiter = rateLimit({
 
 /**
  * Rate limit cho API calls nặng (AI generation)
- * 20 requests / 5 phút
+ * 1000 requests / 5 phút - cho benchmark
  */
 export const aiLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
-  max: 20,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

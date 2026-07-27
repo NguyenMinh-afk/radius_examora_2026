@@ -1,8 +1,11 @@
-Item,Value
-Platform,Windows 10/11
-Python,3.13
-Node.js,24.x
-RabbitMQ,4.x
-PostgreSQL,PostgreSQL 17
-Docker,Docker 28.x
+Metric,Value
+Platform,Windows-11-10.0.26200-SP0
+Python,3.13.7
+Node.js,v22.19.0
+Docker,Docker 29.1.3
 AI Model,Gemini 3.1 Flash Lite
+API Base URL,http://localhost:3000
+Benchmark Requests,20
+Concurrency,2
+Num Runs,2
+Warmup Requests,2

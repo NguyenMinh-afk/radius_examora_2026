@@ -67,6 +67,8 @@ describe('AI Generation RabbitMQ publisher', () => {
       arguments: {
         'x-dead-letter-exchange': 'examora.dlx',
         'x-dead-letter-routing-key': 'ai.generation.dlq',
+        'x-max-length': 1000,
+        'x-overflow': 'reject-publish',
       },
     });
     expect(mocks.channel.publish).toHaveBeenCalledWith(

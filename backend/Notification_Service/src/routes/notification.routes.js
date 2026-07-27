@@ -7,6 +7,7 @@ import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import notificationService from "../services/notification.service.js";
 import { Notification, sequelize } from "../models/index.js";
+import notificationPusher from "../websocket/notification.pusher.js";
 
 const router = express.Router();
 
@@ -158,6 +159,9 @@ router.post("/internal", async (req, res) => {
         messageId: message_id,
       });
     }
+
+    // Push to WebSocket clients (non-blocking)
+    notificationPusher.pushToUser(user_id, result.notification);
 
     res.status(201).json({
       id: result.notification.id,

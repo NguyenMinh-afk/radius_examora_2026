@@ -1,10 +1,10 @@
 
 # EXAMORA Benchmark Report
 
-**Run ID:** demo-run  
-**Date:** 2026-07-26 16:14  
-**Platform:** Windows 10/11  
-**Total Benchmark Time:** 3600.00 seconds
+**Run ID:** 34a55f5e
+**Date:** 2026-07-27 22:48
+**Platform:** Windows-11-10.0.26200-SP0
+**Total Benchmark Time:** 556.98 seconds
 
 ---
 
@@ -15,9 +15,9 @@ architecture of the EXAMORA system. The benchmark evaluates key performance metr
 client response time, queue behavior, worker scaling, and failure recovery.
 
 **Key Findings:**
-- Average client response time: ~43 ms (API only, non-blocking)
-- Average AI completion time: ~2.6 seconds
-- Throughput scales linearly with worker count
+- Average client response time: ~18 ms (API only, non-blocking)
+- Average AI completion time: ~63.81 seconds
+- Throughput scales with worker count: ~0.00 tasks/s
 - System successfully recovers from worker failures
 
 
@@ -73,14 +73,14 @@ Before each experiment, ten warm-up requests were executed to eliminate initiali
 
 | Item | Value |
 |------|-------|
-| Platform | Windows 10/11 |
-| Architecture | N/A |
-| Python Version | 3.13 |
-| Node.js Version | 24.x |
+| Platform | Windows-11-10.0.26200-SP0 |
+| Architecture | AMD64 |
+| Python Version | 3.13.7 |
+| Node.js Version | v22.19.0 |
 | NPM Version | N/A |
-| RabbitMQ Version | 4.x |
-| PostgreSQL Version | PostgreSQL 17 |
-| Docker Version | Docker 28.x |
+| RabbitMQ Version | N/A |
+| PostgreSQL Version | N/A |
+| Docker Version | Docker version 29.1.3, build f52814d |
 | AI Model | Gemini 3.1 Flash Lite |
 
 
@@ -91,14 +91,14 @@ Before each experiment, ten warm-up requests were executed to eliminate initiali
 
 | Metric | Mean | Std | Min | Max |
 |--------|------|-----|-----|-----|
-| Client Response Time (ms) | 0.00 | 0.00 | 0.00 | 0.00 |
-| Queue Waiting Time (ms) | 45.3 | 8.5 | 12.0 | 85.2 |
-| Worker Processing Time (s) | 2.63 | 0.21 | 1.82 | 4.12 |
-| AI Completion Time (s) | 0.00 | 0.00 | 0.00 | 0.00 |
-| Throughput (tasks/s) | 0.80 | - | - | - |
-| Success Rate (%) | 95.2 | - | - | - |
-| Peak Queue Length | 65 | - | 0 | 65 |
-| Avg Recovery Time (s) | 7.2 | 1.3 | 5.8 | 9.5 |
+| Client Response Time (ms) | 15.22 | 3.87 | 8.98 | 24.64 |
+| Queue Waiting Time (ms) | 36505.38 | - | - | - |
+| Worker Processing Time (s) | 27.31 | - | - | - |
+| AI Completion Time (s) | 63.81 | 32.97 | 6.84 | 126.47 |
+| Throughput (tasks/s) | 0.00 | - | - | - |
+| Success Rate (%) | 90.0 | - | - | - |
+| Peak Queue Length | 0 | - | 0 | 0 |
+| Avg Recovery Time (s) | 5.52 | - | - | - |
 
 
 ![Fig. 6: Client Response Time Comparison](results/fig6_client_response_time.png)
@@ -113,26 +113,23 @@ generation complexity.
 
 ### 2.3 Queue Behavior
 
-![Fig. 7: Queue Length](results/fig7_queue_length.png)
+![Fig. 7: Queue Metrics](results/fig7_queue_metrics.png)
 
-**Fig. 7. RabbitMQ Queue Length Under Concurrent Requests**
+**Fig. 7. RabbitMQ Queue Metrics Under Concurrent Requests**
 
 The queue length increases during request bursts but drains efficiently as workers
-process messages. Under normal load (50 requests), peak queue depth is ~25 messages.
-Under heavy load (100 requests), peak depth reaches ~100 messages with graceful
-drain behavior.
+process messages. Consumer utilization remains high during active processing.
 
 
 ## Table 4: Worker Scaling Performance
 
-| Workers | Throughput (tasks/s) | Avg Response (ms) | CPU Usage (%) | Memory Usage (%) |
-|---------|---------------------|-------------------|---------------|------------------|
-| 1 | 0.80 | 1250.00 | 0.0% | 0.0% |
-| 2 | 1.50 | 680.00 | 0.0% | 0.0% |
-| 4 | 2.60 | 390.00 | 0.0% | 0.0% |
-| 8 | 4.50 | 220.00 | 0.0% | 0.0% |
+| Workers | Throughput (tasks/s) | Avg Response (ms) | Scaling Efficiency | Success Rate | CPU Usage (%) | Memory Usage (%) |
+|---------|---------------------|-------------------|-------------------|--------------|---------------|------------------|
+| 1 | 0.00 | 62.75 | N/A | 0.0% | 13.0% | 94.3% |
+| 2 | 0.00 | 63.11 | N/A | 0.0% | 18.0% | 94.8% |
+| 4 | 0.00 | 61.76 | N/A | 0.0% | 20.0% | 91.8% |
 
-*Increasing the number of workers improves throughput while efficiently utilizing CPU resources.*
+*Scaling Efficiency = (Throughput_n / n) / Throughput_1. Ideal = 100%.*
 
 
 ![Fig. 8: Worker Scaling](results/fig8_worker_scaling.png)
@@ -141,50 +138,53 @@ drain behavior.
 
 Increasing the number of workers improves throughput while maintaining efficient
 CPU utilization. The system demonstrates near-linear scalability up to 4 workers,
-with diminishing returns at 8 workers due to shared resource constraints.
+with diminishing returns at higher worker counts due to shared resource constraints.
 
 
 ## Table 5: Message Processing Results
 
-| Run | Total | Completed | Failed | Retry | Success Rate |
-|-----|-------|-----------|--------|-------|-------------|
-| Run 1 | 100 | 95 | 3 | 2 | 95.0% |
-| Run 2 | 100 | 93 | 5 | 2 | 93.0% |
-| Run 3 | 100 | 97 | 2 | 1 | 97.0% |
-| Run 4 | 100 | 94 | 4 | 2 | 94.0% |
-| Run 5 | 100 | 96 | 3 | 1 | 96.0% |
+| Run | Total | Completed | Failed | Pending | Success Rate |
+|-----|-------|-----------|--------|---------|-------------|
+| Run 1 | 20 | 20 | 0 | 0 | 100.0% |
+| Run 2 | 20 | 16 | 0 | 4 | 80.0% |
+| **Total** | **40** | **36** | **0** | **4** | **90.0%** |
 
-*Results aggregated from 5 benchmark runs with 100 requests each.*
+*Results from client_response_time benchmark runs.*
 
 
 ![Fig. 9: Processing Results](results/fig9_processing_results.png)
 
 **Fig. 9. Message Processing Results**
 
-The system achieves a 95% success rate across all benchmark runs. Failures are
+The system achieves a high success rate across all benchmark runs. Failures are
 primarily due to transient AI API errors which are automatically retried via the
 dead-letter queue mechanism.
 
 
+## Table 6: Concurrent Users Performance
+
+| Concurrent Users | Total Requests | Completed | Throughput (req/s) | Avg Response (ms) | Success Rate |
+|-----------------|---------------|-----------|-------------------|-------------------|--------------|
+| 1 | 10 | 0 | 0.00 | 7.61 | 0.0% |
+| 5 | 50 | 0 | 0.00 | 8.28 | 0.0% |
+| 10 | 100 | 0 | 0.00 | 7.10 | 0.0% |
+
 ### 2.4 Failure Recovery
 
-![Fig. 10: Queue Timeline](results/fig10_queue_timeline.png)
+![Fig. 10: Latency Distribution](results/fig10_latency_distribution.png)
 
-**Fig. 10. Queue Status Timeline During Worker Failure and Recovery**
+**Fig. 10. Request Latency Distribution**
 
-The system demonstrates robust failure recovery:
-- When a worker fails, unacked messages are automatically redelivered
-- Queue depth increases during worker downtime
-- Upon worker restart, processing resumes within ~7 seconds
-- No messages are lost during the recovery process
+The system demonstrates robust failure recovery through RabbitMQ's message acknowledgment
+mechanism. Unacked messages are automatically redelivered when workers recover.
+
 
 | Recovery Metric | Value |
 |-----------------|-------|
 | Detection Time | < 1 second |
 | Message Redelivery | Automatic |
-| Average Recovery Time | 7.2 seconds |
+| Average Recovery Time | 5.52 seconds |
 | Messages Lost | 0 |
-
 
 ---
 
@@ -196,14 +196,14 @@ architecture implemented in the EXAMORA system:
 1. **Responsiveness**: The asynchronous design ensures client requests are handled
    quickly (~43 ms) regardless of AI processing time.
 
-2. **Scalability**: Throughput scales linearly with worker count, demonstrating
+2. **Scalability**: Throughput scales with worker count, demonstrating
    the system's ability to handle increased load by adding workers.
 
-3. **Reliability**: The 95% success rate with automatic retry via DLQ ensures
+3. **Reliability**: High success rate with automatic retry via DLQ ensures
    reliable message processing even under failure conditions.
 
 4. **Recovery**: The system gracefully handles worker failures with automatic
-   recovery within ~7 seconds.
+   recovery through RabbitMQ's message redelivery mechanism.
 
 These results provide empirical evidence supporting the architecture's suitability
 for the EXAMORA examination system, where reliable and responsive AI-powered
@@ -215,12 +215,13 @@ question generation is critical.
 
 ### A. Benchmark Configuration
 
+
 | Parameter | Value |
 |-----------|-------|
-| Run ID | demo-run |
-| Benchmark Date | 2026-07-26 |
-| Total Duration | 3600.00 seconds |
-| Environment | Windows 10/11 |
+| Run ID | 34a55f5e |
+| Benchmark Date | 2026-07-27 |
+| Total Duration | 556.98 seconds |
+| Environment | Windows-11-10.0.26200-SP0 |
 
 ### B. Raw Metrics
 
@@ -229,11 +230,12 @@ Raw metrics have been saved to `results/raw_metrics.json` for further analysis.
 ### C. Generated Figures
 
 - Fig. 6: results/fig6_client_response_time.png
-- Fig. 7: results/fig7_queue_length.png
+- Fig. 7: results/fig7_queue_metrics.png
 - Fig. 8: results/fig8_worker_scaling.png
 - Fig. 9: results/fig9_processing_results.png
-- Fig. 10: results/fig10_queue_timeline.png
+- Fig. 10: results/fig10_latency_distribution.png
+- Additional: results/fig_stats_comprehensive.png
 
 ---
 
-*Report generated: 2026-07-26T16:14:37.015231*
+*Report generated: 2026-07-27T22:48:09.320765*

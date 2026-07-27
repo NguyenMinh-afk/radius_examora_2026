@@ -31,6 +31,8 @@ async function setupTopology(currentChannel) {
     arguments: {
       'x-dead-letter-exchange': DLX_NAME,
       'x-dead-letter-routing-key': DLQ_NAME,
+      'x-max-length': 1000,
+      'x-overflow': 'reject-publish',
     },
   });
   await currentChannel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, ROUTING_KEY);

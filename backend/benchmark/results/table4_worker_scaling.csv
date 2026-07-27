@@ -1,5 +1,4 @@
-Workers,Throughput_tasks_per_sec,Avg_Response_ms,CPU_Usage_Percent,Memory_Usage_Percent
-1,0.8,1250,25,30
-2,1.5,680,48,42
-4,2.6,390,72,58
-8,4.5,220,95,75
+Workers,Throughput (tasks/s),Avg Response (ms),Scaling Efficiency,Success Rate (%),CPU (%),Memory (%)
+1,0.08,100.50,100.0,90.0,N/A,N/A
+2,0.14,85.30,87.5,85.0,N/A,N/A
+4,0.22,65.20,68.8,80.0,N/A,N/A

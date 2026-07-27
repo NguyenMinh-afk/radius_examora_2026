@@ -38,7 +38,9 @@ app.disable("x-powered-by");
 
 // CORS
 app.use(cors());
-app.use(express.json());
+
+// JSON parser
+app.use(express.json({ limit: '10mb' }));
 
 // Rate limiting (global)
 app.use(generalLimiter);
@@ -62,7 +64,11 @@ async function proxyRequest(req, res, serviceName, serviceBasePath) {
 
   // Strip gateway prefix, replace with service prefix
   const path = req.originalUrl.replace(/^\/api\/[^/]+/, serviceBasePath);
+  const targetUrl = `${baseURL}${path}`;
   const timeout = 60_000; // 60 seconds
+
+  log.info(`[PROXY] ${req.method} ${req.originalUrl} -> ${targetUrl}`);
+  log.info(`[PROXY] Body type: ${typeof req.body}, has body: ${req.body != null}`);
 
   let timeoutId;
   try {
@@ -70,17 +76,38 @@ async function proxyRequest(req, res, serviceName, serviceBasePath) {
     const controller = new AbortController();
     timeoutId = setTimeout(() => controller.abort(), timeout);
     
-    const response = await fetch(`${baseURL}${path}`, {
+    // Build clean headers
+    const headers = {
+      "content-type": "application/json",
+      "accept": "application/json",
+      "x-request-id": req.requestId,
+      "x-correlation-id": req.correlationId,
+    };
+    
+    // Copy relevant headers from original request
+    if (req.headers["authorization"]) {
+      headers["authorization"] = req.headers["authorization"];
+    }
+    
+    const fetchOptions = {
       method: req.method,
-      headers: {
-        ...req.headers,
-        host: undefined,
-        "x-request-id": req.requestId,
-        "x-correlation-id": req.correlationId,
-      },
-      body: req.method !== "GET" ? JSON.stringify(req.body) : undefined,
+      headers,
       signal: controller.signal,
-    });
+    };
+    
+    if (req.method !== "GET") {
+      const body = req.body;
+      if (body && typeof body === 'object') {
+        fetchOptions.body = JSON.stringify(body);
+        log.info(`[PROXY] Sending body: ${fetchOptions.body.substring(0, 200)}`);
+      } else if (body) {
+        fetchOptions.body = String(body);
+      } else {
+        log.warn(`[PROXY] No body for POST request!`);
+      }
+    }
+    
+    const response = await fetch(targetUrl, fetchOptions);
     
     clearTimeout(timeoutId);
     timeoutId = undefined;
@@ -109,13 +136,19 @@ async function proxyRequest(req, res, serviceName, serviceBasePath) {
     }
   } catch (error) {
     if (timeoutId) clearTimeout(timeoutId);
-    log.error(`Proxy ${serviceName} error`, { error: error.message });
+    const errorDetail = error.cause?.message || error.message;
+    log.error(`[PROXY ERROR] ${serviceName}: ${errorDetail}`, { 
+      error: errorDetail, 
+      cause: error.cause,
+      stack: error.stack,
+      targetUrl
+    });
     if (error.name === "AbortError" || error.message.includes("aborted")) {
       res.status(504).json({ error: "Gateway timeout", service: serviceName, detail: "Service took too long to respond" });
     } else if (error.cause?.code === "ECONNREFUSED" || error.message.includes("ECONNREFUSED")) {
       res.status(503).json({ error: "Service unavailable", service: serviceName });
     } else {
-      res.status(502).json({ error: "Bad response from service", service: serviceName, detail: error.message });
+      res.status(502).json({ error: "Bad response from service", service: serviceName, detail: errorDetail });
     }
   }
 }
@@ -144,7 +177,12 @@ app.use("/api/questions", (req, res, _next) => proxyRequest(req, res, "question"
 app.use("/api/collections", (req, res, _next) => proxyRequest(req, res, "question", "/api/collections"));
 
 // AI routes - use benchmarkLimiter for high-volume requests
-app.use("/api/ai", benchmarkLimiter, (req, res, _next) => proxyRequest(req, res, "ai", "/api/v1/ai"));
+// Proxy to AI_Generation_Service at /api/ai/* and /api/v1/ai/*
+app.use("/api/ai", benchmarkLimiter, (req, res, _next) => proxyRequest(req, res, "ai", "/api/ai"));
+app.use("/api/v1/ai", benchmarkLimiter, (req, res, _next) => proxyRequest(req, res, "ai", "/api/v1/ai"));
+
+// Test endpoint on gateway
+app.get("/gateway-test", (req, res) => res.json({ gateway: "ok" }));
 app.use("/api/notifications", (req, res, _next) => proxyRequest(req, res, "notification", "/api/notifications"));
 app.get("/api/infra/health", (req, res, _next) => proxyRequest(req, res, "infra", "/api/infra"));
 
