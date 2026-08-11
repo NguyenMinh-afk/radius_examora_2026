@@ -11,13 +11,11 @@ Quality Metrics:
 4. Consistency: Difficulty level consistency across generated questions
 """
 
-import asyncio
-import json
 import re
 import statistics
 from dataclasses import dataclass, field
-from typing import Any
 from datetime import datetime
+from typing import Any
 
 from app.core.logging import get_logger
 
@@ -88,7 +86,7 @@ class QuestionQualityEvaluator:
 
         # Extract words (alphanumeric, 3+ chars)
         words = re.findall(r'\b[a-z]{3,}\b', text.lower())
-        return set(w for w in words if w not in stop_words)
+        return {w for w in words if w not in stop_words}
 
     def evaluate_question(self, question: dict[str, Any], expected_difficulty: str = "medium") -> QualityMetrics:
         """
@@ -195,8 +193,8 @@ class QuestionQualityEvaluator:
         content = question.get('question_content', '')
 
         # Must have question mark or be a complete statement
-        has_question_mark = '?' in content
-        has_complete_structure = len(content) > 10
+        if '?' not in content and len(content) <= 10:
+            return 0.3
 
         # Check for common clarity issues
         issues = 0
@@ -351,7 +349,6 @@ class QuestionQualityEvaluator:
         """
         Evaluate if question difficulty matches expectations.
         """
-        difficulty = question.get('difficulty', '').lower()
         content = question.get('question_content', '').lower()
 
         # Simple heuristic: shorter questions tend to be easier
@@ -440,7 +437,7 @@ class QuestionQualityEvaluator:
         lengths = [len(opt) for opt in option_texts if opt]
         if lengths:
             avg_len = sum(lengths) / len(lengths)
-            variance = sum((l - avg_len) ** 2 for l in lengths) / len(lengths)
+            variance = sum((length - avg_len) ** 2 for length in lengths) / len(lengths)
             std_dev = variance ** 0.5
 
             # If standard deviation is too high relative to average, penalize
@@ -464,7 +461,7 @@ class QuestionQualityEvaluator:
 
         # Calculate coefficient of variation (lower is better = more balanced)
         if avg_len > 0:
-            variance = sum((l - avg_len) ** 2 for l in lengths) / len(lengths)
+            variance = sum((length - avg_len) ** 2 for length in lengths) / len(lengths)
             cv = (variance ** 0.5) / avg_len
 
             # CV < 0.2 is good, > 0.5 is poor
@@ -643,7 +640,7 @@ if __name__ == "__main__":
     print(f"\nTotal Questions: {results['aggregate']['total_questions']}")
     print(f"Average Score: {results['aggregate']['average_overall_score']:.3f}")
     print(f"Score Range: {results['aggregate']['min_overall_score']:.3f} - {results['aggregate']['max_overall_score']:.3f}")
-    print(f"\nQuality Distribution:")
+    print("\nQuality Distribution:")
     for tier, count in results['aggregate']['quality_distribution'].items():
         print(f"  {tier}: {count}")
     print("\nPer-Question Details:")
