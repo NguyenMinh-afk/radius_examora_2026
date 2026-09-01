@@ -8,7 +8,6 @@ import {
   Mail,
   User,
   AlertTriangle,
-  ShieldCheck,
   GraduationCap,
   BookOpen,
   CheckCircle,
@@ -128,15 +127,22 @@ const Register: React.FC = () => {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                <ShieldCheck className="text-white" size={22} />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 via-indigo-500 to-teal-400 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                <div
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    backgroundColor: "white",
+                    clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+                  }}
+                />
               </div>
               <span className={`text-2xl font-bold tracking-tight ${theme === "light" ? "text-gray-900" : "text-white"}`}>
                 EXAMORA
               </span>
             </Link>
             <p className={`mt-4 text-sm ${theme === "light" ? "text-slate-500" : "text-white/50"}`}>
-              Enterprise Examination Platform
+              AI Powered Examination Platform
             </p>
           </div>
 

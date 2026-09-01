@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { StudentSidebar } from "../components/student/layout";
 import { useAuth } from "../hooks/useAuth";
-import { Bell } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 import { useTheme } from "../contexts/useTheme";
 
 const StudentLayout: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const initials = (user?.full_name || user?.email || "Học sinh")
     .split(" ")
@@ -18,22 +19,49 @@ const StudentLayout: React.FC = () => {
     .map((part: string) => part.charAt(0).toUpperCase())
     .join("") || "H";
 
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
     <div className={`flex h-screen ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
-      {/* Sidebar */}
-      <StudentSidebar />
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className={`absolute inset-0 ${isDark ? "bg-slate-900/95" : "bg-white/95"} backdrop-blur-lg`} onClick={closeMobileMenu} />
+          <div className={`relative w-64 h-full ${isDark ? "bg-slate-900" : "bg-white"} border-r ${isDark ? "border-white/10" : "border-slate-200"}`}>
+            <button
+              onClick={closeMobileMenu}
+              className={`absolute top-4 right-4 p-2 rounded-lg ${isDark ? "text-gray-400 hover:bg-white/10" : "text-gray-600 hover:bg-gray-100"}`}
+            >
+              <X size={20} />
+            </button>
+            <StudentSidebar />
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block">
+        <StudentSidebar />
+      </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Cohesive Header */}
-        <header className={`border-b px-6 py-3 flex items-center justify-between ${
+        <header className={`border-b px-4 md:px-6 py-3 flex items-center justify-between ${
           isDark ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"
         }`}>
           <div className="flex items-center gap-4">
-            {/* Spacer for alignment */}
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={toggleMobileMenu}
+              className={`md:hidden p-2 rounded-lg ${isDark ? "text-gray-400 hover:bg-white/10" : "text-gray-600 hover:bg-gray-100"}`}
+            >
+              <Menu size={20} />
+            </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {/* Notifications */}
             <Link
               to="/student/notifications"
@@ -48,12 +76,12 @@ const StudentLayout: React.FC = () => {
             </Link>
 
             {/* User Pill */}
-            <div className={`flex items-center gap-3 rounded-full border py-1 pl-1 pr-4 ${
+            <div className={`flex items-center gap-2 md:gap-3 rounded-full border py-1 pl-1 pr-3 md:pr-4 ${
               isDark
                 ? "border-white/10 bg-slate-800"
                 : "border-slate-200 bg-white"
             }`}>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden bg-blue-600 text-sm font-bold text-white">
+              <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-full overflow-hidden bg-blue-600 text-xs md:text-sm font-bold text-white">
                 {user?.avatar_url || user?.avatarUrl ? (
                   <img src={user.avatar_url || user.avatarUrl} alt={user?.full_name || "HS"} className="w-full h-full object-cover" />
                 ) : (
@@ -71,7 +99,7 @@ const StudentLayout: React.FC = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-6 py-6">
+        <main className="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6">
           <Outlet />
         </main>
       </div>

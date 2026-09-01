@@ -26,18 +26,18 @@ const Landing: React.FC = () => {
       <main className="relative z-10 flex flex-1 flex-col pt-16">
 
         {/* Hero Section */}
-        <section className="flex flex-1 items-center justify-center px-16 gap-20 py-16">
+        <section className="flex flex-1 items-center justify-center px-4 sm:px-6 md:px-10 lg:px-16 gap-8 lg:gap-20 py-8 lg:py-16 flex-col lg:flex-row">
 
           {/* Left Content */}
-          <div className="max-w-xl">
+          <div className="max-w-xl text-center lg:text-left">
 
-            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+            <span className={`text-xs px-3 py-1 rounded-full font-semibold inline-block ${
               theme === "dark" ? "bg-green-900/50 text-green-400" : "bg-green-100 text-green-700"
             }`}>
               AI POWERED EXAM PLATFORM
             </span>
 
-            <h1 className={`text-5xl font-extrabold mt-4 mb-5 ${
+            <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold mt-4 mb-5 ${
               theme === "dark" ? "text-white" : "text-gray-900"
             }`}>
               The Future of{" "}
@@ -46,7 +46,7 @@ const Landing: React.FC = () => {
               </span>
             </h1>
 
-            <p className={`text-lg mb-7 ${
+            <p className={`text-base lg:text-lg mb-7 ${
               theme === "dark" ? "text-gray-300" : "text-gray-700"
             }`}>
               EXAMORA integrates AI, RabbitMQ distributed messaging and adaptive learning
@@ -54,7 +54,7 @@ const Landing: React.FC = () => {
             </p>
 
             {/* Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-center lg:justify-start">
 
               <a
                 href="/register"
@@ -95,11 +95,11 @@ const Landing: React.FC = () => {
           </div>
 
           {/* AI Card */}
-          <div className="relative">
+          <div className="relative w-full max-w-[500px]">
 
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 blur-xl opacity-30 rounded-2xl" />
 
-            <div className={`relative w-[500px] p-6 rounded-2xl shadow-2xl space-y-4 ${
+            <div className={`relative w-full p-6 rounded-2xl shadow-2xl space-y-4 ${
               theme === "dark" ? "bg-slate-900/80 border border-white/10" : "bg-white"
             }`}>
 
