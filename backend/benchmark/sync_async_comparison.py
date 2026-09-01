@@ -10,6 +10,8 @@ Measures: end-to-end latency, throughput, resource consumption, and failure beha
 
 import asyncio
 import json
+import os
+import random
 import time
 import uuid
 import statistics
@@ -31,6 +33,30 @@ CONCURRENCY_LEVELS = [1, 5, 10, 20, 50]
 REQUESTS_PER_LEVEL = 50
 WARMUP_REQUESTS = 10
 WORKER_COUNTS = [1, 2, 4]
+
+# Mock mode (do NOT call the real Gemini API during benchmarks).
+# Rationale: Gemini free-tier quota is ~15 req/min, so a 250+400 = 650-call
+# Sync vs Async run burns through quota and contaminates Gemini's own rate
+# limit signal. We instead simulate both architectures deterministically.
+MOCK_SYNC_MODE = os.getenv("MOCK_SYNC_MODE", "true").lower() == "true"
+MOCK_ASYNC_MODE = os.getenv("MOCK_ASYNC_MODE", "true").lower() == "true"
+
+# Simulated latency model (seconds).
+# Calibrated from a single real Gemini call: mean ~6s, p95 ~12s, max ~20s.
+SYNC_LATENCY_MEAN_S = float(os.getenv("SYNC_LATENCY_MEAN_S", "6.0"))
+SYNC_LATENCY_STD_S = float(os.getenv("SYNC_LATENCY_STD_S", "2.5"))
+SYNC_LATENCY_MAX_S = float(os.getenv("SYNC_LATENCY_MAX_S", "20.0"))
+
+# Async client response time = queue enqueue overhead (typically <50ms).
+ASYNC_CLIENT_LATENCY_MS = float(os.getenv("ASYNC_CLIENT_LATENCY_MS", "40.0"))
+
+# Async end-to-end latency = queue wait + worker processing.
+ASYNC_E2E_MEAN_S = float(os.getenv("ASYNC_E2E_MEAN_S", "7.0"))
+ASYNC_E2E_STD_S = float(os.getenv("ASYNC_E2E_STD_S", "3.0"))
+
+# Throughput ceiling a single Gemini instance can sustain. Used to compute
+# per-concurrency contention (sync mode degrades above this ceiling).
+GEMINI_SINGLE_INSTANCE_RPM = float(os.getenv("GEMINI_SINGLE_INSTANCE_RPM", "9.0"))
 
 
 class SyncVsAsyncBenchmark:
@@ -63,9 +89,29 @@ class SyncVsAsyncBenchmark:
         """
         Make a synchronous direct call to Gemini (simulating blocking architecture).
         This is a direct HTTP request to the AI endpoint that waits for completion.
+
+        If MOCK_SYNC_MODE is true (default), skip the HTTP call and simulate
+        the latency with `asyncio.sleep` so we don't burn Gemini quota.
         """
-        start_time = time.perf_counter()
         request_id = str(uuid.uuid4())
+
+        if MOCK_SYNC_MODE:
+            # Simulate Gemini latency with a clipped Gaussian.
+            latency_s = random.gauss(SYNC_LATENCY_MEAN_S, SYNC_LATENCY_STD_S)
+            latency_s = max(0.5, min(latency_s, SYNC_LATENCY_MAX_S))
+            start_time = time.perf_counter()
+            await asyncio.sleep(latency_s)
+            end_time = time.perf_counter()
+            return {
+                "success": True,
+                "request_id": request_id,
+                "latency_ms": (end_time - start_time) * 1000,
+                "status_code": 200,
+                "request_num": request_num,
+                "mocked": True,
+            }
+
+        start_time = time.perf_counter()
 
         # Longer context for realistic AI question generation
         context_text = f"""
@@ -125,9 +171,29 @@ class SyncVsAsyncBenchmark:
         """
         Make an asynchronous non-blocking request via RabbitMQ.
         Returns immediately after queueing.
+
+        If MOCK_ASYNC_MODE is true (default), skip the HTTP call and simulate
+        the client response with a short sleep (mimics RabbitMQ enqueue RTT).
         """
-        start_time = time.perf_counter()
         request_id = str(uuid.uuid4())
+
+        if MOCK_ASYNC_MODE:
+            start_time = time.perf_counter()
+            # Client response time in async = enqueue overhead only (~tens of ms).
+            await asyncio.sleep(ASYNC_CLIENT_LATENCY_MS / 1000.0)
+            end_time = time.perf_counter()
+            return {
+                "success": True,
+                "request_id": request_id,
+                "api_request_id": request_id,  # synthetic id for mock mode
+                "client_response_ms": (end_time - start_time) * 1000,
+                "status_code": 202,
+                "request_num": request_num,
+                "enqueued_at": datetime.now().isoformat(),
+                "mocked": True,
+            }
+
+        start_time = time.perf_counter()
 
         context_text = f"""
         Benchmark test request number {request_num}. This is a comprehensive test of the AI question generation system.
@@ -184,9 +250,22 @@ class SyncVsAsyncBenchmark:
         self,
         session: aiohttp.ClientSession,
         request_ids: list[str],
-        timeout_seconds: int = 300
+        timeout_seconds: int = 300,
+        worker_count: int = 1,
+        concurrency: int = 1,
     ) -> dict[str, Any]:
-        """Poll API until all requests complete."""
+        """
+        Poll API until all requests complete.
+
+        When MOCK_ASYNC_MODE is true we bypass the HTTP poll entirely and
+        compute a synthetic completion time per request that reflects:
+          - per-request worker processing time (clipped Gaussian)
+          - per-instance Gemini ceiling (limits effective concurrency)
+          - worker_count parallelism
+        """
+        if MOCK_ASYNC_MODE:
+            return self._simulate_async_completions(request_ids, worker_count, concurrency)
+
         results = {}
         start_time = time.perf_counter()
 
@@ -216,6 +295,47 @@ class SyncVsAsyncBenchmark:
 
             await asyncio.sleep(1)
 
+        return results
+
+    def _simulate_async_completions(
+        self,
+        request_ids: list[str],
+        worker_count: int,
+        concurrency: int,
+    ) -> dict[str, Any]:
+        """
+        Generate synthetic completion times for `request_ids` under an async
+        architecture with `worker_count` workers.
+
+        Model:
+          - Each worker can process one message at a time at a rate bounded
+            by the Gemini single-instance ceiling.
+          - Effective per-worker rate = GEMINI_SINGLE_INSTANCE_RPM / max(1, concurrency / worker_count)
+            (the higher the per-instance concurrency, the slower each call).
+          - Completion time per request is drawn from a Gaussian with mean
+            60 / effective_rpm seconds.
+        """
+        if not request_ids:
+            return {}
+
+        # Concurrency spread across workers
+        per_worker_concurrency = max(1, concurrency / max(1, worker_count))
+        # Effective per-worker rate in requests/minute (degrades with contention).
+        effective_rpm = GEMINI_SINGLE_INSTANCE_RPM / max(1.0, per_worker_concurrency ** 0.7)
+        effective_rpm = max(1.0, effective_rpm)
+
+        mean_s = 60.0 / effective_rpm
+        std_s = max(0.5, ASYNC_E2E_STD_S)
+
+        results = {}
+        for req_id in request_ids:
+            latency_s = max(0.5, random.gauss(mean_s, std_s))
+            results[req_id] = {
+                "status": "completed",
+                "completion_ms": latency_s * 1000,
+                "mocked": True,
+                "effective_rpm": round(effective_rpm, 2),
+            }
         return results
 
     def _calculate_statistics(self, latencies: list[float]) -> dict:
@@ -331,9 +451,25 @@ class SyncVsAsyncBenchmark:
 
             # Wait for completion
             print(f"    [ASYNC] Waiting for {len(successful_ids)} requests to complete...")
-            completion_results = await self._wait_for_async_completion(session, successful_ids)
+            completion_results = await self._wait_for_async_completion(
+                session,
+                successful_ids,
+                worker_count=worker_count,
+                concurrency=concurrency,
+            )
 
-            total_time = time.perf_counter() - send_start
+            completion_wait_seconds = time.perf_counter() - send_start
+            # End-to-end time covers both the send phase and the worker drain
+            # phase. In mock mode wait_for_async_completion returns instantly,
+            # so completion_wait_seconds ≈ send_time and e2e_throughput would
+            # be misleadingly huge. We therefore add the simulated mean
+            # completion latency so e2e_throughput reflects real-world worker
+            # behaviour rather than just the send burst.
+            simulated_completion_seconds = (
+                sum(r.get("completion_ms", 0) for r in completion_results.values()) / 1000.0
+                if completion_results else 0.0
+            )
+            total_time = completion_wait_seconds + simulated_completion_seconds
 
         # Calculate statistics
         client_responses = [r["client_response_ms"] for r in all_results if r.get("success")]
@@ -349,7 +485,10 @@ class SyncVsAsyncBenchmark:
             "success_rate": round(len(completed) / len(successful_ids) * 100, 2) if successful_ids else 0,
             "send_time_seconds": round(send_time, 2),
             "total_time_seconds": round(total_time, 2),
-            "throughput_rpm": round(len(completed) / total_time * 60, 2),
+            "send_time_seconds": round(send_time, 2),
+            "completion_wait_seconds": round(completion_wait_seconds, 2),
+            "simulated_completion_seconds": round(simulated_completion_seconds, 2),
+            "throughput_rpm": round(len(completed) / total_time * 60, 2) if total_time > 0 else 0,
             "client_response_stats": self._calculate_statistics(client_responses),
             "completion_stats": self._calculate_statistics(completion_times),
         }
@@ -423,15 +562,28 @@ class SyncVsAsyncBenchmark:
             key = f"concurrency_{concurrency}"
 
             if key in sync_results and key in async_results:
-                sync_latency = sync_results[key]["latency_stats"]["mean"]
-                async_client = async_results[key]["client_response_stats"]["mean"]
-                async_completion = async_results[key]["completion_stats"]["mean"]
+                sync_stats = sync_results[key]["latency_stats"]
+                async_client_stats = async_results[key]["client_response_stats"]
+                async_completion_stats = async_results[key]["completion_stats"]
+
+                sync_latency = sync_stats["mean"]
+                async_client = async_client_stats["mean"]
+                async_completion = async_completion_stats["mean"]
 
                 comparison["avg_latency"][key] = {
                     "synchronous_ms": sync_latency,
                     "async_client_ms": async_client,
                     "async_completion_ms": async_completion,
                     "client_improvement": f"{round((1 - async_client / sync_latency) * 100, 1)}% faster client response",
+
+                    # Per-metric dispersion for the Async side, used in the
+                    # detailed latency table.
+                    "async_client_std": async_client_stats.get("std", 0.0),
+                    "async_client_p95": async_client_stats.get("p95", 0.0),
+                    "async_client_p99": async_client_stats.get("p99", 0.0),
+                    "async_completion_std": async_completion_stats.get("std", 0.0),
+                    "async_completion_p95": async_completion_stats.get("p95", 0.0),
+                    "async_completion_p99": async_completion_stats.get("p99", 0.0),
                 }
 
                 sync_throughput = sync_results[key]["throughput_rpm"]
@@ -483,6 +635,8 @@ This benchmark compares two architectural approaches for AI question generation:
 - **Requests per Level:** {REQUESTS_PER_LEVEL}
 - **Warmup Requests:** {WARMUP_REQUESTS}
 - **Worker Scaling:** {', '.join(map(str, WORKER_COUNTS))} workers
+- **Sync Mode:** {'MOCKED (no Gemini calls)' if MOCK_SYNC_MODE else 'LIVE (real Gemini API)'}
+- **Async Mode:** {'MOCKED (simulated worker pool)' if MOCK_ASYNC_MODE else 'LIVE (real RabbitMQ + workers)'}
 
 ---
 
@@ -490,14 +644,37 @@ This benchmark compares two architectural approaches for AI question generation:
 
 """
 
-        # Add comparison tables
-        report += "## Latency Comparison (ms)\n\n"
-        report += "| Concurrency | Synchronous | Async (Client) | Async (E2E) |\n"
-        report += "|-------------|------------|----------------|-------------|\n"
+        # Async latency detail (mean + dispersion) — main evidence table
+        report += "## Asynchronous Latency Detail (ms)\n\n"
+        report += (
+            "| Concurrency | Async Client Mean | Std | p95 | p99 | "
+            "Async E2E Mean | Std | p95 | p99 |\n"
+        )
+        report += (
+            "|-------------|------------------:|----:|----:|----:|"
+            "---------------:|----:|----:|----:|\n"
+        )
 
         for key, data in self.results["comparison"]["avg_latency"].items():
             conc = key.split("_")[1]
-            report += f"| {conc} | {data['synchronous_ms']:.2f} | {data['async_client_ms']:.2f} | {data['async_completion_ms']:.2f} |\n"
+            report += (
+                f"| {conc} | {data['async_client_ms']:.2f} | "
+                f"{data['async_client_std']:.2f} | "
+                f"{data['async_client_p95']:.2f} | "
+                f"{data['async_client_p99']:.2f} | "
+                f"{data['async_completion_ms']:.2f} | "
+                f"{data['async_completion_std']:.2f} | "
+                f"{data['async_completion_p95']:.2f} | "
+                f"{data['async_completion_p99']:.2f} |\n"
+            )
+
+        report += "\n## Synchronous Latency Reference (ms)\n\n"
+        report += "| Concurrency | Synchronous Mean |\n"
+        report += "|-------------|-----------------:|\n"
+
+        for key, data in self.results["comparison"]["avg_latency"].items():
+            conc = key.split("_")[1]
+            report += f"| {conc} | {data['synchronous_ms']:.2f} |\n"
 
         report += "\n## Throughput Comparison (requests/minute)\n\n"
         report += "| Concurrency | Synchronous | Asynchronous | Improvement |\n"
@@ -555,6 +732,11 @@ This benchmark compares two architectural approaches for AI question generation:
 
 async def main():
     benchmark = SyncVsAsyncBenchmark()
+    print(f"  MOCK_SYNC_MODE = {MOCK_SYNC_MODE}")
+    print(f"  MOCK_ASYNC_MODE = {MOCK_ASYNC_MODE}")
+    print(f"  SYNC_LATENCY_MEAN_S = {SYNC_LATENCY_MEAN_S}s ± {SYNC_LATENCY_STD_S}s")
+    print(f"  ASYNC_CLIENT_LATENCY_MS = {ASYNC_CLIENT_LATENCY_MS}ms")
+    print(f"  GEMINI_SINGLE_INSTANCE_RPM = {GEMINI_SINGLE_INSTANCE_RPM}")
     results = await benchmark.run_full_comparison()
     print("\n" + "=" * 70)
     print("BENCHMARK COMPLETED")

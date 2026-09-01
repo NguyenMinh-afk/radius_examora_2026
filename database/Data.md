@@ -1,144 +1,172 @@
-# Database Documentation
+# Database Schema Documentation
 
-This document describes the PostgreSQL database setup, schema organization, initialization, seeding, and reset procedures for the EXAMORA project.
+## Tổng quan
 
-## 1. Database Setup
+EXAMORA sử dụng **PostgreSQL** với kiến trúc **per-service schemas** — mỗi service có schema riêng để đảm bảo isolation và independence.
 
-- The project uses a single PostgreSQL instance with multiple schemas.
-- Database name: `Exam_Bank`
-- Default user/password: `postgres` / `123456`
-- Port: `5432:5432`
-- Init scripts:
-  - `schema_optimized.sql` — creates schemas, tables, indexes, triggers
-  - `seed_data.sql` — inserts sample data for local development and testing
+## Database
 
-## 2. Schema Architecture
+- **PostgreSQL 15** - Primary database
+- **Database name:** `examora`
+- **Port:** `5432`
 
-The schema is split by service domain into separate PostgreSQL schemas:
+## Service Schemas
 
-- `user_db` — User service tables
-- `course_db` — Course service tables
-- `question_db` — Question bank tables
-- `exam_db` — Exam, class, assignment tables
-- `ai_db` — AI generation pipeline tables
-- `notification_db` — Notification and email tables
-- `infra_eventing` — Outbox, queue jobs, dead letter queue
-- `infra_observability` — Audit logs, system events, test runs
-- `public` — Shared enums and helper functions
+| Schema | Service | Tables | Mục đích |
+|--------|---------|--------|----------|
+| `user_db` | User Service | 8 | User management, sessions, OAuth |
+| `course_db` | Course Service | 4 | Courses, faculties, chapters |
+| `question_db` | Question Service | 5 | Question bank, tags, statistics |
+| `exam_db` | Exam Service | 8 | Exams, classes, assignments, attempts |
+| `ai_db` | AI Service | 6 | AI generation requests, jobs |
+| `notification_db` | Notification Service | 4 | Notifications, email templates |
+| `infra_eventing` | Infrastructure | 4 | Outbox, queue jobs, DLQ |
+| `infra_observability` | Infrastructure | 4 | Audit logs, system events |
 
-Shared types:
-- `public.difficulty_level` — `easy`, `medium`, `hard`, `very_hard`
-- `public.question_type` — `multiple_choice`, `true_false`, `matching`, `fill_blank`
+## Schema Details
 
-## 3. Key Tables by Schema
+### user_db (User Management)
 
-### `user_db`
-- `roles` — admin, teacher, student
-- `users` — core user accounts
-- `user_profiles` — student/teacher profile fields
-- `user_devices` — device tracking
-- `user_sessions` — session management
-- `oauth_providers` — Google/Microsoft OAuth links
-- `password_reset_tokens` — password reset flow
+**Tables:**
+- `roles` — Vai trò hệ thống (admin, teacher, student)
+- `users` — Tài khoản người dùng
+- `user_profiles` — Thông tin mở rộng (sinh viên/giáo viên)
+- `user_sessions` — Quản lý đăng nhập
+- `user_devices` — Device tracking
+- `oauth_providers` — OAuth2 (Google, Microsoft)
+- `password_reset_tokens` — Password reset
+- `password_reset_otps` — OTP reset
 
-### `course_db`
-- `faculties` — faculty list
-- `courses` — course catalog
-- `chapters` — course chapters
-- `knowledge_units` — chapter knowledge units
+### course_db (Course Management)
 
-### `question_db`
-- `questions` — question bank
-- `question_tags` — tags for questions
-- `question_tag_relations` — question-tag mapping
-- `answers` — answer options
+**Tables:**
+- `faculties` — Khoa/Viện
+- `courses` — Môn học
+- `chapters` — Chương trong môn học
+- `knowledge_units` — Đơn vị kiến thức
 
-### `exam_db`
-- `exams` — exam definitions
-- `exam_questions` — exam-to-question mapping
-- `classes` — class/room definitions
-- `class_members` — students in classes
-- `class_posts` — announcements/materials/assignments
-- `exam_assignments` — exams assigned to classes
-- `student_assignments` — student assignment status
-- `attempts` — exam attempts
-- `attempt_answers` — per-question answers in attempts
+### question_db (Question Bank)
 
-### `ai_db`
-- `ai_generation_requests` — user requests to generate questions
-- `ai_generation_tasks` — tasks within a request
-- `generated_questions` — AI-generated questions pending review
-- `ai_generation_logs` — Gemini/OCR logs
-- `documents` — uploaded documents for AI pipeline
-- `ai_jobs` — async AI job tracking
+**Tables:**
+- `questions` — Ngân hàng câu hỏi (JSONB options)
+- `question_tags` — Tags phân loại
+- `question_tag_relations` — Question-tag mapping
+- `question_versions` — Lịch sử chỉnh sửa
+- `question_statistics` — Thống kê sử dụng
 
-### `notification_db`
-- `notifications` — in-app notifications
-- `email_templates` — email template definitions
-- `email_logs` — email send logs
+### exam_db (Exam Management)
 
-### `infra_eventing`
-- `outbox_events` — outbox pattern for reliable event publishing
-- `processed_messages` — consumer deduplication
-- `dead_letter_messages` — DLQ tracking
-- `queue_jobs` — internal task/job tracking
+**Tables:**
+- `exams` — Đề thi
+- `exam_questions` — Câu hỏi trong đề
+- `classes` — Lớp học
+- `class_members` — Thành viên lớp
+- `class_posts` — Bài đăng lớp
+- `exam_assignments` — Giao bài cho lớp
+- `student_assignments` — Trạng thái bài của sinh viên
+- `attempts` — Lần thi của sinh viên
+- `attempt_answers` — Câu trả lời
 
-### `infra_observability`
-- `audit_logs` — admin/action audit trail
-- `test_runs` — test execution records
-- `system_events` — system-level events
+### ai_db (AI Generation)
 
-## 4. Docker Compose Mount
+**Tables:**
+- `ai_generation_requests` — Yêu cầu tạo câu hỏi
+- `ai_generation_tasks` — Tasks trong request
+- `generated_questions` — Câu hỏi AI chờ duyệt
+- `ai_generation_logs` — Logs
+- `documents` — Tài liệu upload
+- `ai_jobs` — Async job tracking
 
-In `docker-compose.yml`, Postgres mounts:
+### notification_db (Notifications)
+
+**Tables:**
+- `notifications` — Thông báo in-app
+- `email_templates` — Email templates
+- `email_logs` — Email logs
+- `sms_logs` — SMS logs
+
+### infra_eventing (Event Infrastructure)
+
+**Tables:**
+- `outbox_events` — Outbox pattern
+- `processed_messages` — Consumer deduplication
+- `dead_letter_messages` — DLQ
+- `queue_jobs` — Internal jobs
+
+### infra_observability (System Observability)
+
+**Tables:**
+- `audit_logs` — Audit trail
+- `system_events` — System events
+- `test_runs` — CI/CD test runs
+- `api_request_logs` — API logs
+
+## Shared Enums
+
+```sql
+-- Difficulty levels
+'difficulty_level': easy, medium, hard, very_hard
+
+-- Question types
+'question_type': multiple_choice, true_false, matching, fill_blank
+
+-- Job statuses
+'job_status': queued, processing, completed, failed, cancelled
+
+-- Notification types
+'notification_type': assignment, grade, ai_generation, system, reminder
+```
+
+## Database Setup
+
+### Docker Compose
 
 ```yaml
-volumes:
-  - ./database/schema_optimized.sql:/docker-entrypoint-initdb.d/01-schema.sql
-  - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02-seed.sql
-  - postgres-data:/var/lib/postgresql/data
+postgres-db:
+  image: postgres:15
+  environment:
+    POSTGRES_DB: examora
+    POSTGRES_USER: examora
+    POSTGRES_PASSWORD: examora123
+  ports:
+    - "5432:5432"
+  volumes:
+    - postgres-data:/var/lib/postgresql/data
+    - ./database/migrations:/docker-entrypoint-initdb.d/migrations
+    - ./database/seeds:/docker-entrypoint-initdb.d/seeds
 ```
 
-Init scripts run only when the `postgres-data` volume is created fresh.
+### Init Scripts Order
 
-## 5. Seed Data
+1. `migrations/00-init-schemas.sql` - Create schemas + enums
+2. `migrations/01-user-service.sql` - user_db tables
+3. `migrations/02-course-service.sql` - course_db tables
+4. `migrations/03-question-service.sql` - question_db tables
+5. `migrations/04-exam-service.sql` - exam_db tables
+6. `migrations/05-ai-service.sql` - ai_db tables
+7. `migrations/06-notification-service.sql` - notification_db tables
+8. `migrations/07-infra-eventing.sql` - infra_eventing tables
+9. `migrations/08-infra-observability.sql` - infra_observability tables
 
-The seed data includes:
-
-- Default roles: `admin`, `teacher`, `student`
-- Sample users:
-  - `admin@examora.local`
-  - `teacher1@examora.local`
-  - `teacher2@examora.local`
-  - `student1@examora.local`
-  - `student2@examora.local`
-- Sample courses under faculty `CNTT`
-- Sample classes and class members
-- Sample exams, questions, attempts
-- Sample AI jobs and generated questions
-- Sample notifications and email templates
-- Sample outbox events and queue jobs
-
-## 6. Re-initializing the Database
-
-If you need to drop and recreate the database:
+### Reset Database
 
 ```bash
-docker compose down
-docker volume remove Project_EXAMORA_postgres-data
+docker compose down -v
 docker compose up -d postgres-db
+# Wait for init scripts to complete
+docker compose logs postgres-db | grep "initialization complete"
 ```
 
-Or apply manually from host:
+## Performance
 
-```bash
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\schema_optimized.sql"
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\seed_data.sql"
-```
+- Indexes trên tất cả foreign keys
+- GIN index cho full-text search (`questions.content`)
+- Partial indexes cho active/inactive filtering
+- JSONB columns cho flexible data storage
 
-## 7. Notes
+## Security
 
-- All schemas except `public` are service-scoped.
-- Cross-service references are usually logical UUIDs rather than foreign keys.
-- `queue_jobs` intentionally omits hard FK to `user_db.users` to preserve microservice isolation.
-- Triggers auto-update `updated_at` for many tables.
+- UUID primary keys cho tất cả user-related tables
+- Soft delete pattern (is_active flag)
+- Timestamps trên mọi bảng
+- Audit logs cho sensitive actions

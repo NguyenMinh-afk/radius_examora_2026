@@ -1,0 +1,51 @@
+---
+description: Folder structure rules - where to put files
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Folder Structure Rules (BẮT BUỘC)
+
+## 📂 Root Folders
+- `backend/` - Backend services
+  - `AI_Generation_Service/` - Node.js AI service
+  - `AI_Worker_Service/` - Python FastAPI worker
+  - `API_Gateway/` - API Gateway
+- `web-app/` - Frontend React application
+- `docs/` - Documentation
+- `database/` - SQL migrations
+- `docker/` - Docker configuration
+
+## 🎨 Frontend (`web-app/`)
+- `src/components/` - Shared components
+- `src/app/` - Pages (app router)
+- `src/hooks/` - Custom hooks
+- `src/services/` - API clients, WebSocket
+- `src/types/` - TypeScript types
+- `src/utils/` - Helpers
+- `src/styles/` - Global CSS
+
+## 🔧 Backend Node.js (`backend/AI_Generation_Service/`)
+- `src/controllers/` - Request handlers
+- `src/services/` - Business logic
+- `src/models/` - Data models
+- `src/routes/` - Route definitions
+- `src/middleware/` - Express middleware
+- `src/config/` - Configuration
+- `src/tests/` - Unit tests
+
+## 🐍 Backend Python (`backend/AI_Worker_Service/`)
+- `app/` - Main application
+  - `api/` - Routes
+  - `services/` - Business logic
+  - `schemas/` - Pydantic models
+  - `core/` - Config, logging
+- `tests/` - Tests
+- `requirements.txt`
+
+## 🚫 CẤM
+- Tạo file `.js` (chỉ `.ts`/`.tsx`/`.py`)
+- Tạo thư mục ngoài cấu trúc
+- File rác (draft, debug) trong code
+
+Xem chi tiết: `@/docs/01-business/PROJECT_STRUCTURE.md`

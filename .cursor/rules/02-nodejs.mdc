@@ -1,0 +1,51 @@
+---
+description: Node.js rules for backend services
+globs: ["backend/**/*.ts", "services/**/*.ts"]
+alwaysApply: false
+---
+
+# Node.js Rules (Express/NestJS + TypeScript)
+
+## 🏗️ Structure
+```
+backend/{service}/
+├── src/
+│   ├── controllers/
+│   ├── services/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   └── config/
+├── tests/
+└── {service}.ts
+```
+
+## 📐 Naming
+- Class: PascalCase + suffix (Controller/Service/Model)
+- Method/Variable: camelCase
+- Constant: UPPER_SNAKE_CASE
+- File: kebab-case hoặc dot.notation
+- DTO: PascalCase + Dto
+
+## ✅ MUST
+- Use class-validator cho DTO validation
+- Async/await (NO callback hell)
+- Use RabbitMQ client cho message queue
+- Use TypeORM hoặc Prisma cho DB
+- Use Jest cho test
+- Use proper logging (winston/pino)
+
+## ❌ NEVER
+- `any` type (dùng `unknown` + type guards)
+- `console.log` (dùng Logger)
+- Magic numbers
+- Hardcoded secrets, URLs
+- var (chỉ const/let)
+- Empty catch block
+- Business logic trong Controller
+
+## 🧪 Test
+- Jest + Supertest
+- Test files: `*.test.ts` hoặc `*.spec.ts`
+- Mock với `jest.Mocked<T>`
+- Coverage ≥ 80%

@@ -46,7 +46,77 @@ cd backend/benchmark
 python mock_architecture_benchmark.py
 ```
 
-**Estimated time**: ~30-45 minutes
+**Run command:**
+```bash
+cd backend/benchmark
+python mock_architecture_benchmark.py
+```
+
+**Estimated time**: ~30-45 minutes (FIXED: reduced batch_delay from 2s to 0.1s)
+
+---
+
+### Key Metrics
+
+The benchmark now measures **3 distinct metrics**:
+
+| Metric | What it measures | Use case |
+|--------|------------------|----------|
+| **API Enqueue Latency** | Gateway → RabbitMQ → HTTP response | Prove async benefits |
+| **E2E Completion Latency** | Request sent → Worker completes | Measure total time |
+| **Completion Throughput** | Completed / True E2E time | System capacity |
+
+### Fixed Issues
+
+1. **Request ID extraction** - Now checks multiple possible locations:
+   - `data.requestId`, `data.request_id`, `data.id`, `data.taskId`
+   - `data.data.requestId`, `data.data.id` (nested)
+   - `data.result.requestId` (alternative nesting)
+
+2. **Throughput calculation** - Now uses TRUE end-to-end time:
+   ```
+   throughput = completed / (last_completion_time - first_request_start)
+   ```
+
+3. **Batch delay** - Reduced from 2s to 0.1s for faster benchmarking
+
+4. **Debug mode** - Can be enabled in config to see actual API responses
+
+---
+
+### Quick Test Mode
+
+Before running full benchmark, test API response format:
+
+```python
+# In mock_architecture_benchmark.py, uncomment:
+async def main():
+    benchmark = MockBenchmark()
+    await benchmark.run_quick_test()  # Single request with debug output
+```
+
+---
+
+## Quick Test Checklist
+
+Run this first to verify everything works:
+
+```bash
+cd backend/benchmark
+python -c "import asyncio; from mock_architecture_benchmark import MockBenchmark; asyncio.run(MockBenchmark().run_quick_test())"
+```
+
+Expected output should show:
+```
+[DEBUG] POST Response status: 202
+[DEBUG] Found request ID: data.requestId = xxx-xxx
+Completed: 1/1
+```
+
+If you see `No request ID found`, the benchmark will show:
+```
+[WARNING] API returned 202 but no request ID found!
+```
 
 ---
 

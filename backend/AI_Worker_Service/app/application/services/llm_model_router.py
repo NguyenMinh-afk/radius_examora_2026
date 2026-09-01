@@ -1,11 +1,13 @@
 """
-LLM Model Router — Gemini-only router.
+LLM Model Router — Gemini-only router with Mock support for benchmarking.
 
 Strategy:
-1. Gemini with model fallback list.
-2. Final fallback to local question generator (CPU-only).
+1. If enable_mock_llm=True: use MockLLMProvider (for benchmark)
+2. Gemini with model fallback list.
+3. Final fallback to local question generator (CPU-only).
 
 Provider Priority:
+- Mock: MockLLMProvider (benchmark mode)
 - Primary: Gemini with model fallback chain
 - Final: Local CPU-based generator
 """
@@ -26,6 +28,7 @@ from app.core.exceptions import (
 )
 from app.core.logging import get_logger
 from app.infrastructure.llm.gemini_client import GeminiClient
+from app.infrastructure.llm.mock_llm_provider import MockLLMProvider
 
 logger = get_logger(__name__)
 
@@ -52,7 +55,7 @@ def _is_gemini_quota_error(exc: Exception) -> bool:
 
 class LLMModelRouter:
     """
-    Model router supporting Gemini only.
+    Model router supporting Mock (benchmark) and Gemini (production).
 
     Usage:
         router = LLMModelRouter(db, request_id="xxx")
@@ -68,7 +71,19 @@ class LLMModelRouter:
         self.request_id = request_id
         self.settings = get_settings()
         self.quota_svc = ApiQuotaService(db)
-        self.gemini_client = GeminiClient()
+
+        # Initialize providers based on config
+        if self.settings.enable_mock_llm:
+            self._mock_provider = MockLLMProvider()
+            logger.info(
+                "LLMModelRouter initialized in MOCK mode | latency_ms=%d | request_id=%s",
+                self.settings.mock_llm_latency_ms,
+                request_id,
+            )
+        else:
+            self._mock_provider = None
+            self.gemini_client = GeminiClient()
+
         self._local_generator = LocalQuestionGenerator()
 
     @property
@@ -85,11 +100,12 @@ class LLMModelRouter:
         difficulty: str = "medium",
     ) -> tuple[dict[str, Any], str, str]:
         """
-        Attempt generation with Gemini.
+        Attempt generation with provider priority.
 
         Priority:
-        1. Gemini with model fallback chain
-        2. Local CPU generator (final fallback)
+        1. Mock LLM (if enable_mock_llm=True) - for benchmark mode
+        2. Gemini with model fallback chain
+        3. Local CPU generator (final fallback)
 
         Returns:
             Tuple of (parsed_response_dict, provider_name, model_name)
@@ -97,6 +113,34 @@ class LLMModelRouter:
         Raises:
             Exception: When all providers fail.
         """
+        # ── Step 0: Mock LLM (benchmark mode) ───────────────────────────────
+        if self.settings.enable_mock_llm and self._mock_provider:
+            logger.info(
+                "Using MockLLMProvider | latency=%dms | request_id=%s",
+                self.settings.mock_llm_latency_ms,
+                self.request_id,
+            )
+            try:
+                result, q_count = await self._mock_provider.generate_questions(
+                    prompt=prompt,
+                    request_id=self.request_id,
+                    quantity=quantity,
+                    difficulty=difficulty,
+                )
+                if q_count > 0:
+                    logger.info(
+                        "MockLLM succeeded | questions=%d | request_id=%s",
+                        q_count,
+                        self.request_id,
+                    )
+                    return result, "mock", "mock_llm"
+            except Exception as exc:
+                logger.warning(
+                    "MockLLM failed: %s | falling back to Gemini | request_id=%s",
+                    str(exc)[:200],
+                    self.request_id,
+                )
+
         # ── Step 1: Try Gemini with model fallback ──────────────────────────
         if self.settings.gemini_api_key:
             tried_models: list[str] = []
