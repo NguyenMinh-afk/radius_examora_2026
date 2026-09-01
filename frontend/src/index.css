@@ -16,6 +16,16 @@ body,
   overflow-x: hidden;
 }
 
+/* Ensure mobile layouts don't overflow */
+@media (max-width: 1023px) {
+  html,
+  body,
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
+
 /* Theme variables */
 
 :root {

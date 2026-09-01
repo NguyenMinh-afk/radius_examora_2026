@@ -88,20 +88,24 @@ class MockLLMProvider:
         ]
 
         for i in range(quantity):
-            q_difficulty = difficulties_for_questions[i % len(difficulties_for_questions)]
-            questions.append({
-                "question_content": f"Mock question {i + 1}: Sample question based on prompt topic?",
-                "options": {
-                    "A": "First option (correct answer)",
-                    "B": "Second option",
-                    "C": "Third option",
-                    "D": "Fourth option",
-                },
-                "correct_answer": random.choice(["A", "B", "C", "D"]),
-                "difficulty": q_difficulty,
-                "topic": "Mock Topic",
-                "explanation": f"This is a mock explanation for question {i + 1}. In production, Gemini would generate a real explanation.",
-            })
+            q_difficulty = difficulties_for_questions[
+                i % len(difficulties_for_questions)
+            ]
+            questions.append(
+                {
+                    "question_content": f"Mock question {i + 1}: Sample question based on prompt topic?",
+                    "options": {
+                        "A": "First option (correct answer)",
+                        "B": "Second option",
+                        "C": "Third option",
+                        "D": "Fourth option",
+                    },
+                    "correct_answer": random.choice(["A", "B", "C", "D"]),
+                    "difficulty": q_difficulty,
+                    "topic": "Mock Topic",
+                    "explanation": f"This is a mock explanation for question {i + 1}. In production, Gemini would generate a real explanation.",
+                }
+            )
 
         result = {"questions": questions}
 

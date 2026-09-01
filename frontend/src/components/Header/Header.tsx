@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { getDashboardPath } from "../../utils/auth";
-import { User, Sun, Moon } from "lucide-react";
+import { User, Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "../../contexts/useTheme";
 
 /**
@@ -34,6 +34,7 @@ const Header: React.FC = () => {
   // State để theo dõi trạng thái scroll
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
@@ -105,8 +106,8 @@ const Header: React.FC = () => {
         ))}
       </nav>
 
-      {/* Actions */}
-      <div className="flex gap-2 items-center">
+      {/* Actions - Desktop */}
+      <div className="hidden md:flex items-center gap-2">
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
@@ -173,7 +174,7 @@ const Header: React.FC = () => {
             )}
           </div>
         ) : (
-          <>
+          <div className="hidden md:flex items-center gap-2">
             <Link
               to="/login"
               className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -192,16 +193,78 @@ const Header: React.FC = () => {
             >
               SignUp
             </Link>
-          </>
+          </div>
         )}
       </div>
 
-      {/* Mobile Menu Button */}
-      <button className={`md:hidden p-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+      {/* Mobile Controls - Theme Toggle + Menu */}
+      <div className="flex md:hidden items-center gap-1">
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
+            isDark
+              ? "text-slate-300 hover:text-white"
+              : "text-slate-600 hover:text-slate-800"
+          }`}
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`p-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+          aria-label="Toggle mobile menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-6 shadow-lg ${
+          isDark ? "bg-slate-900 border-b border-white/10" : "bg-white border-b border-gray-100"
+        }`}>
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isDark ? "text-gray-400 hover:text-white hover:bg-white/5" : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-opacity-20">
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`px-3 py-2 text-sm font-medium text-center rounded-lg transition-colors ${
+                    isDark ? "text-gray-400 hover:text-white hover:bg-white/5" : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                  }`}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg text-center transition-colors ${
+                    isDark ? "bg-indigo-600 text-white hover:bg-indigo-500" : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  SignUp
+                </Link>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
