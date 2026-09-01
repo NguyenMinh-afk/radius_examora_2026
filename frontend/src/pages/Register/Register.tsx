@@ -8,7 +8,6 @@ import {
   Mail,
   User,
   AlertTriangle,
-  ShieldCheck,
   GraduationCap,
   BookOpen,
   CheckCircle,
