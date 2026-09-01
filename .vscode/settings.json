@@ -1,3 +1,107 @@
 ﻿{
-  "docker.dockerComposePreview": false
+    "docker.dockerComposePreview": false,
+    "docker.enableDockerComposeProjectNaming": false,
+    "docker.dockerExtensionEnabled": false,
+    
+    // TypeScript
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "typescript.suggest.autoImports": true,
+    "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "typescript.inlayHints.parameterTypes.enabled": true,
+    
+    // JavaScript
+    "javascript.suggest.autoImports": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    
+    // Format
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    
+    // ESLint
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+        "javascriptreact",
+        "typescriptreact"
+    ],
+    "eslint.workingDirectories": [
+        "./web-app",
+        "./backend/API_Gateway",
+        "./backend/AI_Generation_Service"
+    ],
+    
+    // Python
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/AI_Worker_Service/venv/Scripts/python.exe",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    
+    // Files
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/dist": true,
+        "**/build": true
+    },
+    "files.associations": {
+        "*.sql": "sql",
+        "*.env*": "dotenv"
+    },
+    
+    // Search
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/*.pyc": true
+    },
+    
+    // Debug
+    "debug.console.fontSize": 14,
+    "debug.inlineValues": true,
+    
+    // Workbench
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.startupEditor": "welcomePage",
+    
+    // Extensions recommendations
+    "extensions.recommended": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "bradlc.vscode-tailwindcss",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "dsznajder.es7-react-js-snippets"
+    ],
+    
+    // Tailwind CSS
+    "tailwindCSS.includeLanguages": {
+        "plaintext": "html"
+    },
+    "tailwindCSS.experimental.classRegex": [
+        "className:\\s*['\"`]([^'\"`]*)['\"`]"
+    ],
+    
+    // Bracket Pair Colorization
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    
+    // Jest
+    "jest.jestCommand": "npm run test --",
+    "jest.enableOutputChannelScanner": true,
+    
+    // Python debugging
+    "python.debugging.promptToSetVariableTypes": false
 }

@@ -1,0 +1,445 @@
+# ============================================
+# EXAMORA - Local Development Environment
+# ============================================
+#
+# Usage:
+#   docker compose up -d                    # Start all services
+#   docker compose down                     # Stop all
+#   docker compose down -v                  # Stop and remove volumes
+#
+# Services:
+#   - PostgreSQL 15 (per-service schemas)
+#   - RabbitMQ 3 (message broker + management)
+#   - Redis 7 (cache + session)
+#   - Prometheus (metrics)
+#   - Grafana (dashboards)
+#
+# Ports:
+#   PostgreSQL:     5432
+#   RabbitMQ:       5672 (AMQP), 15672 (Management UI)
+#   Redis:          6379
+#   Prometheus:     9090
+#   Grafana:        3006
+#
+
+services:
+  # ============================================
+  # DATABASE - PostgreSQL
+  # ============================================
+
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: examora-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
+      POSTGRES_DB: Exam_Bank
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../database/migrations:/docker-entrypoint-initdb.d/migrations:ro
+      - ../../database/seeds:/docker-entrypoint-initdb.d/seeds:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d Exam_Bank"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - examora-network
+
+  # ============================================
+  # MESSAGE QUEUE - RabbitMQ
+  # ============================================
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: examora-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-StrongPassword123}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 15s
+      retries: 10
+      start_period: 30s
+    networks:
+      - examora-network
+
+  # ============================================
+  # CACHE - Redis
+  # ============================================
+
+  redis:
+    image: redis:7-alpine
+    container_name: examora-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - examora-network
+
+  # ============================================
+  # BACKEND SERVICES
+  # ============================================
+
+  user-service:
+    build:
+      context: ../backend/User_Service
+      dockerfile: Dockerfile
+    container_name: examora-user-service
+    volumes:
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/User_Service/.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  exam-service:
+    build:
+      context: ../backend/Exam_Service
+      dockerfile: Dockerfile
+    container_name: examora-exam-service
+    volumes:
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/Exam_Service/.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  question-service:
+    build:
+      context: ../backend/Question_Service
+      dockerfile: Dockerfile
+    container_name: examora-question-service
+    volumes:
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/Question_Service/.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  ai-generation-service:
+    build:
+      context: ../backend/AI_Generation_Service
+      dockerfile: Dockerfile
+    container_name: examora-ai-generation-service
+    working_dir: /app
+    volumes:
+      - ../backend/AI_Generation_Service:/app
+      - ai-generation-node-modules:/app/node_modules
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/AI_Generation_Service/.env.docker
+    command: ["node", "src/server.js"]
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  ai-worker-api:
+    build:
+      context: ../backend/AI_Worker_Service
+      dockerfile: Dockerfile
+    container_name: examora-ai-worker-api
+    working_dir: /app
+    volumes:
+      - ../backend/AI_Worker_Service:/app
+      - ../backend/AI_Worker_Service/data:/app/data
+    env_file:
+      - ../backend/AI_Worker_Service/.env.docker
+    environment:
+      PYTHON_ENV: production
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  ai-worker-service:
+    build:
+      context: ../backend/AI_Worker_Service
+      dockerfile: Dockerfile
+    container_name: examora-ai-worker-service
+    working_dir: /app
+    volumes:
+      - ../backend/AI_Worker_Service:/app
+      - ../backend/AI_Worker_Service/data:/app/data
+    env_file:
+      - ../backend/AI_Worker_Service/.env.docker
+    environment:
+      PYTHON_ENV: production
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+    command: ["python", "run_worker.py"]
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ../backend/Notification_Service
+      dockerfile: Dockerfile
+    container_name: examora-notification-service
+    volumes:
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/Notification_Service/.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3004:3004"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  infrastructure-service:
+    build:
+      context: ../backend/Infrastructure_Service
+      dockerfile: Dockerfile
+    container_name: examora-infrastructure-service
+    volumes:
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/Infrastructure_Service/.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 5005
+      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+    ports:
+      - "5005:5005"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ../backend/API_Gateway_Service
+      dockerfile: Dockerfile
+    container_name: examora-api-gateway
+    volumes:
+      - ../backend/shared:/shared:ro
+    env_file:
+      - ../backend/API_Gateway_Service/.env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+      USER_SERVICE_URL: http://user-service:5000
+      EXAM_SERVICE_URL: http://exam-service:3001
+      QUESTION_SERVICE_URL: http://question-service:3002
+      AI_SERVICE_URL: http://ai-generation-service:3003
+      NOTIFICATION_SERVICE_URL: http://notification-service:3004
+    ports:
+      - "3100:3000"
+    depends_on:
+      - user-service
+      - exam-service
+      - question-service
+      - ai-generation-service
+      - notification-service
+      - infrastructure-service
+      - postgres-db
+      - rabbitmq
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  # ============================================
+  # FRONTEND
+  # ============================================
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: examora-frontend
+    env_file:
+      - ../frontend/.env.docker
+    environment:
+      VITE_API_BASE_URL: http://api-gateway:3000
+      VITE_WS_URL: ws://api-gateway:3000
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - examora-network
+    restart: unless-stopped
+
+  # ============================================
+  # OBSERVABILITY STACK
+  # ============================================
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: examora-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--storage.tsdb.retention.size=5GB'
+      - '--web.enable-lifecycle'
+    networks:
+      - examora-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: examora-grafana
+    restart: unless-stopped
+    ports:
+      - "3006:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_ALLOW_ORG_CREATE: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - examora-network
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  ai-generation-node-modules:
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  examora-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.101.0/24
+          gateway: 192.168.101.1

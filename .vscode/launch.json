@@ -1,0 +1,108 @@
+{
+    "configurations": [
+        {
+            "type": "node",
+            "name": "Frontend: Vite Dev",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/web-app",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "env": {
+                "VITE_API_GATEWAY_URL": "http://localhost:3100",
+                "VITE_RABBITMQ_URL": "ws://localhost:15672"
+            }
+        },
+        {
+            "type": "node",
+            "name": "API Gateway: Dev",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/backend/API_Gateway",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "restart": true,
+            "sourceMaps": true
+        },
+        {
+            "type": "node",
+            "name": "AI Generation Service: Dev",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/backend/AI_Generation_Service",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "restart": true,
+            "sourceMaps": true
+        },
+        {
+            "type": "debugpy",
+            "name": "AI Worker Service: Python Debug",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--reload",
+                "--port",
+                "8000"
+            ],
+            "cwd": "${workspaceFolder}/backend/AI_Worker_Service",
+            "console": "integratedTerminal",
+            "python": "${config:python.defaultInterpreterPath}",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend/AI_Worker_Service"
+            }
+        },
+        {
+            "type": "docker",
+            "name": "Docker Compose: Full Stack",
+            "request": "launch",
+            "dockerCompose": {
+                "projectName": "examora",
+                "configFiles": ["docker-compose.yml"],
+                "service": "web-app"
+            },
+            "console": "integratedTerminal",
+            "serverReadyAction": {
+                "pattern": "Local:.+(https?://[^\\s]+)",
+                "uriTemplate": "http://localhost:5173"
+            }
+        },
+        {
+            "type": "docker",
+            "name": "Docker Compose: API Gateway",
+            "request": "launch",
+            "dockerCompose": {
+                "projectName": "examora",
+                "configFiles": ["docker-compose.yml"],
+                "service": "api-gateway"
+            },
+            "console": "integratedTerminal"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All Services (Full Stack)",
+            "configurations": [
+                "Frontend: Vite Dev",
+                "API Gateway: Dev",
+                "AI Generation Service: Dev",
+                "AI Worker Service: Python Debug"
+            ],
+            "stopAll": true
+        },
+        {
+            "name": "Backend Only",
+            "configurations": [
+                "API Gateway: Dev",
+                "AI Generation Service: Dev",
+                "AI Worker Service: Python Debug"
+            ],
+            "stopAll": true
+        }
+    ]
+}

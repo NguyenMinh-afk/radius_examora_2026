@@ -1,0 +1,2198 @@
+{
+  "timestamp": "2026-08-15T18:30:53.822009",
+  "expected_difficulty": "medium",
+  "aggregate": {
+    "total_questions": 100,
+    "schema_valid_count": 99,
+    "average_overall_score": 0.808,
+    "median_overall_score": 0.827,
+    "min_overall_score": 0.52,
+    "max_overall_score": 0.832,
+    "std_overall_score": 0.04,
+    "quality_distribution": {
+      "excellent": 64,
+      "good": 34,
+      "acceptable": 1,
+      "poor": 1
+    }
+  },
+  "individual": [
+    {
+      "question_id": "mq-1",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-2",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-3",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-4",
+      "question_preview": "Indexing?",
+      "overall_score": 0.52,
+      "schema_valid": true,
+      "question_clarity": 0.75,
+      "answer_plausibility": 0.9333333333333333,
+      "explanation_quality": 0.0,
+      "difficulty_appropriate": 0.3,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality"
+      ],
+      "weaknesses": [
+        "Explanation does not clearly justify the answer",
+        "Question difficulty may not match intended level",
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency",
+        "Options are uneven in length or detail"
+      ],
+      "suggestions": [
+        "Provide clearer explanation linking to the correct answer",
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level",
+        "Make options more parallel in structure"
+      ]
+    },
+    {
+      "question_id": "mq-5",
+      "question_preview": "Which of the following is NOT NOT true about REST APIs?",
+      "overall_score": 0.685,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.65,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question or options contain ambiguity",
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Remove ambiguous terms or phrasing",
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-6",
+      "question_preview": "Pick the best caching strategy.",
+      "overall_score": 0.0,
+      "schema_valid": false,
+      "question_clarity": 0.0,
+      "answer_plausibility": 0.0,
+      "explanation_quality": 0.0,
+      "difficulty_appropriate": 0.0,
+      "strengths": [],
+      "weaknesses": [
+        "Schema validation failed"
+      ],
+      "suggestions": []
+    },
+    {
+      "question_id": "mq-7",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-8",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-9",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-10",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-11",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-12",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-13",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-14",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-15",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-16",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-17",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-18",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-19",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-20",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-21",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-22",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-23",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-24",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-25",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-26",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-27",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-28",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-29",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-30",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-31",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-32",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-33",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-34",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-35",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-36",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-37",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-38",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-39",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-40",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-41",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-42",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-43",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-44",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-45",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-46",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-47",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-48",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-49",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-50",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-51",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-52",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-53",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-54",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-55",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-56",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-57",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-58",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-59",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-60",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-61",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-62",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-63",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-64",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-65",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-66",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-67",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-68",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-69",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-70",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-71",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-72",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-73",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-74",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-75",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-76",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-77",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-78",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-79",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-80",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-81",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-82",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-83",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-84",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-85",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-86",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-87",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-88",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-89",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-90",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-91",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-92",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-93",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-94",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-95",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-96",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-97",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-98",
+      "question_preview": "Which HTTP status code indicates that a request has been accepted but processing is not yet complete",
+      "overall_score": 0.827,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.85,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure all options follow same format and detail level"
+      ]
+    },
+    {
+      "question_id": "mq-99",
+      "question_preview": "Why does RabbitMQ redeliver a message when a consumer channel closes without an explicit acknowledge",
+      "overall_score": 0.832,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.8,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material"
+      ]
+    },
+    {
+      "question_id": "mq-100",
+      "question_preview": "What is the primary benefit of a B-tree index in a relational database?",
+      "overall_score": 0.778,
+      "schema_valid": true,
+      "question_clarity": 1.0,
+      "answer_plausibility": 1.0,
+      "explanation_quality": 0.6,
+      "difficulty_appropriate": 0.6,
+      "strengths": [
+        "Question is clear and well-phrased",
+        "Good distractor quality",
+        "Explanation clearly justifies the answer"
+      ],
+      "weaknesses": [
+        "Question may not be well-grounded in source material",
+        "Options lack internal consistency"
+      ],
+      "suggestions": [
+        "Ensure question content relates directly to source material",
+        "Ensure all options follow same format and detail level"
+      ]
+    }
+  ],
+  "run_meta": {
+    "run_id": "bf52d6fe",
+    "timestamp": "2026-08-15T18:30:53.817104",
+    "mode": "MOCK",
+    "target_question_count": 100,
+    "actual_question_count": 100
+  }
+}

@@ -87,6 +87,10 @@ class Settings(BaseSettings):
     )
     enable_model_fallback: bool = Field(default=True)
 
+    # --- Mock LLM for Benchmarking ---
+    enable_mock_llm: bool = Field(default=False)
+    mock_llm_latency_ms: int = Field(default=100)
+
     # --- Single-call Strategy ---
     max_single_call_context_chars: int = Field(default=120000)
     max_merged_context_chars: int = Field(default=120000)
