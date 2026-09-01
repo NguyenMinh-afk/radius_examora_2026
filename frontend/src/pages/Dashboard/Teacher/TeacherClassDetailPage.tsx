@@ -203,9 +203,13 @@ const TeacherClassDetailPage: React.FC = () => {
               <p className={`text-center py-12 ${isDark ? "text-gray-500" : "text-slate-400"}`}>Chưa có bài thi nào</p>
             )}
             {assignments.map((a: ClassAssignment) => (
-              <div key={a.assignmentId} className={`flex items-center justify-between p-4 rounded-xl ${
-                isDark ? "bg-slate-800" : "bg-slate-50"
-              }`}>
+              <Link
+                key={a.assignmentId}
+                to={`/teacher/assignments/${a.assignmentId}`}
+                className={`flex items-center justify-between p-4 rounded-xl transition hover:scale-[1.01] ${
+                  isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-slate-50 hover:bg-slate-100"
+                }`}
+              >
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{a.title}</h4>
@@ -225,7 +229,7 @@ const TeacherClassDetailPage: React.FC = () => {
                     <p className={`text-xs ${isDark ? "text-gray-500" : "text-slate-400"}`}>Đã chấm</p>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </SectionCard>
