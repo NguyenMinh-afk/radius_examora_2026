@@ -1,0 +1,71 @@
+---
+description: Git workflow, commits, PRs
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Git Workflow Rules
+
+## 🌿 Branch Naming (BẮT BUỘC)
+```
+<type>/<short-description>
+
+feature/add-ai-generation
+bugfix/fix-rabbitmq-connection
+hotfix/critical-security-patch
+refactor/extract-service
+docs/update-readme
+test/add-e2e
+chore/update-deps
+```
+
+## 📝 Commit Format (Conventional Commits - BẮT BUỘC)
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Types
+- `feat` - Tính năng mới
+- `fix` - Bug fix
+- `docs` - Tài liệu
+- `style` - Format code
+- `refactor` - Refactor
+- `perf` - Performance
+- `test` - Thêm/sửa test
+- `chore` - Build, deps
+- `ci` - CI/CD
+- `revert` - Revert
+
+### Scope
+`(ai)`, `(frontend)`, `(gateway)`, `(worker)`, `(rabbitmq)`, `(deps)`, `(ci)`
+
+### Rules
+- Subject ≤ 72 ký tự
+- Imperative mood ("add" not "added")
+- NO viết hoa chữ cái đầu
+- NO dấu chấm cuối
+
+## ✅ EXAMPLES
+```bash
+git commit -m "feat(ai): add Gemini API integration
+
+Add Gemini AI to generate exam questions from content.
+- Integrate Gemini API
+- Add retry mechanism
+- Handle quota limits"
+
+git commit -m "fix(worker): correct message acknowledgment
+
+Fix DLQ issue where messages were not properly acknowledged
+after successful processing."
+```
+
+## ❌ NEVER
+- `git commit -m "update"`
+- `git commit -m "fix bug"`
+- `git commit -m "WIP"`
+- Commit trực tiếp vào main

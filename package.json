@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "pg": "^8.22.0"
+  }
+}

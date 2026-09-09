@@ -1,5 +1,8 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * QuestionTag Model - exam_bank_db.question_db.question_tags
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class QuestionTag extends Model {}
 
@@ -10,17 +13,24 @@ QuestionTag.init({
     primaryKey: true,
   },
   name: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
     unique: true,
+    field: 'name',
   },
-  category: DataTypes.STRING,
-  created_at: DataTypes.DATE,
+  category: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    field: 'category',
+  },
 }, {
   sequelize,
   modelName: 'QuestionTag',
   tableName: 'question_tags',
-  timestamps: false,
+  schema: 'question_db',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-module.exports = QuestionTag;
+export default QuestionTag;

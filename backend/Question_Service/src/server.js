@@ -1,20 +1,86 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import compression from "compression";
 import dotenv from "dotenv";
+
+// Shared modules
+import { validateServiceEnv } from "../../shared/utils/env.validator.js";
+import { requestIdMiddleware, correlationIdMiddleware } from "../../shared/middleware/requestId.js";
+import { generalLimiter, searchLimiter } from "../../shared/middleware/rateLimiter.js";
+import { default as logger, log } from "../../shared/utils/logger.js";
 
 dotenv.config();
 
-const app = express();
+// Validate environment variables
+validateServiceEnv("questionService");
 
-app.use(cors());
+const app = express();
+const isProduction = process.env.NODE_ENV === "production";
+
+// Request ID & Correlation ID
+app.use(requestIdMiddleware);
+app.use(correlationIdMiddleware);
+
+// Security headers (production only)
+if (isProduction) {
+  app.use(helmet());
+  app.set("trust proxy", 1);
+}
+
+// Compression (production only)
+if (isProduction) {
+  app.use(compression());
+}
+
+// Disable x-powered-by header
+app.disable("x-powered-by");
+
+const corsOptions = isProduction
+  ? { origin: process.env.FRONTEND_URL || "http://localhost:5173" }
+  : {};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Examora API is running...");
+// Rate limiting
+app.use(generalLimiter);
+
+// Routes
+import questionRoutes from "./routes/question.routes.js";
+app.use("/api/questions", questionRoutes);
+app.use("/api/collections", questionRoutes);
+
+app.get("/", (req, res) => res.send("Examora Question_Service is running..."));
+
+// Enhanced Health Check
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "Question_Service",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
-const PORT = process.env.PORT || 5000;
+app.get("/ready", (req, res) => {
+  res.json({ status: "ready", service: "Question_Service" });
+});
+
+// Global error handler (SAU TẤT CẢ ROUTES)
+app.use((err, req, res, next) => {
+  log.error("Unhandled error", { error: err.message, stack: err.stack, requestId: req.requestId });
+  res.status(err.status || 500).json({
+    error: err.message || "Internal server error",
+    requestId: req.requestId,
+    ...(isProduction ? {} : { stack: err.stack }),
+  });
+});
+
+const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  log.service.started(PORT);
 });
+
+export default app;

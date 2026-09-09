@@ -1,0 +1,51 @@
+---
+description: Testing rules and best practices
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Testing Rules
+
+## 📊 Coverage Requirements
+| Layer | Min Coverage |
+|-------|--------------|
+| AI Generation | **85%** |
+| Business logic | **80%** |
+| Controllers | **80%** |
+| UI components | **70%** |
+| **Overall** | **80%** |
+
+## 🧪 Test Types
+1. **Unit (60-75%)** - Pure logic, mock dependencies, < 100ms
+2. **Integration (20-30%)** - Real DB/RabbitMQ
+3. **E2E (5-10%)** - Playwright/Cypress, critical flows only
+
+## ✅ MUST
+- Mỗi PR phải có test
+- Coverage không giảm
+- Test behavior, not implementation
+- Mock external dependencies, NOT internal
+- Test names mô tả behavior: `should_X_When_Y`
+- Fast unit tests (< 100ms)
+- Independent tests (no order dependency)
+
+## 📝 Test Naming
+```typescript
+// TypeScript
+it('should return token when credentials are valid', () => {})
+it('should throw error when email already exists', () => {})
+
+// Python
+def test_should_return_token_when_credentials_valid():
+def test_should_raise_error_when_email_exists():
+```
+
+## ❌ NEVER
+- Test private methods
+- Test implementation details
+- Skip test không có lý do
+- Sleep() trong test
+- Test phụ thuộc thứ tự
+- Test trên production data
+
+Xem chi tiết: `@/docs/03-development/testing-strategy.md`

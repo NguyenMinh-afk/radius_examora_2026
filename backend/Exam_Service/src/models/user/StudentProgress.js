@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * StudentProgress Model
+ * ESM
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class StudentProgress extends Model {}
 
@@ -30,4 +34,4 @@ StudentProgress.init({
   timestamps: false,
 });
 
-module.exports = StudentProgress;
+export default StudentProgress;

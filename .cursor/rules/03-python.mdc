@@ -1,0 +1,46 @@
+---
+description: Python/FastAPI rules for AI services
+globs: ["backend/AI_Worker_Service/**/*.py"]
+alwaysApply: false
+---
+
+# Python Rules (FastAPI + Pydantic)
+
+## 🏗️ Structure
+```
+backend/AI_Worker_Service/
+├── app/
+│   ├── main.py              # FastAPI app
+│   ├── api/                 # Routes
+│   ├── services/            # Business logic
+│   ├── schemas/             # Pydantic models
+│   └── core/                # config, logging
+├── tests/
+└── requirements.txt
+```
+
+## 📐 Naming (PEP 8)
+- Module/file: snake_case
+- Class: PascalCase
+- Function/variable: snake_case
+- Constant: UPPER_SNAKE_CASE
+
+## ✅ MUST
+- Type hints EVERYWHERE (NO untyped functions)
+- Use Pydantic models cho request/response
+- Use Pydantic Settings cho config
+- Use `async def` cho I/O operations
+- Use pytest + pytest-asyncio cho test
+
+## ❌ NEVER
+- `print()` trong production
+- Missing type hints
+- Mutable default arguments
+- Bare except
+- `Any` type
+
+## 🧪 Test
+- pytest + pytest-asyncio
+- pytest-cov cho coverage
+- Use AsyncMock cho async functions
+- Coverage ≥ 80%

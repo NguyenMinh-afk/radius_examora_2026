@@ -1,141 +1,95 @@
 /**
- * Khởi tạo Sequelize, import và thiết lập các model, associations
- * @module models/index
+ * Models index cho User_Service
+ * Chứa user/auth/profile models + admin models (Course, Question, Notification, AIJob, QueueJob, AuditLog, SystemEvent)
+ * Các admin models sử dụng cross-schema (course_db, question_db, ai_db, notification_db, infra_observability, infra_eventing)
  */
-const User = require('./User');
-const Role = require('./Role');
-const UserProfile = require('./UserProfile');
-const TeacherProfile = require('./TeacherProfile');
-const StudentProfile = require('./user/StudentProfile');
-const UserSession = require('./UserSession');
-const Question = require('./question/Question');
-const Exam = require('./exam/Exam');
-const ExamQuestion = require('./exam/ExamQuestion');
-const ExamSubmission = require('./exam/ExamSubmission');
-const Answer = require('./question/Answer');
-const Submission = require('./exam/Submission');
-const SubmissionAnswer = require('./exam/SubmissionAnswer');
-const School = require('./core/School');
-const Subject = require('./core/Subject');
-const LearningPath = require('./activity/LearningPath');
-const LearningPathStep = require('./activity/LearningPathStep');
-const StudentAssignment = require('./user/StudentAssignment');
-const StudentProgress = require('./user/StudentProgress');
-const SystemAnalytics = require('./system/SystemAnalytics');
-const UserAchievement = require('./UserAchievement');
-const Achievement = require('./Achievement');
-const Chapter = require('./core/Chapter');
-const KnowledgeUnit = require('./core/KnowledgeUnit');
-const QuestionTag = require('./question/QuestionTag');
-const QuestionTagRelation = require('./question/QuestionTagRelation');
-const QuestionVersion = require('./question/QuestionVersion');
-const AIGenerationRequest = require('./ai/AIGenerationRequest');
-const AIGenerationLog = require('./ai/AIGenerationLog');
-const OAuthProvider = require('./user/OAuthProvider');
-const VerificationToken = require('./user/VerificationToken');
-const PasswordResetToken = require('./user/PasswordResetToken');
-const { Op } = require('sequelize');
-// Chapters, KnowledgeUnits, Tags, Versions
-Chapter.belongsTo(Subject, { foreignKey: 'subject_id', as: 'subject' });
-Subject.hasMany(Chapter, { foreignKey: 'subject_id', as: 'chapters' });
-KnowledgeUnit.belongsTo(Chapter, { foreignKey: 'chapter_id', as: 'chapter' });
-Chapter.hasMany(KnowledgeUnit, { foreignKey: 'chapter_id', as: 'knowledgeUnits' });
+import { DataTypes, Model, Op } from 'sequelize';
+import sequelize from '../config/sequelize.js';
 
-Question.belongsTo(Chapter, { foreignKey: 'chapter_id', as: 'chapter' });
-Question.belongsTo(KnowledgeUnit, { foreignKey: 'knowledge_unit_id', as: 'knowledgeUnit' });
+// ============ User Core Models (user_db) ============
+import User from './User.js';
+import Role from './Role.js';
+import UserProfile from './UserProfile.js';
+import UserSession from './UserSession.js';
 
-Question.belongsToMany(QuestionTag, { through: QuestionTagRelation, foreignKey: 'question_id', otherKey: 'tag_id', as: 'tags' });
-QuestionTag.belongsToMany(Question, { through: QuestionTagRelation, foreignKey: 'tag_id', otherKey: 'question_id', as: 'questions' });
+// ============ Role-specific Profiles (user_db) ============
+import StudentProfile from './user/StudentProfile.js';
+import TeacherProfile from './TeacherProfile.js';
 
-QuestionVersion.belongsTo(Question, { foreignKey: 'question_id', as: 'question' });
-Question.hasMany(QuestionVersion, { foreignKey: 'question_id', as: 'versions' });
+// ============ Auth Models (user_db) ============
+import OAuthProvider from './user/OAuthProvider.js';
+import VerificationToken from './user/VerificationToken.js';
+import PasswordResetToken from './user/PasswordResetToken.js';
+import PasswordResetOTP from './user/PasswordResetOTP.js';
 
-// AI Generation
-AIGenerationRequest.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-AIGenerationRequest.belongsTo(Subject, { foreignKey: 'subject_id', as: 'subject' });
-AIGenerationRequest.belongsTo(Chapter, { foreignKey: 'chapter_id', as: 'chapter' });
-AIGenerationRequest.belongsTo(KnowledgeUnit, { foreignKey: 'knowledge_unit_id', as: 'knowledgeUnit' });
-AIGenerationLog.belongsTo(AIGenerationRequest, { foreignKey: 'request_id', as: 'request' });
-AIGenerationLog.belongsTo(Question, { foreignKey: 'question_id', as: 'question' });
+// ============ Admin Dashboard Models (cross-service) ============
+import Course from './Course.js';           // course_db.courses
+import Question from './Question.js';       // question_db.questions
+import Notification from './Notification.js'; // notification_db.notifications
+import AIJob from './AIJob.js';             // ai_db.ai_jobs
+import QueueJob from './QueueJob.js';       // infra_eventing.queue_jobs
+import AuditLog from './AuditLog.js';       // infra_observability.audit_logs
+import SystemEvent from './SystemEvent.js';  // infra_observability.system_events
 
-// OAuth, Verification, PasswordReset
-OAuthProvider.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-VerificationToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-PasswordResetToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-
-
-const sequelize = require('../config/sequelize');
-
-// Associations (user, role, profile, session)
+// ============ Associations (user_db only) ============
 User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
 Role.hasMany(User, { foreignKey: 'role_id', as: 'users' });
+
 User.hasOne(UserProfile, { foreignKey: 'user_id', as: 'profile' });
 UserProfile.belongsTo(User, { foreignKey: 'user_id' });
+
 User.hasOne(TeacherProfile, { foreignKey: 'user_id', as: 'teacherProfile' });
 TeacherProfile.belongsTo(User, { foreignKey: 'user_id' });
+
 User.hasOne(StudentProfile, { foreignKey: 'user_id', as: 'studentProfile' });
 StudentProfile.belongsTo(User, { foreignKey: 'user_id' });
+
 User.hasMany(UserSession, { foreignKey: 'user_id', as: 'sessions' });
 UserSession.belongsTo(User, { foreignKey: 'user_id' });
 
-// Question, Answer, Exam, Submission associations
-Question.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
-User.hasMany(Question, { foreignKey: 'created_by', as: 'questions' });
-Answer.belongsTo(Question, { foreignKey: 'question_id', as: 'question' });
-Question.hasMany(Answer, { foreignKey: 'question_id', as: 'answers' });
+OAuthProvider.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(OAuthProvider, { foreignKey: 'user_id', as: 'oauthProviders' });
 
-Exam.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
-User.hasMany(Exam, { foreignKey: 'created_by', as: 'exams' });
-Exam.belongsToMany(Question, { through: ExamQuestion, foreignKey: 'exam_id', otherKey: 'question_id', as: 'questions' });
-Question.belongsToMany(Exam, { through: ExamQuestion, foreignKey: 'question_id', otherKey: 'exam_id', as: 'exams' });
+VerificationToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+PasswordResetToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+PasswordResetOTP.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(PasswordResetOTP, { foreignKey: 'user_id', as: 'passwordResetOTPs' });
 
-Submission.belongsTo(Exam, { foreignKey: 'exam_id', as: 'exam' });
-Exam.hasMany(Submission, { foreignKey: 'exam_id', as: 'submissions' });
-Submission.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-User.hasMany(Submission, { foreignKey: 'user_id', as: 'submissions' });
+// ============ Cross-service associations (read-only for admin) ============
+// Course -> Question (course_db -> question_db)
+// Note: These use cross-schema associations, may need raw queries for reliability
+Course.hasMany(Question, { foreignKey: 'course_id', as: 'questions', foreignKeyConstraint: false });
+Question.belongsTo(Course, { foreignKey: 'course_id', as: 'course', foreignKeyConstraint: false });
 
-SubmissionAnswer.belongsTo(Submission, { foreignKey: 'submission_id', as: 'submission' });
-Submission.hasMany(SubmissionAnswer, { foreignKey: 'submission_id', as: 'answers' });
-SubmissionAnswer.belongsTo(Question, { foreignKey: 'question_id', as: 'question' });
-Question.hasMany(SubmissionAnswer, { foreignKey: 'question_id', as: 'submissionAnswers' });
-SubmissionAnswer.belongsTo(Answer, { foreignKey: 'answer_id', as: 'answer' });
-Answer.hasMany(SubmissionAnswer, { foreignKey: 'answer_id', as: 'submissionAnswers' });
+// Question -> User (question_db -> user_db)
+Question.belongsTo(User, { foreignKey: 'created_by', as: 'creator', foreignKeyConstraint: false });
+User.hasMany(Question, { foreignKey: 'created_by', as: 'createdQuestions', foreignKeyConstraint: false });
 
-// School, Subject associations (if needed)
+// Notification -> User (notification_db -> user_db)
+Notification.belongsTo(User, { foreignKey: 'user_id', as: 'user', foreignKeyConstraint: false });
+User.hasMany(Notification, { foreignKey: 'user_id', as: 'notifications', foreignKeyConstraint: false });
 
-module.exports = {
+// ============ Export ============
+export {
   sequelize,
+  DataTypes,
+  Model,
+  Op,
   User,
   Role,
   UserProfile,
-  TeacherProfile,
-  StudentProfile,
   UserSession,
-  Question,
-  Exam,
-  ExamQuestion,
-  ExamSubmission,
-  Answer,
-  Submission,
-  SubmissionAnswer,
-  School,
-  Subject,
-  LearningPath,
-  LearningPathStep,
-  StudentAssignment,
-  StudentProgress,
-  SystemAnalytics,
-  UserAchievement,
-  Achievement,
-  Chapter,
-  KnowledgeUnit,
-  QuestionTag,
-  QuestionTagRelation,
-  QuestionVersion,
-  AIGenerationRequest,
-  AIGenerationLog,
+  StudentProfile,
+  TeacherProfile,
   OAuthProvider,
   VerificationToken,
   PasswordResetToken,
-  Op,
+  PasswordResetOTP,
+  Course,
+  Question,
+  Notification,
+  AIJob,
+  QueueJob,
+  AuditLog,
+  SystemEvent,
 };

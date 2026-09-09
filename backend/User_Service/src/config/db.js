@@ -1,21 +1,24 @@
-const { Pool } = require('pg');
-require('dotenv').config();
 
-// PostgreSQL connection pool
-console.log('DB_PASSWORD (db.js):', typeof process.env.DB_PASSWORD, process.env.DB_PASSWORD);
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
+
+// PostgreSQL connection pool with env-based tuning
+const dbSchema = process.env.DB_SCHEMA || 'public';
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
+  port: parseInt(process.env.DB_PORT || '5432', 10),
   database: process.env.DB_NAME || 'exam_bank_db',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD,
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  max: parseInt(process.env.DB_POOL_SIZE || '20', 10),
+  idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),
+  connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '2000', 10),
 });
 
 // Test database connection
-pool.on('connect', () => {
+pool.on('connect', (client) => {
+  client.query(`SET search_path TO ${dbSchema}, public`);
   console.log('✅ Connected to PostgreSQL database');
 });
 
@@ -65,8 +68,4 @@ const getClient = async () => {
   return client;
 };
 
-module.exports = {
-  pool,
-  query,
-  getClient,
-};
+export { pool, query, getClient };

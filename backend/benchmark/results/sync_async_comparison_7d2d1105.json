@@ -1,0 +1,1346 @@
+{
+  "run_id": "7d2d1105",
+  "timestamp": "2026-08-15T17:42:22.486615",
+  "configuration": {
+    "concurrency_levels": [
+      1,
+      5,
+      10,
+      20,
+      50
+    ],
+    "requests_per_level": 50,
+    "warmup_requests": 10,
+    "worker_counts": [
+      1,
+      2,
+      4
+    ]
+  },
+  "synchronous": {
+    "concurrency_1": {
+      "concurrency": 1,
+      "total_requests": 50,
+      "successful": 50,
+      "failed": 0,
+      "success_rate": 100.0,
+      "total_time_seconds": 313.94,
+      "throughput_rpm": 9.56,
+      "latency_stats": {
+        "count": 50,
+        "mean": 6278.47,
+        "median": 6019.61,
+        "std": 2807.09,
+        "min": 514.06,
+        "max": 14141.03,
+        "p50": 6111.26,
+        "p75": 8105.23,
+        "p90": 10060.5,
+        "p95": 11572.88,
+        "p99": null,
+        "cv": 0.4471
+      },
+      "individual_results": [
+        {
+          "success": true,
+          "request_id": "2b3d3d17-f7cf-470a-b211-a458730463b9",
+          "latency_ms": 8180.846799998108,
+          "status_code": 200,
+          "request_num": 0,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "7e165bd5-0aff-42d9-a81c-3e642a87a386",
+          "latency_ms": 9250.53040000057,
+          "status_code": 200,
+          "request_num": 1,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "22897d8b-f6a9-4378-b7e3-9a010a047c40",
+          "latency_ms": 5277.899600001547,
+          "status_code": 200,
+          "request_num": 2,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "9a009715-8902-4b49-a16b-c7d656a42596",
+          "latency_ms": 7863.634699999238,
+          "status_code": 200,
+          "request_num": 3,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "4e6fcb53-c08e-470b-a99a-153df2630adb",
+          "latency_ms": 6434.418299999379,
+          "status_code": 200,
+          "request_num": 4,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "31c136c1-3943-448e-bc97-e9342a5cbaf9",
+          "latency_ms": 7685.754099999031,
+          "status_code": 200,
+          "request_num": 5,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "afb8aa5d-1362-4d75-85af-ef687210532d",
+          "latency_ms": 5253.546299998561,
+          "status_code": 200,
+          "request_num": 6,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "0e4a1d18-38ab-4049-9ac1-980fce8a48b1",
+          "latency_ms": 5562.812700001814,
+          "status_code": 200,
+          "request_num": 7,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "1f27b22d-21fa-40f3-b8ea-128376d2a825",
+          "latency_ms": 3242.921999997634,
+          "status_code": 200,
+          "request_num": 8,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "c1ea4789-84a2-453b-af46-7f71fa4fd3e3",
+          "latency_ms": 4247.057999997196,
+          "status_code": 200,
+          "request_num": 9,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "7c8b04ea-f7e3-4b56-a301-2299e34445d7",
+          "latency_ms": 5927.276999998867,
+          "status_code": 200,
+          "request_num": 10,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "e870e38e-0945-46a1-a913-a111bdf9a465",
+          "latency_ms": 6767.640199999732,
+          "status_code": 200,
+          "request_num": 11,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "121c95ae-1424-4b75-8997-71fa84b139aa",
+          "latency_ms": 5802.434599998378,
+          "status_code": 200,
+          "request_num": 12,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "47ea0f1b-48a9-42ae-9888-6e0052fb97cb",
+          "latency_ms": 5927.949799999624,
+          "status_code": 200,
+          "request_num": 13,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "abb4ae1e-1dd1-40c1-a630-38befe39e4b9",
+          "latency_ms": 2816.1795000014536,
+          "status_code": 200,
+          "request_num": 14,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "dc75d2e7-bf47-4130-b7b7-172728985eb1",
+          "latency_ms": 11572.884900000645,
+          "status_code": 200,
+          "request_num": 15,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "3ef5ef9e-ea03-4713-9aac-bfc67de787fa",
+          "latency_ms": 2332.538200000272,
+          "status_code": 200,
+          "request_num": 16,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "35911eb9-e940-4a88-b41c-e7677740a411",
+          "latency_ms": 6976.691799998662,
+          "status_code": 200,
+          "request_num": 17,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "5bc6da49-0903-48a0-bed7-6dcc8aad80ac",
+          "latency_ms": 6111.264400002256,
+          "status_code": 200,
+          "request_num": 18,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "f8dd1121-2012-4f8c-adee-1285963359cf",
+          "latency_ms": 4882.074500001181,
+          "status_code": 200,
+          "request_num": 19,
+          "mocked": true
+        }
+      ]
+    },
+    "concurrency_5": {
+      "concurrency": 5,
+      "total_requests": 50,
+      "successful": 50,
+      "failed": 0,
+      "success_rate": 100.0,
+      "total_time_seconds": 91.25,
+      "throughput_rpm": 32.88,
+      "latency_stats": {
+        "count": 50,
+        "mean": 6185.1,
+        "median": 6194.88,
+        "std": 2310.68,
+        "min": 1457.71,
+        "max": 11549.84,
+        "p50": 6228.35,
+        "p75": 7864.9,
+        "p90": 9127.94,
+        "p95": 10577.36,
+        "p99": null,
+        "cv": 0.3736
+      },
+      "individual_results": [
+        {
+          "success": true,
+          "request_id": "8eecf8e0-ff1c-4164-bb37-8b887e73733a",
+          "latency_ms": 6005.500699997356,
+          "status_code": 200,
+          "request_num": 0,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "ad5bc1e2-ada1-418d-a15e-460c9f16382f",
+          "latency_ms": 10577.360999999655,
+          "status_code": 200,
+          "request_num": 1,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "d747bc25-90ed-43e2-854f-55722e6f6928",
+          "latency_ms": 7403.545500001201,
+          "status_code": 200,
+          "request_num": 2,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "6ecc8738-1d78-45c3-a3d4-1eb6070b0785",
+          "latency_ms": 1519.6451000010711,
+          "status_code": 200,
+          "request_num": 3,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "e34d2a9c-6d05-4f04-b609-b9e9fcc91333",
+          "latency_ms": 4998.698299998068,
+          "status_code": 200,
+          "request_num": 4,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "71769f3e-179d-4e1c-b3c0-2a5d60a0e096",
+          "latency_ms": 3790.2582000024267,
+          "status_code": 200,
+          "request_num": 5,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "abdc9669-c9e4-49c9-b65c-c84dde97ca3a",
+          "latency_ms": 7289.9671999985,
+          "status_code": 200,
+          "request_num": 6,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "295e0b86-3686-4853-a7d1-9d47e40025f1",
+          "latency_ms": 9103.183200000785,
+          "status_code": 200,
+          "request_num": 7,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "c4e5698c-06da-471a-935c-27c29d52ff5d",
+          "latency_ms": 5533.41680000085,
+          "status_code": 200,
+          "request_num": 8,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "6ea47ed3-83dc-4133-bc52-b720bd878f7c",
+          "latency_ms": 4643.0725999998685,
+          "status_code": 200,
+          "request_num": 9,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "0c0bebb7-e9ae-4122-948f-f8cac598a888",
+          "latency_ms": 9190.727600001992,
+          "status_code": 200,
+          "request_num": 10,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "48873e08-3a60-47db-b7ed-12fac6fc3a39",
+          "latency_ms": 8024.245699998573,
+          "status_code": 200,
+          "request_num": 11,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "101aaee3-d15b-4236-b168-625baa7bb4d0",
+          "latency_ms": 3847.365899997385,
+          "status_code": 200,
+          "request_num": 12,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "02c6c72a-e7f7-49c0-82d6-1a8f09ec84b3",
+          "latency_ms": 7292.307200001233,
+          "status_code": 200,
+          "request_num": 13,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "77c00119-e0b2-4067-82b4-864fc61ccbef",
+          "latency_ms": 6093.304699999862,
+          "status_code": 200,
+          "request_num": 14,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "14760866-48f9-418a-ba80-dd2385e5027b",
+          "latency_ms": 7864.900399999897,
+          "status_code": 200,
+          "request_num": 15,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "15d3d0a0-ebf6-45ee-9cec-5b2bc013e126",
+          "latency_ms": 3629.3670000013663,
+          "status_code": 200,
+          "request_num": 16,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "3ddc487f-3b1f-4649-97e1-555ce40eb3ce",
+          "latency_ms": 11053.37420000069,
+          "status_code": 200,
+          "request_num": 17,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "97f0261c-1aa7-4acb-bd4a-88f88999c585",
+          "latency_ms": 5332.334200000332,
+          "status_code": 200,
+          "request_num": 18,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "d4228729-5301-40f6-bd52-b3689ab90f65",
+          "latency_ms": 7074.748099999852,
+          "status_code": 200,
+          "request_num": 19,
+          "mocked": true
+        }
+      ]
+    },
+    "concurrency_10": {
+      "concurrency": 10,
+      "total_requests": 50,
+      "successful": 50,
+      "failed": 0,
+      "success_rate": 100.0,
+      "total_time_seconds": 51.09,
+      "throughput_rpm": 58.72,
+      "latency_stats": {
+        "count": 50,
+        "mean": 6241.03,
+        "median": 6325.87,
+        "std": 2681.67,
+        "min": 509.85,
+        "max": 11668.94,
+        "p50": 6512.31,
+        "p75": 8287.18,
+        "p90": 9665.73,
+        "p95": 10625.42,
+        "p99": null,
+        "cv": 0.4297
+      },
+      "individual_results": [
+        {
+          "success": true,
+          "request_id": "edac0c57-c773-46d9-a5e1-c20dfc87d9c3",
+          "latency_ms": 8381.876100000227,
+          "status_code": 200,
+          "request_num": 0,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "881f4cd1-3c12-4e76-a27a-67ad5b421002",
+          "latency_ms": 4720.553700000892,
+          "status_code": 200,
+          "request_num": 1,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "c443237e-55c0-48e4-bbdf-9e8ebaec891a",
+          "latency_ms": 5389.920699999493,
+          "status_code": 200,
+          "request_num": 2,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "98d393ab-a702-4349-a23a-6bb12582a3a7",
+          "latency_ms": 5482.989500000258,
+          "status_code": 200,
+          "request_num": 3,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "2442c3ee-6351-4ea9-8a29-761d1264b931",
+          "latency_ms": 5683.910100000503,
+          "status_code": 200,
+          "request_num": 4,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "f5d69037-ab5e-4032-83a6-9742c61e1514",
+          "latency_ms": 3089.9430999998003,
+          "status_code": 200,
+          "request_num": 5,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "e36cd8a7-06a5-40ca-a42b-1eaa13f4d525",
+          "latency_ms": 2839.954300001409,
+          "status_code": 200,
+          "request_num": 6,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "98224ace-fb4d-4477-9c68-2a4dc9ba3a17",
+          "latency_ms": 7173.0486000014935,
+          "status_code": 200,
+          "request_num": 7,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "6ceb73c8-3371-4fe0-bef9-95afa04ac6f1",
+          "latency_ms": 10625.41549999878,
+          "status_code": 200,
+          "request_num": 8,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "53cb5afa-7022-4c1d-b588-48e00196f980",
+          "latency_ms": 7764.596499997424,
+          "status_code": 200,
+          "request_num": 9,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "eeb2e738-4512-4e81-899d-4920725361b1",
+          "latency_ms": 6512.305700001889,
+          "status_code": 200,
+          "request_num": 10,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "50d18628-fcb2-48a4-b7c4-2c936063a9fa",
+          "latency_ms": 3572.225299998536,
+          "status_code": 200,
+          "request_num": 11,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "5149872c-3ca2-4c48-af3f-013d4f20b8f6",
+          "latency_ms": 10556.202800002211,
+          "status_code": 200,
+          "request_num": 12,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "4cbfc23f-07cb-4727-b6ee-f1e871729c5b",
+          "latency_ms": 5105.684400001337,
+          "status_code": 200,
+          "request_num": 13,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "3643ce58-ca22-486d-beba-bbd83d9fb046",
+          "latency_ms": 8287.175199999183,
+          "status_code": 200,
+          "request_num": 14,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "09a037c7-2cd9-4420-8898-b2c84fe65ddb",
+          "latency_ms": 509.84500000049593,
+          "status_code": 200,
+          "request_num": 15,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "712c3379-9383-49d5-bdf3-c948929f0e30",
+          "latency_ms": 8364.310999997542,
+          "status_code": 200,
+          "request_num": 16,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "9afa2401-df41-49d8-8e6d-ade4164f8198",
+          "latency_ms": 8765.039600002638,
+          "status_code": 200,
+          "request_num": 17,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "5a9eeaa1-3edb-4e6c-8d93-a6c84f5cc8f2",
+          "latency_ms": 7400.748600000952,
+          "status_code": 200,
+          "request_num": 18,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "1376d35f-d689-4f3a-9fcf-235cafc30e6d",
+          "latency_ms": 4269.879300001776,
+          "status_code": 200,
+          "request_num": 19,
+          "mocked": true
+        }
+      ]
+    },
+    "concurrency_20": {
+      "concurrency": 20,
+      "total_requests": 50,
+      "successful": 50,
+      "failed": 0,
+      "success_rate": 100.0,
+      "total_time_seconds": 33.64,
+      "throughput_rpm": 89.19,
+      "latency_stats": {
+        "count": 50,
+        "mean": 6801.27,
+        "median": 6696.09,
+        "std": 2387.71,
+        "min": 543.46,
+        "max": 11523.68,
+        "p50": 6708.91,
+        "p75": 8439.0,
+        "p90": 9852.93,
+        "p95": 11035.03,
+        "p99": null,
+        "cv": 0.3511
+      },
+      "individual_results": [
+        {
+          "success": true,
+          "request_id": "26062030-1300-4bbb-b314-a187ea15187c",
+          "latency_ms": 3204.7772000005352,
+          "status_code": 200,
+          "request_num": 0,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "e80f332e-e324-4d9a-a0f7-c30e6ebab428",
+          "latency_ms": 5520.544999999402,
+          "status_code": 200,
+          "request_num": 1,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "8012a28b-6d20-46fb-b4db-09087407cd04",
+          "latency_ms": 11523.67509999749,
+          "status_code": 200,
+          "request_num": 2,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "29447a64-35c2-4f4e-8732-b484e25101f9",
+          "latency_ms": 6030.239100000472,
+          "status_code": 200,
+          "request_num": 3,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "2b0c22ce-a3cb-4281-af65-f7d745cffdef",
+          "latency_ms": 9074.243300001399,
+          "status_code": 200,
+          "request_num": 4,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "c20b63b5-b05c-4e46-8c6d-def9da723c91",
+          "latency_ms": 7984.276099999988,
+          "status_code": 200,
+          "request_num": 5,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "2779b886-c6d4-4dc6-9429-e1c9f90b6978",
+          "latency_ms": 6897.718799998984,
+          "status_code": 200,
+          "request_num": 6,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "1a2515e7-88b5-40a4-8048-1be3b9f2c59f",
+          "latency_ms": 2014.448400001129,
+          "status_code": 200,
+          "request_num": 7,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "dee54749-a40b-4046-b509-fc714d559403",
+          "latency_ms": 6277.809100000013,
+          "status_code": 200,
+          "request_num": 8,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "80aaf1ad-bc04-4d60-8c83-699b6c9b3a26",
+          "latency_ms": 8654.352699999436,
+          "status_code": 200,
+          "request_num": 9,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "dd3137ec-f5f0-4952-971b-006a6bb90320",
+          "latency_ms": 6524.008300002606,
+          "status_code": 200,
+          "request_num": 10,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "90a895fb-c1cd-44bf-a1c8-ca15b58599e6",
+          "latency_ms": 4910.103900001559,
+          "status_code": 200,
+          "request_num": 11,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "b54b9768-f07e-4a90-be7a-1e6ec81bd993",
+          "latency_ms": 7500.817899999674,
+          "status_code": 200,
+          "request_num": 12,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "262291ec-31c3-425e-afbc-fa378f9354b3",
+          "latency_ms": 3850.580700000137,
+          "status_code": 200,
+          "request_num": 13,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "3351d1bf-4fab-46f6-b523-c1ad0bdf29e3",
+          "latency_ms": 5810.384500000509,
+          "status_code": 200,
+          "request_num": 14,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "66f852a9-bebe-4bf8-9053-42b61da53ee4",
+          "latency_ms": 6646.504500000447,
+          "status_code": 200,
+          "request_num": 15,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "80c82dd8-657b-4507-8049-b1983a51d241",
+          "latency_ms": 7795.971100000315,
+          "status_code": 200,
+          "request_num": 16,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "bad6e64d-cdce-493c-9b10-01c2e931cb23",
+          "latency_ms": 9672.9677000003,
+          "status_code": 200,
+          "request_num": 17,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "8fd34299-23b0-48ef-8ba2-68abfae56a03",
+          "latency_ms": 6708.9105999984895,
+          "status_code": 200,
+          "request_num": 18,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "8c0263d5-61f5-464f-9fd6-b17da81427ad",
+          "latency_ms": 9333.695900000748,
+          "status_code": 200,
+          "request_num": 19,
+          "mocked": true
+        }
+      ]
+    },
+    "concurrency_50": {
+      "concurrency": 50,
+      "total_requests": 50,
+      "successful": 50,
+      "failed": 0,
+      "success_rate": 100.0,
+      "total_time_seconds": 12.59,
+      "throughput_rpm": 238.34,
+      "latency_stats": {
+        "count": 50,
+        "mean": 6389.12,
+        "median": 6151.17,
+        "std": 2349.42,
+        "min": 2032.76,
+        "max": 12585.93,
+        "p50": 6282.71,
+        "p75": 8474.83,
+        "p90": 9128.42,
+        "p95": 9623.69,
+        "p99": null,
+        "cv": 0.3677
+      },
+      "individual_results": [
+        {
+          "success": true,
+          "request_id": "e758a44c-0bbd-43ac-9ab0-4a37a3157fa3",
+          "latency_ms": 8052.218400000129,
+          "status_code": 200,
+          "request_num": 0,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "e628d824-8e3c-479e-9013-436743ee9236",
+          "latency_ms": 5847.312699999748,
+          "status_code": 200,
+          "request_num": 1,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "14f34845-be67-4c4f-8d17-dbed6b471672",
+          "latency_ms": 4883.241399998951,
+          "status_code": 200,
+          "request_num": 2,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "fc0f4d76-e082-4957-8e63-8b321ba4a2e9",
+          "latency_ms": 3616.0477999983414,
+          "status_code": 200,
+          "request_num": 3,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "23281232-b6ce-4982-86d2-68fefe6b1a90",
+          "latency_ms": 6579.079799997999,
+          "status_code": 200,
+          "request_num": 4,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "69a39958-9343-416c-a64b-00f192ef7170",
+          "latency_ms": 4589.526300002035,
+          "status_code": 200,
+          "request_num": 5,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "502f8a9c-5192-4a0e-810e-b765f7fb86ba",
+          "latency_ms": 2032.7589999978954,
+          "status_code": 200,
+          "request_num": 6,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "8e4b9bb9-23d8-466f-82c0-98e381499d6d",
+          "latency_ms": 3213.5598999993817,
+          "status_code": 200,
+          "request_num": 7,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "81741ef4-f3df-41ee-addf-7f0224e820e7",
+          "latency_ms": 8723.723500002961,
+          "status_code": 200,
+          "request_num": 8,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "e0765c6a-aed6-41ee-9a73-0765d8cf2b60",
+          "latency_ms": 7029.232600001706,
+          "status_code": 200,
+          "request_num": 9,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "80ccbb23-1800-45cc-b190-05db51c3b984",
+          "latency_ms": 5597.986200002197,
+          "status_code": 200,
+          "request_num": 10,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "300b625d-35d3-4e07-b1fc-6120d0066acb",
+          "latency_ms": 8972.545500000706,
+          "status_code": 200,
+          "request_num": 11,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "3293357d-f7aa-46af-8404-4eeb16e2df38",
+          "latency_ms": 6935.637300000963,
+          "status_code": 200,
+          "request_num": 12,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "5198549b-bcdd-4271-8a30-73b8d9f74c3a",
+          "latency_ms": 6019.6335000000545,
+          "status_code": 200,
+          "request_num": 13,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "eabe7f92-cfdd-4260-8a55-4d99551f9466",
+          "latency_ms": 8474.832899999456,
+          "status_code": 200,
+          "request_num": 14,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "cb00dde2-4bbe-471f-aa05-90481bf5cc49",
+          "latency_ms": 9128.41539999863,
+          "status_code": 200,
+          "request_num": 15,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "931b5dd3-94eb-4ec4-8391-7841ba5fa583",
+          "latency_ms": 5942.340599998715,
+          "status_code": 200,
+          "request_num": 16,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "42b7822f-ccdb-4884-bddb-5e0e685a5e1d",
+          "latency_ms": 5473.093999997218,
+          "status_code": 200,
+          "request_num": 17,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "5120c85d-ba67-438d-9690-2871341979b7",
+          "latency_ms": 3569.577999998728,
+          "status_code": 200,
+          "request_num": 18,
+          "mocked": true
+        },
+        {
+          "success": true,
+          "request_id": "9b1596a5-9c47-4e53-aa5f-86e96de6a356",
+          "latency_ms": 8443.146999998135,
+          "status_code": 200,
+          "request_num": 19,
+          "mocked": true
+        }
+      ]
+    }
+  },
+  "asynchronous": {
+    "concurrency_1": {
+      "concurrency": 1,
+      "worker_count": 1,
+      "total_requests": 50,
+      "successful_sent": 50,
+      "successful_completed": 50,
+      "success_rate": 100.0,
+      "send_time_seconds": 394.67,
+      "total_time_seconds": 394.69,
+      "throughput_rpm": 7.6,
+      "client_response_stats": {
+        "count": 50,
+        "mean": 46.36,
+        "median": 46.24,
+        "std": 1.7,
+        "min": 43.0,
+        "max": 55.29,
+        "p50": 46.24,
+        "p75": 46.86,
+        "p90": 47.64,
+        "p95": 48.37,
+        "p99": null,
+        "cv": 0.0366
+      },
+      "completion_stats": {
+        "count": 50,
+        "mean": 6655.72,
+        "median": 6769.54,
+        "std": 2762.51,
+        "min": 500.0,
+        "max": 12861.84,
+        "p50": 6821.12,
+        "p75": 8422.37,
+        "p90": 10243.54,
+        "p95": 10388.76,
+        "p99": null,
+        "cv": 0.4151
+      }
+    },
+    "concurrency_5": {
+      "concurrency": 5,
+      "worker_count": 1,
+      "total_requests": 50,
+      "successful_sent": 50,
+      "successful_completed": 50,
+      "success_rate": 100.0,
+      "send_time_seconds": 72.55,
+      "total_time_seconds": 72.56,
+      "throughput_rpm": 41.35,
+      "client_response_stats": {
+        "count": 50,
+        "mean": 46.4,
+        "median": 46.09,
+        "std": 1.26,
+        "min": 44.89,
+        "max": 49.04,
+        "p50": 46.5,
+        "p75": 47.36,
+        "p90": 48.95,
+        "p95": 49.01,
+        "p99": null,
+        "cv": 0.0271
+      },
+      "completion_stats": {
+        "count": 50,
+        "mean": 20810.26,
+        "median": 20686.36,
+        "std": 3170.43,
+        "min": 15075.0,
+        "max": 27483.39,
+        "p50": 20768.3,
+        "p75": 22934.6,
+        "p90": 25204.22,
+        "p95": 25917.03,
+        "p99": null,
+        "cv": 0.1523
+      }
+    },
+    "concurrency_10": {
+      "concurrency": 10,
+      "worker_count": 1,
+      "total_requests": 50,
+      "successful_sent": 50,
+      "successful_completed": 50,
+      "success_rate": 100.0,
+      "send_time_seconds": 32.27,
+      "total_time_seconds": 32.28,
+      "throughput_rpm": 92.95,
+      "client_response_stats": {
+        "count": 50,
+        "mean": 45.35,
+        "median": 45.79,
+        "std": 1.19,
+        "min": 43.06,
+        "max": 46.34,
+        "p50": 45.92,
+        "p75": 46.07,
+        "p90": 46.34,
+        "p95": 46.34,
+        "p99": null,
+        "cv": 0.0262
+      },
+      "completion_stats": {
+        "count": 50,
+        "mean": 33481.16,
+        "median": 33859.47,
+        "std": 2562.14,
+        "min": 26909.29,
+        "max": 38092.63,
+        "p50": 33870.25,
+        "p75": 35315.99,
+        "p90": 36356.03,
+        "p95": 37502.12,
+        "p99": null,
+        "cv": 0.0765
+      }
+    },
+    "concurrency_20": {
+      "concurrency": 20,
+      "worker_count": 1,
+      "total_requests": 50,
+      "successful_sent": 50,
+      "successful_completed": 50,
+      "success_rate": 100.0,
+      "send_time_seconds": 16.16,
+      "total_time_seconds": 16.16,
+      "throughput_rpm": 185.68,
+      "client_response_stats": {
+        "count": 50,
+        "mean": 45.49,
+        "median": 46.53,
+        "std": 1.89,
+        "min": 43.15,
+        "max": 47.3,
+        "p50": 46.54,
+        "p75": 47.22,
+        "p90": 47.27,
+        "p95": 47.29,
+        "p99": null,
+        "cv": 0.0415
+      },
+      "completion_stats": {
+        "count": 50,
+        "mean": 54422.75,
+        "median": 53894.32,
+        "std": 3705.07,
+        "min": 47329.16,
+        "max": 66280.35,
+        "p50": 53925.87,
+        "p75": 56681.24,
+        "p90": 59451.37,
+        "p95": 60361.61,
+        "p99": null,
+        "cv": 0.0681
+      }
+    },
+    "concurrency_50": {
+      "concurrency": 50,
+      "worker_count": 1,
+      "total_requests": 50,
+      "successful_sent": 50,
+      "successful_completed": 50,
+      "success_rate": 100.0,
+      "send_time_seconds": 0.05,
+      "total_time_seconds": 0.05,
+      "throughput_rpm": 63352.75,
+      "client_response_stats": {
+        "count": 50,
+        "mean": 43.94,
+        "median": 44.02,
+        "std": 0.19,
+        "min": 43.59,
+        "max": 44.13,
+        "p50": 44.02,
+        "p75": 44.08,
+        "p90": 44.11,
+        "p95": 44.12,
+        "p99": null,
+        "cv": 0.0044
+      },
+      "completion_stats": {
+        "count": 50,
+        "mean": 60167.03,
+        "median": 59699.55,
+        "std": 2801.84,
+        "min": 53963.71,
+        "max": 65292.5,
+        "p50": 59796.22,
+        "p75": 62255.31,
+        "p90": 63918.13,
+        "p95": 65115.77,
+        "p99": null,
+        "cv": 0.0466
+      }
+    },
+    "worker_scaling": {
+      "workers_1": {
+        "concurrency": 10,
+        "worker_count": 1,
+        "total_requests": 30,
+        "successful_sent": 30,
+        "successful_completed": 30,
+        "success_rate": 100.0,
+        "send_time_seconds": 16.16,
+        "total_time_seconds": 16.16,
+        "throughput_rpm": 111.4,
+        "client_response_stats": {
+          "count": 30,
+          "mean": 45.11,
+          "median": 45.63,
+          "std": 1.29,
+          "min": 42.95,
+          "max": 46.37,
+          "p50": 45.63,
+          "p75": 46.29,
+          "p90": 46.35,
+          "p95": 46.36,
+          "p99": null,
+          "cv": 0.0286
+        },
+        "completion_stats": {
+          "count": 30,
+          "mean": 33488.66,
+          "median": 33681.01,
+          "std": 3040.69,
+          "min": 27215.2,
+          "max": 39557.78,
+          "p50": 33760.5,
+          "p75": 35749.22,
+          "p90": 38004.03,
+          "p95": 38297.92,
+          "p99": null,
+          "cv": 0.0908
+        }
+      },
+      "workers_2": {
+        "concurrency": 10,
+        "worker_count": 2,
+        "total_requests": 30,
+        "successful_sent": 30,
+        "successful_completed": 30,
+        "success_rate": 100.0,
+        "send_time_seconds": 16.17,
+        "total_time_seconds": 16.17,
+        "throughput_rpm": 111.31,
+        "client_response_stats": {
+          "count": 30,
+          "mean": 46.66,
+          "median": 46.67,
+          "std": 0.07,
+          "min": 46.56,
+          "max": 46.77,
+          "p50": 46.67,
+          "p75": 46.74,
+          "p90": 46.76,
+          "p95": 46.77,
+          "p99": null,
+          "cv": 0.0015
+        },
+        "completion_stats": {
+          "count": 30,
+          "mean": 20803.29,
+          "median": 21251.58,
+          "std": 3956.26,
+          "min": 11837.8,
+          "max": 28164.44,
+          "p50": 21589.12,
+          "p75": 23541.87,
+          "p90": 26295.97,
+          "p95": 26716.96,
+          "p99": null,
+          "cv": 0.1902
+        }
+      },
+      "workers_4": {
+        "concurrency": 10,
+        "worker_count": 4,
+        "total_requests": 30,
+        "successful_sent": 30,
+        "successful_completed": 30,
+        "success_rate": 100.0,
+        "send_time_seconds": 16.15,
+        "total_time_seconds": 16.15,
+        "throughput_rpm": 111.46,
+        "client_response_stats": {
+          "count": 30,
+          "mean": 46.83,
+          "median": 46.71,
+          "std": 0.45,
+          "min": 46.34,
+          "max": 47.43,
+          "p50": 46.71,
+          "p75": 47.41,
+          "p90": 47.42,
+          "p95": 47.42,
+          "p99": null,
+          "cv": 0.0095
+        },
+        "completion_stats": {
+          "count": 30,
+          "mean": 13184.44,
+          "median": 13150.52,
+          "std": 3026.37,
+          "min": 6170.82,
+          "max": 18431.67,
+          "p50": 13594.33,
+          "p75": 15523.42,
+          "p90": 17456.06,
+          "p95": 18143.37,
+          "p99": null,
+          "cv": 0.2295
+        }
+      }
+    }
+  },
+  "comparison": {
+    "avg_latency": {
+      "concurrency_1": {
+        "synchronous_ms": 6278.47,
+        "async_client_ms": 46.36,
+        "async_completion_ms": 6655.72,
+        "client_improvement": "99.3% faster client response"
+      },
+      "concurrency_5": {
+        "synchronous_ms": 6185.1,
+        "async_client_ms": 46.4,
+        "async_completion_ms": 20810.26,
+        "client_improvement": "99.2% faster client response"
+      },
+      "concurrency_10": {
+        "synchronous_ms": 6241.03,
+        "async_client_ms": 45.35,
+        "async_completion_ms": 33481.16,
+        "client_improvement": "99.3% faster client response"
+      },
+      "concurrency_20": {
+        "synchronous_ms": 6801.27,
+        "async_client_ms": 45.49,
+        "async_completion_ms": 54422.75,
+        "client_improvement": "99.3% faster client response"
+      },
+      "concurrency_50": {
+        "synchronous_ms": 6389.12,
+        "async_client_ms": 43.94,
+        "async_completion_ms": 60167.03,
+        "client_improvement": "99.3% faster client response"
+      }
+    },
+    "throughput_comparison": {
+      "concurrency_1": {
+        "synchronous_rpm": 9.56,
+        "asynchronous_rpm": 7.6,
+        "improvement": "0.79x"
+      },
+      "concurrency_5": {
+        "synchronous_rpm": 32.88,
+        "asynchronous_rpm": 41.35,
+        "improvement": "1.26x"
+      },
+      "concurrency_10": {
+        "synchronous_rpm": 58.72,
+        "asynchronous_rpm": 92.95,
+        "improvement": "1.58x"
+      },
+      "concurrency_20": {
+        "synchronous_rpm": 89.19,
+        "asynchronous_rpm": 185.68,
+        "improvement": "2.08x"
+      },
+      "concurrency_50": {
+        "synchronous_rpm": 238.34,
+        "asynchronous_rpm": 63352.75,
+        "improvement": "265.81x"
+      }
+    },
+    "reliability_comparison": {
+      "concurrency_1": {
+        "synchronous_success": 100.0,
+        "asynchronous_success": 100.0
+      },
+      "concurrency_5": {
+        "synchronous_success": 100.0,
+        "asynchronous_success": 100.0
+      },
+      "concurrency_10": {
+        "synchronous_success": 100.0,
+        "asynchronous_success": 100.0
+      },
+      "concurrency_20": {
+        "synchronous_success": 100.0,
+        "asynchronous_success": 100.0
+      },
+      "concurrency_50": {
+        "synchronous_success": 100.0,
+        "asynchronous_success": 100.0
+      }
+    }
+  }
+}

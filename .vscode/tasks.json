@@ -1,0 +1,170 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Frontend: Install Dependencies",
+            "type": "shell",
+            "command": "npm",
+            "args": ["install"],
+            "options": { "cwd": "${workspaceFolder}/web-app" },
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Frontend: Build",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "build"],
+            "options": { "cwd": "${workspaceFolder}/web-app" },
+            "problemMatcher": ["$tsc"],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Frontend: Lint",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "lint"],
+            "options": { "cwd": "${workspaceFolder}/web-app" },
+            "problemMatcher": ["$eslint-stylish"],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Frontend: Test",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "test"],
+            "options": { "cwd": "${workspaceFolder}/web-app" },
+            "problemMatcher": ["$jest"],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Backend: Install Dependencies (API Gateway)",
+            "type": "shell",
+            "command": "npm",
+            "args": ["install"],
+            "options": { "cwd": "${workspaceFolder}/backend/API_Gateway" },
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Backend: Install Dependencies (AI Generation)",
+            "type": "shell",
+            "command": "npm",
+            "args": ["install"],
+            "options": { "cwd": "${workspaceFolder}/backend/AI_Generation_Service" },
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Python: Install Dependencies",
+            "type": "shell",
+            "command": "pip",
+            "args": ["install", "-r", "requirements.txt"],
+            "options": { "cwd": "${workspaceFolder}/backend/AI_Worker_Service" },
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Python: Lint (Flake8)",
+            "type": "shell",
+            "command": "flake8",
+            "args": ["app/", "--max-line-length=120", "--ignore=E501,W503"],
+            "options": { "cwd": "${workspaceFolder}/backend/AI_Worker_Service" },
+            "problemMatcher": ["$flake8"],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Docker: Start All Services",
+            "type": "shell",
+            "command": "docker",
+            "args": ["compose", "up", "-d"],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Docker: Stop All Services",
+            "type": "shell",
+            "command": "docker",
+            "args": ["compose", "down"],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Docker: Rebuild & Start",
+            "type": "shell",
+            "command": "docker",
+            "args": ["compose", "up", "-d", "--build"],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Docker: View Logs",
+            "type": "shell",
+            "command": "docker",
+            "args": ["compose", "logs", "-f"],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new", "focus": true }
+        },
+        {
+            "label": "Database: Reset Schema",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "exec",
+                "-T",
+                "postgres",
+                "psql",
+                "-U",
+                "examora",
+                "-d",
+                "examora"
+            ],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "Database: Run Schema SQL",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "exec",
+                "-T",
+                "postgres",
+                "psql",
+                "-U",
+                "examora",
+                "-d",
+                "examora",
+                "-f",
+                "/docker-entrypoint-initdb.d/schema_optimized.sql"
+            ],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        },
+        {
+            "label": "RabbitMQ: List Queues",
+            "type": "shell",
+            "command": "docker",
+            "args": ["compose", "exec", "rabbitmq", "rabbitmqctl", "list_queues"],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "new" }
+        }
+    ],
+    "problemMatchers": [
+        {
+            "name": "flake8",
+            "owner": "python",
+            "fileLocation": ["relative", "${workspaceFolder}/backend/AI_Worker_Service"],
+            "pattern": {
+                "regexp": "^(.+):(\\d+):(\\d+):\\s+([A-Z])\\d+\\s+(.*)$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "severity": 4,
+                "message": 5
+            }
+        }
+    ]
+}

@@ -1,9 +1,11 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * AI Generation Request Model - ai_db.ai_generation_requests
+ * Lưu trữ các request tạo câu hỏi từ AI
+ */
+import { DataTypes } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
-class AIGenerationRequest extends Model {}
-
-AIGenerationRequest.init({
+const AIGenerationRequest = sequelize.define('AIGenerationRequest', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -13,35 +15,65 @@ AIGenerationRequest.init({
     type: DataTypes.UUID,
     allowNull: false,
   },
-  subject_id: {
+  course_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
-  chapter_id: DataTypes.INTEGER,
-  knowledge_unit_id: DataTypes.INTEGER,
-  difficulty: DataTypes.STRING,
-  question_type: DataTypes.STRING,
+  chapter_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  knowledge_unit_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  question_type: {
+    type: DataTypes.ENUM('multiple_choice', 'true_false', 'matching', 'fill_blank'),
+    allowNull: true,
+  },
+  difficulty: {
+    type: DataTypes.ENUM('easy', 'medium', 'hard', 'very_hard'),
+    allowNull: true,
+  },
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    defaultValue: 10,
   },
-  context: DataTypes.TEXT,
-  reference_materials: DataTypes.TEXT,
-  style_preferences: DataTypes.JSONB,
-  status: DataTypes.STRING,
-  progress: DataTypes.INTEGER,
-  questions_generated: DataTypes.INTEGER,
-  questions_accepted: DataTypes.INTEGER,
-  error_message: DataTypes.TEXT,
-  queue_job_id: DataTypes.STRING,
-  started_at: DataTypes.DATE,
-  completed_at: DataTypes.DATE,
-  created_at: DataTypes.DATE,
+  context: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'processing', 'completed', 'failed'),
+    defaultValue: 'pending',
+  },
+  progress: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  error_message: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  trace_id: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  started_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  completed_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 }, {
-  sequelize,
-  modelName: 'AIGenerationRequest',
   tableName: 'ai_generation_requests',
-  timestamps: false,
+  schema: 'ai_db',
+  timestamps: true,
+  updatedAt: false,
+  underscored: true,
 });
 
-module.exports = AIGenerationRequest;
+export default AIGenerationRequest;

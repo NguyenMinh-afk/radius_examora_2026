@@ -1,25 +1,57 @@
-const { DataTypes, Model } = require('sequelize');
-const  sequelize  = require('../../config/sequelize');
+/**
+ * AI Model Configuration Model
+ * Lưu trữ cấu hình các AI models
+ */
+import { DataTypes } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
-class AIModel extends Model {}
-
-AIModel.init({
+const AIModel = sequelize.define('AIModel', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  name: DataTypes.STRING,
-  provider: DataTypes.STRING,
-  version: DataTypes.STRING,
-  description: DataTypes.TEXT,
-  is_active: DataTypes.BOOLEAN,
-  created_at: DataTypes.DATE,
+  name: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true,
+  },
+  provider: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+  api_endpoint: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+  },
+  api_key_env: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  model_version: {
+    type: DataTypes.STRING(50),
+    defaultValue: 'latest',
+  },
+  max_tokens: {
+    type: DataTypes.INTEGER,
+    defaultValue: 4096,
+  },
+  temperature: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0.7,
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  config: {
+    type: DataTypes.JSONB,
+    defaultValue: {},
+  },
 }, {
-  sequelize,
-  modelName: 'AIModel',
   tableName: 'ai_models',
-  timestamps: false,
+  timestamps: true,
+  underscored: true,
 });
 
-module.exports = AIModel;
+export default AIModel;

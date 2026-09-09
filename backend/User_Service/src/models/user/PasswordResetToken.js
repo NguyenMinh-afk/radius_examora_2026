@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class PasswordResetToken extends Model {}
 
@@ -13,14 +13,11 @@ PasswordResetToken.init({
     type: DataTypes.UUID,
     allowNull: false,
   },
-  token: {
-    type: DataTypes.STRING,
+  token_hash: {
+    type: DataTypes.STRING(64),
     allowNull: false,
     unique: true,
-  },
-  is_used: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    comment: 'SHA256 hash of the reset token',
   },
   used_at: DataTypes.DATE,
   expires_at: {
@@ -29,12 +26,27 @@ PasswordResetToken.init({
   },
   ip_address: DataTypes.STRING,
   user_agent: DataTypes.TEXT,
-  created_at: DataTypes.DATE,
+  created_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
 }, {
   sequelize,
   modelName: 'PasswordResetToken',
   tableName: 'password_reset_tokens',
   timestamps: false,
+  indexes: [
+    {
+      fields: ['user_id'],
+    },
+    {
+      fields: ['token_hash'],
+      unique: true,
+    },
+    {
+      fields: ['expires_at'],
+    },
+  ],
 });
 
-module.exports = PasswordResetToken;
+export default PasswordResetToken;

@@ -1,0 +1,19 @@
+{
+  "name": "@examora/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and middleware for Examora microservices",
+  "type": "module",
+  "main": "utils/index.js",
+  "exports": {
+    "./middleware": "./middleware/index.js",
+    "./utils": "./utils/index.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.5",
+    "express-rate-limit": "^7.5.0",
+    "pino": "^9.6.0"
+  },
+  "peerDependencies": {
+    "express": "^4.18.0 || ^5.0.0"
+  }
+}

@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * StudentAssignment Model
+ * ESM - exam_db.student_assignments
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class StudentAssignment extends Model {}
 
@@ -17,16 +21,20 @@ StudentAssignment.init({
     type: DataTypes.UUID,
     allowNull: false,
   },
-  status: DataTypes.STRING,
-  submitted_at: DataTypes.DATE,
-  grade: DataTypes.FLOAT,
-  feedback: DataTypes.TEXT,
-  created_at: DataTypes.DATE,
+  status: {
+    type: DataTypes.STRING(50),
+    defaultValue: 'assigned',
+  },
+  attempts_used: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
 }, {
   sequelize,
   modelName: 'StudentAssignment',
   tableName: 'student_assignments',
+  schema: 'exam_db',
   timestamps: false,
 });
 
-module.exports = StudentAssignment;
+export default StudentAssignment;

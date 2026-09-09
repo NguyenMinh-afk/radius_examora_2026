@@ -1,0 +1,51 @@
+---
+description: Event-Driven Architecture rules with RabbitMQ
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Event-Driven Architecture Rules (RabbitMQ)
+
+## 🔐 Service Boundaries (BẮT BUỘC)
+- Database per service (KHÔNG share DB)
+- KHÔNG gọi trực tiếp DB của service khác
+- Services giao tiếp qua RabbitMQ
+
+## 📡 Communication Rules
+| Loại | Khi nào |
+|------|---------|
+| RabbitMQ | Async, multiple consumers |
+| REST (via Gateway) | Query data cần ngay |
+
+## 📦 Event Schema (BẮT BUỘC)
+```json
+{
+  "event_id": "uuid",
+  "event_type": "question.created",
+  "event_version": 1,
+  "aggregate_type": "question",
+  "aggregate_id": "uuid",
+  "source": "Question_Service",
+  "occurred_at": "2026-07-23T10:00:00.000Z",
+  "trace_id": "uuid",
+  "data": {}
+}
+```
+
+## 🐰 Queue Configuration
+- Exchange: `examora.topic` (topic)
+- Routing keys: `user.created`, `exam.created`, `question.created`, etc.
+- Consumer queues: `email.send`, `notification.send`, `domain.events`
+
+## 📐 Event Naming (Past tense)
+- `user.created`, `user.updated`
+- `exam.created`, `exam.updated`, `exam.completed`
+- `question.created`, `question.updated`
+
+## 🚫 CẤM
+- ❌ Service gọi trực tiếp DB service khác
+- ❌ Shared database
+- ❌ Sync chain (A → B → C)
+- ❌ Publish passwords, tokens trong events
+
+Xem chi tiết: `@/docs/02-architecture/RABBITMQ_EVENTS.md`

@@ -1,9 +1,11 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * AI Generation Log Model - ai_db.ai_generation_logs
+ * Lưu trữ log chi tiết của từng lần generation
+ */
+import { DataTypes } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
-class AIGenerationLog extends Model {}
-
-AIGenerationLog.init({
+const AIGenerationLog = sequelize.define('AIGenerationLog', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -11,30 +13,54 @@ AIGenerationLog.init({
   },
   request_id: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,  // nullable để khớp với schema_optimized.sql
+    references: {
+      model: 'ai_generation_requests',
+      key: 'id',
+    },
   },
-  question_id: DataTypes.UUID,
+  question_id: {
+    type: DataTypes.UUID,
+    allowNull: true,
+  },
   ai_model: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
   },
-  ai_provider: DataTypes.STRING,
-  model_version: DataTypes.STRING,
-  prompt: DataTypes.TEXT,
-  response: DataTypes.TEXT,
-  tokens_used: DataTypes.INTEGER,
-  generation_time: DataTypes.DECIMAL,
-  cost: DataTypes.DECIMAL,
-  confidence_score: DataTypes.DECIMAL,
-  quality_assessment: DataTypes.JSONB,
-  status: DataTypes.STRING,
-  error_message: DataTypes.TEXT,
-  created_at: DataTypes.DATE,
+  prompt: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  response: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  tokens_used: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  cost: {
+    type: DataTypes.DECIMAL(10, 4),
+    allowNull: true,
+  },
+  status: {
+    type: DataTypes.STRING(50),
+    defaultValue: 'success',
+  },
+  error_message: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  trace_id: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
 }, {
-  sequelize,
-  modelName: 'AIGenerationLog',
   tableName: 'ai_generation_logs',
-  timestamps: false,
+  schema: 'ai_db',
+  timestamps: true,
+  updatedAt: false,
+  underscored: true,
 });
 
-module.exports = AIGenerationLog;
+export default AIGenerationLog;

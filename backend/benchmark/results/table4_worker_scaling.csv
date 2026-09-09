@@ -1,0 +1,4 @@
+Workers,Throughput (tasks/s),Avg Response (ms),Scaling Efficiency,Success Rate (%),CPU (%),Memory (%)
+1,0.08,100.50,100.0,90.0,N/A,N/A
+2,0.14,85.30,87.5,85.0,N/A,N/A
+4,0.22,65.20,68.8,80.0,N/A,N/A

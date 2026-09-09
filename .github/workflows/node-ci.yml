@@ -1,0 +1,219 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - main
+      - Developer
+    paths:
+      - 'backend/User_Service/**'
+      - 'backend/Exam_Service/**'
+      - 'backend/Question_Service/**'
+      - 'backend/AI_Generation_Service/**'
+      - 'backend/Notification_Service/**'
+      - 'backend/Infrastructure_Service/**'
+      - 'backend/API_Gateway_Service/**'
+      - '.github/workflows/node-ci.yml'
+  pull_request:
+    branches:
+      - main
+      - Developer
+    paths:
+      - 'backend/User_Service/**'
+      - 'backend/Exam_Service/**'
+      - 'backend/Question_Service/**'
+      - 'backend/AI_Generation_Service/**'
+      - 'backend/Notification_Service/**'
+      - 'backend/Infrastructure_Service/**'
+      - 'backend/API_Gateway_Service/**'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # Lint all Node.js services
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - User_Service
+          - Exam_Service
+          - Question_Service
+          - AI_Generation_Service
+          - Notification_Service
+          - Infrastructure_Service
+          - API_Gateway_Service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/${{ matrix.service }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: backend/${{ matrix.service }}
+
+      - name: Run ESLint
+        run: npm run lint --if-present
+        working-directory: backend/${{ matrix.service }}
+
+  # Test each Node.js service
+  # TODO: Enable this job after writing tests for each service
+  # Command to run: npm test (or npm run test:coverage for coverage report)
+  # test:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       service:
+  #         - User_Service
+  #         - Exam_Service
+  #         - Question_Service
+  #         - AI_Generation_Service
+  #         - Notification_Service
+  #         - Infrastructure_Service
+  #         - API_Gateway_Service
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_USER: test
+  #         POSTGRES_PASSWORD: test
+  #         POSTGRES_DB: test_db
+  #       ports:
+  #         - 5432:5432
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     rabbitmq:
+  #       image: rabbitmq:3-management
+  #       ports:
+  #         - 5672:5672
+  #         - 15672:15672
+  #       options: >-
+  #         --health-cmd rabbitmq-diagnostics -q ping
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js ${{ env.NODE_VERSION }}
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         cache: 'npm'
+  #         cache-dependency-path: backend/${{ matrix.service }}/package-lock.json
+  #
+  #     - name: Install dependencies
+  #       run: npm ci
+  #       working-directory: backend/${{ matrix.service }}
+  #
+  #     - name: Run tests
+  #       env:
+  #         POSTGRES_HOST: localhost
+  #         POSTGRES_USER: test
+  #         POSTGRES_PASSWORD: test
+  #         POSTGRES_DB: test_db
+  #         RABBITMQ_HOST: localhost
+  #       run: npm test
+  #       working-directory: backend/${{ matrix.service }}
+  #
+  #     - name: Upload coverage
+  #       uses: codecov/codecov-action@v4
+  #       if: success()
+  #       with:
+  #         files: ./backend/${{ matrix.service }}/coverage/lcov.info
+  #         flags: unittests
+  #         name: ${{ matrix.service }}
+
+  # Security audit
+  security:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - User_Service
+          - Exam_Service
+          - Question_Service
+          - AI_Generation_Service
+          - Notification_Service
+          - Infrastructure_Service
+          - API_Gateway_Service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/${{ matrix.service }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: backend/${{ matrix.service }}
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+        working-directory: backend/${{ matrix.service }}
+
+      - name: Run Snyk security scan
+        run: |
+          npm install -g snyk
+          npx snyk test --severity-threshold=high || true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  # Check for outdated dependencies
+  dependency-review:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - User_Service
+          - Exam_Service
+          - Question_Service
+          - AI_Generation_Service
+          - Notification_Service
+          - Infrastructure_Service
+          - API_Gateway_Service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/${{ matrix.service }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: backend/${{ matrix.service }}
+
+      - name: Check outdated dependencies
+        id: outdated
+        run: |
+          npm outdated --json > outdated.json || true
+        working-directory: backend/${{ matrix.service }}
+
+      - name: Upload outdated report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: outdated-${{ matrix.service }}
+          path: backend/${{ matrix.service }}/outdated.json
+          retention-days: 7

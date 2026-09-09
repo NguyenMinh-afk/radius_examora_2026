@@ -1,0 +1,8 @@
+Metric,Value
+Total Requests,40
+Completed,36
+Pending,4
+Success Rate (%),90.0
+Failed,0
+Total Duration (s),556.98
+Throughput (tasks/s),0.0646

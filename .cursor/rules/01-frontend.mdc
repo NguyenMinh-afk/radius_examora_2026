@@ -1,0 +1,46 @@
+---
+description: Frontend rules for React + TypeScript (web-app/)
+globs: ["web-app/**/*.{ts,tsx,css}"]
+alwaysApply: false
+---
+
+# Frontend Rules (React + TypeScript + Vite)
+
+## 🏗️ Structure
+- Components → `src/components/{domain}/`
+- Pages → `src/app/{role}/` (auth, public, student, teacher, admin)
+- API client → `src/services/api/`
+- Hooks → `src/hooks/`
+- Types → `src/types/`
+
+## 📐 Naming
+- Component: PascalCase (`LoginForm.tsx`)
+- Hook: camelCase + `use` prefix (`useAuth.ts`)
+- Constant: UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
+- Boolean: `is/has/should/can` prefix (`isLoading`)
+- File: PascalCase.tsx (component), camelCase.ts (utility)
+
+## ✅ MUST
+- Use functional components + hooks (NO class components)
+- TypeScript strict mode (NO `any`, dùng `unknown` + type guards)
+- Use i18n cho mọi text (`t('key')`)
+- Use Tailwind CSS (NO inline styles cho complex UI)
+- Use React Query cho server state
+- Lazy load routes + heavy components
+- Add aria-label, role cho a11y
+- Props interface rõ ràng
+
+## ❌ NEVER
+- Class components
+- `any` type
+- `console.log` (dùng logger)
+- Direct DOM manipulation
+- Hardcoded URLs, secrets, text (i18n)
+- Magic numbers
+- File `.js` (chỉ `.ts` / `.tsx`)
+- Comment lặp lại code
+
+## 🧪 Test
+- Vitest + React Testing Library
+- Test behavior, không test implementation
+- Use `data-testid` cho test selectors

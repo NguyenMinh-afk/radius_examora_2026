@@ -1,0 +1,38 @@
+---
+description: Examora Project Overview - Mandatory context for AI assistants
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Examora - Hệ thống thi trắc nghiệm trực tuyến
+
+## Project Overview
+- **Name:** Examora
+- **Type:** Microservices-based online examination platform
+- **Architecture:** Monorepo với RabbitMQ Event-Driven Architecture
+- **Stack:** React + TypeScript (Frontend), Node.js + Python (AI Generation), RabbitMQ, PostgreSQL
+
+## MANDATORY References (ĐỌC TRƯỚC KHI CODE)
+- `@/docs/01-business/PROJECT_RULES.md` - Master rules (BẮT BUỘC tuân thủ)
+- `@/docs/01-business/PROJECT_STRUCTURE.md` - Cấu trúc thư mục
+- `@/docs/01-business/BA_DOCUMENT.md` - Business logic
+
+## Architecture Components
+- **Frontend:** React + TypeScript + Vite
+- **API Gateway:** Node.js (Port 3100)
+- **AI Generation Service:** Node.js (Port 3003)
+- **AI Worker Service:** Python FastAPI (Port 8000)
+- **RabbitMQ:** Message Broker (Port 5672, Management 15672)
+- **PostgreSQL:** Database (Port 5432)
+
+## 🚨 GOLDEN RULES (TUYỆT ĐỐI)
+1. **KHÔNG ĐƯỢC LÀM LAN MAN** - Mọi thứ phải theo đúng tài liệu đã được phê duyệt
+2. **KHÔNG tự ý thay đổi kiến trúc** - Mọi thay đổi kiến trúc cần ADR
+3. **LUÔN CÓ TEST** - Coverage tối thiểu 80%
+4. **ĐẶT FILE ĐÚNG VỊ TRÍ** - Theo PROJECT_STRUCTURE.md
+
+## Workflow & Process
+- `@/docs/03-development/git-workflow.md` - GitFlow + Conventional Commits
+- `@/docs/03-development/code-review-checklist.md` - PR Review
+- `@/docs/03-development/testing-strategy.md` - Testing
+- `@/docs/02-architecture/RABBITMQ_EVENTS.md` - Event Architecture

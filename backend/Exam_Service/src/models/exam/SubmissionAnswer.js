@@ -1,5 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/sequelize');
+/**
+ * SubmissionAnswer Model
+ * ESM
+ */
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../../config/sequelize.js';
 
 class SubmissionAnswer extends Model {}
 
@@ -26,7 +30,8 @@ SubmissionAnswer.init({
   sequelize,
   modelName: 'SubmissionAnswer',
   tableName: 'submission_answers',
+  schema: 'exam_db',
   timestamps: false,
 });
 
-module.exports = SubmissionAnswer;
+export default SubmissionAnswer;

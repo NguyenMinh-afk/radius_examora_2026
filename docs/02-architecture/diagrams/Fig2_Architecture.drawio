@@ -1,0 +1,152 @@
+<mxfile host="app.diagrams.net" agent="Claude">
+  <diagram name="Fig. 2 - Architecture" id="arch-1">
+    <mxGraphModel dx="1414" dy="825" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=2;fontColor=#1A1A1A;" value="Fig. 2. Overall Architecture of the Proposed RabbitMQ-Driven Microservice System" vertex="1">
+          <mxGeometry height="30" width="700" x="200" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="clients" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;fontColor=#1A1A1A;" value="CLIENTS (Web / Mobile)" vertex="1">
+          <mxGeometry height="40" width="180" x="320" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;fontColor=#1A1A1A;" value="API GATEWAY (Auth, Rate Limit, Routing)" vertex="1">
+          <mxGeometry height="35" width="200" x="310" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="a0" edge="1" parent="1" source="clients" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="gateway" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="userSvc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;fontColor=#1A1A1A;" value="USER SERVICE" vertex="1">
+          <mxGeometry height="35" width="110" x="60" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="questionSvc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;fontColor=#1A1A1A;" value="QUESTION SERVICE" vertex="1">
+          <mxGeometry height="35" width="120" x="190" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="examSvc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;fontColor=#1A1A1A;" value="EXAM SERVICE" vertex="1">
+          <mxGeometry height="35" width="100" x="330" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="aiSvc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;fontColor=#1A1A1A;" value="AI SERVICE" vertex="1">
+          <mxGeometry height="35" width="100" x="450" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="notifSvc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;fontColor=#1A1A1A;" value="NOTIFICATION SERVICE" vertex="1">
+          <mxGeometry height="35" width="130" x="570" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;entryX=0.5;entryY=0;" target="userSvc" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="310" y="140" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;entryX=0.5;entryY=0;" target="questionSvc" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="350" y="140" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;exitX=0.4;exitY=0;entryX=0.5;entryY=0;" target="examSvc" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;exitX=0.6;exitY=0;entryX=0.5;entryY=0;" target="aiSvc" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;entryX=0.5;entryY=0;" target="notifSvc" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="140" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="infraSvc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=10;fontColor=#1A1A1A;" value="INFRASTRUCTURE SERVICE (Outbox, DLQ Consumer, Event Processing)" vertex="1">
+          <mxGeometry height="35" width="220" x="250" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" edge="1" parent="1" source="examSvc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;exitX=0.5;exitY=1;entryX=0.2;entryY=0;" target="infraSvc" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a7" edge="1" parent="1" source="aiSvc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="infraSvc" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a8" edge="1" parent="1" source="notifSvc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;exitX=0.5;exitY=1;entryX=0.8;entryY=0;" target="infraSvc" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rabbitmq" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;fontColor=#1A1A1A;" value="RABBITMQ" vertex="1">
+          <mxGeometry height="35" width="100" x="700" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="exchange" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;fontColor=#1A1A1A;" value="examora.topic" vertex="1">
+          <mxGeometry height="24" width="85" x="700" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="dlx" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;fontColor=#1A1A1A;" value="examora.dlx" vertex="1">
+          <mxGeometry height="24" width="80" x="800" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="q1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;fontColor=#1A1A1A;" value="domain.events" vertex="1">
+          <mxGeometry height="22" width="80" x="702" y="318" as="geometry" />
+        </mxCell>
+        <mxCell id="q2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;fontColor=#1A1A1A;" value="ai.generation" vertex="1">
+          <mxGeometry height="22" width="80" x="702" y="353" as="geometry" />
+        </mxCell>
+        <mxCell id="q3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;fontColor=#1A1A1A;" value="email.send" vertex="1">
+          <mxGeometry height="22" width="80" x="702" y="392" as="geometry" />
+        </mxCell>
+        <mxCell id="q4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;fontColor=#1A1A1A;" value="notification" vertex="1">
+          <mxGeometry height="22" width="75" x="797" y="315" as="geometry" />
+        </mxCell>
+        <mxCell id="q5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;fontColor=#1A1A1A;" value="exam.results" vertex="1">
+          <mxGeometry height="22" width="75" x="797.5" y="353" as="geometry" />
+        </mxCell>
+        <mxCell id="dlq1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=8;fontColor=#1A1A1A;" value="*.dlq" vertex="1">
+          <mxGeometry height="22" width="50" x="809.5" y="399" as="geometry" />
+        </mxCell>
+        <mxCell id="arrExQ1" edge="1" parent="1" source="exchange" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="q1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrExQ2" edge="1" parent="1" source="exchange" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="q2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrExQ3" edge="1" parent="1" source="exchange" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="q3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrDLXnotif" edge="1" parent="1" source="dlx" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=classic;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="q4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrNotifExam" edge="1" parent="1" source="q4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="q5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrExamDLQ" edge="1" parent="1" source="q5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=classic;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="dlq1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrInfraMQ" edge="1" parent="1" source="infraSvc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;dashed=1;exitX=1;exitY=0.5;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="357.5" />
+              <mxPoint x="670" y="285" />
+              <mxPoint x="700" y="285" />
+            </Array>
+            <mxPoint x="700" y="285" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="postgres" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;fontSize=11;fontColor=#1A1A1A;" value="POSTGRESQL DATABASE" vertex="1">
+          <mxGeometry height="35" width="160" x="60" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="db1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=8;fontColor=#1A1A1A;" value="users, questions, exams, attempts,&#xa;ai_requests, notifications, outbox, queue_jobs" vertex="1">
+          <mxGeometry height="36" width="160" x="60" y="385" as="geometry" />
+        </mxCell>
+        <mxCell id="arrDB" edge="1" parent="1" source="infraSvc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;endArrow=classic;exitX=0;exitY=0.5;entryX=0.7;entryY=0;" target="postgres" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontStyle=1;fontColor=#1A1A1A;" value="Legend:" vertex="1">
+          <mxGeometry height="18" width="50" x="60" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="leg1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;" value="Business Service" vertex="1">
+          <mxGeometry height="16" width="75" x="60" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=8;" value="Infrastructure" vertex="1">
+          <mxGeometry height="16" width="70" x="145" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=8;" value="RabbitMQ" vertex="1">
+          <mxGeometry height="16" width="65" x="225" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="leg4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;" value="Queue / DLQ" vertex="1">
+          <mxGeometry height="16" width="65" x="300" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="leg5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=8;" value="Database" vertex="1">
+          <mxGeometry height="16" width="60" x="375" y="470" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

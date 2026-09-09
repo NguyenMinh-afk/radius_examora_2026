@@ -1,7 +1,7 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
+dotenv.config();
 
-console.log('DB_PASSWORD (sequelize.js):', typeof process.env.DB_PASSWORD, process.env.DB_PASSWORD);
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -11,6 +11,7 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
     logging: false,
+    schema: process.env.DB_SCHEMA || 'public',
     define: {
       freezeTableName: true,
       underscored: true,
@@ -21,4 +22,4 @@ const sequelize = new Sequelize(
   }
 );
 
-module.exports = sequelize;
+export default sequelize;

@@ -1,0 +1,5 @@
+Metric,Mean,Std,Min,Max
+Client Response Time (ms),15.22,3.92,8.98,24.64
+Queue Waiting Time (ms),36505.38,29699.56,399.71,96399.62
+Worker Processing Time (s),27.31,6.22,6.24,30.11
+AI Completion Time (s),63.81,33.44,6.84,126.47
