@@ -1,5 +1,7 @@
 # 🎓 EXAMORA — Hệ thống thi trắc nghiệm trực tuyến
 
+[![Video Demo](https://img.shields.io/badge/▶-Xem%20Demo-FF0000?style=for-the-badge&logo=youtube)](https://youtu.be/GKI56g-uIw8)
+
 > **Hệ thống thi trắc nghiệm trực tuyến với AI-powered question generation và Event-Driven Architecture**
 
 Nền tảng thi trực tuyến microservices cho các tổ chức giáo dục, gồm 3 backend services (Node.js + Python), 1 frontend SPA (React), và RabbitMQ cho message-driven architecture.
