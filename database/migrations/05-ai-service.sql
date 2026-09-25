@@ -7,106 +7,144 @@ SET search_path = ai_db, public;
 -- AI generation requests
 CREATE TABLE IF NOT EXISTS ai_generation_requests (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL, -- References user_db.users
-    course_id INTEGER, -- References course_db.courses
-    chapter_id INTEGER, -- References course_db.chapters
-    title VARCHAR(255),
-    description TEXT,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
-    total_tasks INTEGER DEFAULT 0,
-    completed_tasks INTEGER DEFAULT 0,
-    total_questions_requested INTEGER DEFAULT 0,
-    total_questions_generated INTEGER DEFAULT 0,
-    difficulty difficulty_level DEFAULT 'medium',
-    question_type question_type DEFAULT 'multiple_choice',
-    options JSONB, -- Generation options
+    user_id UUID NOT NULL,
+    course_id INTEGER NOT NULL,
+    chapter_id INTEGER,
+    knowledge_unit_id INTEGER,
+    difficulty difficulty_level,
+    question_type question_type,
+    quantity INTEGER NOT NULL,
+
+    context TEXT,
+    status VARCHAR(50) DEFAULT 'pending'
+        CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+    progress INTEGER DEFAULT 0,
     error_message TEXT,
+
+    trace_id VARCHAR(100),
+
     started_at TIMESTAMP,
     completed_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- AI generation tasks
 CREATE TABLE IF NOT EXISTS ai_generation_tasks (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    request_id UUID REFERENCES ai_generation_requests(id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL,
-    topic VARCHAR(255),
-    num_questions INTEGER DEFAULT 5,
-    difficulty difficulty_level DEFAULT 'medium',
-    status VARCHAR(20) DEFAULT 'queued' CHECK (status IN ('queued', 'processing', 'completed', 'failed')),
-    retry_count INTEGER DEFAULT 0,
-    error_message TEXT,
-    started_at TIMESTAMP,
-    completed_at TIMESTAMP,
+    request_id UUID REFERENCES ai_generation_requests(id) ON UPDATE CASCADE ON DELETE SET NULL,
+    subject_id INTEGER NOT NULL,
+    topic TEXT,
+    input_type VARCHAR(50),
+    input_reference TEXT,
+    number_of_questions INTEGER NOT NULL,
+    difficulty VARCHAR(20),
+    status VARCHAR(50) DEFAULT 'pending'
+        CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+    created_by UUID,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    completed_at TIMESTAMP,
+    error_message TEXT
 );
 
 -- Generated questions (pending review)
 CREATE TABLE IF NOT EXISTS generated_questions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    request_id UUID REFERENCES ai_generation_requests(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    task_id UUID REFERENCES ai_generation_tasks(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    course_id INTEGER,
-    chapter_id INTEGER,
-    question_type question_type DEFAULT 'multiple_choice',
-    difficulty difficulty_level DEFAULT 'medium',
-    content TEXT NOT NULL,
-    options JSONB,
-    correct_answer VARCHAR(10),
+    task_id UUID REFERENCES ai_generation_tasks(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    question_content TEXT NOT NULL,
+    option_a TEXT,
+    option_b TEXT,
+    option_c TEXT,
+    option_d TEXT,
+    correct_answer CHAR(1),
+    difficulty VARCHAR(20),
+    topic TEXT,
     explanation TEXT,
-    ai_confidence_score DECIMAL(5,2),
-    status VARCHAR(20) DEFAULT 'pending_review' CHECK (status IN ('pending_review', 'approved', 'rejected', 'merged')),
-    reviewed_by UUID,
-    reviewed_at TIMESTAMP,
-    merged_question_id UUID, -- References question_db.questions if approved
-    review_notes TEXT,
+    status VARCHAR(50) DEFAULT 'pending_review'
+        CHECK (status IN ('pending_review', 'approved', 'rejected', 'edited')),
+    display_order INTEGER,
+    generation_source VARCHAR(20) DEFAULT 'gemini',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- AI generation logs
 CREATE TABLE IF NOT EXISTS ai_generation_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    request_id UUID REFERENCES ai_generation_requests(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    task_id UUID REFERENCES ai_generation_tasks(id) ON UPDATE CASCADE ON DELETE SET NULL,
-    log_level VARCHAR(20) DEFAULT 'info' CHECK (log_level IN ('debug', 'info', 'warning', 'error')),
-    message TEXT NOT NULL,
-    metadata JSONB,
+    request_id UUID REFERENCES ai_generation_requests(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    question_id UUID,
+    ai_model VARCHAR(100) NOT NULL,
+    prompt TEXT,
+    response TEXT,
+    tokens_used INTEGER,
+    cost DECIMAL(10,4),
+    status VARCHAR(50) DEFAULT 'success',
+    error_message TEXT,
+    trace_id VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- AI API usage tracking
+CREATE TABLE IF NOT EXISTS ai_api_usage (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    provider VARCHAR(50) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    usage_date VARCHAR(10) NOT NULL,
+    request_count INTEGER NOT NULL DEFAULT 0,
+    token_estimate INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_api_usage_provider_model_date UNIQUE (provider, model, usage_date)
 );
 
 -- Documents (uploaded for AI processing)
 CREATE TABLE IF NOT EXISTS documents (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL, -- References user_db.users
+    document_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    course_id INTEGER NOT NULL,
+    uploaded_by UUID NOT NULL,
     file_name VARCHAR(255) NOT NULL,
-    file_path TEXT NOT NULL,
-    file_type VARCHAR(50),
-    file_size INTEGER,
+    original_filename VARCHAR(255) NOT NULL,
+    storage_path TEXT NOT NULL,
+    file_url TEXT,
     mime_type VARCHAR(100),
-    status VARCHAR(20) DEFAULT 'uploaded' CHECK (status IN ('uploaded', 'processing', 'completed', 'failed')),
-    extracted_text TEXT,
+    file_size BIGINT,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING'
+        CHECK (status IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED')),
     error_message TEXT,
+    trace_id VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- AI jobs (async job tracking)
 CREATE TABLE IF NOT EXISTS ai_jobs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    job_type VARCHAR(50) NOT NULL,
-    payload JSONB NOT NULL,
-    status job_status DEFAULT 'queued',
-    priority INTEGER DEFAULT 5,
+    ai_job_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    document_id UUID REFERENCES documents(document_id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL,
+    requested_by UUID NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING'
+        CHECK (status IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED')),
     retry_count INTEGER DEFAULT 0,
-    max_retries INTEGER DEFAULT 3,
+    result_artifact_path TEXT,
     error_message TEXT,
-    result JSONB,
-    started_at TIMESTAMP,
-    completed_at TIMESTAMP,
+    trace_id VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP
+);
+
+-- AI Worker: Courses table
+CREATE TABLE IF NOT EXISTS courses (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- AI Worker: Subjects table
+CREATE TABLE IF NOT EXISTS subjects (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    course_id INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =====================================================
@@ -114,36 +152,43 @@ CREATE TABLE IF NOT EXISTS ai_jobs (
 -- =====================================================
 CREATE INDEX IF NOT EXISTS idx_ai_requests_user ON ai_generation_requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_ai_requests_status ON ai_generation_requests(status);
-CREATE INDEX IF NOT EXISTS idx_ai_requests_created ON ai_generation_requests(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ai_requests_created ON ai_generation_requests(created_at);
+CREATE INDEX IF NOT EXISTS idx_ai_requests_course ON ai_generation_requests(course_id);
+CREATE INDEX IF NOT EXISTS idx_ai_requests_chapter ON ai_generation_requests(chapter_id);
 CREATE INDEX IF NOT EXISTS idx_ai_tasks_request ON ai_generation_tasks(request_id);
+CREATE INDEX IF NOT EXISTS idx_ai_tasks_subject ON ai_generation_tasks(subject_id);
 CREATE INDEX IF NOT EXISTS idx_ai_tasks_status ON ai_generation_tasks(status);
-CREATE INDEX IF NOT EXISTS idx_generated_questions_request ON generated_questions(request_id);
+CREATE INDEX IF NOT EXISTS idx_generated_questions_task ON generated_questions(task_id);
 CREATE INDEX IF NOT EXISTS idx_generated_questions_status ON generated_questions(status);
-CREATE INDEX IF NOT EXISTS idx_generated_questions_pending ON generated_questions(status) WHERE status = 'pending_review';
-CREATE INDEX IF NOT EXISTS idx_ai_logs_request ON ai_generation_logs(request_id);
-CREATE INDEX IF NOT EXISTS idx_ai_logs_task ON ai_generation_logs(task_id);
-CREATE INDEX IF NOT EXISTS idx_ai_logs_level ON ai_generation_logs(log_level);
-CREATE INDEX IF NOT EXISTS idx_documents_user ON documents(user_id);
-CREATE INDEX IF NOT EXISTS idx_documents_status ON documents(status);
-CREATE INDEX IF NOT EXISTS idx_ai_jobs_type ON ai_jobs(job_type);
-CREATE INDEX IF NOT EXISTS idx_ai_jobs_status ON ai_jobs(status);
-CREATE INDEX IF NOT EXISTS idx_ai_jobs_created ON ai_jobs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ai_api_usage_date ON ai_api_usage(usage_date);
+CREATE INDEX IF NOT EXISTS idx_documents_course_status ON documents(course_id, status);
+CREATE INDEX IF NOT EXISTS idx_ai_jobs_status ON ai_jobs(status, created_at);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_ai_jobs_active_per_document
+    ON ai_jobs(document_id) WHERE status IN ('PENDING', 'RUNNING');
 
 -- =====================================================
--- AUTO UPDATE TIMESTAMP TRIGGER
+-- AUTO UPDATE TIMESTAMP TRIGGERS
 -- =====================================================
 CREATE OR REPLACE TRIGGER update_ai_requests_updated_at
     BEFORE UPDATE ON ai_generation_requests
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE OR REPLACE TRIGGER update_ai_tasks_updated_at
-    BEFORE UPDATE ON ai_generation_tasks
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_documents_updated_at
     BEFORE UPDATE ON documents
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_ai_jobs_updated_at
     BEFORE UPDATE ON ai_jobs
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE OR REPLACE TRIGGER update_ai_api_usage_updated_at
+    BEFORE UPDATE ON ai_api_usage
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE OR REPLACE TRIGGER update_courses_updated_at
+    BEFORE UPDATE ON courses
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE OR REPLACE TRIGGER update_subjects_updated_at
+    BEFORE UPDATE ON subjects
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

@@ -66,20 +66,21 @@ CREATE INDEX IF NOT EXISTS idx_chapters_number ON chapters(course_id, chapter_nu
 CREATE INDEX IF NOT EXISTS idx_knowledge_units_chapter ON knowledge_units(chapter_id);
 
 -- =====================================================
--- AUTO UPDATE TIMESTAMP TRIGGER
+-- AUTO UPDATE TIMESTAMP TRIGGERS
+-- Note: The update_updated_at_column() function is defined in public schema (migration 00)
 -- =====================================================
 CREATE OR REPLACE TRIGGER update_faculties_updated_at
     BEFORE UPDATE ON faculties
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_courses_updated_at
     BEFORE UPDATE ON courses
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_chapters_updated_at
     BEFORE UPDATE ON chapters
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_knowledge_units_updated_at
     BEFORE UPDATE ON knowledge_units
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

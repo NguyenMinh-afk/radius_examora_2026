@@ -22,17 +22,28 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 );
 
 -- System events
+-- Columns required by:
+--   Infrastructure_Service/src/services/system-event.service.js (storeSystemEvent INSERT)
+--   User_Service/src/models/SystemEvent.js  (read model for admin)
+-- =====================================================
 CREATE TABLE IF NOT EXISTS system_events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     event_type VARCHAR(100) NOT NULL,
-    severity VARCHAR(20) DEFAULT 'info' CHECK (severity IN ('debug', 'info', 'warning', 'error', 'critical')),
+    severity VARCHAR(20) DEFAULT 'info'
+        CHECK (severity IN ('debug', 'info', 'warning', 'error', 'critical')),
     source VARCHAR(100) NOT NULL,
-    message TEXT NOT NULL,
+    aggregate_id UUID,
+    payload JSONB,
+    status VARCHAR(50) DEFAULT 'processed',
+    trace_id VARCHAR(100),
+    message TEXT,
     metadata JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Test runs (CI/CD)
+-- summary column is referenced by database/initdb/57-infra-observability.sql
+-- (SEED) and CI scripts.
 CREATE TABLE IF NOT EXISTS test_runs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     test_type VARCHAR(50) NOT NULL, -- unit, integration, e2e
@@ -46,6 +57,7 @@ CREATE TABLE IF NOT EXISTS test_runs (
     duration_ms INTEGER,
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
+    summary TEXT,
     branch VARCHAR(100),
     commit_sha VARCHAR(40),
     metadata JSONB,
@@ -86,6 +98,13 @@ CREATE INDEX IF NOT EXISTS idx_api_request_logs_trace ON api_request_logs(trace_
 CREATE INDEX IF NOT EXISTS idx_api_request_logs_user ON api_request_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_api_request_logs_path ON api_request_logs(path);
 CREATE INDEX IF NOT EXISTS idx_api_request_logs_created ON api_request_logs(created_at DESC);
+
+-- =====================================================
+-- AUTO UPDATE TIMESTAMP TRIGGERS
+-- =====================================================
+CREATE OR REPLACE TRIGGER update_audit_logs_updated_at
+    BEFORE UPDATE ON audit_logs
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- =====================================================
 -- PARTITIONING (optional for large tables)

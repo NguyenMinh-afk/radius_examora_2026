@@ -5,16 +5,21 @@
 SET search_path = notification_db, public;
 
 -- Notifications
+-- Note: column must be named `action_data` (not `data`) to match
+--   backend/Notification_Service/src/models/notification/Notification.js
+--   backend/User_Service/src/models/Notification.js
+--   backend/User_Service/src/controllers/admin/admin.notification.controller.js
 CREATE TABLE IF NOT EXISTS notifications (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL, -- References user_db.users
-    type VARCHAR(50) NOT NULL DEFAULT 'system',
+    user_id UUID, -- References user_db.users (nullable for broadcasts)
+    type VARCHAR(50) NOT NULL
+        CHECK (type IN ('assignment', 'grade', 'ai_complete', 'system', 'verification', 'password_reset', 'email')),
     title VARCHAR(255) NOT NULL,
-    message TEXT,
-    data JSONB, -- Additional data payload
+    message TEXT NOT NULL,
+    action_url TEXT,
+    action_data JSONB,
     is_read BOOLEAN DEFAULT false,
     read_at TIMESTAMP,
-    action_url TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -82,20 +87,21 @@ CREATE INDEX IF NOT EXISTS idx_sms_logs_phone ON sms_logs(phone_number);
 CREATE INDEX IF NOT EXISTS idx_sms_logs_status ON sms_logs(status);
 
 -- =====================================================
--- AUTO UPDATE TIMESTAMP TRIGGER
+-- AUTO UPDATE TIMESTAMP TRIGGERS
+-- Note: The update_updated_at_column() function is defined in public schema (migration 00)
 -- =====================================================
 CREATE OR REPLACE TRIGGER update_notifications_updated_at
     BEFORE UPDATE ON notifications
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_email_templates_updated_at
     BEFORE UPDATE ON email_templates
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_email_logs_updated_at
     BEFORE UPDATE ON email_logs
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_sms_logs_updated_at
     BEFORE UPDATE ON sms_logs
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

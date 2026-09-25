@@ -142,24 +142,17 @@ CREATE INDEX IF NOT EXISTS idx_password_reset_otps_user ON password_reset_otps(u
 CREATE INDEX IF NOT EXISTS idx_password_reset_otps_otp ON password_reset_otps(otp_hash);
 
 -- =====================================================
--- AUTO UPDATE TIMESTAMP TRIGGER
+-- AUTO UPDATE TIMESTAMP TRIGGERS
+-- Note: The update_updated_at_column() function is defined in public schema (migration 00)
 -- =====================================================
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_user_profiles_updated_at
     BEFORE UPDATE ON user_profiles
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER update_user_sessions_updated_at
     BEFORE UPDATE ON user_sessions
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
