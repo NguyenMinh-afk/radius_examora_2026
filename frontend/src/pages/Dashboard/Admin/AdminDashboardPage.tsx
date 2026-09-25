@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   AlertTriangle,
   CheckCircle2,
-  CircleDot,
   LibraryBig,
   RefreshCw,
   Search,
@@ -118,6 +117,20 @@ const AdminDashboardPage: React.FC = () => {
     [accessFilter, roleFilter, userPagination.limit, userPagination.page, userSearch]
   );
 
+  // Auto-trigger search when userSearch changes (debounced)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void loadUsers(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [userSearch, loadUsers]);
+
+  // Auto-trigger filter changes without needing Apply button
+  useEffect(() => {
+    void loadUsers(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roleFilter, accessFilter]);
+
   const loadCourses = useCallback(
     async (page: number = coursePagination.page) => {
       setCourseLoading(true);
@@ -141,6 +154,20 @@ const AdminDashboardPage: React.FC = () => {
     },
     [courseAccessFilter, coursePagination.limit, coursePagination.page, courseSearch]
   );
+
+  // Auto-trigger course search when courseSearch changes (debounced)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void loadCourses(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [courseSearch, loadCourses]);
+
+  // Auto-trigger filter changes for courses without needing Apply button
+  useEffect(() => {
+    void loadCourses(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseAccessFilter]);
 
   const loadDashboard = useCallback(async () => {
     const data = await getAdminDashboard();
@@ -202,11 +229,8 @@ const AdminDashboardPage: React.FC = () => {
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (activeSection === "courses") {
-      void loadCourses(1);
-      return;
-    }
-    void loadUsers(1);
+    // Search is now auto-triggered via useEffect with debounce
+    // This form submit is kept for accessibility (Enter key)
   };
 
   const navigateToSection = (section: AdminSection) => {
@@ -557,15 +581,6 @@ const AdminDashboardPage: React.FC = () => {
                     <option key="false" value="false">Locked only</option>
                   </select>
                 </label>
-
-                <button
-                  type="button"
-                  onClick={() => void loadUsers(1)}
-                  className="inline-flex h-10 items-center justify-center gap-2 self-end rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700"
-                >
-                  <CircleDot size={15} />
-                  Apply
-                </button>
               </div>
             </div>
 
@@ -619,15 +634,6 @@ const AdminDashboardPage: React.FC = () => {
                     <option key="false" value="false">Hidden only</option>
                   </select>
                 </label>
-
-                <button
-                  type="button"
-                  onClick={() => void loadCourses(1)}
-                  className="inline-flex h-10 items-center justify-center gap-2 self-end rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700"
-                >
-                  <CircleDot size={15} />
-                  Apply
-                </button>
               </div>
             </div>
 
