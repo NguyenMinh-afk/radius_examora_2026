@@ -50,3 +50,15 @@ CREATE TYPE public.user_role AS ENUM (
     'teacher',
     'student'
 );
+
+-- =====================================================
+-- AUTO UPDATE TIMESTAMP TRIGGER FUNCTION (shared across all schemas)
+-- =====================================================
+-- This function is created in public schema so all service schemas can reference it
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

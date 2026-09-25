@@ -1,139 +1,59 @@
 -- =====================================================
--- SEED 06: Notifications
+-- SEED 06: Notifications and Email Templates
 -- =====================================================
 
 SET search_path = notification_db, public;
 
--- Insert email templates
-INSERT INTO email_templates (template_key, template_name, subject, body_html, body_text, variables) VALUES
-    ('welcome',
-     'Welcome Email',
-     'Chào mừng bạn đến với EXAMORA!',
-     '<h1>Chào mừng {{fullName}}!</h1><p>Cảm ơn bạn đã đăng ký tài khoản EXAMORA. Tài khoản của bạn đã được kích hoạt.</p><p>Trân trọng,<br>EXAMORA Team</p>',
-     'Chao muon {{fullName}}! Cam on ban da dang ky tai khoan EXAMORA.',
-     '["fullName", "email"]'::jsonb),
-    ('assignment_created',
-     'New Assignment Notification',
-     'Bạn có bài tập mới: {{title}}',
-     '<h2>Bài tập mới được giao</h2><p><strong>{{title}}</strong></p><p>{{instructions}}</p><p>Thời gian: {{startTime}} - {{endTime}}</p>',
-     'Bai tap moi: {{title}}. Thoi gian: {{startTime}} - {{endTime}}',
-     '["title", "instructions", "startTime", "endTime"]'::jsonb),
-    ('exam_submitted',
-     'Exam Submitted Confirmation',
-     'Bạn đã nộp bài thi thành công',
-     '<h2>Nộp bài thành công</h2><p>Bạn đã nộp bài thi <strong>{{examTitle}}</strong>.</p><p>Điểm số: {{score}}</p><p>Thời gian nộp: {{submittedAt}}</p>',
-     'Ban da nop bai thi {{examTitle}} thanh cong. Diem so: {{score}}',
-     '["examTitle", "score", "submittedAt"]'::jsonb),
-    ('ai_generation_complete',
-     'AI Question Generation Complete',
-     'Câu hỏi AI đã được tạo thành công',
-     '<h2>Tạo câu hỏi thành công</h2><p>{{count}} câu hỏi đã được tạo và sẵn sàng để bạn xem xét.</p><p><a href="{{reviewUrl}}">Xem và duyệt câu hỏi</a></p>',
-     '{{count}} cau hoi da duoc tao. Truy cap {{reviewUrl}} de xem va duyet.',
-     '["count", "reviewUrl"]'::jsonb),
-    ('password_reset',
-     'Password Reset',
-     'Yêu cầu đặt lại mật khẩu',
-     '<h2>Đặt lại mật khẩu</h2><p>Nhấp vào liên kết bên dưới để đặt lại mật khẩu của bạn:</p><p><a href="{{resetUrl}}">Đặt lại mật khẩu</a></p><p>Liên kết này sẽ hết hạn sau 24 giờ.</p>',
-     'Nhan vao lien ket de dat lai mat khau: {{resetUrl}}. Link het han sau 24 gio.',
-     '["resetUrl"]'::jsonb);
+-- Email templates
+INSERT INTO email_templates (
+    template_key, template_name, subject, body_html, body_text, variables, is_active
+) VALUES
+    ('PASSWORD_RESET', 'Password Reset', 'Đặt lại mật khẩu EXAMORA',
+     '<p>Xin chào {{name}},</p><p>Nhấn vào liên kết sau để đặt lại mật khẩu: <a href="{{reset_url}}">{{reset_url}}</a></p>',
+     'Xin chào {{name}}, dùng liên kết sau để đặt lại mật khẩu: {{reset_url}}.',
+     '{"name": "", "reset_url": ""}', true),
+    ('welcome', 'Welcome', 'Chào mừng bạn đến với EXAMORA!',
+     '<h1>Chào mừng {{fullName}}!</h1><p>Cảm ơn bạn đã đăng ký tài khoản EXAMORA.</p>',
+     'Chao muon {{fullName}}!', '{"fullName": ""}', true),
+    ('email_verification', 'Email Verification', 'Xác minh email EXAMORA',
+     '<p>Xin chào {{name}},</p><p>Mã xác minh của bạn là: <strong>{{verification_code}}</strong></p>',
+     'Xin chao {{name}}, ma xac minh cua ban la: {{verification_code}}.',
+     '{"name": "", "verification_code": ""}', true),
+    ('exam_assigned', 'Exam Assigned', 'New exam assigned',
+     '<p>You have a new exam assigned: {{examTitle}}</p>',
+     'You have a new exam: {{examTitle}}.', '{"examTitle": ""}', true),
+    ('grade_notification', 'Grade Published', 'Kết quả bài thi đã được công bố',
+     '<p>Xin chào {{name}},</p><p>Kết quả bài thi "{{examTitle}}" đã được công bố. Điểm của bạn: {{score}}.</p>',
+     'Xin chao {{name}}, ket qua bai thi "{{examTitle}}" da duoc cong bo. Diem cua ban: {{score}}.',
+     '{"name": "", "examTitle": "", "score": ""}', true)
+ON CONFLICT (template_key) DO NOTHING;
 
--- Insert notifications
-INSERT INTO notifications (user_id, type, title, message, data, is_read, action_url) VALUES
-    -- For admin
-    ('00000000-0000-0000-0000-000000000001',
-     'system',
-     'Chào mừng Admin!',
-     'Chào mừng bạn đến với EXAMORA. Bạn có quyền quản trị hệ thống.',
-     '{"role": "admin"}'::jsonb,
-     true, '/admin/dashboard'),
-    
-    -- For teachers
-    ('00000000-0000-0000-0000-000000000002',
-     'ai_generation',
-     'Câu hỏi AI đã được tạo thành công',
-     '10 câu hỏi về Python Variables đã được tạo. Vui lòng xem xét và duyệt.',
-     '{"request_id": "50000000-0000-0000-0000-000000000001", "count": 10}'::jsonb,
-     true, '/teacher/questions/ai-review'),
-    ('00000000-0000-0000-0000-000000000002',
-     'system',
-     'Lớp học mới được tạo',
-     'Bạn đã tạo thành công lớp "Lớp Python CNTT K10"',
-     '{"class_id": "20000000-0000-0000-0000-000000000001"}'::jsonb,
-     true, '/teacher/classes'),
-    
-    -- For students
-    ('00000000-0000-0000-0000-000000000004',
-     'assignment',
-     'Bài tập mới được giao',
-     'Bạn có bài kiểm tra "Kiểm tra Python cơ bản" cần hoàn thành.',
-     '{"exam_id": "30000000-0000-0000-0000-000000000001", "assignment_id": "40000000-0000-0000-0000-000000000001"}'::jsonb,
-     false, '/student/exams/30000000-0000-0000-0000-000000000001'),
-    ('00000000-0000-0000-0000-000000000004',
-     'grade',
-     'Điểm thi đã được cập nhật',
-     'Bài thi "Quiz Python" của bạn đã được chấm. Điểm: 80/100.',
-     '{"exam_id": "30000000-0000-0000-0000-000000000001", "score": 80}'::jsonb,
-     false, '/student/results'),
-    ('00000000-0000-0000-0000-000000000004',
-     'system',
-     'Chào mừng đến với EXAMORA!',
-     'Tài khoản của bạn đã được kích hoạt. Bắt đầu học tập ngay!',
-     NULL,
-     true, '/student/dashboard'),
-    ('00000000-0000-0000-0000-000000000005',
-     'assignment',
-     'Bài tập mới được giao',
-     'Bạn có bài kiểm tra "Kiểm tra Python cơ bản" cần hoàn thành.',
-     '{"exam_id": "30000000-0000-0000-0000-000000000001", "assignment_id": "40000000-0000-0000-0000-000000000001"}'::jsonb,
-     false, '/student/exams/30000000-0000-0000-0000-000000000001'),
-    ('00000000-0000-0000-0000-000000000005',
-     'reminder',
-     'Nhắc nhở: Bài kiểm tra sắp hết hạn',
-     'Bài kiểm tra "Kiểm tra Python cơ bản" sẽ hết hạn trong 24 giờ.',
-     '{"exam_id": "30000000-0000-0000-0000-000000000001"}'::jsonb,
-     false, '/student/exams/30000000-0000-0000-0000-000000000001'),
-    ('00000000-0000-0000-0000-000000000006',
-     'system',
-     'Bạn đã được thêm vào lớp mới',
-     'Bạn đã được thêm vào lớp "Lớp Giải tích 1 K10".',
-     '{"class_id": "20000000-0000-0000-0000-000000000003"}'::jsonb,
-     false, '/student/classes');
+-- Notifications
+INSERT INTO notifications (id, user_id, type, title, message, action_url, is_read, created_at)
+VALUES
+    ('90000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'assignment',
+     'Bài thi mới được giao', 'Bài thi "Quiz Chương 3 - Cơ sở dữ liệu" đã được mở.',
+     '/student/assignments/EA000000-0000-0000-0000-000000000002', false, CURRENT_TIMESTAMP - INTERVAL '1 hour'),
+    ('90000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'grade',
+     'Kết quả đã được công bố', 'Kết quả bài thi "Kiểm tra Chương 2" đã được công bố. Điểm của bạn: 8.5/10.',
+     '/student/results/EB000000-0000-0000-0000-000000000001', false, CURRENT_TIMESTAMP - INTERVAL '1 day'),
+    ('90000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'system',
+     'Nhắc nhở: Bài thi sắp đóng', 'Bài thi "Quiz React nâng cao" sẽ đóng sau 12 giờ nữa.',
+     '/student/assignments/EA000000-0000-0000-0000-000000000003', true, CURRENT_TIMESTAMP - INTERVAL '2 days'),
+    ('90000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', 'assignment',
+     'Bạn đã được thêm vào lớp mới', 'Bạn đã được thêm vào lớp "Mạng máy tính - D22MMT01".',
+     '/student/classes/B0000000-0000-0000-0000-000000000004', true, CURRENT_TIMESTAMP - INTERVAL '3 days'),
+    ('90000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000001', 'verification',
+     'Xác minh email thành công', 'Email của bạn đã được xác minh thành công.',
+     NULL, true, CURRENT_TIMESTAMP - INTERVAL '7 days')
+ON CONFLICT (id) DO NOTHING;
 
--- Insert email logs
-INSERT INTO email_logs (user_id, recipient_email, template_key, subject, status, sent_at) VALUES
-    ('00000000-0000-0000-0000-000000000001',
-     'admin@examora.local',
-     'welcome',
-     'Chào mừng bạn đến với EXAMORA!',
-     'sent',
-     '2026-08-01 10:00:00'),
-    ('00000000-0000-0000-0000-000000000002',
-     'teacher1@examora.local',
-     'welcome',
-     'Chào mừng bạn đến với EXAMORA!',
-     'sent',
-     '2026-08-01 10:00:00'),
-    ('00000000-0000-0000-0000-000000000004',
-     'student1@examora.local',
-     'welcome',
-     'Chào mừng bạn đến với EXAMORA!',
-     'sent',
-     '2026-08-01 10:00:00'),
-    ('00000000-0000-0000-0000-000000000002',
-     'teacher1@examora.local',
-     'ai_generation_complete',
-     'Câu hỏi AI đã được tạo thành công',
-     'sent',
-     '2026-08-20 10:05:00'),
-    ('00000000-0000-0000-0000-000000000004',
-     'student1@examora.local',
-     'assignment_created',
-     'Bạn có bài tập mới: Kiểm tra Python cơ bản',
-     'sent',
-     '2026-09-10 08:00:00'),
-    ('00000000-0000-0000-0000-000000000004',
-     'student1@examora.local',
-     'exam_submitted',
-     'Bạn đã nộp bài thi thành công',
-     'delivered',
-     '2026-08-25 14:30:00');
+-- Email logs
+INSERT INTO email_logs (
+    id, user_id, recipient_email, template_key, subject, status, sent_at, created_at
+) VALUES
+    ('91000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'student1@examora.local',
+     'exam_assigned', 'New exam assigned', 'sent', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('91000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000002', 'student2@examora.local',
+     'welcome', 'Chào mừng bạn đến với EXAMORA!', 'sent', CURRENT_TIMESTAMP - INTERVAL '7 days', CURRENT_TIMESTAMP - INTERVAL '7 days')
+ON CONFLICT (id) DO NOTHING;

@@ -1,87 +1,98 @@
 -- =====================================================
--- SEED 05: AI Jobs
+-- SEED 05: AI Jobs, Documents, Generation Requests
 -- =====================================================
 
 SET search_path = ai_db, public;
 
--- Insert AI generation requests
-INSERT INTO ai_generation_requests (id, user_id, course_id, chapter_id, title, description, status, total_tasks, completed_tasks, total_questions_requested, total_questions_generated, difficulty, question_type, started_at, completed_at) VALUES
-    ('50000000-0000-0000-0000-000000000001',
-     '00000000-0000-0000-0000-000000000002',
-     1, 2,
-     'Generate Python Variables Questions',
-     'Generate 10 questions about Python variables and data types',
-     'completed', 2, 2, 10, 8, 'medium', 'multiple_choice',
-     '2026-08-20 10:00:00', '2026-08-20 10:05:00'),
-    ('50000000-0000-0000-0000-000000000002',
-     '00000000-0000-0000-0000-000000000002',
-     1, 3,
-     'Generate Python Loops Questions',
-     'Generate 15 questions about for and while loops',
-     'completed', 3, 3, 15, 14, 'medium', 'multiple_choice',
-     '2026-08-21 14:00:00', '2026-08-21 14:08:00'),
-    ('50000000-0000-0000-0000-000000000003',
-     '00000000-0000-0000-0000-000000000002',
-     2, 10,
-     'Generate Data Structures Questions',
-     'Generate questions about arrays and linked lists',
-     'processing', 2, 1, 20, 10, 'hard', 'multiple_choice',
-     '2026-09-01 09:00:00', NULL),
-    ('50000000-0000-0000-0000-000000000004',
-     '00000000-0000-0000-0000-000000000003',
-     10, 21,
-     'Generate Calculus Derivatives Questions',
-     'Generate questions about derivatives',
-     'pending', 1, 0, 10, 0, 'medium', 'multiple_choice',
-     NULL, NULL);
+-- AI generation requests
+INSERT INTO ai_generation_requests (
+    id, user_id, course_id, chapter_id, knowledge_unit_id,
+    difficulty, question_type, quantity, context, status, progress,
+    trace_id, started_at, completed_at
+) VALUES
+    ('60000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 1, 2, 4,
+     'medium', 'multiple_choice', 3, 'Generate basic programming questions', 'completed', 100,
+     '60000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP - INTERVAL '10 minutes', CURRENT_TIMESTAMP - INTERVAL '5 minutes'),
+    ('60000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', 22, 4, 7,
+     'medium', 'multiple_choice', 5, 'Generate database questions', 'completed', 100,
+     '60000000-0000-0000-0000-000000000002', CURRENT_TIMESTAMP - INTERVAL '2 hours', CURRENT_TIMESTAMP - INTERVAL '1 hour')
+ON CONFLICT (id) DO NOTHING;
 
--- Insert AI generation tasks
-INSERT INTO ai_generation_tasks (id, request_id, topic, num_questions, difficulty, status, started_at, completed_at) VALUES
-    ('51000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 'Variables', 5, 'easy', 'completed', '2026-08-20 10:00:00', '2026-08-20 10:02:30'),
-    ('51000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-000000000001', 'Data Types', 5, 'medium', 'completed', '2026-08-20 10:02:30', '2026-08-20 10:05:00'),
-    ('51000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000002', 'For Loops', 5, 'easy', 'completed', '2026-08-21 14:00:00', '2026-08-21 14:03:00'),
-    ('51000000-0000-0000-0000-000000000004', '50000000-0000-0000-0000-000000000002', 'While Loops', 5, 'medium', 'completed', '2026-08-21 14:03:00', '2026-08-21 14:06:00'),
-    ('51000000-0000-0000-0000-000000000005', '50000000-0000-0000-0000-000000000002', 'Loop Patterns', 5, 'hard', 'completed', '2026-08-21 14:06:00', '2026-08-21 14:08:00'),
-    ('51000000-0000-0000-0000-000000000006', '50000000-0000-0000-0000-000000000003', 'Arrays', 10, 'medium', 'completed', '2026-09-01 09:00:00', '2026-09-01 09:04:00'),
-    ('51000000-0000-0000-0000-000000000007', '50000000-0000-0000-0000-000000000003', 'Linked Lists', 10, 'hard', 'queued', NULL, NULL),
-    ('51000000-0000-0000-0000-000000000008', '50000000-0000-0000-0000-000000000004', 'Derivatives', 10, 'medium', 'queued', NULL, NULL);
+-- AI generation tasks
+INSERT INTO ai_generation_tasks (
+    id, request_id, subject_id, topic, input_type, input_reference, number_of_questions,
+    difficulty, status, created_by, created_at, completed_at
+) VALUES
+    ('60000000-0000-0000-0000-000000000010', '60000000-0000-0000-0000-000000000001', 1, 'Vong lap co ban', 'text',
+     'Bai giang lap trinh co ban', 2, 'easy', 'completed',
+     '20000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP - INTERVAL '12 minutes', CURRENT_TIMESTAMP - INTERVAL '6 minutes'),
+    ('60000000-0000-0000-0000-000000000011', '60000000-0000-0000-0000-000000000002', 1, 'Database Fundamentals', 'text',
+     'Chapter 1: Relational Model', 3, 'medium', 'completed',
+     '20000000-0000-0000-0000-000000000002', CURRENT_TIMESTAMP - INTERVAL '2 hours', CURRENT_TIMESTAMP - INTERVAL '1 hour')
+ON CONFLICT (id) DO NOTHING;
 
--- Insert AI generation logs
-INSERT INTO ai_generation_logs (request_id, task_id, log_level, message, metadata) VALUES
-    ('50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000001', 'info', 'Starting AI generation for Variables', '{"course_id": 1, "chapter_id": 2}'::jsonb),
-    ('50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000001', 'info', 'Calling Gemini API', '{"model": "gemini-1.5-pro"}'::jsonb),
-    ('50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000001', 'info', 'Generated 5 questions successfully', '{"questions_generated": 5}'::jsonb),
-    ('50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000002', 'info', 'Starting AI generation for Data Types', '{"course_id": 1, "chapter_id": 2}'::jsonb),
-    ('50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000002', 'info', 'Generated 3 questions successfully', '{"questions_generated": 3}'::jsonb),
-    ('50000000-0000-0000-0000-000000000001', '51000000-0000-0000-0000-000000000002', 'warning', '2 questions filtered due to low confidence score', '{"threshold": 0.7}'::jsonb),
-    ('50000000-0000-0000-0000-000000000002', '51000000-0000-0000-0000-000000000003', 'info', 'Starting AI generation for For Loops', '{"course_id": 1, "chapter_id": 3}'::jsonb),
-    ('50000000-0000-0000-0000-000000000002', '51000000-0000-0000-0000-000000000003', 'info', 'Generated 5 questions successfully', '{"questions_generated": 5}'::jsonb),
-    ('50000000-0000-0000-0000-000000000003', '51000000-0000-0000-0000-000000000006', 'info', 'Starting AI generation for Arrays', '{"course_id": 2, "chapter_id": 10}'::jsonb),
-    ('50000000-0000-0000-0000-000000000003', '51000000-0000-0000-0000-000000000006', 'info', 'Generated 10 questions', '{"questions_generated": 10}'::jsonb);
+-- Generated questions
+INSERT INTO generated_questions (
+    id, task_id, question_content, option_a, option_b, option_c, option_d,
+    correct_answer, difficulty, topic, explanation, status, display_order, generation_source
+) VALUES
+    ('60000000-0000-0000-0000-000000000011', '60000000-0000-0000-0000-000000000010',
+     'Vong lap for trong C co dang nao?',
+     'for(i=0;i<5;i++)', 'while(i<5)', 'loop(i=0; i<5)', 'repeat 5 times',
+     'A', 'easy', 'Vong lap co ban', 'Cau lenh for dung theo cu phap chuan.',
+     'approved', 1, 'gemini'),
+    ('60000000-0000-0000-0000-000000000012', '60000000-0000-0000-0000-000000000010',
+     'Kieu du lieu int dung de luu gi?',
+     'So nguyen', 'So thuc', 'Chuoi ky tu', 'Gia tri logic',
+     'A', 'easy', 'Kieu du lieu', 'int luu so nguyen.',
+     'pending_review', 2, 'gemini'),
+    ('60000000-0000-0000-0000-000000000013', '60000000-0000-0000-0000-000000000011',
+     'Khoa chinh trong co so du lieu quan he la gi?',
+     'Tap hop cac cot danh dau tinh duy nhat cho moi ban ghi', 'Tap hop tat ca cac cot trong bang',
+     'Tap hop cac khoa ngoai', 'Tap hop cac thuoc tinh co the trung nhau',
+     'A', 'medium', 'Database Fundamentals', 'Khoa chinh dam bao tinh duy nhat cua ban ghi.',
+     'approved', 1, 'gemini')
+ON CONFLICT (id) DO NOTHING;
 
--- Insert AI jobs
-INSERT INTO ai_jobs (id, job_type, payload, status, priority, result, started_at, completed_at) VALUES
-    ('52000000-0000-0000-0000-000000000001',
-     'ai_generation',
-     '{"request_id": "50000000-0000-0000-0000-000000000001", "task_id": "51000000-0000-0000-0000-000000000001"}'::jsonb,
-     'completed', 10,
-     '{"questions_generated": 5, "questions_approved": 5}'::jsonb,
-     '2026-08-20 10:00:00', '2026-08-20 10:02:30'),
-    ('52000000-0000-0000-0000-000000000002',
-     'ai_generation',
-     '{"request_id": "50000000-0000-0000-0000-000000000001", "task_id": "51000000-0000-0000-0000-000000000002"}'::jsonb,
-     'completed', 10,
-     '{"questions_generated": 5, "questions_approved": 3}'::jsonb,
-     '2026-08-20 10:02:30', '2026-08-20 10:05:00'),
-    ('52000000-0000-0000-0000-000000000003',
-     'grading',
-     '{"attempt_id": "60000000-0000-0000-0000-000000000001"}'::jsonb,
-     'completed', 5,
-     '{"score": 80, "total_questions": 10, "correct_answers": 8}'::jsonb,
-     '2026-08-25 14:30:00', '2026-08-25 14:30:15'),
-    ('52000000-0000-0000-0000-000000000004',
-     'analytics',
-     '{"user_id": "00000000-0000-0000-0000-000000000004", "period": "weekly"}'::jsonb,
-     'completed', 3,
-     '{"total_exams": 3, "avg_score": 75.5}'::jsonb,
-     '2026-09-01 00:00:00', '2026-09-01 00:00:30');
+-- AI generation logs
+INSERT INTO ai_generation_logs (
+    id, request_id, question_id, ai_model, prompt, response, tokens_used, cost, status, trace_id
+) VALUES
+    ('60000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000002',
+     'gpt-4', 'Generate a loop question', 'Vòng lặp chạy 5 lần là for(i=0;i<5;i++)', 120, 0.0020, 'success', '60000000-0000-0000-0000-000000000001')
+ON CONFLICT (id) DO NOTHING;
+
+-- Documents
+INSERT INTO documents (
+    document_id, course_id, uploaded_by, file_name, original_filename, storage_path,
+    mime_type, file_size, status, trace_id
+) VALUES
+    ('70000000-0000-0000-0000-000000000001', 1, '20000000-0000-0000-0000-000000000001',
+     'math_ch1.pdf', 'math_ch1.pdf', '/storage/docs/math_ch1.pdf',
+     'application/pdf', 1024000, 'COMPLETED', '70000000-0000-0000-0000-000000000001'),
+    ('70000000-0000-0000-0000-000000000002', 22, '20000000-0000-0000-0000-000000000001',
+     'database_ch1.pdf', 'Chuong1_CSDL.pdf', '/storage/docs/database_ch1.pdf',
+     'application/pdf', 2048000, 'COMPLETED', '70000000-0000-0000-0000-000000000002')
+ON CONFLICT (document_id) DO NOTHING;
+
+-- AI jobs
+INSERT INTO ai_jobs (
+    ai_job_id, document_id, requested_by, status, retry_count, result_artifact_path, trace_id, completed_at
+) VALUES
+    ('70000000-0000-0000-0000-000000000002', '70000000-0000-0000-0000-000000000001',
+     '20000000-0000-0000-0000-000000000001', 'COMPLETED', 0, '/storage/results/job-0001.json', '70000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP),
+    ('70000000-0000-0000-0000-000000000003', '70000000-0000-0000-0000-000000000002',
+     '20000000-0000-0000-0000-000000000001', 'COMPLETED', 0, '/storage/results/job-0002.json', '70000000-0000-0000-0000-000000000002', CURRENT_TIMESTAMP - INTERVAL '1 day')
+ON CONFLICT (ai_job_id) DO NOTHING;
+
+-- AI Worker: Courses and Subjects
+INSERT INTO ai_db.courses (id, name) VALUES
+    (1, 'Computer Science'),
+    (2, 'Mathematics')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO ai_db.subjects (id, name, course_id) VALUES
+    (1, 'Programming Basics', 1),
+    (2, 'Data Structures', 1),
+    (3, 'Calculus', 2)
+ON CONFLICT (id) DO NOTHING;

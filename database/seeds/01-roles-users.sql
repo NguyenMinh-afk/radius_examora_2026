@@ -1,56 +1,42 @@
 -- =====================================================
--- SEED 01: Roles + Users
+-- SEED 01: Roles + Users + Profiles
 -- =====================================================
 
 SET search_path = user_db, public;
 
--- Insert roles
-INSERT INTO roles (name, description) VALUES
-    ('admin', 'System administrator with full access'),
-    ('teacher', 'Teacher/ Instructor who creates exams and manages classes'),
-    ('student', 'Student who takes exams and tracks progress')
-ON CONFLICT (name) DO NOTHING;
+-- Roles
+INSERT INTO roles (id, name, description) VALUES
+    (1, 'admin', 'System administrator'),
+    (2, 'teacher', 'Teacher'),
+    (3, 'student', 'Student')
+ON CONFLICT (id) DO NOTHING;
 
--- Sample users (password: Password123!)
--- Hash generated with bcrypt, cost factor 10
-INSERT INTO users (id, email, password_hash, full_name, role_id, is_active, email_verified, approval_status) VALUES
-    ('00000000-0000-0000-0000-000000000001',
-     'admin@examora.local',
-     '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZxZ',
-     'Admin User',
-     1, true, true, 'approved'),
-    ('00000000-0000-0000-0000-000000000002',
-     'teacher1@examora.local',
-     '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZ',
-     'Nguyen Van A',
-     2, true, true, 'approved'),
-    ('00000000-0000-0000-0000-000000000003',
-     'teacher2@examora.local',
-     '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZ',
-     'Tran Thi B',
-     2, true, true, 'approved'),
-    ('00000000-0000-0000-0000-000000000004',
-     'student1@examora.local',
-     '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZ',
-     'Le Van C',
-     3, true, true, 'approved'),
-    ('00000000-0000-0000-0000-000000000005',
-     'student2@examora.local',
-     '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZ',
-     'Pham Thi D',
-     3, true, true, 'approved'),
-    ('00000000-0000-0000-0000-000000000006',
-     'student3@examora.local',
-     '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZ',
-     'Hoang Van E',
-     3, true, true, 'approved')
-ON CONFLICT (email) DO NOTHING;
+-- Users (password: Examora@123 -- run scripts/resetPassword.mjs after seed to set bcrypt hash)
+INSERT INTO users (
+    id, email, phone, password_hash, full_name, role_id, is_active,
+    email_verified, approval_status, approved_at
+)
+VALUES
+    ('10000000-0000-0000-0000-000000000001', 'admin@examora.local', '0900000001', '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZxZ', 'Admin User', 1, true, true, 'approved', CURRENT_TIMESTAMP),
+    ('20000000-0000-0000-0000-000000000001', 'teacher1@examora.local', '0900000002', '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZ', 'Teacher One', 2, true, true, 'approved', CURRENT_TIMESTAMP),
+    ('20000000-0000-0000-0000-000000000002', 'teacher2@examora.local', '0900000003', '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZ', 'Teacher Two', 2, true, true, 'approved', CURRENT_TIMESTAMP),
+    ('30000000-0000-0000-0000-000000000001', 'student1@examora.local', '0900000004', '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZ', 'Student One', 3, true, true, 'approved', CURRENT_TIMESTAMP),
+    ('30000000-0000-0000-0000-000000000002', 'student2@examora.local', '0900000005', '$2b$10$rQZ8qPQZPZQZQZQZQZQZQZOwZcYbJdJxZxZxZxZxZxZxZxZxZ', 'Student Two', 3, true, true, 'approved', CURRENT_TIMESTAMP)
+ON CONFLICT (id) DO NOTHING;
 
--- Sample user profiles
-INSERT INTO user_profiles (user_id, date_of_birth, gender, school_name, student_code, teacher_department) VALUES
-    ('00000000-0000-0000-0000-000000000002', '1985-03-15', 'male', 'University of Science', NULL, 'Computer Science'),
-    ('00000000-0000-0000-0000-000000000003', '1990-07-22', 'female', 'University of Science', NULL, 'Mathematics'),
-    ('00000000-0000-0000-0000-000000000004', '2005-01-10', 'male', 'THPT Chu Van An', 'SV0001', NULL),
-    ('00000000-0000-0000-0000-000000000005', '2005-05-20', 'female', 'THPT Chu Van An', 'SV0002', NULL),
-    ('00000000-0000-0000-0000-000000000006', '2005-08-30', 'male', 'THPT Nguyen Hue', 'SV0003', NULL)
-ON CONFLICT (user_id) DO NOTHING;
+-- User profiles
+INSERT INTO user_profiles (id, user_id, date_of_birth, gender, school_name, class_code, student_code, teacher_code, bio)
+VALUES
+    ('40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', '1988-05-20', 'male', 'Examora University', 'T1', NULL, 'TC001', 'Math teacher'),
+    ('40000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', '1990-08-15', 'female', 'Examora University', 'T2', NULL, 'TC002', 'Physics teacher'),
+    ('40000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', '2008-03-25', 'female', 'Examora University', 'S1', 'SV0001', NULL, 'Student profile'),
+    ('40000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000002', '2008-07-18', 'male', 'Examora University', 'S1', 'SV0002', NULL, 'Student profile')
+ON CONFLICT (id) DO NOTHING;
+
+-- User devices
+INSERT INTO user_devices (id, user_id, device_id, platform, device_name, last_seen)
+VALUES
+    ('41000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'device-student-1', 'android', 'Student Phone', CURRENT_TIMESTAMP),
+    ('41000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'device-student-web', 'web', 'Chrome Browser', CURRENT_TIMESTAMP),
+    ('41000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000001', 'device-teacher-1', 'web', 'Chrome Browser', CURRENT_TIMESTAMP)
+ON CONFLICT (id) DO NOTHING;

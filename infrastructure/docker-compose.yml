@@ -35,12 +35,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
       POSTGRES_DB: Exam_Bank
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../../database/migrations:/docker-entrypoint-initdb.d/migrations:ro
-      - ../../database/seeds:/docker-entrypoint-initdb.d/seeds:ro
+      - ../database/initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d Exam_Bank"]
       interval: 10s
@@ -228,7 +228,7 @@ services:
       - ../backend/AI_Worker_Service/.env.docker
     environment:
       PYTHON_ENV: production
-      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      DATABASE_URL: postgresql+asyncpg://postgres:123456@postgres-db:5432/Exam_Bank
       RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
     ports:
       - "8000:8000"
@@ -255,7 +255,7 @@ services:
       - ../backend/AI_Worker_Service/.env.docker
     environment:
       PYTHON_ENV: production
-      DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+      DATABASE_URL: postgresql+asyncpg://postgres:123456@postgres-db:5432/Exam_Bank
       RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
     command: ["python", "run_worker.py"]
     depends_on:

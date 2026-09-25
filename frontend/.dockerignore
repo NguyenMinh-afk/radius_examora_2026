@@ -29,6 +29,9 @@ out/
 .env.*
 !.env.example
 !.env.docker
+!.env.production
+!.env.development
+!.env
 
 coverage/
 .nyc_output/

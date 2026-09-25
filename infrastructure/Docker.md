@@ -1,45 +1,52 @@
 # Docker Documentation
 
-This document explains how to run the EXAMORA project with Docker Compose, what each service does, how to manage containers, view logs, rebuild images, and reset data.
+Hướng dẫn chạy EXAMORA với Docker Compose — cấu trúc services, quản lý containers, xem logs, rebuild images, reset data.
+
+> Compose file chính: `infrastructure/docker-compose.yml` (KHÔNG nằm ở root).
+> Container names: prefix `examora-` (lowercase).
+> Project path mặc định trong ví dụ: `C:\Users\Admin\radius_examora_2026` (PowerShell) hoặc `~/radius_examora_2026` (bash).
 
 ## 1. Prerequisites
 
-- Docker Desktop or Docker Engine installed
-- Docker Compose plugin installed
-- Enough RAM/CPU for multiple services
-- Project code cloned locally
+- Docker Desktop hoặc Docker Engine
+- Docker Compose plugin (`docker compose`, không phải `docker-compose` cũ)
+- Ít nhất 8 GB RAM, 4 CPU (đủ chạy 13+ services)
+- Project code đã clone về local
 
-## 2. Project Compose Files
+## 2. Compose Files
 
-- `docker-compose.yml` — main compose file for the full system
-- `backend/AI_Worker_Service/docker-compose.yml` — standalone compose file for the AI worker only
+| File | Vai trò |
+| --- | --- |
+| `infrastructure/docker-compose.yml` | Main compose — full stack |
+| `backend/AI_Worker_Service/docker-compose.yml` | Standalone compose cho AI worker (chạy riêng) |
 
-The AI worker service in the root compose reuses:
+Compose chính reuses:
 - `backend/AI_Worker_Service/Dockerfile`
 - `backend/AI_Worker_Service/.env.docker`
 
 ## 3. Services Overview
 
-| Service | Container Name | Image / Build | Ports | Description |
+| Service | Container | Image | Host:Container | Description |
 | --- | --- | --- | --- | --- |
-| Postgres | EXAMORA-postgres | postgres:15 | 5432:5432 | Main database |
-| RabbitMQ | EXAMORA-rabbitmq | rabbitmq:3-management | 5672, 15672 | Message broker and UI |
-| User Service | EXAMORA-user-service | node:20-alpine | 5000:5000 | Auth and user management |
-| Exam Service | EXAMORA-exam-service | node:20-alpine | 3001:3001 | Exam, class, assignment APIs |
-| Question Service | EXAMORA-question-service | node:20-alpine | 3002:3002 | Question bank APIs |
-| AI Generation Service | EXAMORA-ai-generation-service | node:20-alpine | 3003:3003 | AI orchestration APIs |
-| AI Worker API | EXAMORA-ai-worker-api | Build from Dockerfile | 8000:8000 | AI worker REST API |
-| AI Worker Service | EXAMORA-ai-worker-service | Build from Dockerfile | none | Background AI worker |
-| Notification Service | EXAMORA-notification-service | node:20-alpine | 3004:3004 | Notifications |
-| Infrastructure Service | EXAMORA-infrastructure-service | node:20-alpine | 5005:5005 | Infra/monitoring APIs |
-| API Gateway | EXAMORA-api-gateway | node:20-alpine | 3100:3000 | Main gateway |
-| Frontend | EXAMORA-frontend | node:20-alpine | 5173:5173 | React frontend |
-| Prometheus | EXAMORA-prometheus | prom/prometheus:latest | 9090:9090 | Metrics scraper |
-| Grafana | EXAMORA-grafana | grafana/grafana:latest | 3006:3000 | Dashboards |
+| Postgres | `examora-postgres` | postgres:15-alpine | 5432:5432 | Database |
+| RabbitMQ | `examora-rabbitmq` | rabbitmq:3-management-alpine | 5672:5672, 15672:15672 | Message broker + Management UI |
+| Redis | `examora-redis` | redis:7-alpine | 6379:6379 | Cache + session |
+| User Service | `examora-user-service` | node:20-alpine | 5000:5000 | Auth + user management |
+| Exam Service | `examora-exam-service` | node:20-alpine | 3001:3001 | Exam, class, assignment APIs |
+| Question Service | `examora-question-service` | node:20-alpine | 3002:3002 | Question bank APIs |
+| AI Generation Service | `examora-ai-generation-service` | node:20-alpine | 3003:3003 | AI orchestration APIs |
+| AI Worker API | `examora-ai-worker-api` | python (build) | 8000:8000 | AI worker REST API (FastAPI) |
+| AI Worker Service | `examora-ai-worker-service` | python (build) | (none) | Background worker (no API) |
+| Notification Service | `examora-notification-service` | node:20-alpine | 3004:3004 | Notifications |
+| Infrastructure Service | `examora-infrastructure-service` | node:20-alpine | 5005:5005 | Infra / monitoring APIs |
+| API Gateway | `examora-api-gateway` | node:20-alpine | 3100:3000 | Main gateway (public port 3100) |
+| Frontend | `examora-frontend` | node (nginx) | 5173:80 | React frontend (nginx port 80 trong container) |
+| Prometheus | `examora-prometheus` | prom/prometheus:latest | 9090:9090 | Metrics scraper |
+| Grafana | `examora-grafana` | grafana/grafana:latest | 3006:3000 | Dashboards (admin port 3006) |
 
-## 4. Important Environment Files
+## 4. Environment Files
 
-Each service has its own `.env.docker` file. These are loaded into containers via `env_file`.
+Mỗi backend service có `.env.docker`. Compose tự load qua `env_file`:
 
 - `backend/User_Service/.env.docker`
 - `backend/Exam_Service/.env.docker`
@@ -49,216 +56,183 @@ Each service has its own `.env.docker` file. These are loaded into containers vi
 - `backend/Notification_Service/.env.docker`
 - `backend/Infrastructure_Service/.env.docker`
 - `backend/API_Gateway_Service/.env.docker`
+- `frontend/.env.docker`
 
-Real `.env.docker` files are intentionally ignored by Git. After a fresh clone,
-copy each tracked template before starting Compose:
+`.env.docker` được git-ignore. Sau khi clone, copy từ template `.env.docker.example`:
 
 ```powershell
-Get-ChildItem backend -Filter ".env.docker.example" -Recurse | ForEach-Object {
-  Copy-Item $_.FullName ($_.FullName -replace "\.example$", "")
+# PowerShell
+Get-ChildItem backend, frontend -Filter ".env.docker.example" -Recurse | ForEach-Object {
+  Copy-Item $_.FullName ($_.FullName -replace "\.example$","") -Force
 }
 ```
 
 ```bash
-find backend -name '.env.docker.example' -exec sh -c \
+# bash
+find backend frontend -name '.env.docker.example' -exec sh -c \
   'cp "$1" "${1%.example}"' _ {} \;
 ```
 
-The templates contain local-development defaults and empty placeholders only.
-Set real API/SMTP credentials locally. Never commit `.env.docker` or production
-secrets.
+**Không commit** `.env.docker` hay secrets thật.
 
-The frontend uses environment variables directly in compose:
+Compose cũng override một số biến trực tiếp:
 
 ```yaml
 environment:
-  VITE_API_BASE_URL: http://localhost:3100
+  DATABASE_URL: postgres://postgres:123456@postgres-db:5432/Exam_Bank
+  RABBITMQ_URL: amqp://admin:StrongPassword123@rabbitmq:5672
 ```
 
 ## 5. Database Initialization
 
-The root compose mounts two SQL files into Postgres:
+Compose mount folder `database/initdb` vào Postgres init dir:
 
 ```yaml
 volumes:
-  - ./database/schema_optimized.sql:/docker-entrypoint-initdb.d/01-schema.sql
-  - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02-seed.sql
-  - postgres-data:/var/lib/postgresql/data
+  - ../database/initdb:/docker-entrypoint-initdb.d:ro
 ```
 
-These files run only when the `postgres-data` volume is created for the first time. If you already have data, they will not rerun automatically.
+**Chỉ chạy khi volume `postgres_data` được tạo lần đầu.** Volume đã có data → init scripts KHÔNG re-run.
+
+Các file init chạy theo alphabet (xem chi tiết schemas tại `database/Data.md`):
+
+- `00-init-schemas.sql` — schemas + enums
+- `01-…08-…-service.sql` — tables từng schema
+- `51-…57-….sql` — seeds (roles/users, courses, questions, exams/classes, AI jobs, notifications, observability)
 
 ## 6. Start the Full System
 
-From the project root:
+> Tất cả lệnh `docker compose` phải chạy từ thư mục `infrastructure/`, hoặc truyền `-f infrastructure/docker-compose.yml`.
+
+### PowerShell (Windows)
+
+```powershell
+cd C:\Users\Admin\radius_examora_2026\infrastructure
+docker compose up -d                    # Start tất cả
+docker compose up -d --build           # Rebuild trước khi start
+docker compose up -d postgres-db rabbitmq redis prometheus grafana   # Infra first
+docker compose up -d --build user-service api-gateway exam-service question-service ai-generation-service notification-service infrastructure-service ai-worker-api ai-worker-service frontend
+docker compose up                       # Foreground, attach logs
+```
+
+### Bash (Linux/macOS)
 
 ```bash
+cd ~/radius_examora_2026/infrastructure
 docker compose up -d
-```
-
-Or rebuild first if you changed code or dependencies:
-
-```bash
 docker compose up -d --build
-```
-
-To start only infrastructure first:
-
-```bash
-docker compose up -d postgres-db rabbitmq prometheus grafana
-docker compose up --build user-service api-gateway exam-service question-service ai-generation-service notification-service infrastructure-service ai-worker-api ai-worker-service frontend
-```
-
-To attach logs to the terminal instead of backgrounding:
-
-```bash
-docker compose up
+docker compose up -d postgres-db rabbitmq redis prometheus grafana
+docker compose up -d --build user-service api-gateway exam-service question-service ai-generation-service notification-service infrastructure-service ai-worker-api ai-worker-service frontend
 ```
 
 ## 7. Rebuild and Refresh
 
-Rebuild a single service after code changes:
-
-```bash
+```powershell
+# Rebuild một service sau khi sửa code
 docker compose up -d --build frontend
 docker compose up -d --build ai-worker-api
-```
+docker compose up -d --build exam-service
 
-If you changed `.env.docker`, recreate containers so new env vars are applied:
-
-```bash
+# Sửa .env.docker → phải recreate container để apply
 docker compose down
 docker compose up -d --force-recreate
 ```
 
-### One-time AI queue migration
-
-The `ai.generation` queue no longer expires pending messages after one hour.
-RabbitMQ cannot change queue arguments in place. Existing installations that
-still show `x-message-ttl=3600000` must recreate this queue once.
-
-First stop AI publishing/consuming and verify that the queue is empty:
-
-```bash
-docker compose stop ai-generation-service ai-worker-service infrastructure-service
-docker exec EXAMORA-rabbitmq rabbitmqctl list_queues name messages consumers arguments
-```
-
-Only when `ai.generation` has `messages=0`, recreate it and restart the services:
-
-```bash
-docker exec EXAMORA-rabbitmq rabbitmqctl delete_queue ai.generation
-docker compose up -d ai-generation-service ai-worker-service infrastructure-service
-```
-
-If messages exist, do not delete the queue. Drain or export them first.
-
 ## 8. View Logs
 
-View logs for all services:
-
-```bash
+```powershell
+# Tất cả services
 docker compose logs -f
-```
 
-View logs for one service:
-
-```bash
+# Một service
 docker compose logs -f frontend
 docker compose logs -f api-gateway
+docker compose logs -f exam-service
 docker compose logs -f ai-worker-api
-```
 
-View logs for a specific container:
-
-```bash
-docker logs -f EXAMORA-frontend
+# Một container cụ thể
+docker logs -f examora-frontend
+docker logs -f examora-postgres
 ```
 
 ## 9. Inspect Containers
 
-List running containers and ports:
-
-```bash
+```powershell
+# List containers + ports
 docker compose ps
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-```
 
-Check environment variables inside a container:
-
-```bash
-docker exec -it EXAMORA-ai-worker-api sh
+# Env vars trong container
+docker exec -it examora-ai-worker-api sh
 env | grep DATABASE_URL
 env | grep RABBITMQ_URL
+
+# Shell vào container
+docker exec -it examora-frontend sh
+docker exec -it examora-postgres psql -U postgres -d Exam_Bank
 ```
 
-Open a shell inside a container:
+## 10. Health Checks & URLs
 
-```bash
-docker exec -it EXAMORA-frontend sh
-docker exec -it EXAMORA-postgres psql -U postgres -d Exam_Bank
-```
-
-## 10. Health and Quick Checks
-
-- Frontend: http://localhost:5173
-- API Gateway: http://localhost:3100
-- AI Worker API docs: http://localhost:8000/api/docs
-- AI Worker API health: http://localhost:8000/api/v1/health
-- Prometheus: http://localhost:9090
-- Grafana: http://localhost:3006
-- RabbitMQ UI: http://localhost:15672
+| Service | URL |
+| --- | --- |
+| Frontend | http://localhost:5173 |
+| API Gateway | http://localhost:3100 |
+| AI Worker Swagger | http://localhost:8000/api/docs |
+| AI Worker Health | http://localhost:8000/api/v1/health |
+| Prometheus | http://localhost:9090 |
+| Grafana | http://localhost:3006 (admin / admin123) |
+| RabbitMQ UI | http://localhost:15672 (admin / StrongPassword123) |
+| Postgres | `localhost:5432` (postgres / 123456) |
+| Redis | `localhost:6379` |
 
 ## 11. Reset Data
 
-Stop and remove containers, networks, and volumes:
-
-```bash
+```powershell
+# Stop + remove containers, networks, volumes
 docker compose down
-docker compose down --volumes
-```
+docker compose down -v
 
-Remove only the Postgres data volume to re-run init/seed:
-
-```bash
-docker volume rm <project_name>_postgres-data
-```
-
-Example if your project folder is `Project_EXAMORA`:
-
-```bash
-docker volume rm Project_EXAMORA_postgres-data
+# Chỉ remove Postgres data → re-run init scripts
+docker compose down
+docker volume rm radius_examora_2026_postgres_data
+docker compose up -d postgres-db
+# Chờ init scripts xong
+docker compose logs postgres-db | Select-String "initialization complete"
 docker compose up -d
-```
 
-Manually apply schema and seed from host:
-
-```bash
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\schema_optimized.sql"
-psql -U postgres -d Exam_Bank -f "c:\Users\Admin\Project_EXAMORA\database\seed_data.sql"
+# Apply 1 SQL file thủ công (không mất data)
+Get-Content C:\Users\Admin\radius_examora_2026\database\initdb\04-exam-service.sql | `
+  docker exec -i examora-postgres psql -U postgres -d Exam_Bank
 ```
 
 ## 12. AI Worker Standalone
 
-To run only the AI worker stack:
+Chạy chỉ AI worker + dependencies (postgres, rabbitmq):
 
 ```bash
 cd backend/AI_Worker_Service
 docker compose up -d --build
-```
-
-To stop it:
-
-```bash
-cd backend/AI_Worker_Service
 docker compose down
 ```
 
 ## 13. Common Troubleshooting
 
-- Port conflicts: change host ports in `docker-compose.yml`
-- Env not updating: containers do not auto-reload `.env.docker` after creation; recreate containers
-- Database not seeded: only runs on fresh volume creation
-- Frontend not reachable: verify host port `5173` and container command uses `--host 0.0.0.0`
-- AI worker fails to start: ensure `backend/AI_Worker_Service/.env.docker` exists and contains required variables
-- RabbitMQ queue issues: check the management UI at http://localhost:15672
+| Lỗi | Cách xử lý |
+| --- | --- |
+| Port conflict | Đổi host port trong `infrastructure/docker-compose.yml` |
+| Env không update | `.env.docker` không auto-reload — chạy `down` + `up -d --force-recreate` |
+| DB không seed | Chỉ chạy khi volume mới → xóa `postgres_data` volume và `up` lại |
+| Frontend không truy cập được | Container dùng nginx port 80; host map ra 5173. Kiểm tra port mapping |
+| AI worker fail start | Đảm bảo `backend/AI_Worker_Service/.env.docker` tồn tại + có đủ biến |
+| RabbitMQ queue issue | Mở http://localhost:15672 (admin / StrongPassword123) kiểm tra |
+| Postgres schema not found | Volume cũ chưa chạy init scripts mới → `docker volume rm <project>_postgres_data` |
+| Migrations drift so với model | Chạy lệnh SQL qua `docker exec -i examora-postgres psql … < file.sql` |
+
+## 14. Cleanup toàn bộ
+
+```powershell
+# Stop + xóa containers, networks, volumes, images
+docker compose down -v --rmi all
+docker system prune -a
+```
